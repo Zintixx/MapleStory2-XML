@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 헤네시스 요새 외곽 -->
+
+<ms2>
+	<state name="Wait">	
+        <onEnter>		
+			<action name="SetUserValue" key="DefencePhase" value="0" />				
+        </onEnter>	
+				<condition name="UserValue" key="DefencePhase" value="1">
+			<transition state="DefencePhase01"/>
+		</condition> 	
+    <onExit> 
+    </onExit>		
+	</state>	
+
+	<state name="DefencePhase01" >
+		<onEnter>		
+		</onEnter>
+				<condition name="여러명의유저를감지했으면" arg1="9000" arg2="1"> 
+			<transition state="MoveToTheWall"/>
+		</condition> 		
+				<condition name="UserValue" key="DefencePhase" value="2">
+			<transition state="DefencePhase02"/>				
+		</condition> 		
+	</state>		
+	
+	<state name="MoveToTheWall" >
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="52000120" arg2="10"/>			
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="DefencePhase01"/>
+				</condition>	
+				<condition name="UserValue" key="DefencePhase" value="2">
+			<transition state="DefencePhase02"/>				
+		</condition> 
+	</state>		
+
+	<state name="DefencePhase02" >
+		<onEnter>		
+		</onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9000" arg2="1"> 
+			<transition state="OutsideOfTheWall"/>
+		</condition> 		
+				<condition name="UserValue" key="DefencePhase" value="3">
+			<transition state="Quit"/>				
+		</condition> 		
+	</state>	
+	
+	<state name="OutsideOfTheWall" >
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="52000120" arg2="40"/>			
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="DefencePhase02"/>
+				</condition>	
+				<condition name="UserValue" key="DefencePhase" value="3">
+			<transition state="Quit"/>				
+		</condition> 
+	</state>		
+	
+    <state name="Quit" >
+        <onEnter>	
+		</onEnter>		
+    <onExit>
+    </onExit>
+    </state> 
+	
+</ms2>
+

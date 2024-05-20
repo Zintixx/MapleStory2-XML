@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  9991  -->
+    <!--1 2 단계 필수 아이템 없는 유저 죽이기    이 것은 인페르녹이 스킬로 사용하는데, 혹시 보스쪽이 오류라면 대박 버그라서 안정 장치로 맵트리거 설정도 넣음, 던전 끝나면 맵에 설정된 스킬 끄고 지옥의불 시리즈 디버프도 제거하기 -->
+<ms2>
+  <state name="Ready">
+    <onEnter>
+			<action name="스킬을설정한다" arg1="444" arg2="0" /> <!-- 맵 스킬 초기화 셋팅-->		
+			<action name="스킬을설정한다" arg1="666" arg2="0" /> <!-- 맵 스킬 초기화 셋팅-->		
+
+	</onEnter>	
+
+		<condition name="여러명의유저를감지했으면" arg1="750" arg2="1"> <!--   MS2TriggerBox   TriggerObjectID = 750, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면           750은 스타팅 지점 전투판 다  포함되는 범위, 700은 전투판만 포함되는 범위-->
+				<transition state="전투시작"/>
+		</condition>		
+		
+    <onExit>			
+    </onExit> 
+  </state>	
+  
+  
+
+  <state name="전투시작">
+		<onEnter>
+
+		</onEnter>
+		<!--  던전 플레이 시간 체크하는 이 로직은 맵으로 바로 들어가지 말고, 던전로직을 통해서 정식으로 입장해야 작동함-->
+			<condition name="DungeonCheckPlayTime" playSeconds="600"> <!--  플레이 시간이 10분 되면, 1단계 필수 아이템 없는 유저 디버프로 죽이기, 이 것은 인페르녹이 스킬로 사용하는데, 혹시 보스쪽이 오류라면 대박 버그라서 안정 장치로 맵트리거 설정도 넣음 -->
+			
+				<transition state="1단계_70000103" />
+				
+			</condition>		
+			
+			<!--언제든지  파티원이 전멸하거나 파티장이 던전 포기를 해서 몬스터가 전부 제거 될 수 있어서, 맵셋팅 스킬은 트리거 영역 안의 몬스터가 없으면 꺼지도록 매 턴마다 체크할 수 있도록 함-->
+			<condition name="!NPC를감지했으면" arg1="700" arg2="0"> <!--   MS2TriggerBox   TriggerObjectID = 700 , 이 트리거 박스 안에 플레이어가 한명도 없다면, 700은 전투판만 포함되는 범위, 750은 스타팅 지점 전투판 다  포함되는 범위-->
+																<!-- arg2 에는  SpawnPointID를 넣는데, 여기에 0 넣으면 모든 몬스터 전부 체크함 -->
+				<transition state="스킬끄기" />
+			</condition>
+		 
+		<onExit>
+		
+		</onExit>
+  </state>   
+  
+   
+   <state name="1단계_70000103" >	
+        <onEnter>
+			<action name="스킬을설정한다" arg1="444" arg2="1" /> <!-- 70000103  스킬 사용함 -->		
+   
+        </onEnter> 
+		
+			<!--  던전 플레이 시간 체크하는 이 로직은 맵으로 바로 들어가지 말고, 던전로직을 통해서 정식으로 입장해야 작동함-->
+			<condition name="DungeonCheckPlayTime" playSeconds="780"> <!--  플레이 시간이 13분 되면, 2단계 필수 아이템 없는 유저 디버프로 죽이기, 이 것은 인페르녹이 스킬로 사용하는데, 혹시 보스쪽이 오류라면 대박 버그라서 안정 장치로 맵트리거 설정도 넣음 -->
+			
+				<transition state="2단계_70000104" />
+				
+			</condition>	
+			
+			<!--언제든지  파티원이 전멸하거나 파티장이 던전 포기를 해서 몬스터가 전부 제거 될 수 있어서, 맵셋팅 스킬은 트리거 영역 안의 몬스터가 없으면 꺼지도록 매 턴마다 체크할 수 있도록 함-->
+			<condition name="!NPC를감지했으면" arg1="700" arg2="0"> <!--   MS2TriggerBox   TriggerObjectID = 700 , 이 트리거 박스 안에 플레이어가 한명도 없다면, 700은 전투판만 포함되는 범위, 750은 스타팅 지점 전투판 다  포함되는 범위-->
+																<!-- arg2 에는  SpawnPointID를 넣는데, 여기에 0 넣으면 모든 몬스터 전부 체크함 -->
+				<transition state="스킬끄기" />
+			</condition>
+			
+        <onExit>
+			 
+        </onExit> 
+    </state>	
+	
+	
+   <state name="2단계_70000104" >	
+        <onEnter>
+			<action name="스킬을설정한다" arg1="666" arg2="1" /> <!-- 70000104 스킬 사용함 -->		
+        </onEnter>
+		
+			<!--  던전 플레이 시간 체크하는 이 로직은 맵으로 바로 들어가지 말고, 던전로직을 통해서 정식으로 입장해야 작동함-->
+			<condition name="DungeonCheckPlayTime" playSeconds="900"> <!--  플레이 시간이 15분 되면, 2개 맵스킬 끄기 -->
+			
+				<transition state="스킬끄기" />
+				
+			</condition>	
+			
+			<!--언제든지  파티원이 전멸하거나 파티장이 던전 포기를 해서 몬스터가 전부 제거 될 수 있어서, 맵셋팅 스킬은 트리거 영역 안의 몬스터가 없으면 꺼지도록 매 턴마다 체크할 수 있도록 함-->
+			<condition name="!NPC를감지했으면" arg1="700" arg2="0"> <!--   MS2TriggerBox   TriggerObjectID = 700 , 이 트리거 박스 안에 플레이어가 한명도 없다면, 700은 전투판만 포함되는 범위, 750은 스타팅 지점 전투판 다  포함되는 범위-->
+																<!-- arg2 에는  SpawnPointID를 넣는데, 여기에 0 넣으면 모든 몬스터 전부 체크함 -->
+				<transition state="스킬끄기" />
+			</condition>	 
+			
+        <onExit>
+					
+        </onExit> 
+    </state>	
+	
+
+
+	
+   <state name="스킬끄기" >	
+        <onEnter>
+			<action name="스킬을설정한다" arg1="444" arg2="0" /> <!-- 맵 스킬 끄기-->		
+			<action name="스킬을설정한다" arg1="666" arg2="0" /> 		
+
+			<!-- 던전실패 하거나 던전성공 하거나 어쨌든 끝나면 혹시 몸에 걸려있는 지옥의 불 시리즈 디버프를 제거해 주기 위해 아래 애디셔널을 걸어줌--> 
+			<action name="버프를걸어준다" arg1="750" arg2="50004524" arg3="1" arg4="0"/> <!-- 지옥의 불 디버프 제거해주는 애디샤날던 던전 끝나면 걸어주기, MS2TriggerBox   TriggerObjectID = 750,   750은 스타팅 지점 전투판 다  포함되는 범위 -->				
+        </onEnter>
+
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="종료" />
+			</condition>			
+				
+        <onExit>
+					
+        </onExit> 
+    </state>	
+	
+
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>	
+	
+</ms2>

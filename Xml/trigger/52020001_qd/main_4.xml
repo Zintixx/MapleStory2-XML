@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="2차감지">   
+        <onEnter>					
+		    <action name="오브젝트반응설정한다" arg1="10002010" arg2="2" />		
+			</onEnter>	
+		<condition name="유저를감지했으면" arg1="4">
+			<transition state="연출시작"/>
+		</condition> 
+    <onExit> 
+    </onExit>
+    </state>
+
+    <state name="연출시작"> 
+		<onEnter>
+    		<action name="연출UI를설정한다" arg1="3"/>				
+			<action name="연출UI를설정한다" arg1="1"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="카메리이동"/>
+				</condition>
+		<onExit> 				
+		</onExit> 
+	</state>	
+
+      <state name="카메리이동"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="2000010" arg2="0" />							
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="탈것등장"/>
+				</condition>
+		<onExit> 		
+		</onExit> 
+	</state>		
+
+	<state name="탈것등장">   
+        <onEnter>	
+	    	<action name="몬스터를생성한다" arg1="7001" arg2="1" />				
+			</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+            <transition state="폭발_1" />		
+		</condition>  
+    <onExit> 
+    </onExit>
+    </state>
+
+        <state name="폭발_1"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="10052" arg2="1" />							
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="폭발_2"/>
+				</condition>
+		<onExit> 		
+		</onExit> 
+	</state>	
+
+        <state name="폭발_2"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="10053" arg2="1" />									
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="폭발_3"/>
+				</condition>
+		<onExit> 		
+		</onExit> 
+	</state>	
+
+        <state name="폭발_3"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="10054" arg2="1" />									
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="맵폭발연출"/>
+				</condition>
+		<onExit> 		
+		</onExit> 
+	</state>		
+	
+        <state name="맵폭발연출"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="10051" arg2="1" />			
+			<action name="스킬을설정한다" arg1="6007" arg2="1" /> 						
+			</onEnter>
+				<condition name="WaitTick" waitTick="4400">
+					<transition state="연출끝"/>
+				</condition>
+		<onExit> 		
+		</onExit> 
+	</state>	
+	
+      <state name="연출끝"> 
+		<onEnter>			
+			<action name="카메라경로를선택한다" arg1="2000010" arg2="1" />		
+    		<action name="연출UI를설정한다" arg1="2"/>				
+			<action name="연출UI를설정한다" arg1="0"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="오브젝트반응"/>
+				</condition>
+		<onExit> 	
+		
+			<action name="몬스터를생성한다" arg1="6100004" arg2="0" /> 		
+		</onExit> 
+	</state>			
+	
+	<state name="오브젝트반응">   
+        <onEnter>					
+    	<action name="대화를설정한다" arg1="1" arg2="0" arg3="좋아! 이 녀석을 타고 돌격해야겠어!!" arg4="3" arg5="0" />	
+		<action name="오브젝트반응설정한다" arg1="10002010" arg2="1" />			
+			</onEnter>	
+		<condition name="WaitTick" waitTick="1000">		
+            <transition state="오브젝트반응_2" />		
+		</condition>  
+    <onExit> 
+    </onExit>
+    </state>
+
+	<state name="오브젝트반응_2">   
+        <onEnter>				
+			</onEnter>	
+		<condition name="오브젝트가반응했으면" arg1="10002010" arg2="0">	
+            <transition state="오브젝트반응_3" />		
+		</condition>  
+    <onExit> 
+    </onExit>
+    </state>	
+
+	<state name="오브젝트반응_3">   
+        <onEnter>			
+		    <action name="오브젝트반응설정한다" arg1="10002010" arg2="2" />				
+			</onEnter>	
+		<condition name="WaitTick" waitTick="100">		
+            <transition state="카메라연출" />		
+		</condition>  
+    <onExit> 
+			<action name="몬스터소멸시킨다" arg1="7001" arg2="0" />		
+    </onExit>
+    </state>
+
+      <state name="카메라연출"> 
+		<onEnter>		
+		<!--
+			<action name="카메라경로를선택한다" arg1="2000009" arg2="0" />	
+           -->			
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="알림"/>
+				</condition>
+		<onExit> 				
+		</onExit> 
+	</state>	
+
+	<state name="알림">   
+        <onEnter>
+     		<action name="이벤트UI를설정한다" arg1="1" arg2="출력이 부족해 크리티아스로 진입할 수 없습니다." arg3="4000"/> 			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+			<transition state="알림_2"/>
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>	
+
+	<state name="알림_2">   
+        <onEnter>
+     		<action name="이벤트UI를설정한다" arg1="1" arg2="적들을 처치하면 에너지를 충전할 수 있습니다.\n제한시간 내에 100%충전해, 크리티아스로 진입하세요!" arg3="4000"/> 			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="타이머시작"/>
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>
+	
+	<state name="타이머시작">   
+        <onEnter>
+		
+		    <action name="타이머를설정한다" arg1="110" arg2="360" arg3="1" arg4="1" arg5="80"/>				
+			</onEnter>	
+		<condition name="WaitTick" waitTick="100">		
+            <transition state="몬스터생성" />		
+		</condition>  
+    <onExit> 	
+    </onExit>
+    </state>
+ 
+	<state name="몬스터생성">   
+        <onEnter>	
+			<action name="몬스터를생성한다" arg1="6000030" arg2="0" /> 
+			<action name="몬스터를생성한다" arg1="6000031" arg2="0" /> 
+			<action name="몬스터를생성한다" arg1="6000032" arg2="0" /> 
+			<action name="몬스터를생성한다" arg1="6000033" arg2="0" /> 
+			<action name="몬스터를생성한다" arg1="6000034" arg2="0" /> 
+			<action name="SetUserValue" triggerID="909" key="respawn" value="1" />
+			<action name="SetUserValue" triggerID="910" key="respawn" value="1" />
+			<action name="SetUserValue" triggerID="911" key="respawn" value="1" />
+			<action name="SetUserValue" triggerID="912" key="respawn" value="1" />
+			<action name="SetUserValue" triggerID="913" key="respawn" value="1" />			
+			</onEnter>	
+		<condition name="시간이경과했으면" arg1="110" >	
+            <transition state="실패" />		
+		</condition> 	
+		<onExit> 
+    </onExit>			
+    </state>	
+	
+ <!--
+ 	<state name="몬스터전멸">   
+        <onEnter>		
+			</onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="6000030,6000031,6000032,6000033,6000034" >	
+            <transition state="몬스터생성" />		
+		</condition> 
+    <onExit> 		
+    </onExit>		
+		<condition name="시간이경과했으면" arg1="110" >	
+            <transition state="실패" />		
+		</condition> 		
+
+    </state>		
+-->
+ 	<state name="실패">   
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="2000009" arg2="1" />				
+			<action name="이펙트를설정한다" arg1="10090" arg2="1" />
+			<action name="이펙트를설정한다" arg1="10091" arg2="1" />
+			<action name="이펙트를설정한다" arg1="10092" arg2="1" />
+			<action name="메쉬를설정한다" arg1="80000" arg2="1" arg3="0" arg4="0" arg5="0"/>	
+		
+     		<action name="몬스터소멸시킨다" arg1="all" /> 								
+     		<action name="이벤트UI를설정한다" arg1="1" arg2="미션에 실패하였습니다. 다시 재도전 해보세요." arg3="4000"/> 						
+    		<action name="유저를이동시킨다" arg1="52020001" arg2="99"/>	
+
+			<action name="포탈을설정한다" arg1="14" arg2="1" arg3="1" arg4="0" />	
+			</onEnter>	
+		<condition name="WaitTick" waitTick="100">			
+		</condition>  
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+</ms2>

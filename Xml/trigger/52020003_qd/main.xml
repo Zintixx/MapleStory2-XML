@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 부서진 작업실 : 제이든,흑성회 이용해 PC의 능력을 시험하다 -->
+<ms2>
+    <state name="대기">	
+        <onEnter>			
+			<action name="몬스터소멸시킨다" arg1="101,102,111,112,113,121,122,123,124,125,126"/>
+		</onEnter>			
+			<condition name="유저를감지했으면" arg1="9000" >   
+				<transition state="퀘스트조건체크"/>
+			</condition>
+		<onExit> 
+		</onExit>
+    </state>	
+	
+    <state name="퀘스트조건체크">	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001760" arg3="3"> 
+				<transition state="기본"/> 
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001760" arg3="2"> 
+				<transition state="제이든등장_완료"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001760" arg3="1"> 
+				<transition state="제이든등장_완료"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001759" arg3="3"> 
+				<transition state="제이든등장_완료"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001759" arg3="2"> 
+				<transition state="제이든등장_완료"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001759" arg3="1"> 
+				<transition state="흑성회전투_대기"/>
+			</condition>		
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001758" arg3="3"> 
+				<transition state="기본"/>
+			</condition>			
+		<onExit> 
+		</onExit>
+    </state>	
+	
+	<state name="기본">
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="흑성회전투_대기">
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+			<action name="유저를이동시킨다" arg1="52020003" arg2="10"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="PC등장_준비" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="PC등장_준비">
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="PC등장" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>				
+	
+	<state name="PC등장">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8000" arg2="0"/>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Walkin_01"/>
+			<action name="AddBalloonTalk" spawnPointID="0" msg="꽤 넓네, 생각보다…" duration="2000" delayTick="0"/>				
+			<action name="SetSceneSkip" arg1="전투직전_스킵완료" arg2="nextState"/> <!-- setsceneskip 1 set --> <!-- setsceneskip set --> <!-- setsceneskip set -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="누군가있다" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="누군가있다">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/>   
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Walkin_02"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="누군가있다_발견" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="누군가있다_발견">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/>  
+			<action name="AddBalloonTalk" spawnPointID="0" msg="잠깐… 누가 있나?" duration="3000" delayTick="0"/>				
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Walkin_03"/>			
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="요원등장_준비" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="요원등장_준비">
+		<onEnter>	
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/>  
+			<action name="몬스터를생성한다" arg1="113" arg2="0"/>
+			<action name="AddBalloonTalk" spawnPointID="113" msg="하하하!" duration="2000" delayTick="0"/>				
+		</onEnter>				
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="요원등장"/>
+			</condition>	
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="요원등장">
+		<onEnter>	
+	
+			<action name="AddCinematicTalk" npcID="11003666" msg="아주 멍청하지는 않구나.\n내 존재를 눈치채다니." duration="3000" align="left" /> 			
+		</onEnter>				
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="PC반응01"/>
+			</condition>	
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="PC반응01">
+		<onEnter>			
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>  				
+			<action name="AddCinematicTalk" npcID="0" msg="흑성회…? 여기서 뭘 하는 거지?" duration="3000" align="left" /> 		
+			<action name="SetPCEmotionLoop" arg1="Talk_B" arg2="3000"/>				
+		</onEnter>				
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="요원협박"/>
+			</condition>	
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="요원협박">
+		<onEnter>			
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/> 
+			<action name="AddCinematicTalk" npcID="11003666" msg="그건 알 필요 없고, 서로 바쁜데 시간 끌지 말자고~\n찾아낸 물건이 있으면 순순히 넘겨라." duration="3000" align="left" /> 					
+		</onEnter>				
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="PC반응02"/>
+			</condition>	
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="PC반응02">
+		<onEnter>			
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>  				
+			<action name="AddCinematicTalk" npcID="0" msg="그런 건 없고… 오히려 듣고 싶은 이야기가 많은데.\n여기서 뭘 하고 있었던 건지 말해 보라고." duration="3000" align="left" /> 
+			<action name="SetPCEmotionLoop" arg1="Emotion_Cinematic_ShakeHead_A" arg2="3000"/>				
+		</onEnter>				
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="요원반응"/>
+			</condition>	
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="요원반응">
+		<onEnter>			
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/> 			
+			<action name="AddCinematicTalk" npcID="11003666" msg="그럴 시간 없어. 우린 아주 바쁘거든.\n얘들아! 제압하자!" duration="3000" align="left" /> 					
+			<action name="몬스터를생성한다" arg1="111,112" arg2="0"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="요원소환01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="요원소환01">
+		<onEnter>			
+ 		<action name="카메라경로를선택한다" arg1="8010" arg2="0"/>  			
+			<action name="NPC를이동시킨다" arg1="111" arg2="111_blackstars_patrol_00" />	
+			<action name="AddBalloonTalk" spawnPointID="111" msg="각오해라!" duration="2000" delayTick="0" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="1500" > 
+				<transition state="요원소환02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="요원소환02">
+		<onEnter>			
+			<action name="카메라경로를선택한다" arg1="8011" arg2="0"/>  		
+			<action name="NPC를이동시킨다" arg1="112" arg2="112_blackstars_patrol_01" />	
+			<action name="AddBalloonTalk" spawnPointID="112" msg="혼내주마!" duration="2000" delayTick="0" />						
+        </onEnter>
+			<condition name="WaitTick" waitTick="1500" > 
+				<transition state="전투대기00" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="전투대기00">
+		<onEnter>			
+			<action name="카메라리셋" interpolationTime="2.0"/>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  			
+			<action name="몬스터소멸시킨다" arg1="111,112,113"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="전투직전_스킵완료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="전투직전_스킵완료"> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> 
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="몬스터소멸시킨다" arg1="111,112,113"/>
+			<action name="유저를이동시킨다" arg1="52020003" arg2="11"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="전투시작01"/>
+			</condition>
+		<onExit> 
+		</onExit>
+	</state>		 
+	
+	<state name="전투시작01">
+        <onEnter>	
+			<action name="카메라리셋" interpolationTime="2.0"/>	
+			<action name="몬스터를생성한다" arg1="121,122" arg2="1" />			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="121,122">
+				<transition state="전투시작02"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="전투시작02">
+        <onEnter>	
+			<action name="몬스터를생성한다" arg1="123,124" arg2="1"/>	
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="123,124">
+				<transition state="전투시작03"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="전투시작03">
+        <onEnter>	
+			<action name="몬스터를생성한다" arg1="125,126" arg2="1"/>	
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="125,126">
+				<transition state="전투끝"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+						
+	<state name="전투끝">
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  				
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="암전" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="암전">	
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+			<action name="유저를이동시킨다" arg1="52020003" arg2="11"/>
+        </onEnter>			
+			<condition name="WaitTick" waitTick="500" > 
+				<transition state="제이든_등장_대기" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="제이든_등장_대기">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="111,112,113,121,122,123,124,125,126"/>
+			<action name="몬스터를생성한다" arg1="101" arg2="0"/>	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="500" > 
+			<transition state="제이든대기" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>			
+	
+	<state name="제이든대기"><!-- setsceneskip 2 set --> <!-- setsceneskip 2 set -->  <!-- setsceneskip 2 set -->	  	
+        <onEnter>	
+<!-- 			<action name="카메라경로를선택한다" arg1="8040" arg2="0"/>  -->
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+			<action name="AddCinematicTalk" npcID="11003539" msg="…$MyPCName$?" duration="3000" align="left" /> 		
+			<action name="SetSceneSkip" arg1="제이든등장_스킵완료" arg2="exit"/> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set -->  <!-- setsceneskip 2 set -->			
+		</onEnter>	
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="제이든대사01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="제이든대사01">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/> 
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+			<action name="AddCinematicTalk" npcID="11003541" msg="아주 시끄러운 소리가 난 것 같은데…" duration="2000" align="left" /> 	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_PC_Walkin_01" />				
+		</onEnter>	
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="제이든대사02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="제이든대사02"> 	
+        <onEnter>	
+ 			<action name="카메라경로를선택한다" arg1="8021,8022" arg2="0"/>
+			<action name="AddCinematicTalk" npcID="11003541" msg="무슨 일 있었어?" duration="3000" align="left" /> 	
+			<action name="NPC를이동시킨다" arg1="101" arg2="101_MS2PatrolData_Jaiden_Walkin" />				
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close -->
+		</onEnter>	
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="연출종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="제이든등장_스킵완료">  <!-- setsceneskip 2 fin -->
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="몬스터소멸시킨다" arg1="101"/>
+			<action name="몬스터를생성한다" arg1="102" arg2="0"/>	
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="연출종료"/>
+			</condition>
+		<onExit> 
+		</onExit> 	
+	</state>	
+	
+    <state name="연출종료" > 
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="BlackStarAttack01"/>	
+			<action name="카메라리셋" interpolationTime="2.0"/>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="종료"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="제이든등장_완료">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="101,111,112,113,121,122,123,124,125,126"/>
+			<action name="몬스터를생성한다" arg1="102" arg2="0"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="종료">
+    </state>	
+
+</ms2>

@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+<!-- 플레이어 감지 -->
+  <state name="main">
+    <onEnter>
+			<action name="포탈을설정한다" arg1="12" arg2="0" arg3="0" arg4="0"/>	
+			<action name="오브젝트반응설정한다" arg1="13000012" arg2="2" /> <!-- 보상 상태 (없음) -->
+			<action name="이펙트를설정한다" arg1 ="98001" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98002" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98003" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98004" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98005" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98006" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "90021" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "90022" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98031" arg2="1" />
+			<action name="카메라를선택한다" arg1="8000" arg2="1"/>
+    </onEnter>
+			<condition name="여러명의유저를감지했으면" arg1="90001" arg2="1">
+					<transition state="CheckUserCount"/>
+			</condition>	 	
+    <onExit>
+    </onExit>
+  </state>      
+  
+  	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+  
+<!--   플레이어 감지하면 1초 대기 -->
+    <state name="DungeonStart">
+		    <onEnter>
+				<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0"/> <!-- 보상으로 연결되는 포탈 제어 (끔) -->
+				<action name="몬스터를생성한다" arg1="199" arg2="1" /><!-- 퀘스트 주는 NPC가 앞으로 걸어나옴 -->
+				<action name="카메라를선택한다" arg1="8001" arg2="1"/><!-- 연출 카메라 -->
+				<action name="타이머를설정한다" arg1="1" arg2="1" />
+				<action name="몬스터를생성한다" arg1="401,402,403,404,405,406" arg2="1" /> <!-- 성벽 지키는 NPC 소환 -->
+				<action name="몬스터를생성한다" arg1="801,802,803,804,805,806,807,808,809" arg2="1" /> <!-- 성벽 지키는 NPC 소환 -->
+				<action name="메쉬를설정한다" arg1="6000-6016" arg2="1" /> <!-- 가림막 -->	
+		    </onEnter>
+	        <condition name="시간이경과했으면" arg1="1">
+				<transition state="시작_02"/>
+			</condition>							
+    <onExit>
+    </onExit>
+  </state>
+   		   
+		 <state name="시작_02">
+	    <onEnter>
+		<!-- 1초 대기 경과하면 UI연출 출력 -->
+			<action name="연출UI를설정한다" arg1="1"/> 
+			<action name="연출UI를설정한다" arg1="3"/> 
+			<action name="타이머를설정한다" arg1="5" arg2="5" arg4="0" />
+			<action name="스킵을설정한다" arg1="시작_03" />
+			<action name="타이머를설정한다" arg1="1" arg2="1" />
+		</onEnter>
+	        <condition name="시간이경과했으면" arg1="5">
+				<transition state="시작_03"/>
+			</condition>	
+	<onExit>
+    </onExit>
+</state>
+
+  <state name="시작_03">
+    <onEnter>
+				<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+				<action name="대화를설정한다" arg1="2" arg2="11000015" arg3="$02000334_BF__MAIN__1$" arg4="3" /> <!-- 오스칼 대사 -->
+				<action name="몬스터를생성한다" arg1="190" arg2="0" /> <!-- 보스 등장 -->
+				<action name="스킵을설정한다" arg1="1단계_시작" />
+    </onEnter>
+	        <condition name="시간이경과했으면" arg1="3">
+				<transition state="1단계_시작"/>
+			</condition>			
+    <onExit>
+			<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+		<action name="연출UI를설정한다" arg1="4"/>
+		
+    </onExit>
+	</state>
+	
+	
+<!-- 해당 단계에서 플레이어의 위치를 조명해줌 -->
+<!-- 1 단계 시작 카운트 -->
+   <state name="1단계_시작">
+    <onEnter>
+		<action name="카메라경로를선택한다" arg1="8013,8015" arg2="0"/> --><!-- 사이드뷰 카메라 -->
+		<action name="타이머를설정한다" arg1="3" arg2="3" />
+	</onEnter>	
+		<condition name="시간이경과했으면" arg1="3">
+			<transition state="1단계_시작02"/>
+		</condition>
+	<onExit>
+	</onExit>
+  </state>   
+    
+  <state name="1단계_시작02">
+    <onEnter>
+		<action name="연출UI를설정한다" arg1="1"/> 
+		<action name="연출UI를설정한다" arg1="3"/> 
+		<action name="대화를설정한다" arg1="2" arg2="24001205" arg3="$02000334_BF__MAIN__6$" arg4="3" /> <!-- 보스 대사 : 성벽따위 금방 부숴주지 -->
+		<action name="타이머를설정한다" arg1="3" arg2="3" />
+		<action name="스킵을설정한다" arg1="1단계_시작03" />
+	</onEnter>	
+		<condition name="시간이경과했으면" arg1="3">
+			<transition state="1단계_시작03"/>
+		</condition>
+	<onExit>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+	</onExit>
+  </state>   
+  
+    <state name="1단계_시작03">
+    <onEnter>
+        <action name="이벤트UI를설정한다" arg1="0" arg2="1,4" />
+		<action name="ShowCountUI" text="$02000334_BF__MAIN__2$" stage="1" count="5"  />
+
+		<action name="타이머를설정한다" arg1="4" arg2="4" />
+	</onEnter>	
+		<condition name="시간이경과했으면" arg1="4">
+			<transition state="1단계_시작04"/>
+		</condition>
+	<onExit>
+	</onExit>
+  </state>   
+       
+    <state name="1단계_시작04">
+    <onEnter>
+  			<action name="대화를설정한다" arg1="1" arg2="199" arg3="$02000334_BF__MAIN__3$" arg4="3" />  <!-- 오스칼 말풍선 대사 -->
+			<action name="몬스터를생성한다" arg1="201,203" arg2="1" /> <!-- 성벽 지키는 NPC 리필 -->
+			<action name="대화를설정한다" arg1="1" arg2="203" arg3="$02000334_BF__MAIN__4$" arg4="3" />  <!-- 병사 말풍선 대사 -->
+			<action name="대화를설정한다" arg1="1" arg2="201" arg3="$02000334_BF__MAIN__5$" arg4="3" />  <!-- 병사 말풍선 대사 -->
+			<action name="타이머를설정한다" arg1="2" arg2="2" />
+	</onEnter>	
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="1단계_타이머"/>
+		</condition>
+		
+		<condition name="몬스터가죽어있으면" arg1="999">
+		<transition state="게임오버"/>
+		</condition>	
+	<onExit>
+	</onExit>
+  </state>
+  
+            
+  <!-- 1 단계 시작 -->
+  <state name="1단계_타이머">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1 = "90022" arg2="1" /><!-- 점프 뛰는 소리 ON -->
+			<action name="몬스터를생성한다" arg1="160" arg2="0" /> <!-- 웨이브 가이드 -->
+			<action name="몬스터를생성한다" arg1="150" arg2="0" /> 
+			<action name="타이머를설정한다" arg1="60" arg2="60" arg4="1" />
+		</onEnter>	
+			<condition name="시간이경과했으면" arg1="60">
+			<transition state="2단계_준비"/>
+			</condition>
+			<condition name="몬스터가죽어있으면" arg1="999">
+			<transition state="게임오버"/>
+			</condition>	
+		<condition name="유저를감지했으면" arg1="99999"> 	<!-- 임시로 다음 트리거로 보내기 -->	
+			<transition state="클리어"/>
+		</condition>	
+		<onExit>
+			<action name="이펙트를설정한다" arg1 = "90022" arg2="0" /><!-- 점프 뛰는 소리 OFF -->
+		</onExit>
+  </state>   
+ 
+      <state name="2단계_준비">
+    <onEnter>
+				<action name="연출UI를설정한다" arg1="1"/> 
+				<action name="연출UI를설정한다" arg1="3"/> 
+				<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,111,112,113,114,115,131,132,133,134,135,150,151,152,991,992,993,994,995,996,997,998"/>
+				<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+				<action name="대화를설정한다" arg1="2" arg2="11000015" arg3="$02000334_BF__MAIN__7$" arg4="3" /> <!-- 오스칼 대사 -->
+				<action name="스킵을설정한다" arg1="2단계_시작" />
+    </onEnter>
+	        <condition name="시간이경과했으면" arg1="3">
+				<transition state="2단계_시작"/>
+			</condition>					
+    <onExit>
+	<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+	</state>
+  
+  <!-- 2 단계 시작 카운트 -->  
+   <state name="2단계_시작">
+    <onEnter>
+		<action name="몬스터를생성한다" arg1="204,205" arg2="1" /> <!-- 성벽 지키는 NPC 리필 -->
+		<action name="대화를설정한다" arg1="1" arg2="199" arg3="$02000334_BF__MAIN__8$" arg4="3" />  <!-- 오스칼 대사 -->
+		<action name="메쉬를설정한다" arg1="6000-6016" arg2="0" arg4="250" arg5="1" /> <!-- 가림막 해제 -->	
+        <action name="이벤트UI를설정한다" arg1="0" arg2="2,4" />
+		<action name="ShowCountUI" text="$02000334_BF__MAIN__2$" stage="2" count="5"  />
+		<action name="타이머를설정한다" arg1="6" arg2="6" />
+	</onEnter>	
+		<condition name="시간이경과했으면" arg1="6">
+		<transition state="2단계_타이머"/>
+		</condition>
+					<condition name="몬스터가죽어있으면" arg1="999">
+					<transition state="게임오버"/>
+			</condition>	
+	<onExit>
+	</onExit>
+  </state>
+  
+  <!-- 2 단계 시작 -->
+  
+    <state name="2단계_타이머">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1 = "90022" arg2="1" /><!-- 점프 뛰는 소리 ON -->
+			<action name="카메라를선택한다" arg1="8000" arg2="1"/> <!-- 사이드뷰 카메라 -->
+			<action name="몬스터를생성한다" arg1="150,151" arg2="0" /> <!-- 1,2 차 웨이브 몬스터 작동 장치 -->
+			<action name="타이머를설정한다" arg1="60" arg2="60" arg4="1" />
+		</onEnter>	
+			<condition name="시간이경과했으면" arg1="60">
+			<transition state="3단계_준비"/>
+			</condition>
+						<condition name="몬스터가죽어있으면" arg1="999">
+					<transition state="게임오버"/>
+			</condition>	
+		<onExit>
+			<action name="이펙트를설정한다" arg1 = "90022" arg2="0" /><!-- 점프 뛰는 소리 OFF -->
+		</onExit>
+  </state> 
+  
+    <state name="3단계_준비">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/> 
+			<action name="연출UI를설정한다" arg1="3"/> 
+			<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,111,112,113,114,115,131,132,133,134,135,150,151,991,992,993,994,995,996,997,998"/>
+			<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+			<action name="대화를설정한다" arg1="2" arg2="11000015" arg3="$02000334_BF__MAIN__9$" arg4="3" /> <!-- 오스칼 대사 -->
+			<action name="스킵을설정한다" arg1="3단계_시작" />
+    </onEnter>
+	        <condition name="시간이경과했으면" arg1="3">
+				<transition state="3단계_시작"/>
+			</condition>			
+    <onExit>
+	<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+	</state>
+    
+  <!-- 3 단계 시작 카운트 -->
+  
+   <state name="3단계_시작">
+    <onEnter>
+		<action name="몬스터를생성한다" arg1="206,207" arg2="1" /> <!-- 성벽 지키는 NPC 리필 -->
+        <action name="이벤트UI를설정한다" arg1="0" arg2="3,4" />
+		<action name="ShowCountUI" text="$02000334_BF__MAIN__2$" stage="3" count="5"  />
+		<action name="타이머를설정한다" arg1="6" arg2="6" />
+	</onEnter>	
+		<condition name="시간이경과했으면" arg1="6">
+		<transition state="3단계_타이머"/>
+		</condition>
+					<condition name="몬스터가죽어있으면" arg1="999">
+					<transition state="게임오버"/>
+			</condition>	
+	<onExit>
+	</onExit>
+  </state>
+   
+  <!-- 3 단계 시작 -->
+  <state name="3단계_타이머">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1 = "90022" arg2="1" /><!-- 점프 뛰는 소리 ON -->
+			<action name="몬스터를생성한다" arg1="150,151,152" arg2="0" /> <!-- 1,2,3차 웨이브 몬스터 작동 장치 -->
+			<action name="타이머를설정한다" arg1="60" arg2="60" arg4="1" />
+		</onEnter>	
+			<condition name="시간이경과했으면" arg1="60">
+			<transition state="4단계_준비_01"/>
+			</condition>
+						<condition name="몬스터가죽어있으면" arg1="999">
+					<transition state="게임오버"/>
+			</condition>	
+		<onExit>
+			<action name="이펙트를설정한다" arg1 = "90022" arg2="0" /><!-- 점프 뛰는 소리 OFF -->
+		</onExit>
+  </state> 
+
+    <state name="4단계_준비_01">
+    <onEnter>
+				<action name="연출UI를설정한다" arg1="1"/> 
+				<action name="연출UI를설정한다" arg1="3"/> 
+				<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,111,112,113,114,115,131,132,133,134,135,150,151,152,991,992,993,994,995,996,997,998"/>
+				<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+				<action name="대화를설정한다" arg1="2" arg2="11000015" arg3="$02000334_BF__MAIN__10$" arg4="3" /> <!-- 오스칼 대사 -->
+    </onEnter>
+	        <condition name="시간이경과했으면" arg1="3">
+				<transition state="4단계_준비_02"/>
+			</condition>				
+    <onExit>
+    </onExit>
+	</state>
+  
+      <state name="4단계_준비_02">
+    <onEnter>
+				<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+				<action name="대화를설정한다" arg1="2" arg2="24001205" arg3="$02000334_BF__MAIN__11$" arg4="3" />  <!-- 보스 대사 -->
+    </onEnter>
+	        <condition name="시간이경과했으면" arg1="3">
+				<transition state="4단계_시작"/>
+			</condition>				
+    <onExit>
+	<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+	</state>
+  
+   <!-- 4 단계 시작 카운트 -->
+   
+   <state name="4단계_시작">
+    <onEnter>
+		<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,111,112,113,114,115,131,132,133,134,135,150,151,152,991,992,993,994,995,996,997,998"/>
+		<action name="NPC를이동시킨다" arg1="190" arg2="MS2PatrolData_2999" /> <!-- 보스 등장 -->
+        <action name="이벤트UI를설정한다" arg1="0" arg2="4,4" />
+		<action name="ShowCountUI" text="$02000334_BF__MAIN__2$" stage="4" count="5"  />
+		<action name="타이머를설정한다" arg1="6" arg2="6" />
+		<action name="대화를설정한다" arg1="1" arg2="190" arg3="$02000334_BF__WAVE__2$" arg4="3" />  <!-- 보스 대사 -->
+	</onEnter>		
+		<condition name="시간이경과했으면" arg1="6">
+		<transition state="4단계_타이머"/>
+		</condition>
+		<condition name="몬스터가죽어있으면" arg1="999">
+		<transition state="게임오버"/>
+		</condition>	
+	<onExit>
+		<action name="몬스터를생성한다" arg1="150,151" arg2="0" /> <!-- 1,2차 웨이브 몬스터 작동 장치 -->
+	</onExit>
+  </state>
+   
+  <!-- 4 단계 시작 -->
+    <state name="4단계_타이머">
+		<onEnter>
+				<action name="이펙트를설정한다" arg1 = "90022" arg2="1" /><!-- 점프 뛰는 소리 ON -->
+				<action name="타이머를설정한다" arg1="150" arg2="150" arg4="1"/>				
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="999">
+					<transition state="게임오버"/>
+			</condition>
+			<condition name="시간이경과했으면" arg1="150">
+				<transition state="게임오버"/>
+			</condition>
+			<condition name="몬스터가죽어있으면" arg1="190">
+			<transition state="클리어"/>
+			</condition>				
+		<onExit>
+			<action name="이펙트를설정한다" arg1 = "90022" arg2="0" /><!-- 점프 뛰는 소리 OFF -->
+		</onExit>
+  </state>   
+
+  	<!-- 게임 오버 스테이트 -->		 
+	
+    <state name="게임오버">
+		<onEnter>
+				<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,111,112,113,114,115,131,132,133,134,135,150,151,152,190,991,992,993,994,995,996,997,998"/>
+		        <action name="이벤트UI를설정한다" arg1="5" arg3="3000" />
+				<action name="이벤트UI를설정한다" arg1="0" arg2="0,0" />
+				<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+				<action name="이펙트를설정한다" arg1 = "98031" arg2="0" />
+		</onEnter>	
+			    <condition name="시간이경과했으면" arg1="3">
+				<transition state="게임오버_이벤트"/>
+				</condition>		
+		<onExit>
+		</onExit>
+  </state>   
+  
+  
+    <state name="게임오버_이벤트">
+		<onEnter>
+				<action name="연출UI를설정한다" arg1="1"/> 
+				<action name="연출UI를설정한다" arg1="3"/> 
+				<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,111,112,113,114,115,131,132,133,134,135,150,151,152,190,991,992,993,994,995,996,997,998"/>
+				<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+				<action name="대화를설정한다" arg1="2" arg2="24001205" arg3="$02000334_BF__MAIN__13$" arg4="3" /> <!-- 보스 대사 -->
+				<action name="스킵을설정한다" arg1="게임오버_강퇴" />
+		</onEnter>
+	        <condition name="시간이경과했으면" arg1="3">
+			<transition state="게임오버_강퇴"/>
+			</condition>			
+		<onExit>
+	<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="7"/>
+		</onExit>
+	</state>
+		
+    <state name="게임오버_강퇴">
+		<onEnter>
+			<action name="타이머를설정한다" arg1="5" arg2="5" arg4="1" />
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000334_BF__MAIN__14$" arg3="5000"/>
+		</onEnter>
+		    <condition name="시간이경과했으면" arg1="5">
+			<transition state="강퇴"/>	
+			</condition>
+		<onExit>
+		</onExit>
+	</state>
+	
+	<state name="강퇴">
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="0" arg2="0" arg3="90001"/>
+		</onEnter>
+		<onExit>
+		</onExit>
+	</state>
+  
+  <!-- 클리어 -->	
+		
+	    <state name="클리어">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="90001" arg2="trigger" arg3="TaboKill"/>	<!-- 돼지왕 타보 죽임 처리 -->	
+			<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,111,112,113,114,115,131,132,133,134,135,150,151,152,991,992,993,994,995,996,997,998"/>
+			<!-- 폭죽 터뜨림 -->	
+			<action name="이펙트를설정한다" arg1 = "98002" arg2="1" />
+			<action name="이펙트를설정한다" arg1 = "98003" arg2="1" />
+			<action name="이펙트를설정한다" arg1 = "98004" arg2="1" />
+			<action name="이펙트를설정한다" arg1 = "98005" arg2="1" />
+			<action name="타이머를설정한다" arg1="3" arg2="3"/>
+			<action name="이펙트를설정한다" arg1 = "98031" arg2="0" />
+		</onEnter>
+	        <condition name="시간이경과했으면" arg1="3">
+				<transition state="클리어_이벤트"/>
+			</condition>				
+		<onExit>
+			<!-- 폭죽 정지 -->	
+			<action name="이펙트를설정한다" arg1 = "98002" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98003" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98004" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "98005" arg2="0" />
+		</onExit>
+  </state>   
+      
+	   <state name="클리어_이벤트">
+		<onEnter>
+				<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,111,112,113,114,115,131,132,133,134,135,150,151,152,991,992,993,994,995,996,997,998"/> <!-- 몬스터 정리 -->
+				<action name="연출UI를설정한다" arg1="1"/> 
+				<action name="연출UI를설정한다" arg1="3"/> 
+				<action name="대화를설정한다" arg1="2" arg2="11000015" arg3="$02000334_BF__MAIN__16$" arg4="3" /> <!-- 오스칼 대사 -->
+				<action name="메쉬를설정한다" arg1="6000-6016" arg2="0" arg4="250" arg5="1" /> <!-- 가림막 해제 -->	
+				<action name="스킵을설정한다" arg1="클리어_보상"/>
+				<action name="타이머를설정한다" arg1="3" arg2="3"/>
+		</onEnter>
+			<condition name="시간이경과했으면" arg1="3">
+			<transition state="클리어_보상"/>
+			</condition>		
+		<onExit>
+			<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="7"/>
+		</onExit>
+  </state>     
+  
+  	   <state name="클리어_보상">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="0"/>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>   
+			<action name="ShowGuideSummary" entityID="103" textID="40009"/> <!-- 포탈로 이동하세요 -->		
+<!-- 			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000334_BF__MAIN__17$" arg3="10000"/> -->
+			<action name="NPC를이동시킨다" arg1="199" arg2="MS2PatrolData_2015" /> <!-- 오스칼 장소 이동 -->
+			<action name="타이머를설정한다" arg1="10" arg2="10" arg4="1"/>
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="90099">
+			<transition state="클리어_보상_02"/>
+			</condition>
+			<condition name="시간이경과했으면" arg1="10">
+			<transition state="클리어_보상_02"/>
+			</condition>
+		<onExit>
+			<action name="HideGuideSummary" entityID="103"/>
+		</onExit>
+	</state> 
+    
+    	<state name="클리어_보상_02">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="8003" arg2="1"/><!-- 연출 카메라 -->
+			<action name="연출UI를설정한다" arg1="1"/> 
+			<action name="연출UI를설정한다" arg1="3"/> 
+			<action name="대화를설정한다" arg1="2" arg2="11000015" arg3="$02000334_BF__MAIN__18$" arg4="3" /> <!-- 오스칼 대사 -->
+			<action name="타이머를설정한다" arg1="3" arg2="3"/>
+	            <!-- <action name="오브젝트반응설정한다" arg1="13000012" arg2="1" /> --> <!-- 보상 상태 개방-->
+		</onEnter>	
+			<condition name="시간이경과했으면" arg1="3">
+			<transition state="클리어_보상_03"/>
+			</condition>		
+		<onExit>
+			<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="7"/>
+		</onExit>
+	</state> 
+		
+		
+	<state name="클리어_보상_03">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="199" arg3="$02000334_BF__MAIN__19$" arg4="5" />  <!-- 오스칼 대사 -->
+		</onEnter>	
+			<condition name="WaitTick" waitTick="3000" > 
+				<action name="DungeonClear" /> 
+				<action name="포탈을설정한다" arg1="12" arg2="1" arg3="1" arg4="1"/>					
+				<transition state="종료" />
+			</condition>
+		<onExit>
+			<action name="HideGuideSummary" entityID="103"/>
+		</onExit>
+		</state> 
+		
+	<state name="종료">
+		<onEnter>
+		</onEnter>
+		<onExit>
+		</onExit>
+	</state>
+  	
+</ms2>

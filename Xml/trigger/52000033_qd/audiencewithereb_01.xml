@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 특별 알현실 : 50001300,50001301,50001302  -->
+
+<ms2>
+    <state name="대기" > 
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="101,201,301,401,501,502,503,504,505,506,507,508,509,510" arg2="0" /> 		
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- SpotLight_01-->		
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- SpotLight_02-->		
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- GuardBow-->					
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="9000">
+			<transition state="LodingDelay01"/>
+		</condition> 	
+    </state> 			
+
+    <state name="LodingDelay01" >
+        <onEnter>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="연출UI를설정한다" arg1="4"/>	
+				</onEnter>			
+				<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001301" arg3="3" >  <!-- 두 번째 퀘스트 완료 상태-->
+					<transition state="QuestOngoing02"/>
+				</condition>				
+				<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001300" arg3="3" > <!--  첫 번째 퀘스트 완료 상태 -->
+					<transition state="QuestOngoing01"/>	
+				</condition>								
+				<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001300" arg3="2" > <!--  첫 번째 퀘스트 완료 가능 상태 -->
+					<transition state="PCWalkIn01"/>	
+				</condition>		
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="PCtoLeave01"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!--  첫 번째 퀘스트 완료 상태 -->	
+    <state name="QuestOngoing01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  						
+				</onEnter>	
+				<condition name="WaitTick" waitTick="500">
+					<transition state="SecondQuestCheck02"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>			
+<!--  두 번째 퀘스트 완료 상태 -->	
+    <state name="QuestOngoing02" >
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  						
+				</onEnter>	
+				<condition name="WaitTick" waitTick="500">
+					<transition state="PCGoCenter01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+
+	
+	
+<!--  첫 번째 퀘스트 완료 가능 상태 -->	
+    <state name="PCWalkIn01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  			
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>						
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1500">
+					<transition state="PCWalkIn02"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>			
+	
+    <state name="PCWalkIn02" >
+		<onEnter>	
+			<action name="카메라를선택한다" arg1="601" arg2="1"/>						
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="PCWalkIn03"/>
+				</condition>
+    </state>	
+	
+    <state name="PCWalkIn03" >
+		<onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1000" />				
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="PCWalkIn04"/>
+				</condition>
+    </state>	
+	
+    <state name="PCWalkIn04" >
+        <onEnter>			
+			<action name="카메라를선택한다" arg1="602" arg2="1"/>			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="BowAction01"/>
+				</condition>
+    <onExit> 
+    </onExit>				
+    </state>			
+
+    <state name="BowAction01" >
+		<onEnter>
+			<action name="SetNpcEmotionSequence" arg1="501" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="502" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="503" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="504" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="505" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="506" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="507" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="508" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="509" arg2="Bow_A" />		
+			<action name="SetNpcEmotionSequence" arg1="510" arg2="Bow_A" />		
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> <!-- GuardBow-->			
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="BowAction02"/>
+				</condition>
+    </state>	
+
+    <state name="BowAction02" >
+		<onEnter>
+			<action name="카메라를선택한다" arg1="701" arg2="1"/>			
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="ErebTalk01"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+	
+    <state name="ErebTalk01" >
+		<onEnter>	
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1001" />				
+			<action name="카메라를선택한다" arg1="700" arg2="1"/>					
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+			<transition state="ErebTalk02"/>
+		</condition> 	
+    </state>		
+	
+    <state name="ErebTalk02" >
+		<onEnter>			
+			<action name="대화를설정한다" arg1="2" arg2="11000075" arg3="$52000033_QD__AUDIENCEWITHEREB_01__0$" arg4="4" arg5="0"/>			
+			<action name="스킵을설정한다" arg1="ErebTalk03"/>				
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="ErebTalk03"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+	
+    <state name="ErebTalk03" > 
+		<onEnter>		
+			<action name="RemoveCinematicTalk" />			
+			<action name="스킵을설정한다" arg1=""/>					
+			
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="ErebTalk04"/>
+				</condition>
+    </state>				
+
+    <state name="ErebTalk04" >
+		<onEnter>
+			<action name="카메라를선택한다" arg1="700" arg2="0"/>		
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="SecondQuestCheck01"/>
+				</condition>
+		<onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+		</onExit>						
+    </state>		
+
+    <state name="SecondQuestCheck01" >	
+        <onEnter>			
+				</onEnter>								
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001300" arg3="3" > <!--  첫 번째 퀘스트 완료 상태 -->
+					<transition state="SecondQuestCheck02"/>
+				</condition>			
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="SecondQuestCheck02" >	
+        <onEnter>			
+				</onEnter>								
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001301" arg3="3" > <!-- 두 번째 퀘스트 완료 상태-->
+					<transition state="PCGoCenter01"/>
+				</condition>			
+    <onExit> 
+    </onExit>	
+    </state>			
+
+    <state name="PCGoCenter01" >
+        <onEnter>	  
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="PCGoCenter02"/>	
+				</condition>		
+		<onExit>		
+		</onExit> 
+    </state>		
+	
+    <state name="PCGoCenter02" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="연출UI를설정한다" arg1="4"/>			  
+        </onEnter>
+				<condition name="WaitTick" waitTick="500">	
+					<transition state="PCGoCenter03"/>	
+				</condition>			
+		<onExit>		
+		</onExit> 
+    </state>		
+	
+    <state name="PCGoCenter03" >
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="52000033" arg2="10" arg3="9900"/>					  
+        </onEnter>
+				<condition name="WaitTick" waitTick="500">	
+					<transition state="PCGoCenter04"/>	
+				</condition>			
+		<onExit>		
+		</onExit> 
+    </state>		
+	
+    <state name="PCGoCenter04" >	
+        <onEnter>
+			<action name="카메라를선택한다" arg1="800" arg2="1"/>				
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1002" />		
+        </onEnter>
+				<condition name="WaitTick" waitTick="500">	
+					<transition state="PCGoCenter05"/>	
+				</condition>			
+		<onExit>		
+		</onExit> 
+    </state>			
+	
+    <state name="PCGoCenter05" >	
+		<onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  						
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="PCSpotLighting01"/>
+				</condition>
+    </state>	
+
+    <state name="PCSpotLighting01" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- SpotLight_01-->		
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- SpotLight_02-->				
+				</onEnter>						
+				<condition name="WaitTick" waitTick="500">
+					<transition state="PCSpotLighting02"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="PCSpotLighting02" >
+        <onEnter>	
+			<action name="SetPcEmotionSequence" arg1="Emotion_Happy_A" />		
+				</onEnter>					
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="PCSpotLighting03"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>			
+
+    <state name="PCSpotLighting03" >
+        <onEnter>	
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1003" />		
+			<action name="카메라를선택한다" arg1="801" arg2="1"/>						
+				</onEnter>					
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="ErebTalk11"/>	
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>			
+
+    <state name="ErebTalk11" >
+		<onEnter>			
+			<action name="대화를설정한다" arg1="2" arg2="11000075" arg3="$52000033_QD__AUDIENCEWITHEREB_01__1$" arg4="5" arg5="0"/>			
+			<action name="스킵을설정한다" arg1="ErebTalk12"/>				
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="ErebTalk12"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+	
+    <state name="ErebTalk12" > 
+		<onEnter>		
+			<action name="RemoveCinematicTalk" />			
+			<action name="스킵을설정한다" arg1=""/>								
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="ErebTalk13"/>
+				</condition>
+    </state>				
+
+    <state name="ErebTalk13" >	
+        <onEnter>		
+			<action name="카메라를선택한다" arg1="801" arg2="0"/>					
+				</onEnter>						
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="PCtoLeave01"/>
+				</condition>					
+    <onExit> 	
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- SpotLight_01-->		
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- SpotLight_02-->					
+    </onExit>
+    </state>		
+
+    <state name="PCtoLeave01" >
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  				
+				</onEnter>									
+    <onExit> 	
+    </onExit>
+    </state>			
+</ms2>

@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Wait">
+        <onEnter>					
+			<action name="메쉬를설정한다" arg1="2011-2014" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- DoorMesh_AlwaysOn-->	
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- FrontDoorStep-->	 
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- FrontDoorStep-->		
+			<action name="이펙트를설정한다" arg1="5003" arg2="0"/> <!-- FrontDoorStep-->	 
+			<action name="이펙트를설정한다" arg1="5004" arg2="0"/> <!-- FrontDoorStep-->						
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="12" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="13" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="14" arg2="0" arg3="0" arg4="0"/>	
+			<action name="포탈을설정한다" arg1="21" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="22" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="23" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="24" arg2="0" arg3="0" arg4="0"/>	
+			<action name="액터를설정한다" arg1="4101" arg2="1" arg3="ry_functobj_door_B01_off"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4102" arg2="1" arg3="ry_functobj_door_B01_off"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="ry_functobj_door_B01_off"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4104" arg2="1" arg3="ry_functobj_door_B01_off"/> <!-- OfficeDoor-->					
+			<action name="SetUserValue" key="RandomPortalOn" value="0" />		
+			<action name="SetUserValue" key="CounterDoorPick" value="0" />	
+			<action name="SetUserValue" key="DungeonClear" value="0" />				
+        </onEnter>	
+				<condition name="UserValue" key="RandomPortalOn" value="1" >		
+			<transition state="Guide01"/>	
+		</condition> 
+	</state>
+
+    <state name="Guide01">
+        <onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000387_BF__10_RANDOMPORTAL__0$" arg3="3000" arg4="0" />		
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- FrontDoorStep-->	 
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> <!-- FrontDoorStep-->		
+			<action name="이펙트를설정한다" arg1="5003" arg2="1"/> <!-- FrontDoorStep-->	 
+			<action name="이펙트를설정한다" arg1="5004" arg2="1"/> <!-- FrontDoorStep-->					
+        </onEnter>	 
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="CheckMember01"/>	
+		</condition> 
+    <onExit> 
+    </onExit>  
+    </state>			
+	
+    <state name="CheckMember01">	
+        <onEnter>	
+				</onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9001" arg2="1" arg3="Equal">	<!-- 1인용 테스트 임시 -->
+					<transition state="CheckMember02"/>	<!-- CheckMember02 -->		<!-- 1인용 테스트 임시 -->
+				</condition>							
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="CheckMember02">	
+        <onEnter>	
+				</onEnter>	
+				<condition name="!여러명의유저를감지했으면" arg1="9001" arg2="1" arg3="Equal">
+					<transition state="CheckMember01"/>
+				</condition>						
+				<condition name="여러명의유저를감지했으면" arg1="9002" arg2="1" arg3="Equal">
+					<transition state="CheckMember03"/>
+				</condition>							
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="CheckMember03">	
+        <onEnter>	
+				</onEnter>	
+				<condition name="!여러명의유저를감지했으면" arg1="9001" arg2="1" arg3="Equal">
+					<transition state="CheckMember01"/>
+				</condition>			
+				<condition name="!여러명의유저를감지했으면" arg1="9002" arg2="1" arg3="Equal">
+					<transition state="CheckMember01"/>
+				</condition>							
+				<condition name="여러명의유저를감지했으면" arg1="9003" arg2="1" arg3="Equal">
+					<transition state="CheckMember04"/>
+				</condition>							
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="CheckMember04">	
+        <onEnter>	
+				</onEnter>	
+				<condition name="!여러명의유저를감지했으면" arg1="9001" arg2="1" arg3="Equal">
+					<transition state="CheckMember01"/>
+				</condition>			
+				<condition name="!여러명의유저를감지했으면" arg1="9002" arg2="1" arg3="Equal">
+					<transition state="CheckMember01"/>
+				</condition>		
+				<condition name="!여러명의유저를감지했으면" arg1="9003" arg2="1" arg3="Equal">
+					<transition state="CheckMember01"/>
+				</condition>						
+				<condition name="여러명의유저를감지했으면" arg1="9004" arg2="1" arg3="Equal">
+					<transition state="DoorActivate01"/>
+				</condition>							
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="DoorActivate01">	
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+				</onEnter>	
+				<condition name="WaitTick" waitTick="500">	
+					<transition state="DoorActivate02"/> 	
+				</condition>			
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="DoorActivate02">	
+        <onEnter>	
+			<action name="액터를설정한다" arg1="4101" arg2="1" arg3="ry_functobj_door_B01_on"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4102" arg2="1" arg3="ry_functobj_door_B01_on"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="ry_functobj_door_B01_on"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4104" arg2="1" arg3="ry_functobj_door_B01_on"/> <!-- OfficeDoor-->		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="PickPortalPattern"/> 	
+				</condition>			
+    <onExit> 
+    </onExit>
+    </state>		
+	
+	
+	
+<!-- 4개의 문 중에서 하나만 카운터로 -->	
+	<state name="PickPortalPattern">
+		<onEnter>
+		</onEnter>
+				<condition name="랜덤조건" arg1="25">
+					<transition state="1stDoorPick"/>
+				</condition>		
+				<condition name="랜덤조건" arg1="25">	
+					<transition state="2ndDoorPick"/>
+				</condition>
+				<condition name="랜덤조건" arg1="25">
+					<transition state="3rdDoorPick" />
+				</condition>		
+				<condition name="랜덤조건" arg1="25">
+					<transition state="4rdDoorPick" />	
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+    <state name="1stDoorPick">	
+        <onEnter>	
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="1" arg4="0"/>	
+			<action name="포탈을설정한다" arg1="22" arg2="0" arg3="1" arg4="0"/>
+			<action name="포탈을설정한다" arg1="23" arg2="0" arg3="1" arg4="0"/>
+			<action name="포탈을설정한다" arg1="24" arg2="0" arg3="1" arg4="0"/>					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="GameStart00"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="2ndDoorPick">	
+        <onEnter>	
+			<action name="포탈을설정한다" arg1="12" arg2="0" arg3="1" arg4="0"/>	
+			<action name="포탈을설정한다" arg1="21" arg2="0" arg3="1" arg4="0"/>
+			<action name="포탈을설정한다" arg1="23" arg2="0" arg3="1" arg4="0"/>
+			<action name="포탈을설정한다" arg1="24" arg2="0" arg3="1" arg4="0"/>					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="GameStart00"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="3rdDoorPick">	
+        <onEnter>	
+			<action name="포탈을설정한다" arg1="13" arg2="0" arg3="1" arg4="0"/>	
+			<action name="포탈을설정한다" arg1="21" arg2="0" arg3="1" arg4="0"/>
+			<action name="포탈을설정한다" arg1="22" arg2="0" arg3="1" arg4="0"/>
+			<action name="포탈을설정한다" arg1="24" arg2="0" arg3="1" arg4="0"/>						
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="GameStart00"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="4rdDoorPick">	
+        <onEnter>	
+			<action name="포탈을설정한다" arg1="14" arg2="0" arg3="1" arg4="0"/>	
+			<action name="포탈을설정한다" arg1="21" arg2="0" arg3="1" arg4="0"/>
+			<action name="포탈을설정한다" arg1="22" arg2="0" arg3="1" arg4="0"/>
+			<action name="포탈을설정한다" arg1="23" arg2="0" arg3="1" arg4="0"/>					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="GameStart00"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="GameStart00">		
+        <onEnter>	
+		</onEnter>
+				<condition name="여러명의유저를감지했으면" arg1="9800" arg2="4" arg3="Equal">	<!-- InTheStore -->
+			<transition state="GameStart01"/>	
+		</condition> 		
+				<condition name="여러명의유저를감지했으면" arg1="9800" arg2="4" arg3="Less">	<!-- InTheStore -->	
+			<transition state="GameStartDelay01"/>		
+		</condition> 				
+        <onExit>		
+        </onExit>
+    </state>	
+
+    <state name="GameStartDelay01">	
+        <onEnter>				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="GameStart01"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="GameStart01">	
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>	
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="12" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="13" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="14" arg2="0" arg3="0" arg4="0"/>	
+			<action name="포탈을설정한다" arg1="21" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="22" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="23" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="24" arg2="0" arg3="0" arg4="0"/>		
+			<action name="액터를설정한다" arg1="4101" arg2="1" arg3="ry_functobj_door_B01_off"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4102" arg2="1" arg3="ry_functobj_door_B01_off"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="ry_functobj_door_B01_off"/> <!-- OfficeDoor-->		
+			<action name="액터를설정한다" arg1="4104" arg2="1" arg3="ry_functobj_door_B01_off"/> <!-- OfficeDoor-->		
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- FrontDoorStep-->	 
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- FrontDoorStep-->		
+			<action name="이펙트를설정한다" arg1="5003" arg2="0"/> <!-- FrontDoorStep-->	 
+			<action name="이펙트를설정한다" arg1="5004" arg2="0"/> <!-- FrontDoorStep-->					
+				</onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9005" arg2="1" arg3="Equal">	<!-- 카운터 1명 -->
+			<transition state="GameStart02"/>		<!-- 1인 테스트용 임시 -->
+		</condition> 			
+				<condition name="여러명의유저를감지했으면" arg1="9900" arg2="4" arg3="Less">	
+			<transition state="EndGame01"/>	
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="GameStart02">		
+        <onEnter>	
+		</onEnter>
+				<condition name="여러명의유저를감지했으면" arg1="9006" arg2="3" arg3="Equal">	
+			<transition state="10secondsWait"/>	
+		</condition> 		
+				<condition name="여러명의유저를감지했으면" arg1="9900" arg2="4" arg3="Less">	
+			<transition state="EndGame01"/>	
+		</condition> 				
+        <onExit>		
+        </onExit>
+    </state>	
+	
+    <state name="10secondsWait">		
+        <onEnter>				
+				</onEnter>	
+				<condition name="UserValue" key="DungeonClear" value="1">	
+					<transition state="Quit"/>
+		</condition> 					
+				<condition name="WaitTick" waitTick="10000">
+					<transition state="CheckMemeberAgain"/>		<!-- 1인 테스트용 임시 -->	
+		</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="CheckMemeberAgain">	
+        <onEnter>	
+				</onEnter>		
+				<condition name="여러명의유저를감지했으면" arg1="9900" arg2="4" arg3="Equal">	
+			<transition state="10secondsWait"/>		
+		</condition> 		
+				<condition name="여러명의유저를감지했으면" arg1="9900" arg2="4" arg3="Less">	
+			<transition state="EndGame01"/>	
+		</condition> 		
+				<condition name="UserValue" key="DungeonClear" value="1">	
+					<transition state="Quit"/>
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="EndGame01">		
+        <onEnter>		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000387_BF__10_RANDOMPORTAL__1$" arg3="3000" arg4="0" />
+				</onEnter>	
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="PCMoveOut01"/>	
+				</condition>	
+				<condition name="UserValue" key="DungeonClear" value="1">	
+					<transition state="Quit"/>
+		</condition> 						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="PCMoveOut01">	
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="02000387" arg2="1" arg3="9900" />		<!-- 사무실로 강제 이동 -->					
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="FieredNotice01"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="FieredNotice01">	
+        <onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>	
+			<action name="연출UI를설정한다" arg1="3"/>  		
+			<action name="대화를설정한다" arg1="2" arg2="11000491" arg3="$02000387_BF__10_RANDOMPORTAL__2$" arg4="4" />	
+			<action name="스킵을설정한다" arg1="FieredNotice01Skip"/>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="4000">		
+					<transition state="FieredNotice01Skip"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+			
+    <state name="FieredNotice01Skip">	
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="FieredNotice02"/> 	
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	 
+	
+    <state name="FieredNotice02">	
+        <onEnter>			
+			<action name="대화를설정한다" arg1="2" arg2="11000491" arg3="$02000387_BF__10_RANDOMPORTAL__3$" arg4="4" />	
+			<action name="스킵을설정한다" arg1="FieredNotice02Skip"/>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="4000">		
+					<transition state="FieredNotice02Skip"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+			
+    <state name="FieredNotice02Skip">	
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>		
+			<action name="연출UI를설정한다" arg1="0"/>	
+			<action name="연출UI를설정한다" arg1="2"/>  				
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="PCForceToLeave"/> 	
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	 
+
+    <state name="PCForceToLeave">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="0" arg2="0"/>
+        </onEnter>
+		<onExit>
+			<action name="몬스터소멸시킨다" arg1="100"/>		
+		</onExit> 
+    </state>		
+	
+
+    <state name="Quit">
+        <onEnter>
+        </onEnter>
+		<onExit>
+		</onExit> 
+    </state>		
+</ms2>

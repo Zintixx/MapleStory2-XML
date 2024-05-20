@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID = 14112, 12시 방향의 로봇 탈것 관리하는 역할 -->
+<ms2>
+
+	<state name="최초시작">
+		<onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10003148" arg2="2" /> <!--  3페이즈 인터렉트 오브젝트 대기,  arg2="0" 노말 상태 (툴벤치에서 상태 입력)      arg2="1" 반응가능 상태 (툴벤치에서 상태 입력)      arg2="2" 반응완료 상태 (actor일 경우 메시가 보이지 않는다.)-->	
+		</onEnter>													    <!--  arg2="2" : 탈것 인터렉트 오브젝트 모습 감추기, arg2="1" : 탈것 인터렉트 오브젝트 모습 드러내면서 활성화 상태가 되기 -->
+	
+		<condition name="CheckUser">
+			<transition state="탈것_등장대기" /> 
+		</condition>		
+	</state>  
+
+
+	<state name="탈것_등장대기"> 
+		<onEnter>	
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="1000" >
+				<transition state="탈것_등장연출" />					
+			</condition>	
+	</state>
+	
+
+	<state name="탈것_등장연출"> 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="914112" arg2="0" />	<!-- 탑승 아르케온 등장(연출용) : 리젠 애니메이션 출력-->	
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="4000" > <!-- 아르케온 리젠 애니메이션 길이에 맞게 WaitTick 시간 설정해야 함 -->	
+				<transition state="탈것_등장" />					
+			</condition>	
+	</state>	
+
+	<state name="탈것_등장"> 
+		<onEnter>		
+			<action name="오브젝트반응설정한다" arg1="10003148" arg2="1" /> <!--  arg2="0" 노말 상태 (툴벤치에서 상태 입력)      arg2="1" 반응가능 상태 (툴벤치에서 상태 입력)      arg2="2" 반응완료 상태 (actor일 경우 메시가 보이지 않는다.)-->	
+			<action name="몬스터소멸시킨다" arg1="914112" />						
+		</onEnter>
+		
+			<condition name="오브젝트가반응했으면" arg1="10003148" arg2="0" > <!--  arg2="0" 노말 상태 (툴벤치에서 상태 입력)      arg2="1" 반응가능 상태 (툴벤치에서 상태 입력)      arg2="2" 오브젝트 사라짐-->
+				<transition state="인터렉트_동작중" />					
+			</condition>	
+			
+			
+			
+			<condition name="UserValue" key="RidingBattle" value="-1"> <!-- 보스가 죽으면 AI_TurkaHoodForce_Phase03.xml 에서 RidingBattle = -1 신호를 보냄  -->	
+				<transition state="종료" />					
+			</condition>				
+	</state>	
+	
+	<state name="인터렉트_동작중"> 
+		<onEnter>			
+			<action name="오브젝트반응설정한다" arg1="10003148" arg2="2" /> <!--  3페이즈 인터렉트 오브젝트 대기,  arg2="0" 노말 상태 (툴벤치에서 상태 입력)      arg2="1" 반응가능 상태 (툴벤치에서 상태 입력)      arg2="2" 반응완료 상태 (actor일 경우 메시가 보이지 않는다.)-->	
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="30000" >
+				<transition state="탈것_등장대기" />					
+			</condition>	
+			
+			
+			
+			<condition name="UserValue" key="RidingBattle" value="-1">
+				<transition state="종료" />					
+			</condition>			
+	</state>
+
+
+
+	<state name="종료">  <!--  로봇탈것 모습 감추고 트리거 완전 종료 -->
+		<onEnter>			
+			<action name="오브젝트반응설정한다" arg1="10003148" arg2="2" /> <!--  3페이즈 인터렉트 오브젝트 대기,  arg2="0" 노말 상태 (툴벤치에서 상태 입력)      arg2="1" 반응가능 상태 (툴벤치에서 상태 입력)      arg2="2" 반응완료 상태 (actor일 경우 메시가 보이지 않는다.)-->	
+		</onEnter>													    <!--  arg2="2" : 탈것 인터렉트 오브젝트 모습 감추기, arg2="1" : 탈것 인터렉트 오브젝트 모습 드러내면서 활성화 상태가 되기 -->
+			
+	</state>
+	
+</ms2>
+

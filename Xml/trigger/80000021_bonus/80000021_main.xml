@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="입장">
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="180-198" arg2="1" />		<!--뒷문준비 / 막힌 상태-->
+			<action name="몬스터를생성한다" arg1="101,102,103,104,105" arg2="0"/>		<!-- 101-4: 용병 우르자들 / 105:연출용 핑크빈-->	
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>		<!--출구포털준비 / 꺼놓은 상태-->	
+		</onEnter>
+        <condition name="유저를감지했으면" arg1="9000">
+            <transition state="안내" />
+        </condition>
+		<onExit>
+		</onExit>			
+	</state>	
+
+	<state name="안내">
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="1" textID="26300734" durationTime="10" />		
+		</onEnter>
+			<condition name="WaitTick" waitTick="500" >
+				<transition state="몬스터체크"/>
+			</condition> 		
+		<onExit>
+		</onExit>
+	</state>		
+	
+	<state name="몬스터체크">
+		<onEnter>
+			<action name="ShowGuideSummary" entityID="1" textID="26300734" durationTime="10000" />		<!-- 가이드 텍스트 ON : 슈퍼파워 핑크빈의 용병, 험상궂은 우르자들을 처치하세요! -->				
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="101,102,103,104">
+				<transition state="길을열어라" />
+			</condition>
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="길을열어라">
+		<onEnter>
+			<!-- <action name="HideGuideSummary" entityID="1"/> -->		<!-- 가이드 텍스트 OFF : 슈퍼파워 핑크빈의 용병, 험상궂은 우르자들을 처치하세요! -->
+			<action name="SetNpcEmotionSequence" arg1="105" arg2="Dead_A"/>		<!-- 핑크빈 빠잉 -->
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>		<!--출구포털 / 활성화-->	
+            <action name="아이템을생성한다" arg1="5001" />		<!--초록코인-->			
+		</onEnter>
+			<condition name="WaitTick" waitTick="1500" >
+				<transition state="문열기00"/>
+			</condition> 
+		<onExit>
+		</onExit>
+	</state>	
+	
+	<state name="문열기00">
+		<onEnter>
+			<action name="ShowGuideSummary" entityID="2" textID="26300735" durationTime="10000" />		<!-- 가이드 텍스트 ON : 문이 열렸어요. 출구에 있는 초록 코인을 주운 후 이동하세요. -->			
+			<action name="메쉬를설정한다" arg1="198" arg2="0" />	<!--뒷문 / 열기 -->		
+		</onEnter>
+			<condition name="WaitTick" waitTick="800" >
+				<transition state="문열기01"/>
+			</condition> 
+		<onExit>
+		</onExit>
+	</state>
+	
+    <state name="문열기01">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="180,182,184" arg2="0" />	<!--뒷문 / 열기 -->				
+		</onEnter>			
+			<condition name="WaitTick" waitTick="800" >
+				<transition state="문열기02"/>
+			</condition> 				
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="문열기02">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="181,183,185" arg2="0" />	<!--뒷문 / 열기 -->				
+		</onEnter>			
+			<condition name="WaitTick" waitTick="800" >
+				<transition state="문열기03"/>		
+			</condition> 		
+		<onExit>	
+		</onExit>
+    </state>	
+
+    <state name="문열기03">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="186,188,190" arg2="0" />	<!--뒷문 / 열기 -->				
+
+		</onEnter>			
+			<condition name="WaitTick" waitTick="800" >
+				<transition state="문열기04"/>		
+			</condition> 		
+		<onExit>	
+		</onExit>
+    </state>	
+
+    <state name="문열기04">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="187,189,191" arg2="0" />	<!--뒷문 / 열기 -->				
+
+		</onEnter>			
+			<condition name="WaitTick" waitTick="800" >
+				<transition state="문열기05"/>		
+			</condition> 		
+		<onExit>	
+		</onExit>
+    </state>		
+	
+    <state name="문열기05">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="192,194,196" arg2="0" />	<!--뒷문 / 열기 -->				
+		</onEnter>			
+			<condition name="WaitTick" waitTick="800" >
+				<transition state="문열기06"/>		
+			</condition> 		
+		<onExit>	
+		</onExit>
+    </state>		
+	
+    <state name="문열기06">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="193,195,197" arg2="0" />	<!--뒷문 / 열기 -->				
+			<action name="몬스터소멸시킨다" arg1="105" />	<!-- 핑크빈 소멸 -->				
+		</onEnter>			
+			<condition name="WaitTick" waitTick="1500" >
+				<transition state="완료"/>		
+			</condition> 		
+		<onExit>	
+		</onExit>
+    </state>	
+	
+    <state name="완료">
+		<onEnter>	
+		</onEnter>			
+		<onExit>			
+		</onExit>
+    </state>
+	
+</ms2>

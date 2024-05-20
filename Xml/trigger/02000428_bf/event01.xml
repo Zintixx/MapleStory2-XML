@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  9993  -->
+  <!--  이 트리거는 던전 전투 도중에 일러스트 대화창 연출 출력을 위한 용도입니다. -->
+<ms2>
+
+ <state name="Ready">
+    <onEnter>
+
+    </onEnter>  
+	
+		<condition name="여러명의유저를감지했으면" arg1="750" arg2="1"> <!--   MS2TriggerBox   TriggerObjectID = 750, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면,   750은 스타팅 지점 전투판 다  포함되는 범위, 700은 전투판만 포함되는 범위-->
+				<transition state="전투시작잠시대기"/>
+		</condition>		
+		 
+    <onExit>
+	
+    </onExit>
+  </state>
+
+ <state name="전투시작잠시대기">
+    <onEnter>
+		
+    </onEnter>
+	
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="전투시작_인페르녹전함"/>	
+		</condition>	
+		 
+    <onExit>
+	
+    </onExit>
+  </state>
+  
+ 
+   <state name="전투시작_인페르녹전함">
+    <onEnter>
+	
+		<!-- ##  01. 일러스트 대화창 연출 넣기  ## -->
+		<action name="ShowGuideSummary" entityID="20041002" textID="20041002"/> 
+
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="8000" > 
+			<transition state="첫번째페이즈_인페르녹전함"/>	
+		</condition>	
+	
+    <onExit>
+		<action name="HideGuideSummary" entityID="20041002"/>
+    </onExit>
+  </state>
+  
+
+   <state name="첫번째페이즈_인페르녹전함">
+    <onEnter>
+
+    </onEnter>
+	
+		<condition name="UserValue" key="AirshipBalrogCrimsonBroken" value="1">  <!-- 1페이즈 인페르녹의 전함이 파괴될때   AirshipBalrogCrimsonBroken = 1 신호를 받을때까지 여기서 대기-->
+		
+			<transition state="인페르녹전함파괴연출" />
+			
+		</condition>
+		
+    <onExit>
+    </onExit>
+  </state>
+    
+  
+
+ <state name="인페르녹전함파괴연출">
+    <onEnter>
+		<!-- ##  02. 일러스트 대화창 연출 넣기  ##-->
+		<action name="ShowGuideSummary" entityID="20041010" textID="20041010"/> 
+		<action name="SideNpcTalk" npcID="11003536" illust="Neirin_normal" duration="5000" script="$02000410_BF__Event01__0$" voice="ko/Npc/00002167"/>
+
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="인페르녹전함파괴연출2"/>	
+		</condition>		
+	 
+	
+    <onExit>
+    </onExit>
+	
+  </state>
+  
+ <state name="인페르녹전함파괴연출2">
+    <onEnter>
+		<!-- ##  02. 일러스트 대화창 연출 넣기  ##-->
+		<action name="SideNpcTalk" npcID="11003536" illust="Bliche_nomal" duration="5000" script="$02000410_BF__Event01__1$" voice="ko/Npc/00002158"/>
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="두번째페이즈_인페르녹전함"/>	
+		</condition>		
+	 
+	
+    <onExit>
+		<action name="HideGuideSummary" entityID="20041010"/>
+    </onExit>
+  </state>  
+  
+ 
+  
+   <state name="두번째페이즈_인페르녹전함">  
+    <onEnter>  
+	</onEnter>
+
+		<condition name="UserValue" key="AirshipBalrogCrimsonFlameBroken" value="1">  <!-- 2페이즈 인페르녹의 전함이 파괴될때   AirshipBalrogCrimsonFlameBroken = 1 신호를 받을때까지 여기서 대기-->
+		
+			<transition state="인페르녹전함파괴_인페르녹등장연출" />
+			
+		</condition>		
+	
+    <onExit>
+
+    </onExit>
+  </state>	
+	
+  <state name="인페르녹전함파괴_인페르녹등장연출">
+    <onEnter>
+		<!-- ##  03. 일러스트 대화창 연출 넣기  ##-->
+		<action name="ShowGuideSummary" entityID="20041011" textID="20041011"/> 
+		<action name="SideNpcTalk" npcID="11003536" illust="Neirin_normal" duration="5000" script="$02000410_BF__Event01__2$" voice="ko/Npc/00002168"/>
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="인페르녹전함파괴_인페르녹등장연출2"/>	
+		</condition>		
+
+	
+    <onExit>
+		<action name="HideGuideSummary" entityID="20041011"/>
+    </onExit>
+  </state>
+  
+  <state name="인페르녹전함파괴_인페르녹등장연출2">
+    <onEnter>
+		<!-- ##  03. 일러스트 대화창 연출 넣기  ##-->
+		<action name="SideNpcTalk" npcID="11003536" illust="Neirin_surprise" duration="4000" script="$02000410_BF__Event01__3$" voice="ko/Npc/00002169"/>
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="4000" > 
+			<transition state="인페르녹전함파괴_인페르녹등장연출3"/>	
+		</condition>		
+
+	
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="인페르녹전함파괴_인페르녹등장연출3">
+    <onEnter>
+		<!-- ##  03. 일러스트 대화창 연출 넣기  ##-->
+		<action name="SideNpcTalk" npcID="11003536" illust="Bliche_closeEye" duration="5200" script="$02000410_BF__Event01__4$" voice="ko/Npc/00002159"/>
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="5200" > 
+			<transition state="인페르녹전함파괴_인페르녹등장연출4"/>	
+		</condition>		
+
+	
+    <onExit>
+    </onExit>
+  </state>
+
+  <state name="인페르녹전함파괴_인페르녹등장연출4">
+    <onEnter>
+		<!-- ##  03. 일러스트 대화창 연출 넣기  ##-->
+		<action name="SideNpcTalk" npcID="11003536" illust="Neirin_surprise" duration="5000" script="$02000410_BF__Event01__8$" voice=""/>
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="인페르녹전함파괴_인페르녹등장연출5"/>	
+		</condition>		
+
+	
+    <onExit>
+    </onExit>
+  </state>
+
+  <state name="인페르녹전함파괴_인페르녹등장연출5">
+    <onEnter>
+		<!-- ##  03. 일러스트 대화창 연출 넣기  ##-->
+		<action name="SideNpcTalk" npcID="11003536" illust="Neirin_surprise" duration="5000" script="$02000410_BF__Event01__9$" voice=""/> <!--원래 여기에 02000410_BF__Event01__5  가 들어가는데, NA용 인페르녹은 쉴드 설정이 없기 때문에 다른 대화가 나오도록 설정했음-->
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="인페르녹전함파괴_인페르녹등장연출6"/>	
+		</condition>		
+
+	
+    <onExit>
+    </onExit>
+  </state>
+ 
+  <state name="인페르녹전함파괴_인페르녹등장연출6">
+    <onEnter>
+		<!-- ##  03. 일러스트 대화창 연출 넣기  ##-->
+		<action name="SideNpcTalk" npcID="11003536" illust="Bliche_nomal" duration="5000" script="$02000410_BF__Event01__7$" voice=""/> <!--원래 여기에 02000410_BF__Event01__6  가 들어가는데, NA용 인페르녹은 쉴드 설정이 없기 때문에 다른 대화가 나오도록 설정했음-->
+		
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="6000" > 
+			<transition state="세번째페이즈_인페르녹등장"/>	
+		</condition>		
+
+	
+    <onExit>
+    </onExit>
+  </state>   
+  
+   <state name="세번째페이즈_인페르녹등장">
+    <onEnter>
+		
+
+	</onEnter>
+		<!-- 15분 다 지나 끝난 이후  성공한 경우-->
+		<condition name="UserValue" key="BalrogMagicBursterBattlePhase" value="1">  <!-- 인페르녹과 전투 시작할 때 몬스터 AI에서 이 신호를 보낼때까지 대기-->
+											<!-- 즉  BalrogMagicBursterBattlePhase = 1 신호를 AI에서 부터 트리거가  받을때까지 여기서 대기-->
+			<transition state="성공이벤트실행" />
+			
+		</condition>
+		
+		<!-- 15분 다 지나 끝난 이후  실패한 경우-->
+		<condition name="UserValue" key="BalrogMagicBursterBattlePhase" value="1">  <!-- 인페르녹과 전투 시작할 때 몬스터 AI에서 이 신호를 보낼때까지 대기-->
+											<!-- 즉  BalrogMagicBursterBattlePhase = 1 신호를 AI에서 부터 트리거가  받을때까지 여기서 대기-->
+			<transition state="실패이벤트실행" />
+			
+		</condition>	
+
+	
+    <onExit>
+    </onExit>
+  </state>
+
+</ms2>

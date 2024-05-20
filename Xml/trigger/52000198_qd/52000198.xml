@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+
+    <state name="start" >
+        <onEnter>	
+			<action name="포탈을설정한다" arg1="5002" arg2="0" arg3="0"/>	
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0"/>	
+			<action name="포탈을설정한다" arg1="4" arg2="0" arg3="0"/>	
+			<action name="메쉬를설정한다" arg1="8002" arg2="0"/>
+		</onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003422" arg3="2" > <!--바론구한 직후로-->
+					<transition state="도망쳐_12"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003422" arg3="1" > <!--첨부터-->
+					<transition state="CameraEffect01"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003422" arg3="3" > <!--퀘완료-->
+					<transition state="도망쳐_26"/>
+		</condition>
+		<onExit> 
+		</onExit>
+    </state>
+
+	<state name="CameraEffect01" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="CameraEffect02"/>
+		</condition>
+	</state>
+
+	<state name="CameraEffect02" >
+		<onEnter>		
+		<action name="몬스터를생성한다" arg1="101"/>	<!--에레브-->
+		 <action name="연출UI를설정한다" arg1="1"/>	
+		<action name="유저를이동시킨다" arg1="52000198" arg2="5001"/> 
+		<action name="카메라경로를선택한다" arg1="4001" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="CameraEffect03"/>
+		</condition>
+	</state>
+	
+	<state name="CameraEffect03" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="SetSceneSkip" arg1="Skip_1" arg2="nextState"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="CameraEffect04"/>
+		</condition>
+	</state>
+	
+	<state name="CameraEffect04" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4002,4003" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="도망쳐_01"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_01" >
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetPcEmotionLoop" arg1="Attack_Idle_A" arg2="3000"/>	
+			<action name="AddCinematicTalk" npcID="0" msg="$52000198_QD__52000198__0$" duration="4000"/>
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__1$" align="left" illustID="Ereb_serious" duration="4500"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$52000198_QD__52000198__2$" duration="4000"/>
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__3$" align="left" illustID="Ereb_serious" duration="4500"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="17000">
+			<transition state="도망쳐_01_02"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_01_02" >
+		<onEnter>
+		<action name="AddCinematicTalk" npcID="0" msg="$52000198_QD__52000198__4$" duration="4000"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="도망쳐_02"/>
+		</condition>
+	</state>
+	
+	<state name="Skip_1" >
+        <onEnter>		
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="도망쳐_02"/>
+				</condition>		
+        <onExit />
+    </state>
+	
+	<state name="도망쳐_02">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$52000198_QD__52000198__5$" duration="4000" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_3001" /> 
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="2002"><!--내려가는 포탈1-->
+				<transition state="도망쳐_03"/>
+		</condition> 	
+    </state>
+	
+	<state name="도망쳐_03" >
+		<onEnter>
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1"/>	
+			<action name="몬스터를생성한다" arg1="102"/>	<!--에레브-->
+			<action name="몬스터소멸시킨다" arg1="101" />
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="2003"><!--내려가는 포탈2-->
+			<transition state="도망쳐_04"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_04">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$52000198_QD__52000198__6$" duration="4000" />
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_3002" /> 
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="2004"><!--내려가는 포탈3-->
+				<transition state="도망쳐_05"/>
+		</condition> 	
+    </state>
+	
+	<state name="도망쳐_05" >
+		<onEnter>
+			<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1"/>	
+			<action name="몬스터를생성한다" arg1="103"/>	<!--에레브-->
+			<action name="몬스터소멸시킨다" arg1="102" />
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="2005"><!--내려가는 포탈2-->
+			<transition state="도망쳐_06"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_06">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="103" msg="$52000198_QD__52000198__7$" duration="4000" />
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_3003" /> 
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="2006"><!--비밀통로 앞-->
+				<transition state="도망쳐_07"/>
+		</condition> 	
+    </state>
+	
+	<state name="도망쳐_07" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>	
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="도망쳐_08"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_08" >
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="52000198" arg2="5003"/> 
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="도망쳐_09"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_09" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="SetSceneSkip" arg1="Skip_2" arg2="nextState"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="도망쳐_10"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_10" >
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__8$" align="right" illustID="Ereb_serious" duration="4500"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="4500">
+			<transition state="도망쳐_10_01"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_10_01" >
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="4000"/>			
+			<action name="AddCinematicTalk" npcID="0" msg="$52000198_QD__52000198__9$" duration="4000"/>
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__10$" align="right" illustID="Ereb_serious" duration="4500"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="8500">
+			<transition state="도망쳐_10_02"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_10_02" >
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="4500"/>			
+			<action name="AddCinematicTalk" npcID="0" msg="$52000198_QD__52000198__11$" duration="4500"/>
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__12$" align="right" illustID="Ereb_closeEye" duration="1800"/>
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__13$" align="right" illustID="Ereb_serious" duration="4500"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="10800">
+			<transition state="도망쳐_11"/>
+		</condition>
+	</state>
+	
+	<state name="Skip_2" >
+        <onEnter>		
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="도망쳐_11"/>
+				</condition>		
+        <onExit />
+    </state>
+	
+	<state name="도망쳐_11">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="103" msg="$52000198_QD__52000198__14$" duration="4000" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="2007" arg2="10003422" arg3="2" > <!--바론 감옥 앞-->
+					<transition state="도망쳐_12"/>
+		</condition>
+    </state>
+	
+	<state name="도망쳐_12" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>	
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="도망쳐_13"/>
+		</condition>
+	</state>
+	
+	
+	<state name="도망쳐_13" >
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="104"/>	<!--바론-->
+			<action name="유저를이동시킨다" arg1="52000198" arg2="5004"/> 
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="도망쳐_14"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_14" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="SetSceneSkip" arg1="Skip_3" arg2="nextState"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="도망쳐_15"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_15" >
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="4000"/>			
+			<action name="AddCinematicTalk" npcID="0" msg="$52000198_QD__52000198__15$" duration="4000"/>
+			<action name="AddCinematicTalk" npcID="11004787" msg="$52000198_QD__52000198__16$" align="left" illustID="Baron_normal" duration="4500"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="8500">
+			<transition state="도망쳐_15_01"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_15_01" >
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="4000"/>			
+			<action name="AddCinematicTalk" npcID="0" msg="$52000198_QD__52000198__17$" duration="4500"/>
+			<action name="AddCinematicTalk" npcID="11004787" msg="$52000198_QD__52000198__18$" align="left" illustID="Baron_normal" duration="4000"/>
+			<action name="AddCinematicTalk" npcID="11004787" msg="$52000198_QD__52000198__19$" align="left" illustID="Baron_normal" duration="4000"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="12500">
+			<transition state="도망쳐_16"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_16" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>	
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="도망쳐_17"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_17" >
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="104"/>	<!--아래층바론-->
+			<action name="몬스터를생성한다" arg1="105"/>	<!--바론-->
+			<action name="유저를이동시킨다" arg1="52000198" arg2="5003"/> 
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="도망쳐_19"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_19" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="도망쳐_20"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_20" >
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>	
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__20$" align="right" illustID="Ereb_surprise" duration="4000"/>
+			<action name="AddCinematicTalk" npcID="11004787" msg="$52000198_QD__52000198__21$" align="left" illustID="Baron_normal" duration="4000"/>
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__22$" align="right" illustID="Ereb_serious" duration="4500"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="12500">
+			<transition state="도망쳐_21"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_21" >
+		<onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_3004"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="2500">
+			<transition state="도망쳐_22"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_22" >
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Object_React_A" arg2="3000"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="도망쳐_23"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_23" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4004" arg2="0"/>
+			<action name="메쉬를설정한다" arg1="8001" arg2="0"/>
+			<action name="메쉬를설정한다" arg1="8002" arg2="1"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="도망쳐_24"/>
+		</condition>
+	</state>
+	
+	<state name="도망쳐_24" >
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>	
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="AddCinematicTalk" npcID="11001302" msg="$52000198_QD__52000198__23$" align="right" illustID="Ereb_serious" duration="3000"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="도망쳐_25"/>
+		</condition>
+	</state>
+	
+	<state name="Skip_3" >
+        <onEnter>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="몬스터소멸시킨다" arg1="104"/>	<!--아래층바론-->
+			<action name="몬스터소멸시킨다" arg1="105" />
+			<action name="몬스터를생성한다" arg1="105"/>	<!--바론-->
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="SetOnetimeEffect" id="5" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="메쉬를설정한다" arg1="8001" arg2="0"/>
+			<action name="메쉬를설정한다" arg1="8002" arg2="1"/>
+			<action name="유저를이동시킨다" arg1="52000198" arg2="5003"/> 
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="도망쳐_25"/>
+				</condition>		
+        <onExit />
+    </state>
+	
+	<state name="도망쳐_25">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="5" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="몬스터소멸시킨다" arg1="103" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003422" arg3="3" > <!--퀘완료-->
+					<transition state="도망쳐_26"/>
+		</condition>
+    </state>
+	
+	<state name="도망쳐_26">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="5002" arg2="1" arg3="1"/>	<!--불길 속으로 퀘스트 바론에게 완료하고 나면 포탈이 활성화 되게 수정-->
+			<action name="몬스터소멸시킨다" arg1="105" />
+		</onEnter>
+    </state>
+	
+</ms2>
+

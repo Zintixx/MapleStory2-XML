@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<ms2>
+
+		<state name="룸체크"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="소환" />	
+				</condition>				
+	</state>  	  
+ 
+	<state name="소환">
+		<onEnter>			
+			<action name="스킵을설정한다" arg1="죽음대기" />						
+		</onEnter>				
+			<condition name="WaitTick" waitTick="3000">								
+				<transition state="죽음대기" />
+			</condition>	
+	</state> 
+ 			
+	<state name="죽음대기">
+		<onEnter>									
+			<action name="스킵을설정한다" arg1="" />	
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="2001">
+				<transition state="셀린사망" />
+			</condition>	
+			<condition name="몬스터가죽어있으면" arg1="2002">
+				<transition state="피리스사망" />
+			</condition>				
+	</state> 
+
+	<state name="셀린사망">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="2002" arg3="$02000432_BF__SUMMON__1$" arg4="4" arg5="0"/>				
+			<action name="버프를걸어준다" arg1="2002" arg2="40500011" arg3="1" arg4="1" arg5="0" />
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="2002">			
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="SirenDualKill"/> 							
+				<transition state="종료" />
+			</condition>				
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="종료"/> 
+			</condition>
+	</state>	 
+ 
+	<state name="피리스사망">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="603" arg2="1" />					
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="BigSisterFirst"/> 					
+			<action name="대화를설정한다" arg1="1" arg2="2001" arg3="$02000432_BF__SUMMON__0$" arg4="4" arg5="0"/>			
+			<action name="버프를걸어준다" arg1="2001" arg2="40500011" arg3="1" arg4="1" arg5="0" />
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="2001">
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="SirenDualKill"/> 					
+				<transition state="종료" />
+			</condition>				
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="종료"/> 
+			</condition>
+	</state>	 
+
+	<state name="종료">
+	</state>  
+  
+</ms2>
+

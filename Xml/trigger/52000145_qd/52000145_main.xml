@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 궁수 교육원_레인저 인트로 -->
+<ms2>
+	<state name="준비">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="몬스터를생성한다" arg1="101" arg2="1" />			
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002711" arg3="3">
+			<transition state="퀘스트2완료_01"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002711" arg3="2">
+			<transition state="퀘스트2진행_01"/> 
+		</condition> 
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002711" arg3="1">
+			<transition state="퀘스트2시작_01"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002710" arg3="3">
+			<transition state="퀘스트1완료가능_01"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002710" arg3="2">
+			<transition state="퀘스트1진행_01"/> 
+		</condition> 
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002710" arg3="1">
+			<transition state="퀘스트1수락_02"/> 
+		</condition>
+		<condition name="유저를감지했으면" arg1="701">
+			<transition state="영상준비_01"/> 
+		</condition>
+		<onExit>
+		</onExit>
+    </state> 
+	
+	<state name="영상준비_01" >
+        <onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>	
+			<action name="연출UI를설정한다" arg1="4"/>
+		</onEnter>			
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="영상재생_01"/>	
+		</condition>							
+    <onExit> 
+    </onExit>
+    </state>
+
+	<state name="영상재생_01" >
+        <onEnter>
+			<action name="CreateWidget" arg1="SceneMovie"/>
+			<action name="WidgetAction" arg1="SceneMovie" arg2="Clear"/>
+			<action name="PlaySceneMovie" fileName="common\JobIntro_Ranger.usm" movieID='1' />
+        </onEnter>	
+			<condition name="WidgetCondition" arg1="SceneMovie" arg2="IsStop" arg3="1">
+				<transition state="독백_01"/>
+			</condition>
+			<condition name="WaitTick" waitTick="45000">
+				<transition state="독백_01"/>
+			</condition>
+		<onExit> 
+		
+    </onExit>
+    </state>	
+	
+	<state name="독백_01" >
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="9" arg2="$52000145_QD__52000145_MAIN__0$"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="시작_01"/>
+		</condition>					
+		<onExit>
+		
+		</onExit>
+    </state>
+	
+	<state name="시작_01" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<!-- <action name="연출UI를설정한다" arg1="0"/>-->
+			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="시작_02"/>
+		</condition>					
+		<onExit>
+			<action name="연출UI를설정한다" arg1="2"/> 
+		</onExit>
+    </state>
+	
+	<state name="시작_02" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="유저를이동시킨다" arg1="52000145" arg2="99"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="하스터숙면_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="하스터숙면_01" >
+        <onEnter>			
+			<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__1$" duration="3000" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="하스터숙면_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="하스터숙면_02" >
+        <onEnter>			
+			<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__2$" duration="3000" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="하스터숙면_03"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="하스터숙면_03" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="하스터숙면_04"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="하스터숙면_04" >
+        <onEnter>
+			<action name="SetSceneSkip" arg1="퀘스트1수락_01" arg2="nextState"/>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="3000"/>	
+			<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__3$" duration="3000" align="right" />			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="하스터숙면_05"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="하스터숙면_05" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__4$" duration="3000" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="하스터숙면_06"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="하스터숙면_06" >
+        <onEnter>
+			<action name="FaceEmotion" spawnPointID="0" emotionName="Think_A"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__5$" duration="3000" align="right" />
+			<!--<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__6$" duration="3000" align="right" />-->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="퀘스트1수락_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트1수락_01" >
+        <onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="카메라리셋" interpolationTime="0.0"/>			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="500">
+			<transition state="퀘스트1수락_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트1수락_02" >
+        <onEnter>	
+			<action name="FaceEmotion" spawnPointID="0" emotionName=""/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="ShowGuideSummary" entityID="25201456" textID="25201456"/>
+		</onEnter>					
+		<condition name="퀘스트유저를감지하면" arg1="701,702" arg2="40002710" arg3="1">
+			<transition state="퀘스트1진행_00"/> 
+		</condition>					
+		<onExit>
+			<action name="HideGuideSummary" entityID="25201456"/>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트1진행_00" >
+        <onEnter>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="퀘스트1진행_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트1진행_01" >
+        <onEnter>			
+			<action name="ShowGuideSummary" entityID="25201451" textID="25201451"/>
+		</onEnter>					
+		<condition name="퀘스트유저를감지하면" arg1="701,702" arg2="40002710" arg3="2">
+			<transition state="퀘스트1완료가능_00"/> 
+		</condition>					
+		<onExit>
+			<action name="HideGuideSummary" entityID="25201451"/>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트1완료가능_00" >
+        <onEnter>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="퀘스트1완료가능_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트1완료가능_01" >
+        <onEnter>
+			
+			<action name="ShowGuideSummary" entityID="25201452" textID="25201452"/>
+		</onEnter>					
+		<condition name="퀘스트유저를감지하면" arg1="701,702" arg2="40002710" arg3="3">
+			<transition state="퀘스트1완료_01"/> 
+		</condition>					
+		<onExit>
+			<action name="HideGuideSummary" entityID="25201452"/>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트1완료_01" >
+        <onEnter>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="퀘스트2시작_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트2시작_01" >
+        <onEnter>			
+			<action name="ShowGuideSummary" entityID="25201453" textID="25201453"/>
+		</onEnter>					
+		<condition name="퀘스트유저를감지하면" arg1="701,702" arg2="40002711" arg3="1">
+			<transition state="퀘스트2진행_00"/> 
+		</condition>					
+		<onExit>
+			<action name="HideGuideSummary" entityID="25201453"/>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트2진행_00" >
+        <onEnter>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="퀘스트2진행_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트2진행_01" >
+        <onEnter>			
+			<action name="ShowGuideSummary" entityID="25201454" textID="25201454"/>
+		</onEnter>					
+		<condition name="퀘스트유저를감지하면" arg1="701,703" arg2="40002711" arg3="2">
+			<transition state="퀘스트2완료가능_00"/> 
+		</condition>					
+		<onExit>
+			<action name="HideGuideSummary" entityID="25201454"/>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트2완료가능_00" >
+        <onEnter>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="퀘스트2완료가능_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트2완료가능_01" >
+        <onEnter>			
+			<action name="ShowGuideSummary" entityID="25201455" textID="25201455"/>
+		</onEnter>					
+		<condition name="퀘스트유저를감지하면" arg1="701,702" arg2="40002711" arg3="3">
+			<transition state="퀘스트2완료_01"/> 
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트2완료_01" >
+        <onEnter>			
+			<action name="HideGuideSummary" entityID="25201455"/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="퀘스트2완료_02"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트2완료_02" >
+        <onEnter>			
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/>			
+			<action name="유저를이동시킨다" arg1="52000145" arg2="99"/>
+			<action name="몬스터를생성한다" arg1="103" arg2="1" />			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="오스칼등장_01"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_01" >
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="SetPcEmotionSequence" arg1="Emotion_Troubled_A" />
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_2001" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="오스칼등장_02"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	
+	
+	<state name="오스칼등장_02" >
+        <onEnter>	
+			<action name="SetPcEmotionSequence" arg1="Emotion_Suprise_A" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="오스칼등장_03"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_03" >
+        <onEnter>
+			<action name="SetSceneSkip" arg1="마무리" arg2="exit"/>
+			<action name="FaceEmotion" spawnPointID="0" emotionName="Think_A"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__7$" duration="3000" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="오스칼등장_04"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_04" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__8$" duration="3000" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="오스칼등장_05"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_05" >
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__9$" duration="3000" align="right" />
+			<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__10$" duration="2500" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="6000">
+			<transition state="오스칼등장_06"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_06" >
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__11$" duration="4000" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="5485">
+			<transition state="오스칼등장_07"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_07" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="오스칼등장_08"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_08" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__12$" duration="3000" align="left" />
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="몬스터를생성한다" arg1="102" arg2="0" />
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Sit_Down_A" arg3="70000" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="오스칼등장_08_1"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_08_1" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__13$" duration="2500" align="left" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="오스칼등장_09"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_09" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8004" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="오스칼등장_10"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_10" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__14$" duration="4000" illustID="Hastur_normal" align="center" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="오스칼등장_11"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_11" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__15$" duration="3000" illustID="Oskhal_normal" align="left" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="오스칼등장_12"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_12" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__16$" duration="3500" illustID="Hastur_normal" align="center" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="오스칼등장_13"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_13" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__17$" duration="2500" illustID="Oskhal_normal" align="left" />
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__18$" duration="3500" illustID="Oskhal_normal" align="left" />
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__19$" duration="3000" illustID="Oskhal_normal" align="left" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="9500">
+			<transition state="오스칼등장_14"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_14" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__20$" duration="3000" illustID="Hastur_normal" align="center" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="오스칼등장_15"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_15" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__21$" duration="3500" illustID="Oskhal_normal" align="left" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="5172">
+			<transition state="오스칼등장_16"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_16" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__22$" duration="3000" illustID="Hastur_normal" align="center" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="오스칼등장_17"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_17" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__23$" duration="2500" illustID="Oskhal_normal" align="left" />
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__24$" duration="3500" illustID="Oskhal_normal" align="left" />
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__25$" duration="2500" illustID="Oskhal_normal" align="left" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="9742">
+			<transition state="오스칼등장_18"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_18" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__26$" duration="3000" illustID="Hastur_normal" align="center" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="오스칼등장_19"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_19" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003380" msg="$52000145_QD__52000145_MAIN__27$" duration="3000" illustID="Oskhal_normal" align="left" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3631">
+			<transition state="오스칼등장_20"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_20" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003189" msg="$52000145_QD__52000145_MAIN__28$" duration="3500" illustID="Hastur_normal" align="center" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="오스칼등장_21"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="오스칼등장_21" >
+        <onEnter>	
+			<action name="FaceEmotion" spawnPointID="0" emotionName=""/>
+			<action name="AddCinematicTalk" npcID="0" msg="$52000145_QD__52000145_MAIN__29$" duration="2500" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="마무리"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state>   
+		
+	<state name="마무리">  
+		<onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="강제이동"/>
+		</condition>		
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="강제이동">  
+		<onEnter>			
+			<action name="유저를이동시킨다" arg1="52000146" arg2="1"/>
+		</onEnter>		
+		<onExit> 
+		</onExit>
+    </state>
+	
+
+	
+</ms2>

@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 이도공간 : 90000450 기묘한 조짐 완료 , 90000451 별, 수정, 그리고 시작 -->
+<ms2>
+	<state name="Wait">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- 가이드 서머리 사운드 이펙트 -->
+			<action name="이펙트를설정한다" arg1="5200" arg2="0"/> <!-- VibrateLong -->
+			<action name="이펙트를설정한다" arg1="5300" arg2="0"/> <!-- Sound_SpaceDestroy -->
+			<action name="이펙트를설정한다" arg1="5400" arg2="0"/> <!-- Voice_Vision_00001725 -->
+			<action name="이펙트를설정한다" arg1="5401" arg2="0"/> <!-- Voice_Vision_00001741 -->
+			<action name="이펙트를설정한다" arg1="5402" arg2="0"/> <!-- Voice_Vision_00001872 -->
+			<action name="이펙트를설정한다" arg1="5500" arg2="0"/> <!-- Sound_VisionBuff -->
+			<action name="메쉬를설정한다" arg1="3100" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- barrier-->
+			<action name="메쉬를설정한다" arg1="3101" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- barrier-->
+			<action name="메쉬를설정한다" arg1="3102" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- barrier-->
+			<action name="메쉬를설정한다" arg1="3103" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- barrier-->
+			<action name="SetUserValue" key="CollapseEnd" value="0" />
+			<action name="SetUserValue" key="ZoomIn" value="0" />
+				</onEnter>
+				<condition name="유저를감지했으면" arg1="9000">
+			<transition state="Enter01"/>
+		</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+
+<!-- 최초 입장 -->
+    <state name="Enter01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+				</onEnter>
+				<condition name="퀘스트유저를감지하면" arg1="9000" arg2="90000451" arg3="1" > <!-- 별, 수정, 그리고 퀘스트 수락한 상태 -->
+					<transition state="QuestOnGoing01"/>
+				</condition>
+				<condition name="퀘스트유저를감지하면" arg1="9000" arg2="90000450" arg3="3" > <!-- 기묘한 조짐 퀘스트 완료 상태 -->
+					<transition state="QuestOnGoing11"/>
+				</condition>
+				<condition name="퀘스트유저를감지하면" arg1="9000" arg2="90000450" arg3="2" > <!-- 기묘한 조짐 퀘스트 완료 가능 상태 -->
+					<transition state="Delay01"/>
+				</condition>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="Quit"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+
+<!-- 별, 수정, 그리고 퀘스트 수락한 상태 -->
+    <state name="QuestOnGoing01">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="102" arg2="0" />
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="TimeToLeave01"/>
+				</condition>
+		<onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onExit>
+    </state>
+
+ <!-- 기묘한 조짐 퀘스트 완료 상태 -->
+    <state name="QuestOnGoing11">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="102" arg2="0" />
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="SecondQuestStart01"/>
+				</condition>
+		<onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onExit>
+    </state>
+
+
+
+    <state name="Delay01" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="500" arg2="1"/>
+			<action name="SetSceneSkip" arg1="VisionApp02" arg2="nextState" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="LookAround01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="LookAround01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="LookAround02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="LookAround02" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="501" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="LookAround03"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="LookAround03" >
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1000" />
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="$63000027_CS__MISTERY01__0$" arg4="3" arg5="0" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="LookAround04"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="LookAround04" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="502" arg2="1"/>
+			<action name="SetPcEmotionSequence" arg1="Bore_C" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="VisionApp01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="VisionApp01" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>
+			<action name="SetSceneSkip" arg1="" arg2="" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="1500">
+					<transition state="VisionApp02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="VisionApp02" >
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="101" arg2="0" />
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="VisionTalk01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="VisionTalk01">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="5400" arg2="1"/> <!-- Voice_Vision_00001725 -->
+			<action name="대화를설정한다" arg1="2" arg2="11001560" arg3="$63000027_CS__MISTERY01__1$" arg4="5" />   <!-- Voice 00001725 -->
+			<action name="스킵을설정한다" arg1="VisionTalk04"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="VisionTalk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="VisionTalk02">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="VisionTalk03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="VisionTalk03">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001560" arg3="$63000027_CS__MISTERY01__2$" arg4="5" />
+			<action name="스킵을설정한다" arg1="VisionTalk04"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="VisionTalk04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="VisionTalk04">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="몬스터를생성한다" arg1="102" arg2="0" />
+			<action name="카메라를선택한다" arg1="601" arg2="0"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="VisionTalk05"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="VisionTalk05" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="FirstQuestEnd01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	    <state name="FirstQuestEnd01" >
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->
+			<action name="ShowGuideSummary" entityID="10034010" textID="10034010"/>  <!-- 가이드 : 비전을 향해 이동하기-->
+				</onEnter>
+				<condition name="유저를감지했으면" arg1="9100">
+					<transition state="FirstQuestEnd02"/>
+				</condition>
+    <onExit>
+			<action name="HideGuideSummary" entityID="10034010"/>
+    </onExit>
+    </state>
+
+    <state name="FirstQuestEnd02" >
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->
+			<action name="ShowGuideSummary" entityID="10034020" textID="10034020"/>  <!-- 가이드 : [[icon:questcomplete]] 비전과 대화하기-->
+				</onEnter>
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000450" arg3="3" > <!-- 기묘한 조짐 퀘스트 완료 상태 -->
+					<transition state="SecondQuestStart01"/>
+				</condition>
+    <onExit>
+			<action name="HideGuideSummary" entityID="10034020"/>
+    </onExit>
+    </state>
+
+    <state name="SecondQuestStart01" >
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->
+			<action name="ShowGuideSummary" entityID="10034030" textID="10034030"/>  <!-- 가이드 : [[icon:questaccept]] 비전과 대화하기 -->
+				</onEnter>
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000451" arg3="1" > <!-- 별, 수정, 그리고 퀘스트 수락한 상태 -->
+					<transition state="TimeToLeave01"/>
+				</condition>
+    <onExit>
+			<action name="HideGuideSummary" entityID="10034030"/>
+    </onExit>
+    </state>
+
+    <state name="TimeToLeave01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+			<action name="카메라를선택한다" arg1="700" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="250">
+					<transition state="TimeToLeave02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="TimeToLeave02" >
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="102" />
+			<action name="몬스터를생성한다" arg1="103" arg2="0" />
+			<action name="유저를이동시킨다" arg1="63000027" arg2="10" arg3="9900" />
+			<action name="SetSceneSkip" arg1="VisionSayGoodbye04" arg2="exit" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="250">
+					<transition state="TimeToLeave03"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="TimeToLeave03" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라를선택한다" arg1="701" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="PCGetEffect01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="PCGetEffect01" posX="300" posY="199">
+        <onEnter>
+			<action name="버프를걸어준다" arg1="9900" arg2="70000097" arg3="1" />		<!-- 신비로운 힘 -->
+			<action name="이펙트를설정한다" arg1="5500" arg2="1"/> <!-- Sound_VisionBuff -->
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="VisionSayGoodbye01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="VisionSayGoodbye01" >
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5402" arg2="1"/> <!-- Voice_Vision_00001872 -->
+			<action name="대화를설정한다" arg1="1" arg2="103" arg3="$63000027_CS__MISTERY01__3$" arg4="4" arg5="0" />	   <!-- Voice 00001872 -->
+				</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="VisionSayGoodbye02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="VisionSayGoodbye02" >
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5401" arg2="1"/> <!-- Voice_Vision_00001741 -->
+			<action name="대화를설정한다" arg1="1" arg2="103" arg3="$63000027_CS__MISTERY01__4$" arg4="4" arg5="0" />	   <!-- Voice 00001741 -->
+			<action name="대화를설정한다" arg1="1" arg2="103" arg3="$63000027_CS__MISTERY01__5$" arg4="3" arg5="4" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="VisionSayGoodbye03"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="VisionSayGoodbye03" >
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_102" />
+			<action name="SetSceneSkip" arg1="" arg2="" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="VisionSayGoodbye04"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="VisionSayGoodbye04" >
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="103" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Collapse01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="Collapse01">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5200" arg2="1"/> <!-- VibrateLong -->
+			<action name="카메라를선택한다" arg1="710" arg2="1"/>
+			<action name="메쉬를설정한다" arg1="3100" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- barrier-->
+			<action name="메쉬를설정한다" arg1="3101" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- barrier-->
+			<action name="메쉬를설정한다" arg1="3102" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- barrier-->
+			<action name="메쉬를설정한다" arg1="3103" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- barrier-->
+			<action name="SetUserValue" triggerID="2" key="CollapseStart" value="1" />
+			<action name="이펙트를설정한다" arg1="5300" arg2="1"/> <!-- Sound_SpaceDestroy -->
+		</onEnter>
+			<condition name="UserValue" key="ZoomIn" value="1">
+					<transition state="Collapse02" />
+				</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="Collapse02">
+        <onEnter>
+			<action name="카메라를선택한다" arg1="711" arg2="1"/>
+		</onEnter>
+			<condition name="UserValue" key="CollapseEnd" value="1">
+					<transition state="PCFainted01" />
+				</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="PCFainted01" >
+        <onEnter>
+			<action name="SetPcEmotionSequence" arg1="Down2_A,Down_Idle_A" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="2667">
+					<transition state="PCTeleport01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="PCTeleport01" >
+        <onEnter>
+			<action name="SetPcEmotionLoop" arg1="Down_Idle_A" arg2="10000" />
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="PCTeleport02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="PCTeleport02" posX="300" posY="199">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="63000028" arg2="1" arg3="9900" />
+			<action name="카메라를선택한다" arg1="711" arg2="0"/>
+				</onEnter>
+		<condition name="!유저를감지했으면" arg1="9900">
+			<transition state="Quit"/>
+		</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="Quit">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state>
+
+
+</ms2>
+

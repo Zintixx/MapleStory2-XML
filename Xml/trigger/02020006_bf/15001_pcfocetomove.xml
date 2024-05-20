@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 길 막고 있는 NPC에게 감정표현하기 / 황금 상자 생성 영역 안에 있는 PC를 밖으로 강제 이동 시키기 --> 
+<ms2>	
+    <state name="Wait" >
+        <onEnter>	
+		<action name="SetUserValue" key="PortalOn" value="0" />		
+		<action name="포탈을설정한다" arg1="15700" arg2="0" arg3="0" arg4="0"/> <!-- 황금 상자 생성 구역 안쪽 포탈 / 닿아서 바깥에 있는 portal id 15701 위치로 이동 / 포탈의 target field id 수정 필요 -->		
+        </onEnter>
+		<condition name="UserValue" key="PortalOn" value="1">	
+			<transition state="PortalOn"/>
+		</condition>	
+        <onExit>				
+        </onExit>	
+    </state>
+
+    <state name="PortalOn"> <!-- 퍼즐이 활성화 된 이후부터 퍼즐 해결 시점까지 닿아서 이동시키는 포탈 활성화 --> 
+        <onEnter>	
+		<action name="포탈을설정한다" arg1="15700" arg2="0" arg3="1" arg4="0"/> <!-- 황금 상자 생성 구역 안쪽 포탈 / 닿아서 바깥에 있는 portal id 15701 위치로 이동 / 포탈의 target field id 수정 필요 -->			
+        </onEnter>
+		<condition name="UserValue" key="PortalOn" value="2">	
+			<transition state="PortalOff"/>
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+	
+    <state name="PortalOff">   
+        <onEnter>	
+		<action name="포탈을설정한다" arg1="15700" arg2="0" arg3="0" arg4="0"/> <!-- 황금 상자 생성 구역 안쪽 포탈 / 닿아서 이동 -->				
+        </onEnter>
+		<condition name="UserValue" key="PortalOn" value="0">	
+			<transition state="Wait"/>
+		</condition>			
+        <onExit>
+        </onExit>
+    </state>	
+	
+</ms2>

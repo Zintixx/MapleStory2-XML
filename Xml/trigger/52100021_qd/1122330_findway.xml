@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="Setting">
+    <onEnter>
+			<action name="스킬을설정한다" arg1="8000" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8001" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8002" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8003" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8004" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8005" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8006" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8007" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8008" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8009" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8010" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8011" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8012" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8013" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8014" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8015" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8016" arg2="0"/> 	
+			<action name="스킬을설정한다" arg1="8017" arg2="0"/> 			
+			<action name="몬스터소멸시킨다" arg1="101" />	
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="ic_fi_funct_icedoor_A01_off" /> <!-- IceDoor-->	
+			<action name="메쉬를설정한다" arg1="3000-3002" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- InvisibleBarrier -->		
+			<action name="메쉬를설정한다" arg1="3100-3129" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- WallMesh -->					
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0" /> 			
+			<action name="포탈을설정한다" arg1="12" arg2="0" arg3="0" arg4="0" /> 		
+			<action name="포탈을설정한다" arg1="13" arg2="0" arg3="0" arg4="0" /> 	
+			<action name="SetUserValue" key="BossRoomPortal01" value="0" /> 		
+			<action name="SetUserValue" key="BossRoomPortal02" value="0" /> 		
+			<action name="SetUserValue" key="BossRoomPortal03" value="0" /> 					
+    </onEnter>
+			<condition name="CheckUser">
+				<transition state="LoadingDelay"/>	
+			</condition>	
+    <onExit>
+    </onExit>
+  </state>
+
+    <state name="LoadingDelay" >
+        <onEnter>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="CheckUserCount"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+ 
+    <import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+
+   <state name="DungeonStart" >	
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="201" arg2="0"/>  <!-- 연출용설눈이 -->				
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="NpcPatrol01" />	
+        </condition>
+        <onExit>
+        </onExit> 
+    </state>
+	
+    <state name="NpcPatrol01">	
+        <onEnter>		
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_200" />		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">		
+			<transition state="CameraSet01"/>
+		</condition> 
+    <onExit>  
+    </onExit>	
+    </state>		
+	
+   <state name="CameraSet01" >	
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="카메라를선택한다" arg1="500" arg2="1"/>					
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="NpcTalk01"/>	
+				</condition>	
+        <onExit>
+        </onExit> 
+    </state>
+	
+    <state name="NpcTalk01">
+        <onEnter>				
+			<action name="대화를설정한다" arg1="2" arg2="11003068" arg3="$52100021_QD__1122330_FINDWAY__0$" arg4="5" />  <!-- 설눈이 --> 		
+			<action name="스킵을설정한다" arg1="NpcTalk01Skip"/>	
+				</onEnter>						
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="NpcTalk01Skip"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+    <state name="NpcTalk01Skip">
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="501" arg2="1"/>				
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="DoorOpen01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+   <state name="DoorOpen01" >	
+        <onEnter>
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="ic_fi_funct_icedoor_A01_on" /> <!-- IceDoor-->	
+			<action name="메쉬를설정한다" arg1="3000-3002" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- InvisibleBarrier -->			
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">			
+			<transition state="CameraReset01" />		
+        </condition>
+        <onExit>
+        </onExit> 
+    </state>	
+	
+    <state name="CameraReset01">
+		<onEnter>		
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>					
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_201" />					
+			<action name="연출UI를설정한다" arg1="0"/>	
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			<action name="카메라리셋" interpolationTime="1.0"/>		
+			</onEnter>
+				<condition name="WaitTick" waitTick="3500">	 
+					<transition state="NpcChange01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+   <state name="NpcChange01" >	
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="201" />			
+			<action name="몬스터를생성한다" arg1="101,102" arg2="0"/>  <!-- 설눈이 -->				
+        </onEnter>
+		<condition name="WaitTick" waitTick="2000">		
+			<transition state="Guide01" />	
+        </condition>
+        <onExit>
+        </onExit> 
+    </state>
+	
+   <state name="Guide01" >	
+        <onEnter>	
+			<action name="ShowGuideSummary" entityID="20038101" textID="20038101" durationTime="4000"/>  <!-- 설눈이와 함께 이동하세요 -->		
+			<action name="액터를설정한다" arg1="4000" arg2="0" arg3="ic_fi_funct_icedoor_A01_on" /> <!-- IceDoor-->				
+			<action name="메쉬를설정한다" arg1="3100-3129" arg2="0" arg3="2000" arg4="70" arg5="2" /> <!-- WallMesh -->				
+        </onEnter>
+				<!-- 21810047 설눈이 신호 받기  <event eventName="TriggerEvent" target="SetUserValue" param1="1122330" param2="BossRoomPortal01" param3="1"/> -->
+				<condition name="UserValue" key="BossRoomPortal01" value="1" >		
+					<transition state="BossRoomPortal01"/>	
+				</condition>		
+				<!-- 21810048 설눈이 신호 받기  <event eventName="TriggerEvent" target="SetUserValue" param1="1122330" param2="BossRoomPortal02" param3="1"/> -->
+				<condition name="UserValue" key="BossRoomPortal02" value="1" >		
+					<transition state="BossRoomPortal02"/>	
+				</condition>			
+				<!-- 21810049 설눈이 신호 받기  <event eventName="TriggerEvent" target="SetUserValue" param1="1122330" param2="BossRoomPortal03" param3="1"/> -->
+				<condition name="UserValue" key="BossRoomPortal03" value="1" >		
+					<transition state="BossRoomPortal03"/>	
+				</condition>							
+        <onExit>
+        </onExit>
+    </state>
+
+	
+
+	
+    <state name="BossRoomPortal01" >
+        <onEnter>		
+			<action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1" /> 				
+				</onEnter>		
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="Quit" />	
+        </condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="BossRoomPortal02" >
+        <onEnter>		
+			<action name="포탈을설정한다" arg1="12" arg2="1" arg3="1" arg4="1" /> 				
+				</onEnter>	
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="Quit" />	
+        </condition>						
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="BossRoomPortal03" >
+        <onEnter>		
+			<action name="포탈을설정한다" arg1="13" arg2="1" arg3="1" arg4="1" /> 					
+				</onEnter>	
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="Quit" />	
+        </condition>						
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+	<state name="Quit">
+		<onEnter>	
+			<action name="스킬을설정한다" arg1="8000" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8001" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8002" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8003" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8004" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8005" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8006" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8007" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8008" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8009" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8010" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8011" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8012" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8013" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8014" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8015" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8016" arg2="1"/> 	
+			<action name="스킬을설정한다" arg1="8017" arg2="1"/> 						
+			<!-- action name="몬스터소멸시킨다" arg1="101"/ -->			
+		</onEnter>
+		<onExit>
+		</onExit>
+	</state>  
+
+</ms2>

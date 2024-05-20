@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="초기화"> <!-- 중간입장손님 위치잡기, 난입방지.  -->
+		<onEnter>		
+			<action name="SetUserValue" key="Weddingceremonyfail" value="0" /> <!-- 초기화 -->
+        </onEnter>
+		<condition name="무조건" > 
+			<transition state="시작_타이머설정" />
+		</condition>				
+    </state>
+	
+	 <state name="시작_타이머설정"> <!-- 필드 생성되자마자 타이머걸어서 유저가 오거나 말거나 10분 타이머가 돌아가게 한다. 10분 안에 결혼식이 시작되지 않으면 타이머가 돌아 맵이 사라진다. 10분 안에 결혼식이 시작되면 타이머가 끝나므로 맵이 유지되고, 모든 유저가 나가면 맵이 사라진다.  -->
+        <onEnter>
+			<action name="타이머를설정한다" arg1="4000" arg2="2100" arg3="1" arg4="0" /> <!-- 시간 내 입장 안 하면 취소 -->
+        </onEnter>
+		<condition name="무조건" > 
+			<transition state="위치세팅" />
+		</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="위치세팅" > <!-- 신랑, 신부, 하객을 감지해 맞는 위치에 떨어뜨리는 state. 반복적으로 돈다. --> 
+        <onEnter>
+			<action name="WeddingMoveUser"  entryType="Guest" arg1="84000014" arg2="22,23" arg3="701"/> <!-- 하객들은 22,23번으로 랜덤이동-->			
+        </onEnter>
+			<!-- 무한 세팅으로 제거하였으므로 설정필요 --> 
+		<condition name="WeddingEntryInField" entryType="GroomBride" isInField="1"> <!-- 신랑신부 모두 입장했나 체크 -->
+			<transition state="둘다입장" />
+		</condition>	
+		<condition name="시간이경과했으면" arg1="4000"> <!-- 트리거모델4000(여기 맨 위에 설정한 10분)에서 건 타이머 시간 내에 결혼식이 시작 안 되면 결혼식장 폐쇄 준비 -->
+			<transition state="강퇴안내" />
+		</condition>
+    </state>
+
+    <state name="위치돌림" > <!-- 신랑, 신부, 하객을 감지해 맞는 위치에 떨어뜨리는 state. 반복적으로 돈다. --> 
+        <onEnter>
+			<action name="WeddingMoveUser"  entryType="Guest" arg1="84000014" arg2="22,23" arg3="701"/> <!-- 하객들은 22,23번으로 랜덤이동-->			
+        </onEnter>
+		<onTick>
+		</onTick>
+		<condition name="무조건" > 
+			<transition state="위치세팅" />
+		</condition>	
+    </state>
+	
+    <state name="대기01"> <!-- 결혼식 시작에 동의 안했을 때 처리하는 state. wait xml에서 10분 타이머, 신랑신부 입장체크 계속 하도록 돌려보냄-->
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="28400131" textID="28400131"/> <!-- 두사람 입장하길 기다리고 있다는 메시지 -->
+        </onEnter>
+		<condition name="WeddingEntryInField" entryType="GroomBride" isInField="1"> <!-- 신랑신부 모두 입장했나 체크 -->
+			<transition state="둘다입장" />
+		</condition>
+		<condition name="시간이경과했으면" arg1="4000"> <!-- 트리거모델4000(여기 맨 위에 설정한 10분)에서 건 타이머 시간 내에 결혼식이 시작 안 되면 결혼식장 폐쇄 준비 -->
+			<transition state="강퇴안내" />
+		</condition>
+        <onExit>
+			<action name="HideGuideSummary" entityID="28400131"/>
+        </onExit>
+    </state>
+
+    <state name="둘다입장">
+        <onEnter>			
+			<action name="ShowGuideSummary" entityID="28400133" textID="28400133"/> <!-- 주례에게 말걸라는 메시지 -->
+			<action name="SetUserValue" key="StartWedding" value="0" /> <!-- 결혼시작확인 초기화 -->		
+        </onEnter>
+		   	<condition name="UserValue" key="StartWedding" value="1"> <!-- 주례에게 말 걸어 결혼식 시작하기로 할 때 npcscriptfunction에서 triggervalue 컬럼에 입력된 값을 쏨(setuservalue와 같은 역할). 이 값을 받은 경우 다음 state로 넘긴다. -->
+				<transition state="결혼확인띄우기" />
+			</condition>
+		<condition name="시간이경과했으면" arg1="4000"> <!-- 트리거모델4000(여기 맨 위에 설정한 10분)에서 건 타이머 시간 내에 결혼식이 시작 안 되면 결혼식장 폐쇄 준비 -->
+			<transition state="강퇴안내" />
+		</condition>
+        <onExit>
+			<action name="HideGuideSummary" entityID="28400133"/>
+        </onExit>
+    </state>
+	
+    <state name="결혼확인띄우기"> <!-- 결혼식 시작여부 신랑, 신부에게 동의받는 state. 둘다 동의하지 않으면 결혼식 시작 불가 -->
+        <onEnter>			
+			<action name="WeddingMutualAgree" agreeType="startActing"/> <!-- 결혼식 시작여부 투표 ui(결혼을 시작하시겠습니까?) 띄우기 -->
+			<action name="SetUserValue" triggerID="4002" key="Weddingceremonystartsready" value="1" /> <!-- 하객 옮기기 시작하라고 moveguest에 쏘는 신호 -->					
+        </onEnter>
+        <condition name="무조건" > 
+			<transition state="결혼시작체크" />
+		</condition>
+    </state>
+
+
+    <state name="결혼시작체크">
+        <onEnter>			
+        </onEnter>
+		<condition name="WeddingEntryInField" entryType="GroomBride" isInField="0"> <!-- 신랑신부 중 나간 사람 없나 체크. 만약 나간 사람이 있으면 -->
+			<transition state="대기01" />
+		</condition>
+		<condition name="WeddingMutualAgreeResult" agreeType="startActing" success="1" > <!-- 결혼식 시작에 동의했으면 wait xml에서 10분 타이머, 신랑신부 입장체크는 완전 종료시킴-->
+			<transition state="결혼식연출진행중"/>
+		</condition>
+		<condition name="WeddingMutualAgreeResult" agreeType="startActing" success="0" > <!-- 결혼식 시작에 동의 안했으면 wait xml에서 10분 타이머, 신랑신부 입장체크 계속 하도록 돌려보냄-->
+			<transition state="대기01"/>
+		</condition>		
+		<condition name="시간이경과했으면" arg1="4000">		<!-- 트리거모델4000(여기 맨 위에 설정한 10분)에서 건 타이머 시간 내에 결혼식이 완료 안 되면 -->
+			<transition state="강퇴안내" />
+		</condition>
+        <onExit>
+			<action name="WeddingMoveUser"  entryType="Guest" arg1="84000014" arg2="22,23" arg3="701"/> <!-- 701번 박스(버진로드)에 있는 하객들은 21,22,23번으로 랜덤이동-->				
+        </onExit>
+    </state>
+	
+	<state name="강퇴안내">
+		<onEnter>		
+			<action name="ShowGuideSummary" entityID="28400132" textID="28400132"/> <!-- 결혼식장 폐쇄 안내 -->
+			<action name="WeddingBroken" />			<!-- 쌍방 결혼식장 미진입으로 인한 파토 처리 선언 / 로그용 -->
+        </onEnter>
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="강퇴"/>
+		</condition>
+    </state>
+	
+	<state name="강퇴">
+		<onEnter>
+			<action name="HideGuideSummary" entityID="28400132"/>
+			<action name="유저를이동시킨다" arg1="0" arg2="0"/>
+        </onEnter>
+    </state>
+	
+	<state name="결혼식연출진행중">
+		<onEnter>
+			<action name="SetUserValue" triggerID="4001" key="Weddingceremonystarts" value="1" /> <!-- 연출 시작하라고 main에 쏘는 신호 -->
+		</onEnter>
+		<condition name="UserValue" key="Weddingceremonyfail" value="1">	<!-- 결혼 실패 -->	
+			<action name="SetUserValue" key="Weddingceremonyfail" value="0" /> <!-- 초기화 -->
+			<transition state="위치세팅"/>
+		</condition>
+		<condition name="WeddingHallState" hallState="weddingComplete">		<!-- 결혼 연출 끝나서 보상받고 종료 -->
+			<transition state="종료" />
+		</condition>
+    </state>
+	
+	<state name="종료">
+		<onEnter>
+		</onEnter>
+    </state>
+		
+</ms2>
+

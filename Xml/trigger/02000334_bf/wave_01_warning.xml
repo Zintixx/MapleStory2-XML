@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+<!-- 플레이어 감지 -->  
+  <state name="시작">
+    <onEnter>
+    </onEnter>
+		<condition name="NPC를감지했으면" arg1="90099" arg2="150" >
+		<transition state="1차타이머" />
+		</condition>	
+		
+		<condition name="몬스터가죽어있으면" arg1="999">
+		<transition state="게임오버" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state> 
+  
+      <state name="1차타이머">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="30" arg2="30" />
+        </onEnter>
+			<condition name="시간이경과했으면" arg1="30">
+			<transition state="돌격" />
+			</condition> 
+        <onExit />
+    </state>
+	
+ 
+  <!-- 몬스터 돌격 생성 -->
+      <state name="돌격">
+        <onEnter>
+				<action name="이펙트를설정한다" arg1 = "98001" arg2="1" />
+				<action name="NPC를이동시킨다" arg1="190" arg2="MS2PatrolData_3501" /> <!-- 바라하 빡침 모션 -->
+				<action name="대화를설정한다" arg1="1" arg2="190" arg3="$02000334_BF__WAVE__0$" arg4="3" />  <!-- 보스 대사 -->
+		        <action name="몬스터를생성한다" arg1="991,992,993" arg2="1" />
+				<action name="타이머를설정한다" arg1="3" arg2="3" />
+        </onEnter>
+		    <condition name="시간이경과했으면" arg1="3">
+			<transition state="카메라 복구" />
+			</condition> 
+		<onExit>
+		</onExit>
+    </state>
+ 
+	<state name="카메라 복구">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1 = "98006" arg2="1" />
+			<action name="NPC를이동시킨다" arg1="199" arg2="MS2PatrolData_3502" /> <!-- 오스칼 대응 모션 -->
+			<action name="버프를걸어준다" arg1="90001" arg2="70000068" arg3="1"/> <!-- 이속 버프를 걸어준다 -->
+			<action name="대화를설정한다" arg1="1" arg2="199" arg3="$02000334_BF__WAVE__1$" arg4="3" />  <!-- 오스칼 대사 -->
+			<action name="카메라경로를선택한다" arg1="8017" arg2="0"/> --><!-- 사이드뷰 카메라 -->
+        </onEnter>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="게임오버">
+        <onEnter>
+        </onEnter>
+		<onExit>
+		</onExit>
+    </state>
+ 
+</ms2>

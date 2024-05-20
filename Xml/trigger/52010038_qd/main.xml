@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2> 
+	<state name="대기">	
+		<onEnter> 	
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0"/>				
+			<action name="이펙트를설정한다" arg1="6299" arg2="0" />					
+			<action name="ShadowExpedition" type="CloseBossGauge" /> 				
+			<action name="메쉬를설정한다" arg1="3000-3005" arg2="1" arg3="0" arg4="0" arg5="0" />
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="199" >   
+				<transition state="준비"/>
+			</condition>
+	</state>
+
+    <state name="준비">
+		<onEnter> 
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="버프를걸어준다" arg1="199" arg2="70000109" arg3="1" arg4="0" arg5="0" />		
+			<action name="몬스터를생성한다" arg1="1805,1806" arg2="0" />	
+			<action name="몬스터를생성한다" arg1="1201" arg2="0" />								
+			<action name="SpawnNpcRange" rangeID="1001-1008" isAutoTargeting="0"/>		
+			<action name="SpawnNpcRange" rangeID="1101-1106" isAutoTargeting="0"/>				
+			<action name="SpawnNpcRange" rangeID="1801-1804" isAutoTargeting="0"/>							
+			<!-- <action name="SetCinematicIntro" text="&lt;font color='#ffd200' size='90'&gt;Press 'ESC' to Start&lt;/font&gt;\n\n\n\n\n\n\n\n\n\n\n\n"/>	 -->
+			<action name="스킵을설정한다" arg1="시작"/>					
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="시작"/>
+				</condition>		
+		<onExit> 
+			<action name="RemoveCinematicTalk"/>						
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+		</onExit>					
+    </state>	
+
+	<state name="시작">
+		<onEnter>				
+			<action name="스킵을설정한다" arg1=""/>						
+			<action name="SetUserValue" triggerID="999001" key="GaugeOpen" value="1" /> 									
+			<action name="SetUserValue" triggerID="992001" key="WaveStart" value="1" /> 				
+			<action name="SetUserValue" triggerID="999004" key="AllertStart" value="1" /> 					
+		</onEnter>
+		<condition name="ShadowExpeditionReachPoint" point="150">
+			<transition state="부상병발생"/>
+		</condition>		
+	</state> 	
+
+	<state name="부상병발생">
+		<onEnter>					
+			<action name="SideNpcTalk" npcID="11003533" illust="Bliche_nomal" duration="7000" script="$52010038_QD__main__4$" voice="ko/Npc/00002057"/>				
+			<action name="SetUserValue" triggerID="993001" key="WoundStart" value="1" /> 						
+		</onEnter>
+		<condition name="ShadowExpeditionReachPoint" point="300">
+			<transition state="2차폭탄방어"/>
+		</condition>		
+	</state> 		
+	
+	<state name="2차폭탄방어">
+		<onEnter>						
+			<action name="타이머를설정한다" arg1="99" arg2="60" arg3="1" arg4="1" arg5="80"/>				
+			<action name="SetUserValue" triggerID="992003" key="bombStart" value="1" /> 			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="스킵을설정한다" arg1="연출02종료" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="카메라304"/>
+			</condition>
+	</state>  
+
+	<state name="카메라304">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="304" arg2="1"/>
+			<action name="스킵을설정한다" arg1="연출02종료" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="부관대사03"/>
+			</condition>
+	</state>		
+
+	<state name="부관대사03"> 
+		<onEnter>	 
+			<action name="스킵을설정한다" arg1="연출02종료" />		
+			<action name="AddCinematicTalk" npcID="11003536" illustID="Neirin_surprise" msg="$52010038_QD__MAIN__0$" duration="7000" align="right" /> 			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000" >  
+				<transition state="연출02종료" />
+			</condition>
+	</state>		
+
+	<state name="연출02종료">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="스킵을설정한다" arg1="" />				
+			<action name="SideNpcTalk" npcID="11003537" illust="Mason_closeEye" duration="7000" script="$52010038_QD__main__5$" voice="ko/Npc/00002095"/>										
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2008,2009,2010">
+					<action name="몬스터를생성한다" arg1="4020" arg2="0" />					
+					<action name="몬스터를생성한다" arg1="4020" arg2="0" />							
+					<action name="타이머를초기화한다" arg1="99" />		
+					<transition state="2차폭탄방어완료조건"/>
+				</condition>
+	</state> 	    	
+
+	<state name="2차폭탄방어완료조건">	
+			<condition name="몬스터가죽어있으면" arg1="2097">	
+				<transition state="종료"/>
+			</condition>			
+			<condition name="WaitTick" waitTick="1000" >  
+				<action name="SideNpcTalk" npcID="11003536" illust="Neirin_normal" duration="6000" script="$52010038_QD__main__6$" voice="ko/Npc/00002106"/>										
+				<transition state="3층이벤트스킵"/>
+			</condition>					
+	</state> 		
+
+	<state name="3층이벤트스킵">
+			<condition name="ShadowExpeditionReachPoint" point="700">
+				<transition state="보스등장"/>
+			</condition>
+	</state>	 	
+
+	<state name="보스등장">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="6201-6204" arg2="0" />				
+			<action name="몬스터를생성한다" arg1="2098" arg2="0" />								
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="스킵을설정한다" arg1="보스연출종료" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="카메라302"/>
+			</condition>
+	</state>  
+
+	<state name="카메라302">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="302" arg2="1"/>
+			<action name="스킵을설정한다" arg1="보스연출종료" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="보스대사01"/>
+			</condition>
+	</state>	
+
+	<state name="보스대사01"> 
+		<onEnter>	 
+			<action name="스킵을설정한다" arg1="보스연출종료" />		
+			<action name="AddCinematicTalk" npcID="11003185" illustID="ShadowClaw_normal" msg="$52010038_QD__MAIN__2$" duration="5000" align="left" /> 			
+		</onEnter>
+			<condition name="WaitTick" waitTick="1500" >  
+				<transition state="보스이동" />
+			</condition>
+	</state>	
+ 
+	<state name="보스이동"> 
+		<onEnter>	 
+			<action name="스킵을설정한다" arg1="보스연출종료" />		
+			<action name="NPC를이동시킨다" arg1="2098" arg2="MS2PatrolData_2098" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="3500" >  
+				<transition state="카메라303" />
+			</condition>
+	</state>		
+
+	<state name="카메라303">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11003185" illustID="ShadowClaw_normal" msg="$52010038_QD__MAIN__3$" duration="5000" align="left" /> 		
+			<action name="카메라를선택한다" arg1="303" arg2="1"/>
+			<action name="스킵을설정한다" arg1="보스연출종료" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="보스연출종료"/>
+			</condition>
+	</state>		
+	
+	<state name="보스연출종료">
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="6299" arg2="1" />			
+			<action name="SideNpcTalk" npcID="11003533" illust="Bliche_nomal" duration="7000" script="$52010038_QD__main__8$" voice="ko/Npc/00002058"/>								
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="스킵을설정한다" arg1="" />	
+			<action name="몬스터소멸시킨다" arg1="2098" />	
+			<action name="몬스터를생성한다" arg1="2099" arg2="1" />		
+			<action name="몬스터를생성한다" arg1="1099" arg2="0" />					
+			<action name="SetUserValue" triggerID="992001" key="WaveSlowDown" value="1" /> 					
+			<action name="SetUserValue" triggerID="992002" key="WaveStart" value="1" /> 						
+		</onEnter>
+			<condition name="ShadowExpeditionReachPoint" point="1000">
+				<transition state="종료" />
+			</condition>		
+			<condition name="몬스터가죽어있으면" arg1="1099">
+				<action name="SetUserValue" triggerID="999001" key="EngineIsDead" value="1" /> 								
+				<transition state="종료" />
+			</condition>	  
+	</state>		
+
+	<state name="종료"> 
+
+	</state>		
+	
+</ms2>
+

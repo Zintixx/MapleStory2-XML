@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="시작">   
+        <onEnter>			
+			</onEnter>	
+		<condition name="유저를감지했으면" arg1="4">
+			<transition state="기다림"/>
+		</condition> 
+    <onExit> 
+    </onExit>
+    </state>
+
+	
+	
+	<state name="기다림">   
+        <onEnter>	
+			<action name="ShadowExpedition" type="OpenBossGauge" maxGaugePoint="300" title="출력 에너지"/> 		
+			
+			</onEnter>	
+		<condition name="WaitTick" waitTick="10000">	
+				    <transition state="체력조건_1" />
+		</condition>  
+    <onExit> 
+    </onExit>
+    </state>
+
+	<state name="체력조건_1">   
+        <onEnter>				
+			</onEnter>	
+		<condition name="ShadowExpeditionReachPoint" point="150" >
+				    <transition state="알림_1" />		
+		</condition>  
+    <onExit> 
+    </onExit>
+    </state>
+
+		<state name="알림_1">   
+        <onEnter>
+     		<action name="이벤트UI를설정한다" arg1="1" arg2="에너지가 50%충전 되었습니다." arg3="4000"/> 			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="체력조건_2"/>
+		</condition> 	
+
+ <onExit> 
+			<action name="몬스터를생성한다" arg1="6000041" arg2="0" /> 
+			<action name="몬스터를생성한다" arg1="6000042" arg2="0" />  
+     		<action name="버프를걸어준다" arg1="6000041" arg2="49286001" arg3="1" arg4="1"/> 		
+     		<action name="버프를걸어준다" arg1="6000042" arg2="49286001" arg3="1" arg4="1"/> 				
+
+    </onExit>
+    </state>
+	
+	<state name="체력조건_2">   
+        <onEnter>						
+			</onEnter>	
+		<condition name="ShadowExpeditionReachPoint" point="300" >
+				    <transition state="알림_5" />		
+		</condition>  
+    <onExit> 
+    <action name="업적이벤트를발생시킨다" arg2="trigger" arg3="EscapeToKritias"/>     	
+    </onExit>
+    </state>	
+
+		<state name="알림_5">   
+        <onEnter>
+     		<action name="이벤트UI를설정한다" arg1="1" arg2="에너지가 100%충전 되었습니다." arg3="4000"/> 			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+			<transition state="알림_6"/>
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>		
+		
+	<state name="알림_6">   
+        <onEnter>
+     		<action name="이벤트UI를설정한다" arg1="1" arg2="곧 최대 출력으로 돌진 합니다." arg3="3000"/> 			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000">
+			<transition state="마지막_연출"/>
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>		
+			
+
+	<state name="마지막_연출">   
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/> 		
+			<action name="카메라경로를선택한다" arg1="2000009" arg2="0" />					
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="캐릭터숨기기"/>
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>
+	
+	<state name="캐릭터숨기기">   
+        <onEnter>
+		<action name="VisibleMyPC" isVisible="0"/>	
+	    <action name="몬스터를생성한다" arg1="7002" arg2="1" />	
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="마지막_연출_2"/>
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>			
+
+	<state name="마지막_연출_2">   
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="AI연출"/>
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>			
+		
+	<state name="AI연출">   
+        <onEnter>
+		    <action name="연출UI를설정한다" arg1="3"/>				
+			<action name="연출UI를설정한다" arg1="1"/>	
+			<action name="카메라경로를선택한다" arg1="2000013" arg2="0" />				
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="AI연출_2"/>
+		</condition> 		
+		
+ <onExit> 
+    </onExit>
+    </state>		
+	
+	<state name="AI연출_2">   
+        <onEnter>		
+		    <action name="대화를설정한다" arg1="2" arg2="0" arg3="준비완료! 크리티아스로 돌진!" arg4="3" arg5="0" />
+			<action name="SetAiExtraData" key="wing" value="1" boxID="4"/>
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1500">
+			<transition state="끝"/>
+		</condition> 		
+		
+ <onExit> 
+    </onExit>
+    </state>	
+
+	<state name="끝">   
+        <onEnter>		
+			<action name="SetAiExtraData" key="wing" value="1" />			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+			<transition state="끝_2"/>
+		</condition> 		
+		
+ <onExit> 
+    </onExit>
+    </state>		
+
+	<state name="끝_2">   
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/> 			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="맵이동"/>				
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>
+	
+	<state name="맵이동">   
+        <onEnter>
+           <action name="유저를이동시킨다" arg1="02020001" arg2="10"/>		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+		</condition> 	
+
+ <onExit> 
+    </onExit>
+    </state>	
+</ms2>

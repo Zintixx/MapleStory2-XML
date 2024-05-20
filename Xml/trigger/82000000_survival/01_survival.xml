@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+    <state name="Setting" >
+        <onEnter>				
+			<action name="이펙트를설정한다" arg1="4000,4100,4200,4300,4400,4500,4600,4700,4800" arg2="0" />		<!-- SafeZone Barrier Effect -->
+			<action name="메쉬를설정한다" arg1="3000-3007" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier Center -->		
+			<action name="메쉬를설정한다" arg1="3100-3107" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier North -->	
+			<action name="메쉬를설정한다" arg1="3200-3207" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier South -->				
+			<action name="메쉬를설정한다" arg1="3300-3307" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier East -->				
+			<action name="메쉬를설정한다" arg1="3400-3407" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier West -->				
+			<action name="메쉬를설정한다" arg1="3500-3507" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier SouthEast -->			
+			<action name="메쉬를설정한다" arg1="3600-3607" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier SouthWest -->			
+			<action name="메쉬를설정한다" arg1="3700-3707" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier NorthEast -->			
+			<action name="메쉬를설정한다" arg1="3800-3807" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier NorthWest -->			
+			<action name="사운드를설정한다" arg1="20000" arg2="0" />	<!-- BGM Intro -->		
+			<action name="사운드를설정한다" arg1="20001" arg2="0" />	<!-- BGM Loop -->		
+			<action name="SetLocalCamera" cameraId="100" enable="0"/>						
+			<action name="SightRange" enable="1" range="3" rangeZ="300" border="75"/> 	
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="9000"> 
+					<transition state="Wait_Talk01"/>		<!-- test용 수정 가능 지점 -->
+					<!-- 원본 state : Wait_Talk01 -->
+					<!-- 비행선 생성하려면 : CheckPCLocation / 추가로 인원수 수정 필요 --> 
+					<!-- 비행선 없이 빠른 시작 : Countdown  / 인원수 수정 필요 없음 -->	
+				</condition>	
+        <onExit>			
+			<action name="이펙트를설정한다" arg1="4000,4100,4200,4300,4400,4500,4600,4700,4800" arg2="1" />		<!-- SafeZone Barrier Effect -->	
+			<action name="타이머를설정한다" arg1="1" arg2="59" arg3="1" arg4="1" arg5="-80"/>			<!-- test용 수정 가능 지점 / arg2="30" / arg2 시간 더 짧게 가능  arg2="10" -->			
+			<action name="로그를남긴다"  arg1="Survival" arg3="Waiting_Start" /> 	<!--서바이벌 대기 시작 -->				
+        </onExit>
+    </state>
+
+    <state name="Wait_Talk01" >
+        <onEnter>
+			<action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__0$"/>		
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Wait_Talk02"/>	      
+				</condition>	
+				 <condition name="시간이경과했으면" arg1="1" >	
+					<transition state="ChangeBGM"/>		
+				</condition>							
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="Wait_Talk02" >
+        <onEnter>
+			<action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__1$"/>		
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Wait_Talk03"/>	      
+				</condition>	
+				 <condition name="시간이경과했으면" arg1="1" >	
+					<transition state="ChangeBGM"/>				
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="Wait_Talk03" >
+        <onEnter>
+			<action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__2$"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Wait_Talk01"/>	      
+				</condition>	
+				 <condition name="시간이경과했으면" arg1="1" >	
+					<transition state="ChangeBGM"/>		
+				</condition>							
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="ChangeBGM" >
+        <onEnter>	
+			<action name="PlaySystemSoundInBox" arg2="BattleField_Event"/>       
+			<action name="사운드를설정한다" arg1="20000" arg2="1" />	<!-- BGM Intro -->			
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">    
+					<transition state="StartGameExplain" />		
+				</condition>						
+        <onExit>	
+        </onExit>	
+    </state>	
+	
+	<state name="StartGameExplain" >
+        <onEnter>			
+			 <action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="5000" script="$82000000_survival__01_SURVIVAL__3$"/>	 
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">    
+					<transition state="GameExplain01" />		
+				</condition>						
+        <onExit>	
+        </onExit>	
+    </state>	
+	
+	<state name="GameExplain01" >
+        <onEnter>				
+			 <action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="6000" script="$82000000_survival__01_SURVIVAL__4$"/> 	 
+        </onEnter>
+				<condition name="WaitTick" waitTick="6000">    
+					<transition state="GameExplain02" />		
+				</condition>						
+        <onExit>	
+        </onExit>	
+    </state>	
+	
+	<state name="GameExplain02" >
+        <onEnter>				
+			 <action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__5$"/>    		 
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000">    
+					<transition state="GameExplain03" />		
+				</condition>						
+        <onExit>	
+        </onExit>	
+    </state>	
+	
+	<state name="GameExplain03" >
+        <onEnter>				
+			 <action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__6$"/> 	 
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000">    
+					<transition state="GameExplain04" />		
+				</condition>						
+        <onExit>	
+        </onExit>	
+    </state>	
+	
+	<state name="GameExplain04" >
+        <onEnter>				
+			 <action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="5000" script="$82000000_survival__01_SURVIVAL__7$"/> 	 
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">    
+					<transition state="CheckPCLocation" />		
+				</condition>						
+        <onExit>	
+        </onExit>	
+    </state>	
+	
+    <state name="CheckPCLocation" >
+        <onEnter>	
+        </onEnter>	
+			<condition name="유저를감지했으면" arg1="9001">
+				<transition state="StartPoint01_North"/>	
+			</condition>	
+			<condition name="유저를감지했으면" arg1="9002">
+				<transition state="StartPoint02_South"/>	
+			</condition>	
+			<condition name="유저를감지했으면" arg1="9003">
+				<transition state="StartPoint03_East"/>	
+			</condition>	
+			<condition name="유저를감지했으면" arg1="9004">
+				<transition state="StartPoint04_West"/>	
+			</condition>	
+			<condition name="유저를감지했으면" arg1="9005">
+				<transition state="StartPoint05_NorthWest"/>	
+			</condition>	
+			<condition name="유저를감지했으면" arg1="9006">
+				<transition state="StartPoint06_NorthEast"/>	
+			</condition>	
+			<condition name="유저를감지했으면" arg1="9007">
+				<transition state="StartPoint07_SouthWest"/>	
+			</condition>	
+			<condition name="유저를감지했으면" arg1="9008">
+				<transition state="StartPoint08_SouthEast"/>	
+			</condition>				
+        <onExit>							
+        </onExit>
+    </state>
+	
+	<state name="StartPoint01_North" >
+        <onEnter>			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="1" />				
+        </onExit>			
+    </state>	
+	
+	<state name="StartPoint02_South" >
+        <onEnter>										
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="2" />			
+        </onExit>					
+    </state>	
+	
+	<state name="StartPoint03_East" >
+        <onEnter>								
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="3" />		
+        </onExit>						
+    </state>	
+	
+	<state name="StartPoint04_West" >
+        <onEnter>						
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="4" />	
+        </onExit>				
+    </state>	
+	
+	<state name="StartPoint05_NorthWest" >
+        <onEnter>			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="5" />	
+        </onExit>					
+    </state>	
+	
+	<state name="StartPoint06_NorthEast" >
+        <onEnter>	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="6" />	
+        </onExit>					
+    </state>	
+	
+	<state name="StartPoint07_SouthWest" >
+        <onEnter>		
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="7" />			
+        </onExit>					
+    </state>	
+	
+	<state name="StartPoint08_SouthEast" >
+        <onEnter>			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="PVPReady"/>	
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="8" />		
+        </onExit>					
+    </state>	
+		
+    <state name="PVPReady" >
+        <onEnter>			
+			<action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__8$"/>	<!-- 누가 우승할지 보자 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000">  
+				<transition state="CheckTheNumberOfPlayers" />	   <!-- test용 수정 가능 지점 -->    
+				<!-- 원본 state : CheckTheNumberOfPlayers -->
+				<!-- 인원 체크 생략하려면  : MatchingSuccessDelay --> 	
+			</condition>
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="CheckTheNumberOfPlayers" >		<!--  인원 체크 -->
+        <onEnter>
+			<action name="타이머를초기화한다" arg1="1"/>				
+        </onEnter>
+				<condition name="여러명의유저를감지했으면" arg1="9000" arg2="20" arg3="GreaterEqual">  	<!-- 10명 이상이면 게임 시작  -->	
+					<transition state="MatchingSuccessDelay" />		
+				</condition>	
+				<condition name="여러명의유저를감지했으면" arg1="9000" arg2="20" arg3="Less">  	<!-- 10명 미만이면 게임 취소  --> 	
+					<transition state="MatchingFailDelay" />		
+				</condition>			
+        <onExit>				
+        </onExit>	
+    </state>
+
+    <state name="MatchingSuccessDelay" >
+        <onEnter>		
+			<action name="SetUserValue" triggerID="7" key="HidePartyUI" value="1" />				
+			<action name="PlaySystemSoundInBox" arg2="GuildBattle_Enter"/>        			
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">    	
+					<transition state="MatchingSuccess"/>	
+				</condition>				
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="MatchingSuccess" >
+        <onEnter>	
+			<action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__9$"/>  <!-- 충분히 모였군! -->					
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">    
+					<transition state="RideRiseUp" />		 
+				</condition>						
+        <onExit>		
+        </onExit>	
+    </state>
+	
+    <state name="RideRiseUp" >
+        <onEnter>	
+			<action name="SetUserValue" triggerID="2" key="StartPatrol" value="1" />		
+        </onEnter>
+				<condition name="WaitTick" waitTick="2000">  
+            <transition state="Countdown" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="Countdown" >
+		<onEnter>				
+			<action name="CreateFieldGame" type="MapleSurvival" />		
+			<action name="ShowCountUI" text="$82000000_survival__01_SURVIVAL__10$" stage="0" count="3"  />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="AreaOpen"/> 
+			</condition>
+    </state>
+	
+    <state name="AreaOpen" >
+        <onEnter>
+			<action name="StartCombineSpawn" groupId="196-318" isStart="true"/>	<!-- 나태 버섯 Normal Mob -->				
+			<action name="SetUserValue" triggerID="5" key="RareBoxOnCount" value="1" />		
+			<action name="SetUserValue" triggerID="8" key="RareMobOnCount" value="1" />		
+			<action name="SetUserValue" triggerID="9" key="NormaBoxOnCount" value="1" />		
+			<action name="SetUserValue" triggerID="10" key="BattleRidingOnCount" value="1" />				
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>      			
+			<action name="SetUserValue" triggerID="4" key="InvincibleOff" value="1" /> 				
+			<action name="버프를걸어준다" arg1="9000" arg2="71000053" arg3="1" arg4="0" arg5="0"/>		<!-- 31초 무적 버프 -->	<!-- test용 수정 가능 지점 : 무적 버프 없이 게임하려면 주석 처리 -->
+			<action name="이펙트를설정한다" arg1="4000,4100,4200,4300,4400,4500,4600,4700,4800" arg2="0" />		<!-- SafeZone Barrier Effect -->					
+			<action name="메쉬를설정한다" arg1="3000-3007" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier Center -->					
+			<action name="메쉬를설정한다" arg1="3100-3107" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier_North -->	
+			<action name="메쉬를설정한다" arg1="3200-3207" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier_South -->				
+			<action name="메쉬를설정한다" arg1="3300-3307" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier_East -->				
+			<action name="메쉬를설정한다" arg1="3400-3407" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier_West -->				
+			<action name="메쉬를설정한다" arg1="3500-3507" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier_SouthEast -->				
+			<action name="메쉬를설정한다" arg1="3600-3607" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier_SouthWest -->				
+			<action name="메쉬를설정한다" arg1="3700-3707" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier_NorthEast -->				
+			<action name="메쉬를설정한다" arg1="3800-3807" arg2="0" arg3="1000" arg4="0" arg5="1" />		<!-- Barrier_NorthWest -->				
+			<action name="사운드를설정한다" arg1="20000" arg2="0" />	<!-- BGM Intro -->		
+			<action name="사운드를설정한다" arg1="20001" arg2="1" />	<!-- BGM Loop -->		
+			<action name="로그를남긴다" arg1="Survival" arg3="Start"/> <!--서바이벌 시작 로그 남김 -->
+        </onEnter>
+				<condition name="WaitTick" waitTick="30000">  	<!-- test용 수정 가능 지점 : 게임 시작 후 스톰 생성 딜레이 -->
+            <transition state="GameStart" />	
+        </condition>
+        <onExit>			
+        </onExit>
+    </state>
+
+    <state name="GameStart" >
+        <onEnter>	
+			<action name="SetUserValue" triggerID="3" key="StormStart" value="1" /> 	<!-- test용 수정 가능 지점 : 스톰 생성 안하려면 주석 처리 -->
+			<action name="로그를남긴다"  arg1="Survival" arg3="StormStart" /> <!--서바이벌 스톰 시작 로그 남김 -->
+        </onEnter>
+			<condition name="!유저를감지했으면" arg1="9000">
+				<transition state="Quit" />		
+			</condition>			
+			<condition name="!IsPlayingMapleSurvival">
+				<transition state="GameEnd" />		
+			</condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+<!-- 인원 미만으로 인한 경기 취소 -->
+    <state name="MatchingFailDelay" >
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="guildBattle_MatchingFail"/>     					
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">    	
+					<transition state="MatchingFail"/>	
+				</condition>				
+        <onExit>
+        </onExit>
+    </state>	
+	
+    <state name="MatchingFail" >
+        <onEnter>
+			<action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__11$"/>  <!-- 인원 부족 -->		
+        </onEnter>	
+				<condition name="WaitTick" waitTick="5000">  
+            <transition state="GameCancel" />	
+        </condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="GameCancel" >
+        <onEnter>	
+			<action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="4000" script="$82000000_survival__01_SURVIVAL__12$"/>  <!-- 경기 취소 -->		
+        </onEnter>	
+				<condition name="WaitTick" waitTick="5000">  
+            <transition state="ReadyToKickOut" />	
+        </condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="ReadyToKickOut" >
+        <onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$82000000_survival__01_SURVIVAL__13$" arg3="4000" arg4="0" />			<!-- 잠시 후 원래 있던 곳으로 돌아갑니다.-->
+        </onEnter>	
+				<condition name="WaitTick" waitTick="5000">  
+            <transition state="Quit" />	
+        </condition>				
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="GameEnd" >	<!-- 코드에서 우승자 카메라 연출 및 게임 결과 UI 호출 -->
+        <onEnter>	
+			<action name="버프를걸어준다" arg1="9000" arg2="70001101" arg3="1" arg4="0" arg5="0"/>		<!-- 변신 탈 것 해제용 버프 -->		
+			<action name="SightRange" enable="0" range="3"/>			<!-- 우승자 카메라 (LocalTargetCamera 호출) 연출 시, 비석 상태인 유저의 위치 기준으로 우승자가 멀리 있어도 우승자가 보이도록 워포그 해제 -->
+		</onEnter>
+			<condition name="!유저를감지했으면" arg1="9000">
+				<transition state="Quit" />		
+			</condition>			
+        <onExit>
+        </onExit>
+    </state>		
+	
+    <state name="Quit" >
+        <onEnter>
+			<action name="SetUserValue" triggerID="5" key="RareBoxOff" value="1" />		
+			<action name="SetUserValue" triggerID="8" key="RareMobOff" value="1" />		
+			<action name="SetUserValue" triggerID="9" key="NormaBoxOff" value="1" />	
+			<action name="SetUserValue" triggerID="10" key="BattleRidingOff" value="1" />			
+			<action name="몬스터소멸시킨다" arg1="all" />					
+			<action name="유저를이동시킨다" arg1="0" arg2="0"/>		
+			<action name="StartCombineSpawn" groupId="196-318" isStart="false"/>	<!-- 나태 버섯 Normal Mob -->				
+        </onEnter>		
+        <onExit>
+        </onExit>
+    </state>
+	
+</ms2>

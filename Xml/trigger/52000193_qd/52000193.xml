@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 52100206 벨라 RP용 트리거 -->
+<ms2>
+
+    <state name="start" >
+        <onEnter>	
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="2001">
+				<transition state="CameraEffect01"/>
+			</condition>					
+		<onExit> 
+		</onExit>
+    </state>
+
+	<state name="CameraEffect01" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="CameraEffect02"/>
+		</condition>
+	</state>
+
+	<state name="CameraEffect02" >
+		<onEnter>		
+		<action name="몬스터를생성한다" arg1="202"/>	
+		 <action name="VisibleMyPC" isVisible="0"/>	<!-- 유저 투명 처리 -->		
+		 <action name="연출UI를설정한다" arg1="1"/>	
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="CameraEffect02_01"/>
+		</condition>
+	</state>
+	
+	<state name="CameraEffect02_01" >
+		<onEnter>	
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003406" arg3="2" >
+					<transition state="CameraEffect02_02"/>
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003407" arg3="3" >
+					<transition state="이동"/>
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003407" arg3="2" >
+					<transition state="변신_02"/>
+		</condition>	
+		<condition name="!퀘스트유저를감지하면" arg1="2001" arg2="10003407" arg3="2" >
+					<transition state="변신_02"/>
+		</condition>
+	</state>
+
+	<state name="CameraEffect02_02" >
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$52000193_QD__52000193__0$"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="CameraEffect03"/>
+		</condition>
+	</state>
+	
+	 <state name="CameraEffect03">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="CameraEffect03_3"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="CameraEffect03_3">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4001,4002" arg2="0"/>
+			<action name="ShowCaption" type="VerticalCaption" title="$52000193_QD__52000193__1$" desc="" align="bottomLeft" offsetRateX="0" offsetRateY="0" duration="5000" scale="2.5"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="CameraEffect03_4"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="CameraEffect03_4">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="변신_01"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="변신_01">
+		<onEnter>			
+			
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="몬스터소멸시킨다" arg1="201"/> 
+			<action name="VisibleMyPC" isVisible="1"/>	<!-- 유저 투명 처리 품 -->			
+			<action name="SetVisibleUI" uiName="MessengerBrowser,GroupMessengerBrowser,HighlightGameMenu" visible="0" />		
+			<action name="버프를걸어준다" arg1="2001" arg2="99910402" arg3="1" arg4="0" arg5="1" /> <!-- 에레브 변신 -->		
+			<action name="버프를걸어준다" arg1="2001" arg2="99910402" arg3="1" arg4="0" arg5="0" /> <!-- 에레브 변신 -->
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="CameraEffect03_6"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="변신_02">
+		<onEnter>			
+			<action name="유저를이동시킨다" arg1="52000193" arg2="5002"/> 				
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="몬스터소멸시킨다" arg1="201"/> 
+			<action name="VisibleMyPC" isVisible="1"/>	<!-- 유저 투명 처리 품 -->			
+			<action name="SetVisibleUI" uiName="MessengerBrowser,GroupMessengerBrowser,HighlightGameMenu" visible="0" />		
+			<action name="버프를걸어준다" arg1="2001" arg2="99910402" arg3="1" arg4="0" arg5="1" /> <!-- 에레브 변신 -->		
+			<action name="버프를걸어준다" arg1="2001" arg2="99910402" arg3="1" arg4="0" arg5="0" /> <!-- 에레브 변신 -->
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="CameraEffect03_6"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="CameraEffect03_6">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+				<transition state="CameraEffect03_8"/>
+		</condition>
+    </state>
+	
+	<state name="CameraEffect03_8">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>	
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003407" arg3="3" >
+					<transition state="이동"/>
+		</condition>
+    </state>
+
+	<state name="이동">
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="02000065" arg2="0"/> 				
+		</onEnter>
+    </state>
+		
+</ms2>
+

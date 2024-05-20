@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="Wait">
+        <onEnter>
+			<action name="SetUserValue" key="CageDoorOpen" value="0" />			
+			<action name="SetUserValue" key="MissionStart" value="0" />			
+			<action name="SetUserValue" key="MissionComplete" value="0" />								
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="Closed" /> <!-- Cage -->	
+            <action name="메쉬를설정한다" arg1="3100" arg2="1" arg3="0" arg4="0" arg5="0"/>	<!-- Cage Door -->			
+            <action name="메쉬를설정한다" arg1="3101-3103" arg2="1" arg3="0" arg4="0" arg5="0"/>	<!-- Cage Mesh -->
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- MetalDoorOpen 사운드 이펙트-->		
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- MetalDoorClose 사운드 이펙트-->						
+        </onEnter>
+				<condition name="UserValue" key="CageDoorOpen" value="1">
+					<transition state="CageDoorOpenDelay" />	
+				</condition>		
+    </state>
+
+	<state name="CageDoorOpenDelay">   
+        <onEnter> 		
+			</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="CageDoorOpen"/>	
+				</condition>		
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="CageDoorOpen">
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- MetalDoorOpen 사운드 이펙트-->				
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="Open" /> <!-- Cage -->	
+            <action name="메쉬를설정한다" arg1="3100" arg2="0" arg3="300" arg4="0" arg5="0"/>	<!-- Cage Door -->		
+        </onEnter>
+			<condition name="UserValue" key="MissionStart" value="1">
+					<transition state="CountDown" />	
+				</condition>		
+    </state>	
+	
+	<state name="CountDown">	
+        <onEnter>	
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>  			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02100001_BF__99_BARRICADE__0$" arg3="3000" />
+        </onEnter>	
+			<condition name="WaitTick" waitTick="30000">
+				<transition state="ShutDown"/> 
+			</condition>
+	</state>
+
+    <state name="ShutDown">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> <!-- MetalDoorClose 사운드 이펙트-->				
+			<action name="SetUserValue" triggerID="5" key="GiveBuffSlowly" value="1" /> 			
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="Closed" /> <!-- Cage -->			
+            <action name="메쉬를설정한다" arg1="3100" arg2="1" arg3="0" arg4="0" arg5="0"/>	<!-- Cage Door -->	
+        </onEnter>
+			<condition name="UserValue" key="MissionComplete" value="1">
+					<transition state="Release" />	
+				</condition>		
+    </state>
+
+    <state name="Release">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- MetalDoorOpen 사운드 이펙트-->				
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="Open" /> <!-- Cage -->			
+            <action name="메쉬를설정한다" arg1="3100" arg2="0" arg3="300" arg4="0" arg5="0"/>	<!-- Cage Door -->	
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="Quit"/> 
+			</condition>
+    </state>
+
+    <state name="Quit">
+    </state>
+
+</ms2>

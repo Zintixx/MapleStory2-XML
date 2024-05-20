@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+<!-- 아크로폴리스 수호자 처치 퀘스트를 받고 입장 -->
+
+    <state name="idle"> 
+        <onEnter>
+		<action name="이펙트를설정한다" arg1="5001" arg2="0" />
+		<action name="이펙트를설정한다" arg1="5002" arg2="0" />
+		<action name="이펙트를설정한다" arg1="5003" arg2="0" />	
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="30000328" arg3="1">
+				<transition state="연출시작"/>
+			</condition>			
+		<onExit>
+		</onExit>
+    </state> 
+
+	
+    <state name="연출시작"> 
+        <onEnter>	
+		<action name="유저를이동시킨다" arg1="52020028" arg2="6002" arg3=""/>			
+		<action name="SetOnetimeEffect" id="1000" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>						
+		<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="아크로폴리스내부확인"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+	
+   <state name="아크로폴리스내부확인"> 
+        <onEnter>
+		<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		<action name="ShowCaption" type="VerticalCaption" title="아크로폴리스" desc="고대 크리티아스 지식의 안식처" align="centerLeft" offsetRateX="0" offsetRateY="0" duration="4000" scale="2"/>			
+		<action name="카메라경로를선택한다" arg1="4002,4003,4004" arg2="0"/> 
+		<action name="AddCinematicTalk" npcID="0" msg="여기가 아크로폴리스..." duration="3000" />		
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="유저이동"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+	
+	
+   <state name="유저이동"> 
+        <onEnter>
+		<action name="카메라경로를선택한다" arg1="4012,4001" arg2="0"/>	
+		<action name="유저를경로이동시킨다" arg1="MS2PatrolData_3001"/> 		
+		<action name="AddCinematicTalk" npcID="0" msg="생각보다 조용하군." duration="3000" />
+		<action name="AddCinematicTalk" npcID="0" msg="수호자 때문에 안에 들어갈 수가 없다니, 얼마나 대단한 녀석인거지." duration="3000" />
+		<action name="AddCinematicTalk" npcID="0" msg="싸우지 않을 수 있었으면 좋겠는데." duration="3000" />		
+		<action name="AddCinematicTalk" npcID="0" msg="그나저나, 정말 아무도 없는 것 같은데..." duration="3000" />							
+		</onEnter>
+			<condition name="WaitTick" waitTick="12000"> 
+				<transition state="유저자격확인하기전"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+
+   <state name="유저자격확인하기전"> 
+        <onEnter>			
+		<action name="카메라경로를선택한다" arg1="4009" arg2="0"/>		
+		<action name="이펙트를설정한다" arg1 = "5003" arg2="1" />
+		<action name="FaceEmotion" spawnPointID="0" emotionName="Trigger_panic"/>		
+		<action name="SetPcEmotionLoop" arg1="Idle_A" arg2="6000"/>
+		<action name="AddBalloonTalk" spawnPointID="0" msg="?!" duration="3000"/>
+		<action name="AddBalloonTalk" spawnPointID="0" msg="이... 이건?" duration="3000" delayTick="3000"/>
+		<action name="SetSceneSkip" arg1="경고" arg2="exit"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="유저자격확인"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+	
+    <state name="유저자격확인"> 
+		<onEnter>		
+			<action name="연출UI를설정한다" arg1="9" arg2="침입자 발견. 자격을 확인한다." arg3="0"/>	
+		    <action name="SetSceneSkip" arg1="아르케온등장4" arg2="exit"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="유저자격확인2"/> 
+			</condition> 														
+		<onExit>
+		</onExit>
+    </state>	
+	
+   <state name="유저자격확인2"> 
+        <onEnter>
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>			
+		<action name="FaceEmotion" spawnPointID="0" emotionName="Trigger_panic"/>		
+		<action name="SetPcEmotionLoop" arg1="Attack_Idle_A" arg2="18000"/>
+		<action name="이펙트를설정한다" arg1 = "5003" arg2="1" />		
+		<action name="AddBalloonTalk" spawnPointID="0" msg="자격을 확인한다고? 잠깐!!!" duration="3000"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+				<transition state="유저자격확인2_1"/> 
+		</condition>		
+		<onExit>
+		</onExit> 
+    </state> 
+	
+   <state name="유저자격확인2_1"> 
+        <onEnter>		
+		<action name="AddCinematicTalk" npcID="22000117" msg="문답무용.\n순수한 크리티아스의 피가 흐르지 않는 자는 이곳에 발을 디딜 수 없다." duration="3000" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="유저자격확인3"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+	
+   <state name="유저자격확인3"> 
+        <onEnter>	
+		<action name="카메라경로를선택한다" arg1="4010" arg2="0"/>		
+		<action name="AddBalloonTalk" spawnPointID="0" msg="잠시 이야기를 들어줘!" duration="3000" delayTick="4000"/>		
+		<action name="AddCinematicTalk" npcID="22000117" msg="결과를 확인한다."  duration="3000" />		
+		<action name="AddCinematicTalk" npcID="22000117" msg="결과, 부적합.\n전투 시스템 가동." duration="3000" />
+		<action name="이펙트를설정한다" arg1 = "5003" arg2="1" />		
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="아르케온등장"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+	
+	
+	<state name="아르케온등장"> 
+		<onEnter>
+		<action name="이펙트를설정한다" arg1 = "5003" arg2="0" />					
+		<action name="SetOnetimeEffect" id="1000" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="AddCinematicTalk" npcID="22000117" msg="자격이 없는 자, 즉시 처단한다." duration="3000" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">	 
+				<transition state="아르케온등장2"/> 
+			</condition> 														
+		<onExit>
+		</onExit>
+    </state>	 
+	
+	 <state name="아르케온등장2"> 
+        <onEnter>
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>				
+		<action name="카메라경로를선택한다" arg1="4007" arg2="0"/>			
+		<action name="AddBalloonTalk" spawnPointID="0" msg="아니 대화가 전혀 안 통하잖아!" duration="2000" delayTick="0"/>	
+		<action name="SetOnetimeEffect" id="1000" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="경고"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+	
+	<state name="경고"> 
+        <onEnter>			
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="등장연출"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 	
+	
+	 <state name="등장연출"> 
+        <onEnter>
+		<action name="SetOnetimeEffect" id="1000" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>							
+		<action name="카메라경로를선택한다" arg1="4005" arg2="0"/>		
+		<action name="이펙트를설정한다" arg1 = "5001" arg2="1" />			
+			<action name="몬스터를생성한다" arg1="101" arg2="0"/>
+		<action name="ShowCaption" type="VerticalCaption" title="아르케온" desc="아크로폴리스의 수호자" align="centerLeft" offsetRateX="0" offsetRateY="0" duration="4000" scale="2"/>			
+		<action name="SetOnetimeEffect" id="1001" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="아르케온등장3"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+
+	<state name="아르케온등장3"> 
+		<onEnter>
+		<action name="AddCinematicTalk" npcID="0" msg="역시 이렇게 되는군." duration="3000" />
+		<action name="AddCinematicTalk" npcID="0" msg="말이 통하지 않으니, 어쩔 수 없지.\n여기서 시간을 낭비할 수 없어.\n어서 처치하자." duration="3000" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="아르케온등장4"/> 
+			</condition> 														
+		<onExit>
+		</onExit>
+    </state>		
+	
+	 <state name="아르케온등장4"> 
+        <onEnter>
+		<action name="SetOnetimeEffect" id="1001" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>						
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>			
+		<action name="카메라리셋" interpolationTime="0"/>
+		<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/> 				
+		<action name="이벤트UI를설정한다" arg1="1" arg2="수호자 아르케온을 처치하세요." arg3="2000" arg4="0"/>					
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="101">
+				<transition state="다음연출시작" />
+			</condition>			
+		<onExit>
+		</onExit>
+    </state> 
+	
+	<state name="다음연출시작"> 
+        <onEnter>			
+		<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>	
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="다음연출시작_02"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다음연출시작_02"> 
+        <onEnter>	
+		<action name="유저를이동시킨다" arg1="52020028" arg2="6001" arg3=""/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="위치이동"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="위치이동"> 
+        <onEnter>
+		<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>				
+		<action name="AddCinematicTalk" npcID="0" msg="휴... 힘든 싸움이었어." duration="3000" />							
+		<action name="AddCinematicTalk" npcID="0" msg="중요한 시설인가보군, 이런 괴물같은 녀석이 지키고 있는 것을 보니..." duration="3000" />		
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="진리의문확인"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+
+	<state name="진리의문확인"> 
+        <onEnter>
+		<action name="카메라경로를선택한다" arg1="4004,4003" arg2="0"/>			
+		<action name="이펙트를설정한다" arg1 = "5002" arg2="0" />
+		<action name="AddCinematicTalk" npcID="0" msg="아무래도 저기가 진리의 문인가 보군." duration="3000" />
+		<action name="AddCinematicTalk" npcID="0" msg="아르망에게 전달해야겠어. 알케이나 고원으로 돌아가자." duration="3000" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="이오네독백준비"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+
+	<state name="이오네독백준비"> 
+        <onEnter>			
+		<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>
+		<action name="VisibleMyPC" isVisible="0" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="이오네독백준비_02"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+
+	<state name="이오네독백준비_02"> 
+        <onEnter>
+		<action name="몬스터를생성한다" arg1="102" arg2="0"/>
+		<action name="카메라를선택한다" arg1="4011" arg2="1"/>	
+		</onEnter> 
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="이오네독백"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="이오네독백"> 
+        <onEnter>
+		<action name="카메라경로를선택한다" arg1="4011,4008" arg2="0"/>		
+		<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		<action name="ShowCaption" type="VerticalCaption" title="이오네" desc="크리티아스의 왕녀" align="centerLeft" offsetRateX="0" offsetRateY="0" duration="4000" scale="2"/>			
+		<action name="AddCinematicTalk" npcID="11003760" msg="그 동안 수고 했어요. 아르케온." duration="3000" />		
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="이오네독백_02"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 	
+	
+	<state name="이오네독백_02"> 
+        <onEnter>
+		<action name="SetNpcEmotionSequence" arg1="102" arg2="Talk_A" />
+		<action name="AddCinematicTalk" npcID="11003760" msg="이 뒤는 저에게 맡기고 편히 쉬세요." duration="3000" />
+		<action name="AddCinematicTalk" npcID="11003760" msg="이제 이 곳의 모든 정보는 그 누구도 열어보지 못하도록...\n이 이오네가 책임지고 막겠습니다." duration="3000" />		
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="Warp준비"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 
+ 
+
+		<state name="Warp준비"> 
+        <onEnter>			
+		<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="Warp"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state> 		
+	
+     <state name="Warp"> 
+		<onEnter>
+        <action name="몬스터소멸시킨다" arg1="102"  />			
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>				
+ 		<action name="유저를이동시킨다" arg1="02020016" arg2="3"/>		
+		</onEnter>		
+		<onExit>
+		</onExit>
+    </state>	
+	
+</ms2>

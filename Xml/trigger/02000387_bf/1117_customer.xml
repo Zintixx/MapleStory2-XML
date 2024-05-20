@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Wait">
+        <onEnter>			
+			<action name="오브젝트반응설정한다" arg1="10001099" arg2="0"/>	 <!-- Greeting-->				
+			<action name="SetUserValue" key="CustomerEnter" value="0" />	
+			<action name="SetUserValue" key="ItemNumber" value="0" />				
+        </onEnter>	
+				<condition name="UserValue" key="CustomerEnter" value="1" >	
+			<transition state="CustomerEnterDelay"/>
+		</condition>
+	</state>
+	
+    <state name="CustomerEnterDelay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="CustomerEnter"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="CustomerEnter" >	
+        <onEnter>		
+			<action name="몬스터를생성한다" arg1="1117" arg2="0" /> 		
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9110" arg2="0">		<!-- 대기열에 아무도 없으면 -->
+					<transition state="Patrol03"/>	
+				</condition>		
+				<condition name="!NPC를감지했으면" arg1="9111" arg2="0">		<!-- 세 번째 대기 손님이 없으면 -->
+					<transition state="Patrol01"/>	
+				</condition>						
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="Patrol01">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="1117" arg2="MS2PatrolData_101" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9112" arg2="0">	<!-- 두 번째 대기 손님이 없으면 -->
+			<transition state="Patrol02Delay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Patrol02Delay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="Patrol02"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="Patrol02">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="1117" arg2="MS2PatrolData_102" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9113" arg2="0">	<!-- 첫 번째 대기 손님이 없으면 -->
+			<transition state="Patrol03Delay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Patrol03Delay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="Patrol03"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="Patrol03">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="1117" arg2="MS2PatrolData_103" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9113" arg2="0">	<!-- 첫 번째 대기 손님이 없으면 -->
+			<transition state="PatrolEndDelay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="PatrolEndDelay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="PatrolEnd"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="PatrolEnd">		
+        <onEnter>						
+				</onEnter>	
+				<condition name="NPC를감지했으면" arg1="9113" arg2="1117">	<!-- 카운터 앞에 도착했으면 -->
+			<transition state="WaitGreeting"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="WaitGreeting">	
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001099" arg2="1"/>	 <!-- Greeting-->		
+			</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001099" arg2="0"> 	 
+					<transition state="OrderRandomPick"/>
+				</condition>
+		<onExit>	
+			<action name="오브젝트반응설정한다" arg1="10001099" arg2="2"/>	 <!-- Greeting-->					
+		</onExit> 
+    </state>			
+	
+
+
+<!-- 고객 주문 랜덤-->	
+	<state name="OrderRandomPick">
+		<onEnter>		
+		</onEnter>
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000639"/>	
+				</condition>		
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000640"/>	
+				</condition>		
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000702"/>	
+				</condition>		
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000713"/>	
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+	
+	
+<!-- 	30000639 -->
+	<state name="PickItem_30000639">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5101" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000639" />					
+			<action name="AddEffectNif" spawnPointID="1117" nifPath="Map/Tria/Indoor/tr_in_prop_machine_A01.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="0">  	
+					<transition state="DetectItem_30000639"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000639">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="30000639">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9201" itemID="30000639">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 	30000640 -->
+	<state name="PickItem_30000640">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5101" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000640" />					
+			<action name="AddEffectNif" spawnPointID="1117" nifPath="Map/Tria/Indoor/tr_in_prop_cutter_A01.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="0">  	
+					<transition state="DetectItem_30000640"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000640">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="30000640">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9201" itemID="30000640">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 	30000702 -->
+	<state name="PickItem_30000702">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5101" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000702" />					
+			<action name="AddEffectNif" spawnPointID="1117" nifPath="Map/Tria/Indoor/tr_in_prop_workit_A01.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="0">  	
+					<transition state="DetectItem_30000702"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000702">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="30000702">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9201" itemID="30000702">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 	30000713 -->
+	<state name="PickItem_30000713">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5101" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000713" />					
+			<action name="AddEffectNif" spawnPointID="1117" nifPath="Map/Steampunk/Indoor/sp_in_prop_desk_A01.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="0">  	
+					<transition state="DetectItem_30000713"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000713">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="30000713">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9201" itemID="30000713">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+	
+<!-- 미션 성공 -->	
+	<state name="RightItem">
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="5101" arg2="0" />	<!-- DownArrow -->							
+			<action name="PlaySystemSoundInBox" arg1="9900" arg2="System_PartTimeJob_Right_01"/>				
+			<action name="RemoveEffectNif" spawnPointID="1117" />					
+			<action name="대화를설정한다" arg1="1" arg2="1117" arg3="$02000387_BF__1117_CUSTOMER__0$" arg4="3" arg5="0" />		
+			<action name="버프를걸어준다" arg1="9900" arg2="70000112" arg3="1" arg4="0" arg5="0" />				
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="CustomerLeave"/>
+				</condition>	
+		<onExit>	
+		</onExit>
+	</state>	
+	<state name="CustomerLeave">	
+		<onEnter>	
+			<action name="NPC를이동시킨다" arg1="1117" arg2="MS2PatrolData_111" />		
+		</onEnter>
+				<condition name="NPC를감지했으면" arg1="9301" arg2="1117">	
+					<transition state="Quit"/>
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+	 
+    <state name="Quit">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="1117"/>					
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="Wait"/>
+				</condition>			
+    <onExit>
+    </onExit>
+    </state> 		
+
+<!-- 잘못된 아이템을 내려놓으면 -->	
+	<state name="WrongItem">
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5101" arg2="0" />	<!-- DownArrow -->					
+			<action name="PlaySystemSoundInBox" arg1="9900" arg2="System_PartTimeJob_Wrong_01"/>		
+			<action name="RemoveEffectNif" spawnPointID="1117" />				
+			<action name="대화를설정한다" arg1="1" arg2="1117" arg3="$02000387_BF__1117_CUSTOMER__1$" arg4="3" arg5="0" />		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3500">	
+					<transition state="WrongItemReturn"/>		
+				</condition>	
+		<onExit>	
+		</onExit>
+	</state>	
+	<state name="WrongItemReturn">
+		<onEnter>		
+		</onEnter>	
+				<condition name="UserValue" key="ItemNumber" value="30000617" >	
+					<transition state="PickItem_30000617"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000618" >	
+					<transition state="PickItem_30000618"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000619" >	
+					<transition state="PickItem_30000619"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000620" >	
+					<transition state="PickItem_30000620"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000621" >	
+					<transition state="PickItem_30000621"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000622" >	
+					<transition state="PickItem_30000622"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000623" >	
+					<transition state="PickItem_30000623"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000624" >	
+					<transition state="PickItem_30000624"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000625" >	
+					<transition state="PickItem_30000625"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000626" >	
+					<transition state="PickItem_30000626"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000627" >	
+					<transition state="PickItem_30000627"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000628" >	
+					<transition state="PickItem_30000628"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000629" >	
+					<transition state="PickItem_30000629"/>	
+				</condition>						
+				<condition name="UserValue" key="ItemNumber" value="30000630" >	
+					<transition state="PickItem_30000630"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000631" >	
+					<transition state="PickItem_30000631"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000632" >	
+					<transition state="PickItem_30000632"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000633" >	
+					<transition state="PickItem_30000633"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000634" >	
+					<transition state="PickItem_30000634"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000635" >	
+					<transition state="PickItem_30000635"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000636" >	
+					<transition state="PickItem_30000636"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000637" >	
+					<transition state="PickItem_30000637"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000638" >	
+					<transition state="PickItem_30000638"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000639" >	
+					<transition state="PickItem_30000639"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000640" >	
+					<transition state="PickItem_30000640"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000641" >	
+					<transition state="PickItem_30000641"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000642" >	
+					<transition state="PickItem_30000642"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000643" >	
+					<transition state="PickItem_30000643"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000644" >	
+					<transition state="PickItem_30000644"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000645" >	
+					<transition state="PickItem_30000645"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000646" >	
+					<transition state="PickItem_30000646"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000647" >	
+					<transition state="PickItem_30000647"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000648" >	
+					<transition state="PickItem_30000648"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000649" >	
+					<transition state="PickItem_30000649"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000650" >	
+					<transition state="PickItem_30000650"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000651" >	
+					<transition state="PickItem_30000651"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000652" >	
+					<transition state="PickItem_30000652"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000653" >	
+					<transition state="PickItem_30000653"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000654" >	
+					<transition state="PickItem_30000654"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000655" >	
+					<transition state="PickItem_30000655"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000656" >	
+					<transition state="PickItem_30000656"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000657" >	
+					<transition state="PickItem_30000657"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000658" >	
+					<transition state="PickItem_30000658"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000659" >	
+					<transition state="PickItem_30000659"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000660" >	
+					<transition state="PickItem_30000660"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000661" >	
+					<transition state="PickItem_30000661"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000662" >	
+					<transition state="PickItem_30000662"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000663" >	
+					<transition state="PickItem_30000663"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000664" >	
+					<transition state="PickItem_30000664"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000665" >	
+					<transition state="PickItem_30000665"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000666" >	
+					<transition state="PickItem_30000666"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000667" >	
+					<transition state="PickItem_30000667"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000668" >	
+					<transition state="PickItem_30000668"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000669" >	
+					<transition state="PickItem_30000669"/>	
+				</condition>	
+				<condition name="UserValue" key="ItemNumber" value="30000670" >	
+					<transition state="PickItem_30000670"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000671" >	
+					<transition state="PickItem_30000671"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000672" >	
+					<transition state="PickItem_30000672"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000673" >	
+					<transition state="PickItem_30000673"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000674" >	
+					<transition state="PickItem_30000674"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000675" >	
+					<transition state="PickItem_30000675"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000676" >	
+					<transition state="PickItem_30000676"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000677" >	
+					<transition state="PickItem_30000677"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000678" >	
+					<transition state="PickItem_30000678"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000679" >	
+					<transition state="PickItem_30000679"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000680" >	
+					<transition state="PickItem_30000680"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000681" >	
+					<transition state="PickItem_30000681"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000682" >	
+					<transition state="PickItem_30000682"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000683" >	
+					<transition state="PickItem_30000683"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000684" >	
+					<transition state="PickItem_30000684"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000685" >	
+					<transition state="PickItem_30000685"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000686" >	
+					<transition state="PickItem_30000686"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000687" >	
+					<transition state="PickItem_30000687"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000688" >	
+					<transition state="PickItem_30000688"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000689" >	
+					<transition state="PickItem_30000689"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000690" >	
+					<transition state="PickItem_30000690"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000691" >	
+					<transition state="PickItem_30000691"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000692" >	
+					<transition state="PickItem_30000692"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000693" >	
+					<transition state="PickItem_30000693"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000694" >	
+					<transition state="PickItem_30000694"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000695" >	
+					<transition state="PickItem_30000695"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000696" >	
+					<transition state="PickItem_30000696"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000697" >	
+					<transition state="PickItem_30000697"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000698" >	
+					<transition state="PickItem_30000698"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000699" >	
+					<transition state="PickItem_30000699"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000700" >	
+					<transition state="PickItem_30000700"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000701" >	
+					<transition state="PickItem_30000701"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000702" >	
+					<transition state="PickItem_30000702"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000703" >	
+					<transition state="PickItem_30000703"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000704" >	
+					<transition state="PickItem_30000704"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000705" >	
+					<transition state="PickItem_30000705"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000706" >	
+					<transition state="PickItem_30000706"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000707" >	
+					<transition state="PickItem_30000707"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000708" >	
+					<transition state="PickItem_30000708"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000709" >	
+					<transition state="PickItem_30000709"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000710" >	
+					<transition state="PickItem_30000710"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000711" >	
+					<transition state="PickItem_30000711"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000712" >	
+					<transition state="PickItem_30000712"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000713" >	
+					<transition state="PickItem_30000713"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000714" >	
+					<transition state="PickItem_30000714"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000715" >	
+					<transition state="PickItem_30000715"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000716" >	
+					<transition state="PickItem_30000716"/>	
+				</condition>						
+		<onExit>	
+		</onExit>
+	</state>			
+</ms2>

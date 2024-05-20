@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  102 , 플레이어가 특정 영역에 들어서면 안내 메시지를 출력하는 역할을 하는 트리거 -->
+<ms2>
+
+  <state name="시작대기중">
+    <onEnter>
+
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="10"> <!--   MS2TriggerBox   TriggerObjectID = 10, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        10은 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+				<transition state="대기상태"/>
+		</condition>
+  </state>
+
+
+	
+	<state name="대기상태">
+		<onEnter>
+			
+		</onEnter>
+
+			<!-- 플레이어가 1페이지 끝나고 2페이지 전투판 진입로에 들어서는 경우-->
+			<condition name="유저를감지했으면" arg1="12"> <!--   MS2TriggerBox   TriggerObjectID = 12, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        12은 2페이지 전투판 진입로에 설치된 영역임-->
+					<transition state="경비병도움안내"/>
+			</condition>	
+			
+			<!-- 2페이즈 전투 다 끝나고 , AI_Balrog_Kritias.xml 발록에게   StairsOk2nd = 1 신호를 받으면 이 부분 실행, 2페이즈 건너띄기가 되었기 때문에 경비병 도움 메시지 출력 안함-->
+			<condition name="UserValue" key="StairsOk2nd" value="1">  
+				<transition state="트리거종료"/>
+			</condition>								
+		
+	</state>  	
+   
+
+   <state name="경비병도움안내">
+    <onEnter>
+		<!-- 안내 메시지 호출하기 -->
+		<action name="ShowGuideSummary" entityID="29200001" textID="29200001"/> 
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="7000" > 
+			<transition state="트리거종료"/>	
+		</condition>	
+	
+    <onExit>
+		<action name="HideGuideSummary" entityID="29200001"/>
+    </onExit>
+  </state>
+
+   
+
+  
+  
+	<state name="트리거종료">
+		<onEnter>
+
+		</onEnter>
+	</state>  
+
+</ms2>

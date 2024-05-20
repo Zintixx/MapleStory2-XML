@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 제논 시스템 연구소 :  길드 레이드 전용 로비 -->
+<!-- 가운데 머신만 하나 먼저 활성화 시켜서 던전이 생성되고 나면 다른 포탈도 동작할 수 있도록 설정 -->
+<!-- 	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" /> -->
+<!-- 다음 스테이트 이름 : DungeonStart -->
+
+<ms2>
+    <state name="CheckUserCount"> 
+        <onEnter>	
+			<action name="SetUserValue" key="DungeonRoomOpened" value="0" />		
+			<action name="액터를설정한다" arg1="4002" arg2="1" arg3="Interaction_vrmachine_A01_off" />
+			<action name="액터를설정한다" arg1="4001" arg2="1" arg3="Interaction_vrmachine_A01_off" />
+			<action name="액터를설정한다" arg1="4003" arg2="1" arg3="Interaction_vrmachine_A01_off" />		
+        </onEnter>
+				<condition name="CheckDungeonLobbyUserCount"> <!-- 던전 로비에서 생성할 던전 인원수가 충족되면 -->
+					<transition state="DungeonStart" />
+				</condition>
+				<condition name="!CheckDungeonLobbyUserCount" > <!-- 던전 로비에서 생성할 던전 인원수가 부족하면 -->
+					<transition state="WaitDungeon01"/>
+				</condition>					
+    </state>
+
+ <!-- 던전 최대 인원수가 충족되면 -->	
+    <state name="DungeonStart">	
+        <onEnter>		
+			<action name="SetUserValue" triggerID="3" key="machineon" value="1" /> 		
+			<action name="액터를설정한다" arg1="4002" arg2="1" arg3="Interaction_vrmachine_A01_on" />		
+        </onEnter>	
+				<condition name="WaitTick" waitTick="800" > 
+					<transition state="DungeonStart01"/>	
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="DungeonStart01">	
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="GuildRaid_Laboratory_DungeonOpen_01"/>   		
+			<action name="ShowGuideSummary" entityID="25100206" textID="25100206" durationTime="3000"/> 		
+			<action name="액터를설정한다" arg1="4002" arg2="0" arg3="Interaction_vrmachine_A01_on" />						
+        </onEnter>	
+			<condition name="UserValue" key="DungeonRoomOpened" value="1">
+					<transition state="DungeonStart02"/>	
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="DungeonStart02">	
+        <onEnter>		
+			<action name="SetUserValue" triggerID="2" key="machineon" value="1" /> 				
+			<action name="SetUserValue" triggerID="4" key="machineon" value="1" /> 			
+			<action name="액터를설정한다" arg1="4001" arg2="1" arg3="Interaction_vrmachine_A01_on" />
+			<action name="액터를설정한다" arg1="4003" arg2="1" arg3="Interaction_vrmachine_A01_on" />						
+        </onEnter>	
+				<condition name="WaitTick" waitTick="800" > 
+					<transition state="DungeonStart03"/>	
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="DungeonStart03">	
+        <onEnter>
+			<action name="액터를설정한다" arg1="4001" arg2="0" arg3="Interaction_vrmachine_A01_on" />
+			<action name="액터를설정한다" arg1="4003" arg2="0" arg3="Interaction_vrmachine_A01_on" />							
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="DungeonStart04"/>
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="DungeonStart04">	
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="GuildRaid_Laboratory_DungeonOpen_01"/>   			
+			<action name="ShowGuideSummary" entityID="25100206" textID="25100206" durationTime="3000"/> 
+        </onEnter>	
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="DungeonStart04"/>
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+   
+	
+ <!-- 던전 로비에서 생성할 던전 인원수가 부족하면 대기-->	
+    <state name="WaitDungeon01">	
+        <onEnter>
+		<action name="ShowGuideSummary" entityID="25100204" textID="25100204" durationTime="3000"/> 
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="WaitDungeon02"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon02">	
+        <onEnter>
+        </onEnter>
+				<condition name="CheckDungeonLobbyUserCount"> <!-- 던전 로비에서 생성할 던전 인원수가 충족되면 -->
+					<transition state="DungeonStart" />
+				</condition>
+				<condition name="!CheckDungeonLobbyUserCount" > <!-- 던전 로비에서 생성할 던전 인원수가 부족하면 -->
+					<transition state="WaitDungeon03"/>
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon03">	
+        <onEnter>
+		<action name="ShowGuideSummary" entityID="25100205" textID="25100205" durationTime="3000"/> 
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="WaitDungeon04"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon04">	
+        <onEnter>
+        </onEnter>
+				<condition name="CheckDungeonLobbyUserCount"> <!-- 던전 로비에서 생성할 던전 인원수가 충족되면 -->
+					<transition state="DungeonStart" />
+				</condition>
+				<condition name="!CheckDungeonLobbyUserCount" > <!-- 던전 로비에서 생성할 던전 인원수가 부족하면 -->
+					<transition state="WaitDungeon05"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon05">	
+        <onEnter>
+		<action name="ShowGuideSummary" entityID="25100204" textID="25100204" durationTime="3000"/> 
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="WaitDungeon06"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon06">	
+        <onEnter>
+        </onEnter>
+				<condition name="CheckDungeonLobbyUserCount"> <!-- 던전 로비에서 생성할 던전 인원수가 충족되면 -->
+					<transition state="DungeonStart" />
+				</condition>
+				<condition name="!CheckDungeonLobbyUserCount" > <!-- 던전 로비에서 생성할 던전 인원수가 부족하면 -->
+					<transition state="WaitDungeon07"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon07">	
+        <onEnter>
+		<action name="ShowGuideSummary" entityID="25100205" textID="25100205" durationTime="3000"/> 
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="WaitDungeon08"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon08">	
+        <onEnter>
+        </onEnter>
+				<condition name="CheckDungeonLobbyUserCount"> <!-- 던전 로비에서 생성할 던전 인원수가 충족되면 -->
+					<transition state="DungeonStart" />
+				</condition>
+				<condition name="!CheckDungeonLobbyUserCount" > <!-- 던전 로비에서 생성할 던전 인원수가 부족하면 -->
+					<transition state="WaitDungeon09"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon09">	
+        <onEnter>
+		<action name="ShowGuideSummary" entityID="25100204" textID="25100204" durationTime="3000"/> 
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="WaitDungeon10"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon10">	
+        <onEnter>
+        </onEnter>
+				<condition name="CheckDungeonLobbyUserCount"> <!-- 던전 로비에서 생성할 던전 인원수가 충족되면 -->
+					<transition state="DungeonStart" />
+				</condition>
+				<condition name="!CheckDungeonLobbyUserCount" > <!-- 던전 로비에서 생성할 던전 인원수가 부족하면 -->
+					<transition state="WaitDungeon11"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="WaitDungeon11">	
+        <onEnter>
+		<action name="ShowGuideSummary" entityID="25100205" textID="25100205" durationTime="3000"/> 
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="DungeonStart"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+</ms2>

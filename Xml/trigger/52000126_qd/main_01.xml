@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+   <state name="idle">
+        <onEnter>
+        </onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60100210" arg3="2">
+				<transition state="ready"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60100210" arg3="3">
+				<transition state="ready"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60100215" arg3="1">
+				<transition state="ready"/>
+			</condition>		
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60100215" arg3="2">
+				<transition state="ready"/>
+			</condition>			
+		<onExit>
+        </onExit>
+    </state>
+
+<!-- 준비 -->	
+
+   <state name="ready">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="52000126" arg2="6001"/>
+			<action name="사운드를설정한다" arg1="7002" arg2="1" />		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>				
+			<action name="몬스터를생성한다" arg1="201" arg2="1" />	
+			<action name="SetSceneSkip" arg1="endwaiting" arg2="exit"/>					
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="move"/>
+			</condition>	
+		<onExit>
+        </onExit>
+    </state> 
+
+   <state name="move">
+        <onEnter>
+            <action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_3001" />
+			<action name="AddBalloonTalk" spawnPointID="201" msg="$52000126_QD__MAIN_01__0$" duration="7000" delayTick="1" />			
+        </onEnter>
+			<condition name="WaitTick" waitTick="7000">
+				<transition state="talk"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state>
+
+   <state name="talk">
+        <onEnter>
+			<action name="SetNpcEmotionSequence" arg1="201" arg2="Clap_A" />	 	
+			<action name="AddBalloonTalk" spawnPointID="201" msg="$52000126_QD__MAIN_01__1$" duration="3000" delayTick="0" />	
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="endtalk"/> 
+			</condition>						
+		<onExit>
+        </onExit>
+    </state>
+
+   <state name="endtalk">
+        <onEnter> 	
+			<action name="AddBalloonTalk" spawnPointID="201" msg="$52000126_QD__MAIN_01__2$" duration="3000" delayTick="0" />	
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="endwaiting"/> 
+			</condition>						
+		<onExit> 				
+        </onExit> 
+    </state>
+
+   <state name="endwaiting">
+        <onEnter> 
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="연출UI를설정한다" arg1="4"/>				
+			<action name="몬스터소멸시킨다" arg1="201"/>				
+			<action name="몬스터를생성한다" arg1="202" arg2="1" />		
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="end"/> 
+			</condition>						
+		<onExit>
+        </onExit> 
+    </state>	
+
+	
+   <state name="end">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>				
+        </onEnter>						
+		<onExit>
+        </onExit>
+    </state> 
+	
+</ms2>

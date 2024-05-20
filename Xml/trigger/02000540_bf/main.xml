@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+<!-- 플레이어 감지 -->
+	<state name="idle">
+		<onEnter>			
+		<action name="SetAmbientLight" arg1="132,195,255" arg2="0,0,0" arg3="0,0,0" />	
+		<action name="SetDirectionalLight" arg1="163,115,143" arg2="140,140,140" />	
+		<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>		
+		<action name="포탈을설정한다" arg1="6002" arg2="0"/>
+		<action name="포탈을설정한다" arg1="6003" arg2="0"/>			
+		<action name="포탈을설정한다" arg1="6004" arg2="0" />		
+		<action name="포탈을설정한다" arg1="6005" arg2="0" />			
+		<action name="오브젝트반응설정한다" arg1="10003138" arg2="0"/>		
+		<action name="오브젝트반응설정한다" arg1="10003139" arg2="0"/>		
+		<action name="오브젝트반응설정한다" arg1="10003140" arg2="0"/>		
+		<action name="오브젝트반응설정한다" arg1="10003141" arg2="0"/>
+		<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="1" />			
+		<action name="EnableSpawnPointPC" spawnPointID="1" isEnable="0" />	
+		<action name="이펙트를설정한다" arg1="9000" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="9001" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="9002" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="9003" arg2="0"/>		
+		<action name="이펙트를설정한다" arg1="8000" arg2="1"/>
+		<action name="이펙트를설정한다" arg1="8001" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="8002" arg2="0"/> 
+		<action name="이펙트를설정한다" arg1="8003" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="8004" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="8005" arg2="0"/> 
+		<action name="이펙트를설정한다" arg1="8006" arg2="0"/> 
+		<action name="이펙트를설정한다" arg1="8007" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="8008" arg2="0"/>
+		<action name="몬스터를생성한다" arg1="614" arg2="1" />		
+		<action name="SetOnetimeEffect" id="101" enable="0"	path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="SetOnetimeEffect" id="102" enable="0"	path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="SetOnetimeEffect" id="103" enable="0"	path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="SetOnetimeEffect" id="104" enable="0"	path="BG/Common/Eff_Com_Vibrate_Short.xml"/>			
+		<action name="SetOnetimeEffect" id="105" enable="0"	path="BG/Common/Eff_Com_Vibrate_Short.xml"/>											
+        </onEnter>		
+		<condition name="유저를감지했으면" arg1="701" arg2="0">
+			<transition state="ready"/>
+		</condition>			
+	</state>			
+		
+	<state name="ready">
+		<onEnter>
+		<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>				
+		<action name="이펙트를설정한다" arg1="8000" arg2="1"/>		
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__0$" arg3="3000" />		
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="708" arg2="0">
+			<transition state="전투판으로이동하면"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+	
+	<state name="전투판으로이동하면">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="601,6011,6012" arg2="1" />
+			<action name="AddBalloonTalk" spawnPointID="601" msg="$02000540_BF__MAIN__1$" duration="3500" delayTick="0"/>
+			<action name="AddBalloonTalk" spawnPointID="6011" msg="$02000540_BF__MAIN__2$" duration="3500" delayTick="1500"/>
+			<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="3000" script="$02000540_BF__MAIN__3$" />			
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="709" arg2="0">
+			<transition state="전투판으로이동하면2"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+
+	<state name="전투판으로이동하면2">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="602,6021,6022,603" arg2="1" />
+			<action name="AddBalloonTalk" spawnPointID="603" msg="$02000540_BF__MAIN__4$" duration="3500" delayTick="500"/>			
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="601,6011,6012,602,6021,6022,603">
+				<transition state="첫번째오브젝트조사"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+	
+	<state name="첫번째오브젝트조사">
+		<onEnter>	
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__5$" arg3="3000" />			
+		<action name="오브젝트반응설정한다" arg1="10003138" arg2="1"/>
+        </onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10003138" arg2="0">
+					<transition state="첫번째불켰음"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="첫번째불켰음">
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="8001" arg2="1"/> 
+		<action name="SetOnetimeEffect" id="101" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__6$" arg3="3000" />				
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="704" arg2="0">
+			<transition state="두번째몬스터생성"/>
+		</condition>			
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="두번째몬스터생성">
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="9000" arg2="0"/>		
+		<action name="몬스터를생성한다" arg1="604,6041,6042" arg2="0" />
+		<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="3000" script="$02000540_BF__MAIN__7$" />		 	 	
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="710" arg2="0">
+			<transition state="두번째전투판으로이동하면"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="두번째전투판으로이동하면">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="605,6051,6052,606" arg2="1" />
+			<action name="AddBalloonTalk" spawnPointID="606" msg="$02000540_BF__MAIN__8$" duration="3500" delayTick="500"/>				
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="604,6041,6042,605,6051,6052,606">
+				<transition state="두번째오브젝트조사"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 			
+	
+	<state name="두번째오브젝트조사">
+		<onEnter>			
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__9$" arg3="3000" />					
+		<action name="오브젝트반응설정한다" arg1="10003139" arg2="1"/>
+        </onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10003139" arg2="0">
+					<transition state="세번째전투판체크"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+	
+	<state name="세번째전투판체크">
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="8002" arg2="1"/> 				
+		<action name="SetOnetimeEffect" id="102" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__10$" arg3="3000" />
+		<action name="이펙트를설정한다" arg1="8005" arg2="1"/> 
+		<action name="이펙트를설정한다" arg1="8006" arg2="1"/>
+		<action name="포탈을설정한다" arg1="6002" arg2="1"/>
+		<action name="포탈을설정한다" arg1="6003" arg2="1"/>
+		<action name="AddBalloonTalk" spawnPointID="614" msg="$02000540_BF__MAIN__11$" duration="6500" delayTick="2000"/>		
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="705" arg2="0">
+			<transition state="세번째몬스터생성"/>
+		</condition>
+		<onExit>
+        </onExit>
+    </state> 		
+	
+	<state name="세번째몬스터생성">
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="9001" arg2="0"/>			
+			<action name="몬스터를생성한다" arg1="607,6071,6072" arg2="0" /> 	 	
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="711" arg2="0">
+			<transition state="세번째전투판으로이동하면"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="세번째전투판으로이동하면">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="608,6081,6082,609" arg2="1" />
+			<action name="AddBalloonTalk" spawnPointID="609" msg="$02000540_BF__MAIN__12$" duration="3500" delayTick="500"/>				
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="607,6071,6072,608,6081,6082,609">
+				<transition state="세번째오브젝트조사"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 				
+	
+	<state name="세번째오브젝트조사">
+		<onEnter>	
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__13$" arg3="3000" />					
+		<action name="오브젝트반응설정한다" arg1="10003140" arg2="1"/>
+        </onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10003140" arg2="0">
+					<transition state="네번째전투판체크"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="네번째전투판체크">
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="8003" arg2="1"/> 				
+		<action name="SetOnetimeEffect" id="103" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__14$" arg3="3000" />		
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="706" arg2="0">
+			<transition state="네번째몬스터생성"/>
+		</condition>
+		<onExit>
+        </onExit>
+    </state> 		
+	
+	<state name="네번째몬스터생성">
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="9002" arg2="0"/>				
+			<action name="몬스터를생성한다" arg1="610,6101,6102" arg2="0" /> 	 	
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="712" arg2="0">
+			<transition state="네번째전투판으로이동하면"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="네번째전투판으로이동하면">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="611,6111,6112,612" arg2="1" />
+			<action name="AddBalloonTalk" spawnPointID="612" msg="$02000540_BF__MAIN__15$" duration="3500" delayTick="500"/>				
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="610,6101,6102,611,6111,6112,612">
+				<transition state="네번째오브젝트조사"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 					
+		
+	<state name="네번째오브젝트조사">
+		<onEnter>	
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__16$" arg3="3000" />					
+		<action name="오브젝트반응설정한다" arg1="10003141" arg2="1"/>
+        </onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10003141" arg2="0">
+					<transition state="보스전투판완성시키기"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="보스전투판완성시키기">
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="8004" arg2="1"/> 				
+		<action name="SetOnetimeEffect" id="104" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000540_BF__MAIN__17$" arg3="3000" />	
+		<action name="SetAmbientLight" arg1="237,225,255" arg2="0,0,0" arg3="0,0,0" />
+		<action name="SetDirectionalLight" arg1="232,212,127" arg2="140,140,140" />	
+		<action name="포탈을설정한다" arg1="6004" arg2="1" />		
+		<action name="포탈을설정한다" arg1="6005" arg2="1" />
+		<action name="이펙트를설정한다" arg1="8007" arg2="1"/>
+		<action name="이펙트를설정한다" arg1="8008" arg2="1"/>				
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="보스등장전에"/> 
+			</condition>
+		<onExit>
+        </onExit>
+    </state> 	
+
+
+	<state name="보스등장전에">
+		<onEnter>			
+			<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="3000" script="$02000540_BF__MAIN__18$" />		 	 	
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="707" arg2="0">
+			<transition state="보스등장"/>
+		</condition>			
+		<onExit>
+        </onExit>
+    </state> 		
+		
+	
+	<state name="보스등장">
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="9003" arg2="0"/>					
+		<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="1" isEnable="1" />	
+		<action name="SetOnetimeEffect" id="105" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+		<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="3000" script="$02000540_BF__MAIN__19$" />		 	 			
+		<action name="몬스터를생성한다" arg1="613" arg2="1" /> 
+		<action name="포탈을설정한다" arg1="6005" arg2="0" />					
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="613">
+				<transition state="다리생성"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="다리생성">
+		<onEnter>			
+		<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="3000" script="$02000540_BF__MAIN__20$" />		 	 			
+		<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>					
+        </onEnter>
+		<onExit>
+        </onExit>
+    </state> 		
+	
+</ms2>
+

@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="Wait">   
+        <onEnter> 	  		 		
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 		
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="2"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10001211" arg2="2"/>  <!-- Off -->
+        </onEnter>	
+			<condition name="UserValue" key="Barrier33" value="1">
+					<transition state="Sensor7331"/>
+				</condition> 
+			<condition name="UserValue" key="Barrier33" value="2">
+					<transition state="Sensor7332"/>
+				</condition> 
+			<condition name="UserValue" key="Barrier33" value="3">
+					<transition state="Sensor7333"/>
+				</condition> 
+			<condition name="UserValue" key="Barrier33" value="4">
+					<transition state="Sensor7334"/>
+				</condition> 
+			<condition name="UserValue" key="Barrier33" value="5">
+					<transition state="Sensor7335"/>
+				</condition> 			
+    <onExit> 
+    </onExit> 
+    </state>
+
+<!-- 1명 방어 불가 -->	
+    <state name="Sensor7331">
+        <onEnter>			
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="1" />	<!-- yellow -->				
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="1" arg3="Equal" >
+					<transition state="Activate7331"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+	 
+    <state name="Activate7331"> 
+		<onEnter>
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="2" />	<!--green -->				
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="1" arg3="Equal" >
+					<transition state="Sensor7331" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+
+<!-- 2명 -->	
+    <state name="Sensor7332">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="1" />	<!-- yellow -->				
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 			
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="0"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10001211" arg2="0"/>  <!-- Off -->
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="2" arg3="Equal" >
+					<transition state="SafeGreen7332"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>	
+    </state>			
+
+    <state name="SafeGreen7332">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="2" />	<!--green -->	
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="2" arg3="Equal" >
+					<transition state="CheckSameUserTag7332"/>
+				</condition> 
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="2" arg3="Equal" >
+					<transition state="Sensor7332" />	
+				</condition>					
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+	
+    <state name="CheckSameUserTag7332">
+        <onEnter>	
+        </onEnter>	
+				<condition name="AllOf">	
+					<group>
+						<condition name="CheckSameUserTag" triggerBoxID="9330"/>
+						<condition name="여러명의유저를감지했으면" arg1="9330" arg2="2" arg3="Equal"/>
+					</group>
+						<transition state="Enable7332"/>
+				</condition>		
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="2" arg3="Equal" >
+					<transition state="Sensor7332" />	
+				</condition>						
+				<condition name="!CheckSameUserTag" triggerBoxID="9330">	
+					<transition state="SafeGreen7332"/>
+				</condition> 		
+				<condition name="UserValue" key="Barrier33" value="10">	
+					<transition state="Reset"/>	
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>		
+	
+     <state name="Enable7332">  
+		<onEnter>		
+			<action name="PlaySystemSoundInBox" arg1="9330" arg2="DDStop_Stage_Shiled_01"/>	
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="1"/>   <!-- On -->
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001195" arg2="0"> <!-- On -->
+					<transition state="Activate7332" />
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="2" arg3="Equal" >
+					<transition state="Sensor7332" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>	
+		 
+    <state name="Activate7332"> 
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="8330" arg2="1" /> 
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="1" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="2"/>  <!-- On -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="2" arg3="Equal" >
+					<transition state="Sensor7332" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Delay7332" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Delay7332"> 
+		<onEnter>
+		  <action name="오브젝트반응설정한다" arg1="10001211" arg2="1"/>  <!-- Off -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="2" arg3="Equal" >
+					<transition state="Sensor7332" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10001211" arg2="0"> <!-- Off -->
+					<transition state="DeActivate7332" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="DeActivate7332"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />			  
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Sensor7332"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+<!-- 3명 -->	
+    <state name="Sensor7333">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="1" />	<!-- yellow -->				
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="0"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10001211" arg2="0"/>  <!-- Off -->
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="3" arg3="Equal" >
+					<transition state="SafeGreen7333"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+
+    <state name="SafeGreen7333">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="2" />	<!--green -->	
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="3" arg3="Equal" >
+					<transition state="CheckSameUserTag7333"/>
+				</condition> 
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="3" arg3="Equal" >
+					<transition state="Sensor7333" />
+				</condition>					
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+	
+    <state name="CheckSameUserTag7333">
+        <onEnter>	
+        </onEnter>	
+				<condition name="AllOf">	
+					<group>
+						<condition name="CheckSameUserTag" triggerBoxID="9330"/>
+						<condition name="여러명의유저를감지했으면" arg1="9330" arg2="3" arg3="Equal"/>
+					</group>	
+						<transition state="Enable7333"/>
+				</condition>		
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="3" arg3="Equal" >
+					<transition state="Sensor7333" />	
+				</condition>						
+				<condition name="!CheckSameUserTag" triggerBoxID="9330">	
+					<transition state="SafeGreen7333"/>
+				</condition> 		
+				<condition name="UserValue" key="Barrier33" value="10">	
+					<transition state="Reset"/>	
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>		
+	
+     <state name="Enable7333">  
+		<onEnter>		
+			<action name="PlaySystemSoundInBox" arg1="9330" arg2="DDStop_Stage_Shiled_01"/>		
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="1"/>   <!-- On -->
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001195" arg2="0"> <!-- On -->
+					<transition state="Activate7333" />
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="3" arg3="Equal" >
+					<transition state="Sensor7333" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>	
+		 
+    <state name="Activate7333"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8330" arg2="1" />
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="1" arg3="0" arg4="0" arg5="0" /> 			
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="2"/>  <!-- On -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="3" arg3="Equal" >
+					<transition state="Sensor7333" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Delay7333" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Delay7333"> 
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001211" arg2="1"/>  <!-- Off -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="3" arg3="Equal" >
+					<transition state="Sensor7333" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10001211" arg2="0"> <!-- Off -->
+					<transition state="DeActivate7333" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="DeActivate7333"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />			  
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Sensor7333"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+<!-- 4명 -->	
+    <state name="Sensor7334">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="1" />	<!-- yellow -->				
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="0"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10001211" arg2="0"/>  <!-- Off -->
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="4" arg3="Equal" >
+					<transition state="SafeGreen7334"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+
+    <state name="SafeGreen7334">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="2" />	<!--green -->	
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="4" arg3="Equal" >
+					<transition state="CheckSameUserTag7334"/>
+				</condition> 
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="4" arg3="Equal" >
+					<transition state="Sensor7334" />
+				</condition>					
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+	
+    <state name="CheckSameUserTag7334">
+        <onEnter>	
+        </onEnter>	
+				<condition name="AllOf">	
+					<group>
+						<condition name="CheckSameUserTag" triggerBoxID="9330"/>
+						<condition name="여러명의유저를감지했으면" arg1="9330" arg2="4" arg3="Equal"/>
+					</group>
+						<transition state="Enable7334"/>
+				</condition>		
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="4" arg3="Equal" >
+					<transition state="Sensor7334" />	
+				</condition>						
+				<condition name="!CheckSameUserTag" triggerBoxID="9330">	
+					<transition state="SafeGreen7334"/>
+				</condition> 		
+				<condition name="UserValue" key="Barrier33" value="10">	
+					<transition state="Reset"/>	
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>		
+	
+     <state name="Enable7334">  
+		<onEnter>		
+			<action name="PlaySystemSoundInBox" arg1="9330" arg2="DDStop_Stage_Shiled_01"/>		
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="1"/>   <!-- On -->
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001195" arg2="0"> <!-- On -->
+					<transition state="Activate7334" />
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="4" arg3="Equal" >
+					<transition state="Sensor7334" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>	
+		 
+    <state name="Activate7334"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8330" arg2="1" />
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="1" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="2"/>  <!-- On -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="4" arg3="Equal" >
+					<transition state="Sensor7334" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Delay7334" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Delay7334"> 
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001211" arg2="1"/>  <!-- Off -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="4" arg3="Equal" >
+					<transition state="Sensor7334" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10001211" arg2="0"> <!-- Off -->
+					<transition state="DeActivate7334" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="DeActivate7334"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />			  
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Sensor7334"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+<!-- 5명 -->	
+    <state name="Sensor7335">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="1" />	<!-- yellow -->				
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 			
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="0"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10001211" arg2="0"/>  <!-- Off -->
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="5" arg3="Equal" >
+					<transition state="SafeGreen7335"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+
+    <state name="SafeGreen7335">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7330" key="Color33" value="2" />	<!--green -->	
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9330" arg2="5" arg3="Equal" >
+					<transition state="CheckSameUserTag7335"/>
+				</condition> 
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="5" arg3="Equal" >
+					<transition state="Sensor7335" />
+				</condition>					
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+	
+    <state name="CheckSameUserTag7335">
+        <onEnter>	
+        </onEnter>	
+				<condition name="AllOf">	
+					<group>
+						<condition name="CheckSameUserTag" triggerBoxID="9330"/>
+						<condition name="여러명의유저를감지했으면" arg1="9330" arg2="5" arg3="Equal"/>
+					</group>
+						<transition state="Enable7335"/>
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="5" arg3="Equal" >
+					<transition state="Sensor7335" />	
+				</condition>						
+				<condition name="!CheckSameUserTag" triggerBoxID="9330">	
+					<transition state="SafeGreen7335"/>
+				</condition> 		
+				<condition name="UserValue" key="Barrier33" value="10">	
+					<transition state="Reset"/>	
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>		
+	
+     <state name="Enable7335">  
+		<onEnter>		
+			<action name="PlaySystemSoundInBox" arg1="9330" arg2="DDStop_Stage_Shiled_01"/>		
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="1"/>   <!-- On -->
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001195" arg2="0"> <!-- On -->
+					<transition state="Activate7335" />
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="5" arg3="Equal" >
+					<transition state="Sensor7335" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>	
+		 
+    <state name="Activate7335"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8330" arg2="1" />
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="1" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="2"/>  <!-- On -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="5" arg3="Equal" >
+					<transition state="Sensor7335" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Delay7335" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Delay7335"> 
+		<onEnter>
+		  <action name="오브젝트반응설정한다" arg1="10001211" arg2="1"/>  <!-- Off -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9330" arg2="5" arg3="Equal" >
+					<transition state="Sensor7335" />
+				</condition>	
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10001211" arg2="0"> <!-- Off -->
+					<transition state="DeActivate7335" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="DeActivate7335"> 
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />			  
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Sensor7335"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier33" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+	<state name="Reset">   
+        <onEnter> 	
+			<action name="메쉬를설정한다" arg1="8331-8338" arg2="0" arg3="0" arg4="0" arg5="0" /> 	
+			<action name="이펙트를설정한다" arg1="8330" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10001195" arg2="0"/>   <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10001211" arg2="0"/>  <!-- Off -->
+			<action name="SetUserValue" key="Barrier33" value="0" />					  
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Wait"/>
+				</condition> 
+    <onExit> 
+    </onExit>
+    </state>
+</ms2>
+

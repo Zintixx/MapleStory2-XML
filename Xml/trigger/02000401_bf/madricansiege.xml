@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<ms2>
+	<state name="대기">
+		<onEnter>	
+			<action name="AGENT를설정한다" arg1="8001,8002,8003,8004,8005,8006" arg2="1" /> 		
+			<action name="AGENT를설정한다" arg1="8101,8102,8103,8104,8105,8106" arg2="1" /> 				
+			<action name="AGENT를설정한다" arg1="8201,8202,8203,8204,8205,8206" arg2="1" /> 				
+			<action name="카메라를선택한다" arg1="300" arg2="1"/>		
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>			
+			<action name="메쉬를설정한다" arg1="3000-3004" arg2="1" arg3="0" arg4="0" arg5="0" />		
+			<action name="메쉬를설정한다" arg1="3101-3105" arg2="1" arg3="0" arg4="0" arg5="0" />					
+			<action name="메쉬를설정한다" arg1="3201-3207" arg2="1" arg3="0" arg4="0" arg5="0" />	
+			<action name="메쉬를설정한다" arg1="3801-3804" arg2="1" arg3="0" arg4="0" arg5="0" />				
+			<action name="몬스터를생성한다" arg1="1001,1002,1003,1004,1005" arg2="0" />			
+			<action name="몬스터를생성한다" arg1="2000,2001" arg2="0" />		
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+			<action name="액터를설정한다" arg1="201" arg2="0" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="202" arg2="0" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="203" arg2="0" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="204" arg2="0" arg3="Dead_A" />					
+			<action name="액터를설정한다" arg1="205" arg2="0" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="206" arg2="0" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="207" arg2="0" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="208" arg2="0" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="209" arg2="0" arg3="Dead_A" />					
+			<action name="액터를설정한다" arg1="210" arg2="0" arg3="Dead_A" />					
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="199"> 
+				<transition state="CheckUserCount" />
+			</condition>	
+	</state> 
+ 
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+
+	<state name="DungeonStart">
+		<onEnter>	
+			<action name="스킵을설정한다" arg1="연출종료" />		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  		
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+			<action name="대화를설정한다" arg1="2" arg2="11000015" arg3="$02000401_BF__MADRICANSIEGE__0$" arg4="4" arg5="0"/>						
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="연출종료"/>  
+			</condition>
+	</state>	
+  
+	<state name="연출종료">
+		<onEnter>		
+			<action name="스킵을설정한다" arg1="" />				
+			<action name="메쉬를설정한다" arg1="3000-3004" arg2="0" arg3="0" arg4="0" arg5="5" />								
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			<action name="카메라를선택한다" arg1="300" arg2="0"/>							
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">		
+				<transition state="던전시작"/> 
+			</condition> 
+	</state>  
+  
+	<state name="던전시작">
+		<onEnter>	
+			<action name="카메라리셋" interpolationTime="0.0"/>	 	
+			<action name="AGENT를설정한다" arg1="8001,8002,8003,8004,8005,8006" arg2="0" /> 				
+			<action name="대화를설정한다" arg1="1" arg2="1001" arg3="$02000401_BF__MADRICANSIEGE__1$" arg4="3" arg5="0"/>			
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="2000,2001">
+				<action name="메쉬를설정한다" arg1="3101-3105" arg2="0" arg3="0" arg4="0" arg5="5" />					
+				<action name="AGENT를설정한다" arg1="8101,8102,8103,8104,8105,8106" arg2="0" /> 					
+				<action name="NPC를이동시킨다" arg1="1102" arg2="MS2PatrolData_1001A" />									
+				<transition state="1차지원" />
+			</condition>
+	</state>
+
+	<state name="1차지원">
+		<onEnter>	
+			<action name="SpawnNpcRange" rangeID="2006-2030" isAutoTargeting="0" />				
+			<action name="몬스터를생성한다" arg1="2002,2003,2004,2005" arg2="0" />				
+			<action name="SetUserValue" triggerID="99999101" key="cannon01" value="1" /> 					
+			<action name="SetUserValue" triggerID="99999099" key="faction01" value="1" /> 					
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="2901">
+				<action name="몬스터소멸시킨다" arg1="2002" />						
+				<action name="ShadowExpedition" type="OpenBossGauge" maxGaugePoint="1000" /> <!-- 좀더 빠른 타이밍에 OpenBossGauge 최초 초기화 설정 하기   --> 						
+				<!-- OpenBossGauge = 1000은 100% 초기화 설정하기 전에 몬스터를 잡으면 로직이 꼬여서 몬스터를 다 죽여도 100%가 되지 못하는 버그가 발생할 수 있어, 이거 초기화 후 1.3초 대기후 진행하도록 함 -->	
+				<transition state="잠시대기" />
+			</condition>
+	</state>		
+	
+	<state name="잠시대기">
+		<onEnter>	
+		</onEnter>	
+		
+			<condition name="WaitTick" waitTick="1300" >  <!-- 최초 OpenBossGauge 값 초기화 설정하고 잠시 1.3초 대기 후에 이후 진행하도록 설정함 -->	
+				<transition state="다리건넘"/>	
+			</condition>	
+
+	</state>		
+	
+ 
+	<state name="다리건넘">
+		<onEnter>	
+			<action name="AGENT를설정한다" arg1="8201,8202,8203,8204,8205,8206" arg2="0" /> 	<!-- 몬스터가 넘어오지 못하게 잠시 TOK길 막았던 벽 해제하기  --> 										
+			<action name="메쉬를설정한다" arg1="3201-3207" arg2="0" arg3="0" arg4="0" arg5="5" />	<!-- 플레이어가 넘어가지 못하게 막았던 트리거메쉬 벽 해제하기  --> 		
+			
+			<action name="SetUserValue" triggerID="99999102" key="cannon02" value="1" /> 		
+			<action name="SetUserValue" triggerID="99999103" key="cannon03" value="1" /> 	
+			<action name="SetUserValue" triggerID="99999104" key="cannon04" value="1" /> 		
+			<action name="SetUserValue" triggerID="99999105" key="cannon05" value="1" /> 				
+			<!--action name="몬스터를생성한다" arg1="2101" arg2="0" /--> 						
+		</onEnter>	
+			<condition name="ShadowExpeditionReachPoint" point="300">
+				<transition state="2차지원" />
+			</condition>
+	</state>	
+	
+	<state name="2차지원">
+		<onEnter>			
+			<action name="SetUserValue" triggerID="99999098" key="faction02" value="1" /> 				
+		</onEnter>	
+			<condition name="ShadowExpeditionReachPoint" point="600">	
+				<transition state="3차지원" />
+			</condition>
+	</state>	
+
+	<state name="3차지원">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="2031,2032,2033,2034,2035,2036" arg2="0" />					
+			<action name="SetUserValue" triggerID="99999097" key="faction03" value="1" /> 				
+		</onEnter>	
+			<condition name="ShadowExpeditionReachPoint" point="1000">	
+				<action name="ShadowExpedition" type="CloseBossGauge" /> 						
+				<transition state="보스등장" />
+			</condition>
+	</state>	
+
+	<state name="보스등장">
+		<onEnter>	
+			<action name="몬스터를생성한다" arg1="2026,2027,2028,2029,2030" arg2="0" />				
+			<action name="SetUserValue" triggerID="99999096" key="faction04" value="1" /> 					
+		</onEnter>	
+			<condition name="UserValue" key="bossSpawn" value="1">
+				<transition state="던전종료대기" />
+			</condition>	
+	</state>		
+
+	<state name="던전종료대기">
+			<condition name="몬스터가죽어있으면" arg1="2099">			
+				<transition state="던전종료딜레이" />
+			</condition>
+	</state>	
+
+	<state name="던전종료딜레이">
+			<condition name="WaitTick" waitTick="3000">		
+				<transition state="암전"/> 
+			</condition> 
+	</state>  
+
+	<state name="암전">
+		<onEnter>	
+			<action name="액터를설정한다" arg1="201" arg2="1" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="202" arg2="1" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="203" arg2="1" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="204" arg2="1" arg3="Dead_A" />					
+			<action name="액터를설정한다" arg1="205" arg2="1" arg3="Dead_A" />				
+			<action name="액터를설정한다" arg1="206" arg2="1" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="207" arg2="1" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="208" arg2="1" arg3="Dead_A" />		
+			<action name="액터를설정한다" arg1="209" arg2="1" arg3="Dead_A" />					
+			<action name="액터를설정한다" arg1="210" arg2="1" arg3="Dead_A" />					
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 							
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="유저를이동시킨다" arg1="02000401" arg2="3"/> 			
+			<action name="SetUserValue" triggerID="99999099" key="DungeonClear" value="1" /> 					
+			<action name="SetUserValue" triggerID="99999098" key="DungeonClear" value="1" /> 						
+			<action name="SetUserValue" triggerID="99999097" key="DungeonClear" value="1" /> 			
+			<action name="SetUserValue" triggerID="99999096" key="DungeonClear" value="1" /> 		
+			<action name="몬스터소멸시킨다" arg1="2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2099,2901,2902,2903,2904,2905" arg2="0" />		
+			<action name="SpawnNpcRange" rangeID="1901-1919" isAutoTargeting="0" />									
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="0" arg4="1"/>					
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1500">		
+				<transition state="던전종료연출시작"/> 
+			</condition> 
+	</state>  	
+	
+	<state name="던전종료연출시작">
+		<onEnter>			
+			<action name="카메라를선택한다" arg1="305" arg2="1"/>						
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 				
+			<action name="대화를설정한다" arg1="1" arg2="1901" arg3="$02000401_BF__MADRICANSIEGE__2$" arg4="3" arg5="2"/>						
+			<action name="스킵을설정한다" arg1="던전종료연출종료" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="던전종료연출01"/>  
+			</condition>
+		<onExit>	
+			<action name="메쉬를설정한다" arg1="3801-3804" arg2="0" arg3="0" arg4="0" arg5="5" />						
+		</onExit>				
+	</state>	
+
+	<state name="던전종료연출01">
+		<onEnter>	
+			<action name="카메라를선택한다" arg1="304" arg2="1"/>						
+			<action name="대화를설정한다" arg1="1" arg2="1903" arg3="$02000401_BF__MADRICANSIEGE__3$" arg4="3" arg5="0"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="2500">
+				<transition state="던전종료연출02"/>  
+			</condition>
+	</state>		
+
+		<state name="던전종료연출02">
+		<onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="1902" arg3="$02000401_BF__MADRICANSIEGE__4$" arg4="4" arg5="0"/>		
+			<action name="대화를설정한다" arg1="1" arg2="1904" arg3="$02000401_BF__MADRICANSIEGE__5$" arg4="2" arg5="3"/>						
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="던전종료연출종료"/>  
+			</condition>
+	</state>		
+	
+	<state name="던전종료연출종료">
+		<onEnter>					
+			<action name="스킵을설정한다" arg1="" />				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			<action name="카메라리셋" interpolationTime="0.0"/>	 					
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">				
+				<transition state="룸체크"/> 
+			</condition> 
+	</state>  	
+	
+	<state name="룸체크"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="던전종료" />	
+				</condition>		
+				<condition name="!IsDungeonRoom" > 
+					<transition state="퀘스트던전종료" />	
+				</condition>		
+	</state>  	  	
+
+	<state name="던전종료">
+		<onEnter>			
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="Madracan01"/>						
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="ClearMadracanSiege"/>	
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="Madracan_Q01"/>			
+			<action name="DungeonClear" /> 	
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>					
+		</onEnter>			
+			<condition name="WaitTick" waitTick="1000">			
+				<transition state="종료"/> 
+			</condition> 
+	</state>  
+
+	<state name="퀘스트던전종료">
+		<onEnter>			
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="Madracan_Q01"/>	
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>		
+		</onEnter>			
+			<condition name="WaitTick" waitTick="1000">			
+				<transition state="종료"/> 
+			</condition> 
+	</state> 
+	
+	<state name="종료">
+
+	</state> 	
+	
+</ms2>
+

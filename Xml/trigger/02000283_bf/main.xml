@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="대기" posX="300" posY="199">
+        <onEnter>
+            <action name="오브젝트반응설정한다" arg1="10000427" arg2="2" />
+            <action name="오브젝트반응설정한다" arg1="10000430" arg2="2" />
+            <action name="오브젝트반응설정한다" arg1="10000431" arg2="2" />
+            <action name="오브젝트반응설정한다" arg1="10000432" arg2="2" />
+            <action name="오브젝트반응설정한다" arg1="10000433" arg2="2" />
+            <action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0" />
+			
+			
+			<!-- mesh.xml 에 있던 내용 2001스폰 아이디의 몬스터가 전투 상태로 되기 전에 죽어버리면 mesh.xml 내용이 작동 안하는 버그가 있어서 mesh.xml  내용을 이 main.xml에 포함시키는 형태로 수정했음-->
+            <action name="메쉬를설정한다" arg1="301-355" arg2="1" arg3="0" arg4="0" arg5="0" />
+            <action name="메쉬를설정한다" arg1="400-416" arg2="0" arg3="0" arg4="0" arg5="0" />
+			
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="101">
+				<transition state="준비" />
+			</condition>	
+        <onExit />
+    </state>
+
+    <state name="준비" posX="392" posY="526">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="1001" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1002" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1003" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1004" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1005" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1006" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1007" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1008" arg2="0" />
+            <action name="오브젝트반응설정한다" arg1="10000427" arg2="1" />
+
+			
+        </onEnter>	
+	        <condition name="오브젝트가반응했으면" arg1="10000427" arg2="0">
+				<transition state="엘리트스폰" />
+			</condition>
+        <onExit />
+    </state>
+
+	 <state name="엘리트스폰" posX="392" posY="526">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="2001" arg2="0" />
+			<action name="ShowGuideSummary" entityID="20002818" textID="20002818" durationTime="5000"/>   
+		    <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			
+			
+			<!-- mesh.xml 에 있던 내용 2001스폰 아이디의 몬스터가 전투 상태로 되기 전에 죽어버리면 mesh.xml 내용이 작동 안하는 버그가 있어서 mesh.xml  내용을 이 main.xml에 포함시키는 형태로 수정했음-->
+            <action name="랜덤메쉬를설정한다" arg1="301-355" arg2="0" arg3="56" arg4="0" arg5="30" />
+			
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="2001">
+				<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1" />
+				<action name="ShowGuideSummary" entityID="20002813" textID="20002813"/> 
+				<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+				
+				<!-- mesh.xml 에 있던 내용 2001스폰 아이디의 몬스터가 전투 상태로 되기 전에 죽어버리면 mesh.xml 내용이 작동 안하는 버그가 있어서 mesh.xml  내용을 이 main.xml에 포함시키는 형태로 수정했음-->
+				<action name="메쉬를설정한다" arg1="400-416" arg2="1" arg3="0" arg4="100" arg5="0" />
+
+				<transition state="소멸대기" />
+			</condition>
+        <onExit />
+    </state>
+
+    <state name="소멸대기" posX="392" posY="526">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="5" arg2="5" />
+        </onEnter>	
+			<condition name="시간이경과했으면" arg1="5">
+				<transition state="소멸" />
+			</condition>
+        <onExit />
+    </state>
+
+    <state name="소멸" posX="392" posY="526">
+        <onEnter>
+			<action name="HideGuideSummary" entityID="20002813"/>
+        </onEnter>
+    </state>
+
+</ms2>

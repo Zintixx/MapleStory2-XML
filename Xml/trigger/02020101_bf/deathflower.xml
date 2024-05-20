@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+
+	<state name="대기">
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="flower" value="1" >
+			<transition state="랜덤대상선정"/>  
+		</condition>
+	</state>
+	
+	<state name="랜덤대상선정">
+		<onEnter>
+			<action name="RandomAdditionalEffect" Target="pc" triggerBoxID="1003" spawnPointID="0" targetCount = "1" tick="3" waitTick="2" targetEffect="Additional/Etc/Eff_Target_Select_Keep.xml" additionalEffectID="62100021" />
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="101" >
+			<action name="SetUserValue" triggerID="900007" key="flower" value="0" />
+			<transition state="종료" />		
+		</condition>
+		<condition name="WaitTick" waitTick="2000" >
+			<action name="SetUserValue" triggerID="900007" key="flower" value="0" />
+			<transition state="변수초기화"/>	
+		</condition>
+	</state> 
+
+	<state name="변수초기화">
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="flower" value="0" >
+			<transition state="대기"/>	
+		</condition>
+	</state>
+
+	<state name="종료">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="1004" arg2="62100021" arg3="true"/>
+			<action name="버프를삭제한다" arg1="1004" arg2="62100022" arg3="true"/>
+			<action name="버프를삭제한다" arg1="1004" arg2="62100023" arg3="true"/>
+		</onEnter>
+		<condition name="무조건" >
+			<transition state="대기" />				
+		</condition>
+	</state>	
+
+</ms2>
+

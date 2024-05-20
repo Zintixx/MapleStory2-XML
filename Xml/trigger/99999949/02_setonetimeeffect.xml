@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	  <state name="Wait">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_black.xml"/> 	
+			<action name="SetOnetimeEffect" id="2" enable="0" path="UGC_Test/Eff_Tutorial_Sound_target.xml"/> 		
+			<action name="SetOnetimeEffect" id="3" enable="0" path="UGC_Test/Eff_Tutorial_Sound_target.xml"/> 				
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/> 					
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9011">
+					<transition state="Guide"/>	
+			</condition>	
+	  </state>
+	  
+	  <state name="Guide">	
+		<onEnter>
+			<action name="DebugString" string="2번 영역에 들어가면 SetOnetimeEffect 트리거가 발동됩니다." /> 
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9010">	
+					<transition state="SetOnetimeEffectReady01"/>
+			</condition>	
+	  </state>
+	  
+	<state name="SetOnetimeEffectReady01">
+		<onEnter>
+			<action name="DebugString" string="SetOnetimeEffect 2초 후에 시작됩니다." /> 		
+			<action name="SetOnetimeEffect" id="2" enable="1" path="UGC_Test/Eff_Tutorial_Sound_target.xml"/> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="SetOnetimeEffectReady02"/>
+				</condition>
+	</state>
+	  
+	<state name="SetOnetimeEffectReady02">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="UGC_Test/Eff_Tutorial_Sound_target.xml"/> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 	
+					<transition state="SetOnetimeEffect01"/>	
+				</condition>
+	</state>
+	
+	  <state name="SetOnetimeEffect01">
+		<onEnter>	
+			<action name="DebugString" string="SetOnetimeEffect 재생" /> 				
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_black.xml"/> 	
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/> 					
+		</onEnter>
+				<condition name="WaitTick" waitTick="10000" > 	
+					<transition state="Quit"/>
+			</condition>
+	  </state>
+
+	  <state name="Quit">
+		<onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_black.xml"/> 	
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/> 			
+					<action name="DebugString" string="7초 후에 트리거가 리셋됩니다. 2번 영역 밖으로 나가세요." /> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="7000" > 	
+					<transition state="Wait"/>	
+			</condition>
+        <onExit>				
+        </onExit>			
+	  </state>
+</ms2>

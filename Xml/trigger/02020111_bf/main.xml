@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+	<state name="대기"> 
+		<onEnter>
+			<action name="SetUserValue" triggerID="900012" key="SkillBreakMissionReset" value="0" />
+			<action name="SetAmbientLight" arg1="183,189,201"/>	
+			<action name="SetDirectionalLight" arg1="192,210,211" arg2="170,170,170"/>	
+		</onEnter>
+		
+		<condition name="유저를감지했으면" arg1="1007" >
+			<transition state="시작" />		
+		</condition>		
+	</state>
+
+	<state name="시작"> 
+		<onEnter>
+			<action name="버프를삭제한다" arg1="1006" arg2="70002151" arg3="true" />
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="1001" >
+			<transition state="보스전_시작" />		
+		</condition>		
+	</state>
+
+	<state name="보스전_시작"> 
+		<onEnter>
+			<action name="SetUserValue" triggerID="900012" key="SkillBreakMissionReset" value="1" />	<!-- <스킬브레이크 던전 미션 체크시작> -->
+			<action name="SideNpcTalk" type="talk" npcID="23501011" illust="Turned_Renduebian_normal" script="$02020111_BF__MAIN__0$" duration="5684" voice="ko/Npc/00002201"/>				
+			<action name="DungeonResetTime" seconds="420" />
+			<action name="몬스터를생성한다" arg1="101" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="5684" >
+			<transition state="조건추가"/>
+		</condition>
+	</state>
+	
+	<state name="조건추가"> 
+		<onEnter>
+		</onEnter>
+		<condition name="AllOf">
+      		<group>
+           		<condition name="몬스터가죽어있으면" arg1="101" />
+				<condition name="DungeonCheckPlayTime" playSeconds="420" operator="Less" />
+      		</group>
+            <transition state="보스전_성공"/>
+		</condition>
+		<condition name="DungeonCheckPlayTime" playSeconds="420" operator="Equal" >
+			<transition state="보스전_타임어택실패"/>
+		</condition>
+		<condition name="UserValue" key="SkillBreakFail" value="1" >
+			<transition state="보스전_스킬브레이크실패"/>	
+		</condition>
+	</state>
+
+	<state name="보스전_스킬브레이크실패"> 
+		<onEnter>
+			<action name="DungeonStopTimer" />
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000" >
+			<transition state="보스전_리셋세팅" />				
+		</condition>
+	</state>
+
+	<state name="보스전_타임어택실패"> 
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="all" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000" >
+			<transition state="보스전_타임어택실패세팅" />				
+		</condition>
+	</state>
+
+	<state name="보스전_리셋세팅"> 
+		<onEnter>
+			<action name="SetUserValue" triggerID="900012" key="SkillBreakMissionReset" value="0" />		<!-- <스킬브레이크 던전 미션 리셋> -->
+			<action name="포탈을설정한다" arg1="5" arg2="0" arg3="0" arg4="0"/>	
+			<action name="포탈을설정한다" arg1="6" arg2="0" arg3="0" arg4="0"/>				
+			<action name="포탈을설정한다" arg1="7" arg2="0" arg3="0" arg4="0"/>	
+			<action name="포탈을설정한다" arg1="8" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="9" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="12" arg2="0" arg3="0" arg4="0"/>		
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" />
+			<action name="몬스터소멸시킨다" arg1="all" />
+			<action name="유저를이동시킨다" arg1="2020111" arg2="1" arg3="1001" />
+			<action name="버프를삭제한다" arg1="1006" arg2="70002151" arg3="true" />
+		</onEnter>
+		<condition name="무조건" >	
+			<transition state="대기" />				
+		</condition>		
+	</state>
+
+	<state name="보스전_타임어택실패세팅"> 
+		<onEnter>
+			<action name="DungeonSetEndTime" />
+			<action name="DungeonCloseTimer" />
+			<action name="버프를삭제한다" arg1="1006" arg2="70002151" arg3="true" />
+		</onEnter>
+	</state>
+
+	<state name="보스전_성공">		
+		<onEnter>
+			<action name="DungeonMissionComplete" missionID="23039005" />
+			<action name="DungeonSetEndTime" />
+			<!-- <action name="DungeonCloseTimer" /> -->
+			<action name="SideNpcTalk" type="talk" npcID="23501011" illust="Turned_Renduebian_normal" script="$02020111_BF__MAIN__1$" duration="3176" voice="ko/Npc/00002202"/>
+		</onEnter>		
+		<condition name="WaitTick" waitTick="3176">
+			<transition state="종료"/>	
+		</condition>			
+	</state>		
+	
+	<state name="종료">	
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="all" />
+			<action name="DungeonClear"/>
+            <action name="업적이벤트를발생시킨다" arg2="trigger" arg3="ClearBlueLapenta"/>
+			<action name="버프를삭제한다" arg1="1006" arg2="70002151" arg3="true" />
+			<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="5" arg2="1" arg3="1" arg4="1"/>	
+			<action name="포탈을설정한다" arg1="6" arg2="1" arg3="1" arg4="1"/>				
+			<action name="포탈을설정한다" arg1="7" arg2="1" arg3="1" arg4="1"/>	
+			<action name="포탈을설정한다" arg1="8" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="9" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="12" arg2="1" arg3="1" arg4="1"/>
+		</onEnter>
+	</state>	
+	
+</ms2>
+

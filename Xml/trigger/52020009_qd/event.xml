@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 이름 없는 집 이벤트 : 52020009 -->
+
+<ms2>
+    <state name="Idle"> 
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5201" arg2="0"/>
+			<action name="이펙트를설정한다" arg1="5202" arg2="0"/>		
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="2003" >   
+				<transition state="Ready"/>
+			</condition>
+		<onExit>
+		</onExit>
+    </state> 
+
+    <state name="Ready"> 
+        <onEnter>
+            <action name="몬스터를생성한다" arg1="101" arg2="1"/> <!-- 이름 없는 유령 -->
+			<action name="이펙트를설정한다" arg1="5201" arg2="1"/>					
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="Walk"/>
+			</condition>
+		<onExit>
+		</onExit>
+    </state> 	
+
+    <state name="Walk"> 
+        <onEnter>
+            <action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_3001"/>
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="Event_Ready_01"/>
+			</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="Event_Ready_01"> 
+        <onEnter>
+            <action name="오브젝트반응설정한다" arg1="10001267" arg2="1"/>		
+            <action name="오브젝트반응설정한다" arg1="10001268" arg2="1"/>
+            <action name="오브젝트반응설정한다" arg1="10001269" arg2="1"/>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="이름... 내 이름이 기억나지 않아..." duration="2800" delayTick="0"/>									
+		</onEnter>	
+			<condition name="오브젝트가반응했으면" arg1="10001267" arg2="0">
+				<transition state="Event_A" />
+			</condition>
+			<condition name="오브젝트가반응했으면" arg1="10001268" arg2="0">
+				<transition state="Event_B" />
+			</condition>
+			<condition name="오브젝트가반응했으면" arg1="10001269" arg2="0">
+				<transition state="Event_C" />
+			</condition>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="Event_Ready_02" />
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="Event_Ready_02"> 
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="누가 내 이름 좀 찾아줘!" duration="2800" delayTick="0"/>									
+		</onEnter>	
+			<condition name="오브젝트가반응했으면" arg1="10001267" arg2="0">
+				<transition state="Event_A" />
+			</condition>
+			<condition name="오브젝트가반응했으면" arg1="10001268" arg2="0">
+				<transition state="Event_B" />
+			</condition>
+			<condition name="오브젝트가반응했으면" arg1="10001269" arg2="0">
+				<transition state="Event_C" />
+			</condition>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="Event_Ready_01" />
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>
+
+
+	
+    <state name="Event_A"> 
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="아니야! 그건 내 이름이 적힌 책이 아니라고!" duration="2800" delayTick="0"/>						
+		</onEnter>		
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="Event_A_End" />
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="Event_A_End"> 
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="그건 왕의 비밀병기와 관련된 책이란 말이야!" duration="2800" delayTick="0"/>					
+		</onEnter>		
+			<condition name="WaitTick" waitTick="5000" > 
+				<transition state="Event_Ready_01" />
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+	
+    <state name="Event_B"> 
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$map:02020010$의 거대 병기?" duration="2800" delayTick="0"/>						
+		</onEnter>		
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="Event_B_End" />
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Event_B_End"> 
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="그런 책에 내 이름이 적혀 있을 리가 없잖아!" duration="2800" delayTick="0"/>					
+		</onEnter>		
+			<condition name="WaitTick" waitTick="5000" > 
+				<transition state="Event_Ready_01" />
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	
+    <state name="Event_C"> 
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="그 책은! 내 일기장!" duration="2800" delayTick="0"/>						
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="Event_C_End" />
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Event_C_End"> 
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="그래... 기억났다. 내 이름..." duration="2800" delayTick="0"/>					
+		</onEnter>		
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="New_Event" />
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="New_Event"> 
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5202" arg2="1"/>		
+			<action name="몬스터를변경한다" arg1="101" arg2="102"/>	
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="Event_D"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="Event_D"> 
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="102" msg="내 이름은 $npcName:11003602$." duration="2800" delayTick="0"/>					
+		</onEnter>	
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="Event_D_End"/>
+			</condition>			
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="Event_D_End"> 
+        <onEnter>
+            <action name="오브젝트반응설정한다" arg1="10001267" arg2="0"/>	
+            <action name="오브젝트반응설정한다" arg1="10001268" arg2="0"/>
+            <action name="오브젝트반응설정한다" arg1="10001269" arg2="0"/>
+			<action name="AddBalloonTalk" spawnPointID="102" msg="크리티아스의 관찰자." duration="2800" delayTick="0"/>					
+		</onEnter>		
+		<onExit>
+		</onExit>
+    </state>
+
+	
+</ms2>

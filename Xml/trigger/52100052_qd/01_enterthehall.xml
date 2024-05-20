@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="Wait" >
+        <onEnter> 
+			<action name="이펙트를설정한다" arg1="5004" arg2="0"/> <!-- DoorOpen -->					
+			<action name="액터를설정한다" arg1="4004" arg2="1" arg3="Closed" />		<!-- Upstairs -->				
+			<action name="사다리를설정한다" arg1="511" arg2="0" arg3="0" arg4="0"/>	<!-- Ladder_Enter -->
+			<action name="사다리를설정한다" arg1="512" arg2="0" arg3="0" arg4="0"/>	<!-- Ladder_Enter -->		
+			<action name="메쉬를설정한다" arg1="3000,3001,3002,3003,3004,3005,3006" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Invisible_AlwaysOn-->		
+			<action name="메쉬를설정한다" arg1="3007" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Invisible_DoorOpen -->					
+			<action name="몬스터소멸시킨다" arg1="101,102" />	<!--Npc -->					
+			<action name="몬스터소멸시킨다" arg1="901,902,903"/>	<!-- Mob_Actor -->		
+			<action name="AGENT를설정한다" arg1="8006,8007,8008,8009" arg2="1"/>							
+			<action name="SetUserValue" key="MobClear" value="0" /> 	
+			<action name="SetUserValue" key="FindWay" value="0" /> 				
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="9000">
+				<transition state="LoadingDelay" />
+			</condition>	
+        <onExit />
+    </state>
+
+    <state name="LoadingDelay" >
+        <onEnter>				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="BlackeyeApp01"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="BlackeyeApp01" >
+        <onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="몬스터를생성한다" arg1="101" arg2="0" />	<!-- Npc_Actor -->					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="BlackeyeApp02"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+	<state name="BlackeyeApp02" >		
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>					
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101" />
+			<action name="AddCinematicTalk" npcID="11001590" illustID="11001590" msg="$52100052_QD__01_ENTERTHEHALL__0$" duration="3000" align="left" />					
+			<action name="스킵을설정한다" arg1="BlackeyeApp02Skip" />					
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">		
+					<transition state="BlackeyeApp02Skip"/>		
+				</condition>
+         <onExit />
+    </state>
+
+    <state name="BlackeyeApp02Skip">
+		<onEnter>		
+			<action name="RemoveBalloonTalk" spawnPointID="101"/>	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="BlackeyeApp03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="BlackeyeApp03" >		
+        <onEnter>
+		<action name="SetNPcEmotionLoop" arg1="101" arg2="Talk_A" arg3="3000" />
+			<action name="AddCinematicTalk" npcID="11001590" illustID="11001590" msg="$52100052_QD__01_ENTERTHEHALL__1$" duration="3000" align="left" />		
+			<action name="스킵을설정한다" arg1="BlackeyeApp03Skip" />					
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000">		
+					<transition state="BlackeyeApp03Skip"/>		
+				</condition>
+         <onExit />
+    </state>
+
+    <state name="BlackeyeApp03Skip">
+		<onEnter>		
+			<action name="RemoveBalloonTalk" spawnPointID="101"/>	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="EnemyApp01"/>	
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="EnemyApp01" >		
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="카메라를선택한다" arg1="601" arg2="1"/>		
+			<action name="SetUserValue" triggerID="2" key="MobSpawn" value="1" /> 					
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="EnemyApp02"/>		
+				</condition>
+         <onExit />
+    </state>
+
+    <state name="EnemyApp02" >	
+        <onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="몬스터를생성한다" arg1="901,902,903" arg2="0" />	<!-- Mob_Actor -->		
+			<action name="대화를설정한다" arg1="1" arg2="901" arg3="$52100052_QD__01_ENTERTHEHALL__2$" arg4="2" arg5="1" />		
+			<action name="대화를설정한다" arg1="1" arg2="902" arg3="$52100052_QD__01_ENTERTHEHALL__2$" arg4="2" arg5="1" />			
+			<action name="대화를설정한다" arg1="1" arg2="903" arg3="$52100052_QD__01_ENTERTHEHALL__2$" arg4="2" arg5="1" />						
+			<action name="스킵을설정한다" arg1="EnemyApp03Skip" />					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="4000">	
+					<transition state="EnemyApp03Skip"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="EnemyApp03Skip">
+		<onEnter>		
+			<action name="RemoveBalloonTalk" spawnPointID="901"/>	
+			<action name="RemoveBalloonTalk" spawnPointID="902"/>	
+			<action name="RemoveBalloonTalk" spawnPointID="903"/>				
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="EnemyApp03"/>	
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+	
+	<state name="EnemyApp03" >		
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_104" />					
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="BlackeyeAction01"/>		
+				</condition>
+         <onExit />
+    </state>
+	
+	<state name="BlackeyeAction01" >		
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>						
+			<action name="대화를설정한다" arg1="2" arg2="11001590" arg3="$52100052_QD__01_ENTERTHEHALL__5$" arg4="5" />  <!-- 이슈라 -->		
+			<action name="스킵을설정한다" arg1="BlackeyeAction01Skip" />				
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">		
+					<transition state="BlackeyeAction01Skip"/>		 
+				</condition>	
+         <onExit />
+    </state>
+	
+	<state name="BlackeyeAction01Skip" >		
+        <onEnter>		
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+			<action name="카메라리셋" interpolationTime="1.0"/>	
+        </onEnter>
+				<condition name="WaitTick" waitTick="500">		
+					<transition state="BlackeyeAction02"/>		
+				</condition>
+         <onExit />
+    </state>
+	
+	<state name="BlackeyeAction02" >		
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="101" />	<!--Npc_Actor -->	
+			<action name="몬스터를생성한다" arg1="102" arg2="0" />	<!-- Npc_Battle -->				
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52100052_QD__01_ENTERTHEHALL__6$" arg4="3" arg5="1" />			
+			<action name="사다리를설정한다" arg1="511" arg2="1" arg3="1" arg4="1"/>	<!-- Ladder_Enter -->
+			<action name="사다리를설정한다" arg1="512" arg2="1" arg3="1" arg4="1"/>	<!-- Ladder_Enter -->	
+			<action name="SetUserValue" triggerID="2" key="MobAttack" value="1" /> 		
+			<action name="SetUserValue" triggerID="10" key="TrapOn" value="1" /> 	
+			<action name="SetUserValue" triggerID="11" key="TrapOn" value="1" /> 	
+			<action name="SetUserValue" triggerID="12" key="TrapOn" value="1" /> 	
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">		
+					<transition state="BlackeyeAction03"/>		
+				</condition>
+         <onExit />	
+    </state>
+	
+	<state name="BlackeyeAction03" >		
+        <onEnter>	
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>       		
+			<action name="ShowGuideSummary" entityID="20039601" textID="20039601" durationTime="3000"/>  <!-- 가이드 : 레버를 당겨 트랩을 발동시키기 -->							
+        </onEnter>
+			<condition name="UserValue" key="MobClear" value="1">
+					<transition state="MoveToUpstairs01"/>		
+				</condition>
+         <onExit />	
+    </state>
+	
+   <state name="MoveToUpstairs01" >	
+        <onEnter>
+			<action name="AGENT를설정한다" arg1="8006,8007,8008,8009" arg2="0"/>					
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_102" />		
+			<action name="이펙트를설정한다" arg1="5004" arg2="1"/> <!-- DoorOpen -->					
+			<action name="액터를설정한다" arg1="4004" arg2="1" arg3="Opened" />		<!-- Upstairs -->	
+			<action name="메쉬를설정한다" arg1="3007" arg2="0" arg3="0" arg4="0" arg5="0" />		<!-- Invisible_DoorOpen -->	
+			<action name="SetUserValue" triggerID="3" key="EnableLadder" value="1" /> 					
+        </onEnter>
+				<condition name="WaitTick" waitTick="2000">		
+					<transition state="MoveToUpstairs02"/>		
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+   <state name="MoveToUpstairs02" >	
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="대화를설정한다" arg1="2" arg2="11001590" arg3="$52100052_QD__01_ENTERTHEHALL__7$" arg4="5" />  <!-- 이슈라 -->		
+			<action name="스킵을설정한다" arg1="MoveToUpstairs02Skip" />				
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">		
+					<transition state="MoveToUpstairs02Skip"/>		
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="MoveToUpstairs02Skip" >		
+        <onEnter>	
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>       		
+			<action name="ShowGuideSummary" entityID="20039602" textID="20039602" durationTime="3000"/>  <!-- 가이드 : 계단을 통해 2층으로 올라가기-->				
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="9002">
+					<transition state="FindWayOut01"/>		
+				</condition>
+         <onExit />
+    </state>
+	
+   <state name="FindWayOut01" >	
+        <onEnter>		
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_103" />				
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">		
+					<transition state="Quit"/>		
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="Quit" >	
+        <onEnter>		
+ 			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>       			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$52100052_QD__01_ENTERTHEHALL__8$" arg3="4000" arg4="0" />				
+			<action name="SetUserValue" triggerID="4" key="SearchStart" value="1" /> 					
+        </onEnter>
+				<condition name="NPC를감지했으면" arg1="9100" arg2="102">
+					<transition state="NpcMonologueRandom"/>		
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="NpcMonologueRandom">
+		<onEnter>
+		</onEnter>
+				<condition name="랜덤조건" arg1="25">
+					<transition state="NpcMonologue01"/>
+				</condition>		
+				<condition name="랜덤조건" arg1="25">
+					<transition state="NpcMonologue02"/>
+				</condition>
+				<condition name="랜덤조건" arg1="25">
+					<transition state="NpcMonologue03" />
+				</condition>				
+				<condition name="랜덤조건" arg1="25">	
+					<transition state="NpcMonologue04"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="NpcMonologue01" >		
+        <onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52100052_QD__01_ENTERTHEHALL__9$" arg4="3" arg5="0" />		<!-- 이슈라 -->				
+        </onEnter>
+				<condition name="WaitTick" waitTick="9000">		
+					<transition state="NpcMonologueRandom"/>		
+				</condition>
+				<condition name="UserValue" key="FindWay" value="1" >		
+			<transition state="NpcLeave01"/>	
+		</condition> 				
+         <onExit />
+    </state>	
+
+	<state name="NpcMonologue02" >		
+        <onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52100052_QD__01_ENTERTHEHALL__10$" arg4="3" arg5="0" />	<!-- 이슈라 -->			
+        </onEnter>
+				<condition name="WaitTick" waitTick="9000">		
+					<transition state="NpcMonologueRandom"/>		
+				</condition>
+				<condition name="UserValue" key="FindWay" value="1" >		
+			<transition state="NpcLeave01"/>	
+		</condition> 				
+         <onExit />
+    </state>	
+
+	<state name="NpcMonologue03" >		
+        <onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52100052_QD__01_ENTERTHEHALL__11$" arg4="3" arg5="0" />		<!-- 이슈라 -->			
+        </onEnter>
+				<condition name="WaitTick" waitTick="9000">		
+					<transition state="NpcMonologueRandom"/>		
+				</condition>
+				<condition name="UserValue" key="FindWay" value="1" >		
+			<transition state="NpcLeave01"/>	
+		</condition> 				
+         <onExit />
+    </state>	
+
+	<state name="NpcMonologue04" >		
+        <onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52100052_QD__01_ENTERTHEHALL__12$" arg4="3" arg5="0" />		<!-- 이슈라 -->				
+        </onEnter>
+				<condition name="WaitTick" waitTick="9000">		
+					<transition state="NpcMonologueRandom"/>		
+				</condition>
+				<condition name="UserValue" key="FindWay" value="1" >		
+			<transition state="NpcLeave01"/>	
+		</condition> 				
+         <onExit />
+    </state>	
+	
+    <state name="NpcLeave01" >		
+        <onEnter> 			
+			<action name="RemoveBalloonTalk" spawnPointID="102"/>			
+			<action name="몬스터소멸시킨다" arg1="102" />	<!--Npc -->							
+        </onEnter>
+        <onExit />
+    </state>
+</ms2>

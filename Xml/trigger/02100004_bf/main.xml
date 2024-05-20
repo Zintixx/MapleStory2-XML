@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2> 
+      
+	<state name="대기">		
+		<onEnter>	
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>		
+			<action name="메쉬를설정한다" arg1="3000,3001" arg2="1" arg3="0" arg4="0" arg5="0" />		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	      
+		</onEnter>		
+			<condition name="유저를감지했으면" arg1="199">
+					<transition state="CheckUser10_GuildRaid"/>	<!-- 임시 테스트용 CheckUser10_GuildRaid / DungeonStart -->
+			</condition>	
+	</state>     	
+
+   <state name="CheckUser10_GuildRaid">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="99" arg2="30" arg3="1" arg4="0" arg5="0"/>  
+        </onEnter>
+				<condition name="CountUsers" arg1="199" arg2="10" arg3="GreaterEqual">
+					<transition state="MaxCount10_Start"/>	
+				</condition>	
+				<condition name="CountUsers" arg1="199" arg2="10" arg3="Less"> 
+					<transition state="MaxCount10_Wait"/>	
+				</condition>	
+				<condition name="!IsDungeonRoom" > <!-- 룸던전이 아니면 바로 시작 -->
+					<transition state="MaxCount10_Start"/>
+				</condition>					
+    </state>
+
+    <state name="MaxCount10_Wait">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="40012" textID="40012" durationTime="3000"/> 		
+        </onEnter>		
+				<condition name="CountUsers" arg1="199" arg2="10" arg3="GreaterEqual">
+					<transition state="MaxCount10_Start"/>	
+				</condition>	
+				<condition name="시간이경과했으면" arg1="99"> 
+					<transition state="MaxCount10_Start"/>
+				</condition>					
+				<condition name="WaitTick" waitTick="6000" > 
+					<transition state="MaxCount10_Wait"/>
+				</condition>	
+				<condition name="!IsDungeonRoom" > <!-- 룸던전이 아니면 바로 시작 -->
+					<transition state="MaxCount10_Start"/>
+				</condition>						
+    </state>
+
+    <state name="MaxCount10_Start">	
+        <onEnter>
+			<action name="타이머를초기화한다" arg1="99"/>  		
+        </onEnter>		
+				<condition name="무조건" >
+					<transition state="DungeonStart"/>	
+				</condition>			
+    </state> 
+
+	<!-- 설명문 출력 -->
+	<state name="DungeonStart" >	  
+		<onEnter> 
+			<action name="SetCinematicIntro" text="$02100004_BF__MAIN__0$"/>	
+			<action name="스킵을설정한다" arg1="Caption01Skip"/>					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="20000">  
+			<transition state="Caption01Skip"/>   
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>		
+	<state name="Caption01Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>						
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="시작"/>
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+	
+	<state name="시작"> 
+		<onEnter>	
+			<action name="메쉬를설정한다" arg1="3000,3001" arg2="0" arg3="0" arg4="0" arg5="0" />				
+			<action name="CloseCinematic" />			
+			<action name="RemoveCinematicTalk"/>						
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />	      		
+			<action name="ShowGuideSummary" entityID="20002411" textID="20002411" /> 				
+			<action name="SetUserValue" triggerID="999993" key="BattleStart" value="1"/>				
+		</onEnter>						
+			<condition name="유저를감지했으면" arg1="101">
+					<transition state="1라운드시작"/>
+			</condition>				
+	</state>
+
+	<state name="1라운드시작" >
+		<onEnter>		
+			<action name="HideGuideSummary" entityID="20002411"/>				
+			<action name="ShowCountUI" text="$02100004_BF__MAIN__1$" stage="0" count="3"  />
+			<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>						
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="1라운드" />
+				</condition>
+	</state>
+ 
+	<state name="1라운드"> 	
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	      		
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="1,10" />		
+			<action name="타이머를설정한다" arg1="1" arg2="20" arg3="1" arg4="1"/>
+		</onEnter>				
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">					
+					<transition state="2라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="1">
+					<transition state="2라운드시작" />
+				</condition>
+		<onExit>					
+			<action name="타이머를초기화한다" arg1="1"/>  					
+		</onExit>					
+	</state>				
+
+    <state name="2라운드시작" >
+        <onEnter>		
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	      		
+		<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>				
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__2$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="2라운드" />
+				</condition> 
+    </state>	
+ 
+	<state name="2라운드"> 
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	      		
+			<action name="타이머를설정한다" arg1="2" arg2="20" arg3="1" arg4="1"/>		
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="2,10" />				
+		</onEnter>						
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">			
+					<transition state="3라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="3라운드시작" />
+				</condition>
+		<onExit>		
+			<action name="타이머를초기화한다" arg1="2"/>  					
+		</onExit>						
+    </state>		 
+
+    <state name="3라운드시작" >
+        <onEnter>		
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	      		
+		<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>						
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__3$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="3라운드" />
+				</condition>
+    </state>	
+
+	<state name="3라운드"> 
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	      		
+			<action name="타이머를설정한다" arg1="3" arg2="20" arg3="1" arg4="1"/>									
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="3,10" />		
+		</onEnter>		
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">	
+					<transition state="4라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="3">
+					<transition state="4라운드시작" />
+				</condition>
+		<onExit>		
+			<action name="타이머를초기화한다" arg1="3"/>  					
+		</onExit>						
+    </state>		
+
+    <state name="4라운드시작">
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	      		
+		<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>				
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__4$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="4라운드" />
+				</condition>
+    </state>	
+
+	<state name="4라운드"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	      		
+			<action name="타이머를설정한다" arg1="4" arg2="20" arg3="1" arg4="1"/>									
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="4,10" />			
+		</onEnter>		
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">		
+					<transition state="5라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="4">
+					<transition state="5라운드시작" />
+				</condition>
+		<onExit>		
+			<action name="타이머를초기화한다" arg1="4"/>  					
+		</onExit>						
+    </state>		
+
+    <state name="5라운드시작">
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	    		
+		<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>				
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__5$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="5라운드" />
+				</condition>
+    </state>	
+
+	<state name="5라운드"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	    		
+			<action name="타이머를설정한다" arg1="5" arg2="20" arg3="1" arg4="1"/>									
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="5,10" />			
+		</onEnter>		
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">				
+					<transition state="6라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="6라운드시작" />
+				</condition>
+		<onExit>		
+			<action name="타이머를초기화한다" arg1="5"/>  					
+		</onExit>						
+    </state>		
+
+    <state name="6라운드시작">
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	    		
+		<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>				
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__6$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="6라운드" />
+				</condition>
+    </state>	
+
+	<state name="6라운드"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	    		
+			<action name="타이머를설정한다" arg1="6" arg2="20" arg3="1" arg4="1"/>									
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="6,10" />			
+		</onEnter>		
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">			
+					<transition state="7라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="6">
+					<transition state="7라운드시작" />
+				</condition>
+		<onExit>		
+			<action name="타이머를초기화한다" arg1="6"/>  					
+		</onExit>						
+    </state>		
+
+    <state name="7라운드시작">
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	    		
+		<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>				
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__7$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="7라운드" />
+				</condition>
+    </state>		
+	
+	<state name="7라운드"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	    		
+			<action name="타이머를설정한다" arg1="7" arg2="20" arg3="1" arg4="1"/>									
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="7,10" />			
+		</onEnter>		
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">			
+					<transition state="8라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="7">
+					<transition state="8라운드시작" />
+				</condition>
+		<onExit>		
+			<action name="타이머를초기화한다" arg1="7"/>  					
+		</onExit>						
+    </state>		
+
+    <state name="8라운드시작">
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	    		
+		<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>				
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__8$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="8라운드" />
+				</condition>
+    </state>		
+	
+	<state name="8라운드"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	    		
+			<action name="타이머를설정한다" arg1="8" arg2="20" arg3="1" arg4="1"/>									
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="8,10" />			
+		</onEnter>		
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">				
+					<transition state="9라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="8">
+					<transition state="9라운드시작" />
+				</condition>
+		<onExit>		
+			<action name="타이머를초기화한다" arg1="8"/>  					
+		</onExit>						
+    </state>	
+
+    <state name="9라운드시작">
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	    		
+		<action name="SetUserValue" triggerID="999992" key="RoundStart" value="1"/>				
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__9$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="9라운드" />
+				</condition>
+    </state>		
+	
+	<state name="9라운드"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	    		
+			<action name="타이머를설정한다" arg1="9" arg2="20" arg3="1" arg4="1"/>									
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="9,10" />			
+		</onEnter>		
+				<condition name="!NPC를감지했으면" arg1="199" arg2="0">				
+					<transition state="10라운드시작" />
+				</condition>			
+				<condition name="시간이경과했으면" arg1="9">
+					<transition state="10라운드시작" />
+				</condition>
+		<onExit>		
+			<action name="타이머를초기화한다" arg1="9"/>  					
+		</onExit>						
+    </state>
+ 
+    <state name="10라운드시작">
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="601" arg2="1" />	    		
+		<action name="몬스터를생성한다" arg1="2000" arg2="1" />		
+		<action name="ShowCountUI" text="$02100004_BF__MAIN__10$" stage="0" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="10라운드" />
+				</condition>
+    </state>	
+
+	<state name="10라운드"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />	    		
+			<action name="타이머를설정한다" arg1="10" arg2="150" arg3="1" arg4="1"/>									
+			<action name="무작위유저를이동시킨다" arg1="02100004" arg2="99" arg3="101" arg4="1" /> 		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="10,10" />	
+			<action name="SetUserValue" triggerID="999995" key="LastRoundStart" value="1" /> 		<!-- 트로피 전용 -->			
+		</onEnter>		
+				<condition name="몬스터가죽어있으면" arg1="2000">
+					<action name="타이머를초기화한다" arg1="10"/>  						
+					<transition state="성공" />
+				</condition>		
+				<condition name="시간이경과했으면" arg1="10">
+					<transition state="실패" />
+				</condition>
+		<onExit>		
+			<action name="이벤트UI를설정한다" arg1="0" arg2="0,0" />	
+			<action name="SetUserValue" triggerID="999995" key="LastRoundEnd" value="1" /> 		<!-- 트로피 전용 -->					
+		</onExit>						
+    </state>	
+	
+	<state name="성공">		
+		<onEnter> 
+			<action name="SetUserValue" triggerID="999993" key="BattleEnd" value="1"/>							
+			<action name="몬스터소멸시킨다" arg1="all" />	
+            <action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="Find02100004"/> 
+			<action name="이벤트UI를설정한다" arg1="7" arg2="$02000251_BF__TRIGGER_01_01__0$" arg3="2000" arg4="0" />			
+		</onEnter>		
+				<condition name="WaitTick" waitTick="2000">	
+					<action name="DungeonClear"/>		 						
+					<transition state="종료"/>	
+				</condition>			
+	</state>	
+
+	 <state name="실패">
+		<onEnter> 
+			<action name="이벤트UI를설정한다" arg1="5" arg2="$02100004_BF__MAIN__11$" arg3="2000" arg4="0" />					
+			<action name="SetUserValue" triggerID="999993" key="BattleEnd" value="1"/>				
+			<action name="몬스터소멸시킨다" arg1="all" />			
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="2000" > 
+					<action name="DungeonFail" /> 						
+					<transition state="종료" />
+				</condition>
+	</state> 		
+	
+    <state name="종료">
+		<onEnter> 
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+		</onEnter>		
+    </state>	
+	
+</ms2>

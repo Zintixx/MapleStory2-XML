@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 불멸의 신전 퀘던 -->
+<ms2>
+	<state name="PC체크" >
+        <onEnter>	
+		</onEnter>
+		<condition name="CheckUser">
+			<action name="VisibleMyPC" isVisible="0"/>
+			<transition state="준비_01"/>
+		</condition>						
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="준비_01" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="VisibleMyPC" isVisible="1"/>	<!-- 유저 투명 처리 -->			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="SetVisibleUI" uiName="UpperHudDialog,MessengerBrowser,ExpBar,GroupMessengerBrowser,QuestGuideDialog,MinimapDialog,AdPushDialog,SnowmanEventDialog" visible="0" />	
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="준비_02"/>
+		</condition>					
+		<onExit>
+		</onExit> 
+    </state>
+	
+	<state name="준비_02" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/>
+			<action name="SetVisibleUI" uiName="MessengerBrowser,GroupMessengerBrowser" visible="0" />					
+			<action name="버프를걸어준다" arg1="701" arg2="99910320" arg3="1" arg4="0" arg5="1" /> <!-- 검마 변신 -->		
+			<action name="버프를걸어준다" arg1="701" arg2="99910320" arg3="1" arg4="0" arg5="0" /> <!-- 검마 변신 -->	
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> <!-- 발록 -->				
+			<action name="메쉬를설정한다" arg1="4001-4026" arg2="1" arg3="0" arg4="0" arg5="0" />
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="91000076" arg3="3">
+			<transition state="퀘스트완료_02"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="91000076" arg3="2">
+			<transition state="검마등장_01"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="91000076" arg3="1">
+			<transition state="검마등장_01"/> 
+		</condition>
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="검마등장_01" >
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="검마등장_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="검마등장_02" >
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="검마등장_03"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="검마등장_03" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="벨라등장_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="벨라등장_01" >
+        <onEnter>			
+			<action name="몬스터를생성한다" arg1="102" arg2="0" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="저멀리발록_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="저멀리발록_01" >
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			
+			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="저멀리발록_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="저멀리발록_02" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/>
+			<action name="SetSceneSkip" arg1="스킵1_01" arg2="nextState"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>				
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="발록검마인사_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="발록검마인사_01" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003819" msg="$52010065_QD__52010065_main__0$" duration="3000" illustID="balrog_normal" align="center" />
+		</onEnter>				
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="발록검마인사_02"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state> 
+	
+	<state name="발록검마인사_02" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11001811" msg="$52010065_QD__52010065_main__1$" duration="3000" illustID="BlackWizard_normal" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="발록검마인사_03"/> 
+		</condition>			
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="발록검마인사_03" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003819" msg="$52010065_QD__52010065_main__2$" duration="3000" illustID="balrog_normal" align="center" />
+		</onEnter>				
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="다리끊기_01"/>
+		</condition>				
+		<onExit>			
+		</onExit>
+    </state> 
+	
+	<state name="다리끊기_01" > 
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8005" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="다리끊기_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다리끊기_02" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4003,4006,4010" arg2="0" arg3="0" arg4="0" arg5="0" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="50">
+			<transition state="다리끊기_03"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다리끊기_03" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4004,4005,4014" arg2="0" arg3="0" arg4="0" arg5="0" />	
+		</onEnter>					
+		<condition name="WaitTick" waitTick="50">
+			<transition state="다리끊기_04"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다리끊기_04" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4007,4013,4018" arg2="0" arg3="0" arg4="0" arg5="0" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="50">
+			<transition state="다리끊기_05"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다리끊기_05" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4009,4015,4022" arg2="0" arg3="0" arg4="0" arg5="0" />	
+		</onEnter>					
+		<condition name="WaitTick" waitTick="50">
+			<transition state="다리끊기_06"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다리끊기_06" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4008,4012,4017" arg2="0" arg3="0" arg4="0" arg5="0" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="50">
+			<transition state="다리끊기_07"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다리끊기_07" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4011,4016,4023" arg2="0" arg3="0" arg4="0" arg5="0" />	
+		</onEnter>					
+		<condition name="WaitTick" waitTick="50">
+			<transition state="다리끊기_08"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다리끊기_08" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4019,4021,4024" arg2="0" arg3="0" arg4="0" arg5="0" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="50">
+			<transition state="다리끊기_09"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다리끊기_09" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4020,4025" arg2="0" arg3="0" arg4="0" arg5="0" />	
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="비웃는검마_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="비웃는검마_01" > 
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="비웃는검마_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="비웃는검마_02" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11001811" msg="$52010065_QD__52010065_main__3$" duration="3000" illustID="BlackWizard_normal" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="비웃는검마_03"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="비웃는검마_03" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003820" msg="$52010065_QD__52010065_main__4$" duration="3000" illustID="Bella_normal" align="left" />
+			<action name="AddCinematicTalk" npcID="11001811" msg="$52010065_QD__52010065_main__5$" duration="3000" illustID="BlackWizard_normal" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="6500">
+			<transition state="용암건너기_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="스킵1_01" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="4003-4025" arg2="0" arg3="0" arg4="0" arg5="0" />
+		</onEnter>					
+		 <condition name="무조건">
+			<transition state="용암건너기_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="용암건너기_01" >
+        <onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="카메라리셋" interpolationTime="1.0"/>
+			<action name="메쉬를설정한다" arg1="4026" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="용암건너기_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="용암건너기_02" >
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="25210651" textID="25210651"/>
+		</onEnter>					
+		<condition name="유저를감지했으면" arg1="702">
+			<transition state="용암건너기완료_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="용암건너기완료_01" >
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="용암건너기완료_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="용암건너기완료_02" >
+        <onEnter>			
+			<action name="유저를이동시킨다" arg1="52010065" arg2="11"/>
+			<action name="몬스터소멸시킨다" arg1="102" />
+			<action name="몬스터를생성한다" arg1="103" arg2="0" />
+			
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="퀘스트완료_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트완료_01" >
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="HideGuideSummary" entityID="25210651"/>
+			<action name="몬스터를생성한다" arg1="104" arg2="0" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>					
+		<condition name="퀘스트유저를감지하면" arg1="702" arg2="91000076" arg3="3">
+			<transition state="퀘스트완료_02"/> 
+		</condition>		
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘스트완료_02" >
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="5" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="500">
+			<transition state="검마퇴장_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="검마퇴장_01" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8006" arg2="0"/>
+			<action name="VisibleMyPC" isVisible="0"/>
+			<action name="몬스터소멸시킨다" arg1="103" />
+			<action name="몬스터를생성한다" arg1="106" arg2="0" />
+			<action name="몬스터소멸시킨다" arg1="104" />
+			<action name="몬스터를생성한다" arg1="105" arg2="0" />
+			<action name="NPC를이동시킨다" arg1="105" arg2="MS2PatrolData_2001" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2500">
+			<transition state="검마퇴장_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="검마퇴장_02" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="5" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="SetSceneSkip" arg1="마무리" arg2="exit"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1500">
+			<transition state="검마퇴장_03"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="검마퇴장_03" >
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="106" arg2="MS2PatrolData_2002" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="검마퇴장_04"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="검마퇴장_04" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8006,8007" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="검마퇴장_05"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="검마퇴장_05" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8007,8008" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="500">
+			<transition state="검마퇴장_06"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="검마퇴장_06" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11001811" msg="$52010065_QD__52010065_main__6$" duration="3000" align="right" />
+			<action name="AddCinematicTalk" npcID="11001811" msg="$52010065_QD__52010065_main__7$" duration="3000" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="6500">
+			<transition state="마무리"/> 
+		</condition>			
+		<onExit>			
+		</onExit>
+    </state>
+
+	<state name="마무리">  
+		<onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="SetOnetimeEffect" id="6" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="강제이동"/>
+		</condition>		
+		<onExit> 
+		</onExit>
+    </state>
+		
+	<state name="강제이동">
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="52010061" arg2="1"/>
+		</onEnter>		
+		<onExit>
+		</onExit> 
+    </state>	
+
+	
+</ms2>

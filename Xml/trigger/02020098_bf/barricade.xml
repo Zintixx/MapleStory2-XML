@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  102 , 스타트포인트 지점의 칸막이 막는 처리 하는 트리거, 칸막이 막히면 방장이 던전포기 버튼 활성화 시키기 -->
+<ms2>
+
+  <state name="시작대기중">
+    <onEnter>
+
+		<action name="메쉬를설정한다" arg1="301-311" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--  스타트포인트 지점의 칸막이 트리거메쉬 최초에는 감추기-->
+	 
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="10"> <!--   MS2TriggerBox   TriggerObjectID = 10, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        10은 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+			<transition state="칸막이대기시작"/>
+		</condition>
+  </state>
+
+    <state name="칸막이대기시작">
+			<condition name="WaitTick" waitTick="8000" > 
+				<transition state="칸막이대기알림" />
+			</condition>
+    </state>	 
+	
+	<state name="칸막이대기알림">
+		<onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02020098_BF__BARRICADE__0$" arg3="3000" />
+			<action name="DungeonEnableGiveUp" isEnable="1" />		
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="22000" > 
+				<transition state="칸막이막기" />
+			</condition>									
+		
+	</state>  	
+   
+
+	<state name="칸막이막기"> 
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="301-311" arg2="1" arg3="1" arg4="120" arg5="0.5"  />   <!--  시작지점의 칸막이 막기-->			
+		</onEnter>            
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="트리거종료" />
+			</condition>				
+		
+	</state>  	
+
+  
+  
+	<state name="트리거종료">
+		<onEnter>
+
+		</onEnter>
+	</state>  
+
+</ms2>

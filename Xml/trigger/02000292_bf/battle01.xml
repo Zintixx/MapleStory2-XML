@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="Wait" >
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="1001" />
+			<action name="몬스터소멸시킨다" arg1="1002" />
+			<action name="몬스터소멸시킨다" arg1="1003" />
+			<action name="몬스터소멸시킨다" arg1="1004" />
+			<action name="몬스터소멸시킨다" arg1="1005" />			
+			<action name="몬스터소멸시킨다" arg1="2001" />
+			<action name="몬스터소멸시킨다" arg1="2002" />
+			<action name="몬스터소멸시킨다" arg1="2003" />
+			<action name="몬스터소멸시킨다" arg1="2004" />
+			<action name="몬스터소멸시킨다" arg1="2005" />					
+        </onEnter>
+			<condition name="CheckUser">
+				<transition state="MobSpawn01" />
+			</condition>	
+        <onExit />
+    </state>
+
+    <state name="MobSpawn01" >
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="1001" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1002" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1003" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1004" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1005" arg2="0" />
+        </onEnter>
+			<condition name="몬스터가전투상태면" arg1="1001,1002,1003,1004,1005" >
+				<transition state="MobBattle01" />
+			</condition>
+        <onExit />
+    </state>	
+
+
+    <state name="MobBattle01" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- Dark_Intro_Chord -->					
+			<action name="몬스터를변경한다" arg1="1001" arg2="2001" />	
+			<action name="몬스터를변경한다" arg1="1002" arg2="2002" />
+			<action name="몬스터를변경한다" arg1="1003" arg2="2003" />
+			<action name="몬스터를변경한다" arg1="1004" arg2="2004" />
+			<action name="몬스터를변경한다" arg1="1005" arg2="2005" />			
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="LadderOff01"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="LadderOff01" >
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg1="9001" arg2="System_ShowGuideSummary_01"/>       		
+			<action name="ShowGuideSummary" entityID="20002925" textID="20002925" durationTime="3000"/> 	
+			<action name="오브젝트반응설정한다" arg1="10001061" arg2="1" />	
+        </onEnter>
+        <condition name="오브젝트가반응했으면" arg1="10001061" arg2="0">
+				<transition state="LadderOn01" />	
+			</condition> 
+        <onExit />
+    </state>
+
+    <state name="LadderOn01" >	
+        <onEnter>	
+			<action name="사다리를설정한다" arg1="501" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="502" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="503" arg2="1" arg3="1" />		
+        </onEnter>	
+				<condition name="WaitTick" waitTick="3000">	
+				<transition state="Quit" />
+			</condition>	
+        <onExit />
+    </state>
+	
+    <state name="Quit" >
+        <onEnter>
+        </onEnter>	
+        <onExit />
+    </state>
+</ms2>

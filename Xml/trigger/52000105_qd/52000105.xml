@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 어둠의회랑 : 52000035 챕터4/5/6 에필로그 연출 -->
+<ms2>
+
+	<state name="Wait">   
+        <onEnter> 	
+			<action name="몬스터를생성한다" arg1="200" arg2="0" /> <!-- 텐-->			
+		</onEnter>
+		
+		<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002320" arg3="1" > <!-- 몬스터 처치 훈련01-->	
+			<transition state="몬스터처치훈련01"/>
+		</condition>
+		
+		<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002321" arg3="1" > <!-- 몬스터 처치 훈련01-->	
+			<transition state="몬스터처치훈련02"/>
+		</condition>		
+
+		<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002322" arg3="1" > <!-- 할아버지대련01-->	
+			<transition state="할아버지대련01"/>
+		</condition>
+
+		<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002322" arg3="2" > <!-- 대련 퀘스트를 받으면 할아버지 등장-->	
+			<transition state="대련종료씬시작01"/>
+		</condition>
+
+		<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002322" arg3="3" >
+			<transition state="대련종료씬시작01"/>
+		</condition>			
+    <onExit> 
+    </onExit>
+    </state>
+
+<!-- ########################씬2 몬스터 소환 교육01~02########################-->
+
+    <state name="몬스터처치훈련01"> 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="300,301,302" arg2="0" />		
+			<action name="ShowGuideSummary" entityID="25201051" textID="25201051" durationTime="5000" /> 			
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002321" arg3="1" > <!-- 몬스터 처치 훈련01-->	
+				<transition state="몬스터처치훈련02"/>
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="몬스터처치훈련02"> 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="400,401,402" arg2="0" />		
+			<action name="ShowGuideSummary" entityID="25201052" textID="25201052" durationTime="5000" /> 			
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002322" arg3="1" > <!-- 할아버지대련01-->	
+				<transition state="할아버지대련01"/>
+			</condition>				
+    </state>	
+				
+<!-- ########################씬3 할아버지 대련########################-->	
+	
+    <state name="할아버지대련01"> 
+		<onEnter>
+			<action name="SetSceneSkip" arg1="Skip_1" arg2="nextState"/>			
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="연출UI를설정한다" arg1="1"/>							
+			<action name="유저를이동시킨다" arg1="52000105" arg2="2"/>				
+			</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="할아버지대련02_b"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="할아버지대련02_b">	
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="200" arg2="MS2PatrolData_ten_comeFront" />			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>			
+			<action name="카메라경로를선택한다" arg1="1000,1001,1002,1003" arg2="0"/>							
+		</onEnter>
+			<condition name="WaitTick" waitTick="5500">
+				<transition state="할아버지대련03"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="할아버지대련03">
+		<onEnter>
+			<action name="SetTimeScale" enable="1" startScale="1.0" endScale="0.5" duration="2.0" interpolator="2" /> <!-- 2초간 느려지기 시작 -->		
+			<action name="SetNpcEmotionLoop" arg1="200" arg2="Attack_Idle_A" arg3="15000" />					
+			<action name="카메라경로를선택한다" arg1="1004,1005" arg2="0"/>							
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="할아버지대련04"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="할아버지대련04">
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Attack_Idle_A" arg2="6000"  />			
+			<action name="카메라경로를선택한다" arg1="1006,1007" arg2="0"/>					
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$52000105_QD__52000105__0$" duration="6000" delayTick="1000"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="할아버지대련05_B"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="할아버지대련05_B">
+		<onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Run_0" />			
+			<action name="SetSceneSkip" arg1="" arg2=""/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="할아버지대련05"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Skip_1">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>				
+			<action name="연출UI를설정한다" arg1="4"/>							
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="할아버지대련05"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="할아버지대련05"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="몬스터소멸시킨다" arg1="200" />	
+			<action name="몬스터를생성한다" arg1="500" arg2="0"/>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+			<action name="카메라리셋" interpolationTime="0.5"/>	
+			<action name="ShowGuideSummary" entityID="25201053" textID="25201053" durationTime="5000" /> 			
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002322" arg3="2" > <!-- 대련 퀘스트를 받으면 할아버지 등장-->	
+				<transition state="대련종료씬시작01"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="대련종료씬시작01"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FadeInOut1sec.xml"/>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="몬스터소멸시킨다" arg1="203" />			
+			</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="대련종료씬시작02"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+<!-- ########################대련 종료씬########################--> 
+	
+    <state name="대련종료씬시작02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="200" />				
+			<action name="연출UI를설정한다" arg1="1"/>			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FadeInOut1sec.xml"/>				
+			<action name="몬스터를생성한다" arg1="202" arg2="0"/>	
+			<action name="유저를이동시킨다" arg1="52000105" arg2="3"/>
+	</onEnter>
+			<condition name="WaitTick" waitTick="100">
+				<transition state="대련종료씬시작02_01"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="대련종료씬시작02_01">
+		<onEnter>	
+			<action name="SetSceneSkip" arg1="Skip_2" arg2="nextState"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="100">
+				<transition state="대련종료씬시작03"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="대련종료씬시작03"> <!-- PC달려옴--> 
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="202" arg2="Attack_Idle_A" arg3="5000" />			
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Run_0" />							
+			<action name="카메라경로를선택한다" arg1="2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2012,2013" arg2="0"/>
+			</onEnter>
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="대련종료씬시작04"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="대련종료씬시작04"> <!-- 할아버지 클로즈업--> 
+		<onEnter>						
+			<action name="카메라경로를선택한다" arg1="2014,2015" arg2="0"/>
+			</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="대련종료씬시작06"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="대련종료씬시작06"> <!-- 할아버지 반격,--> 
+		<onEnter>
+			<action name="SetTimeScale" enable="1" startScale="0.3" endScale="0.3" duration="2.5" interpolator="3" /> <!-- 2초간 느려지기 시작 -->		
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Attack_01_B"/>		
+			<action name="카메라경로를선택한다" arg1="2016,2017" arg2="0"/>
+			</onEnter>
+			<condition name="WaitTick" waitTick="900">
+				<transition state="대련종료씬시작07"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="대련종료씬시작07"> <!-- PC 나가 떨어짐--> 
+		<onEnter>
+			<action name="SetPcEmotionSequence" arg1="Dead_A" />
+			<action name="SetSceneSkip" arg1="" arg2=""/>					
+			</onEnter>
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="대련종료씬시작07_b"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="대련종료씬시작07_b"> <!-- PC 나가 떨어짐--> 
+		<onEnter>		
+			<action name="SetOnetimeEffect" id="100" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FadeInOut1sec.xml"/>		
+			</onEnter>
+			<condition name="WaitTick" waitTick="2500">
+				<transition state="대련종료씬시작08"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="대련종료씬시작08"> <!-- 상황 전체 카메라--> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="100" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FadeInOut1sec.xml"/>
+			<action name="SetPcEmotionSequence" arg1="Stuck_A" />				
+			<action name="카메라경로를선택한다" arg1="2018,2019" arg2="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="대련종료씬시작09"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="대련종료씬시작09"> <!-- 상황 전체 카메라--> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="10" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="대련종료씬시작10"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="대련종료씬시작10">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FadeInOut1sec.xml"/>			
+			<action name="SetOnetimeEffect" id="10" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 				
+			<action name="카메라리셋" interpolationTime="1.0"/>	
+			<action name="SetPcEmotionLoop" arg1="Stun_A" arg2="6500"  />			
+			<action name="몬스터를생성한다" arg1="201" arg2="0"/>	
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_ririn_go" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="대련종료씬시작11"/>
+			</condition>	
+	</state>
+
+    <state name="Skip_2">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="4"/>
+			<action name="카메라리셋" interpolationTime="1.0"/>				
+			<action name="SetPcEmotionLoop" arg1="Stun_A" arg2="6500"  />				
+			<action name="몬스터를생성한다" arg1="201" arg2="0"/>	
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_ririn_go" />				
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="대련종료씬시작11"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="대련종료씬시작11">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/> 
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="10011" arg2="20002322" arg3="3" >
+				<transition state="떠나는할아버지01"/>
+			</condition>	
+	</state>	
+
+<!-- ########################씬4 떠나는할아버지01########################-->	
+
+    <state name="떠나는할아버지01">
+		<onEnter>
+			<action name="SetSceneSkip" arg1="떠나는할아버지07" arg2="exit"/>		
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>									
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="떠나는할아버지02"/>
+			</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="떠나는할아버지02">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 							
+			<action name="NPC를이동시킨다" arg1="202" arg2="MS2PatrolData_ten_exit_0" />
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_ririn_Turn" />
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Turn" />	
+			<action name="카메라경로를선택한다" arg1="1008,1009" arg2="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="떠나는할아버지03"/>
+			</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="떠나는할아버지03">
+		<onEnter>				
+			<action name="AddCinematicTalk" npcID="11003175" illustID="Ten_normal" msg="$52000105_QD__52000105__1$" duration="4000" align="right" />								
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="떠나는할아버지04"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="떠나는할아버지04">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="202" arg2="MS2PatrolData_tenExit_1" />			
+ 			<action name="AddBalloonTalk" spawnPointID="0" msg="$52000105_QD__52000105__2$" duration="6000" delayTick="1000"/>
+			<action name="AddBalloonTalk" spawnPointID="201" msg="$52000105_QD__52000105__3$" duration="6000" delayTick="1500"/>							
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="떠나는할아버지05"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="떠나는할아버지05"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			</onEnter>	
+			<condition name="WaitTick" waitTick="7000">
+				<transition state="떠나는할아버지06"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="떠나는할아버지06"> 
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="ShowCaption" type="VerticalCaption" title="$52000105_QD__52000105__4$" desc="$52000105_QD__52000105__5$" align="bottomLeft" offsetRateX="0" offsetRateY="0" duration="10000" scale="2.5"/>				
+			<action name="SetSceneSkip" arg1="" arg2=""/>					
+		</onEnter>	
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="떠나는할아버지07"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="떠나는할아버지07"> 
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/> 		
+			<action name="유저를이동시킨다" arg1="52000106" arg2="1"/>		
+		</onEnter>			
+		<onExit>
+		</onExit>
+    </state>	
+	
+</ms2>
+

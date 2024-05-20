@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<ms2> 
+	<state name="Ready">
+		<condition name="유저를감지했으면" arg1="1000">
+				<transition state="퀘스트체크"/>
+		</condition>
+    </state>
+	
+	<state name="퀘스트체크">
+	
+		<condition name="퀘스트유저를감지하면" arg1="1000" arg2="50100890" arg3="3">
+				<transition state="NPC소환"/>
+		</condition>
+
+		<condition name="퀘스트유저를감지하면" arg1="1000" arg2="50100890" arg3="2">
+				<transition state="연출끝"/>
+		</condition>
+
+		<condition name="퀘스트유저를감지하면" arg1="1000" arg2="50100890" arg3="1">
+				<transition state="연출끝"/>
+		</condition>
+    </state>		
+	
+	<state name="NPC소환">
+		<onEnter>
+			<action name="VisibleMyPC" isVisible="0"/>	<!-- 유저 투명 처리 -->
+			<action name="이펙트를설정한다" arg1="600" arg2="0" />	
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />
+			<action name="이펙트를설정한다" arg1="602" arg2="0" />
+			<action name="이펙트를설정한다" arg1="603" arg2="0" />	
+			<action name="이펙트를설정한다" arg1="604" arg2="0" />				
+			<action name="몬스터를생성한다" arg1="100" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="101" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="102" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="103" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="104" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="105" arg2="0"/>			
+			<action name="몬스터를생성한다" arg1="200" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="201" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="202" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="203" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="204" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="205" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="206" arg2="0"/>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="1000">
+				<transition state="narration01"/>
+		</condition>
+    </state>
+
+	
+	<state name="narration01">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="연출UI를설정한다" arg1="9" arg2="$52100102_QD__MAIN__0$"/>
+			<action name="SetSceneSkip" arg1="연출끝" arg2="nextState"/>				
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="narration02"/>  
+		</condition>
+	</state>
+	
+	
+    <state name="narration02">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="카메라경로를선택한다" arg1="1,2" arg2="0"/>		
+			<action name="ShowCaption" type="VerticalCaption" title="$52100102_QD__MAIN__1$" desc="$52100102_QD__MAIN__2$" align="bottomLeft" offsetRateX="0" offsetRateY="0" duration="3000" scale="2.5"/>				
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="암전1"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="암전1">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 
+		</onEnter>
+		<condition name="WaitTick" waitTick="100">
+				<transition state="카메라무브1"/>  
+		</condition>
+	</state>
+
+    <state name="카메라무브1">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="3,4" arg2="0"/>	
+			<action name="NPC를이동시킨다" arg1="202" arg2="PatrolData_01" />			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="위협1"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="위협1">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="8" arg2="1"/>				
+	   		<action name="AddCinematicTalk" npcID="11004429" illustID="" msg="$52100102_QD__MAIN__3$" duration="3000" align="left" />				
+	   		<action name="AddCinematicTalk" npcID="11004429" illustID="" msg="$52100102_QD__MAIN__4$" duration="4000" align="left" />				
+			<action name="SetNpcEmotionLoop" arg1="202" arg2="Bore_A" arg3="1333"/>	
+			</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+				<transition state="위협2"/>  
+		</condition>
+	</state>
+
+	<state name="위협2">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="301" arg2="Bore_B" arg3="3667"/>				
+	   		<action name="AddCinematicTalk" npcID="11004426" illustID="" msg="$52100102_QD__MAIN__5$" duration="4000" align="left" />				
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+				<transition state="투르카등장"/>  
+		</condition>
+	</state>		
+	
+	<state name="투르카등장">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="6,7,9" arg2="0"/>				
+			<action name="이펙트를설정한다" arg1="600" arg2="1" />
+			<action name="몬스터를생성한다" arg1="300" arg2="0"/>
+	   		<action name="AddCinematicTalk" npcID="11004430" illustID="" msg="$52100102_QD__MAIN__6$" duration="3000" align="left" />				
+			<action name="NPC를이동시킨다" arg1="300" arg2="PatrolData_Turka_1" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+				<transition state="투르카대사소개"/>  
+		</condition>
+	</state>
+	
+    <state name="투르카대사소개">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 
+			<action name="ShowCaption" type="VerticalCaption" title="$52100102_QD__MAIN__7$" desc="$52100102_QD__MAIN__8$" align="bottomLeft" offsetRateX="0" offsetRateY="0" duration="3000" scale="2.5"/>				
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="투르카대사1"/>
+		</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="투르카대사1">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="300" arg2="Bore_A" arg3="5400"/>			
+	   		<action name="AddCinematicTalk" npcID="11004430" illustID="" msg="$52100102_QD__MAIN__9$" duration="5000" align="left" />				
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+				<transition state="검은군단물러서기_1"/>  
+		</condition>
+	</state>	
+	
+	<state name="검은군단물러서기_1">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="600" arg2="0" />		
+			<action name="카메라를선택한다" arg1="10" arg2="1"/>
+	   		<action name="SetNpcRotation" arg1="202" arg2="180" />				
+	   		<action name="AddCinematicTalk" npcID="11004429" illustID="" msg="$52100102_QD__MAIN__10$" duration="2000" align="left" />	
+	   		<action name="SetNpcRotation" arg1="200" arg2="225" />	
+	   		<action name="SetNpcRotation" arg1="201" arg2="180" />	
+	   		<action name="SetNpcRotation" arg1="205" arg2="225" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="100">
+				<transition state="검은군단돌아보기_1"/>  
+		</condition>
+	</state>
+
+	<state name="검은군단돌아보기_1">
+		<onEnter>
+	   		<action name="SetNpcRotation" arg1="203" arg2="180" />	
+	   		<action name="SetNpcRotation" arg1="204" arg2="135" />
+	   		<action name="SetNpcRotation" arg1="206" arg2="135" />			
+	   		<action name="AddCinematicTalk" npcID="11004430" illustID="" msg="$52100102_QD__MAIN__11$" duration="3000" align="left" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+				<transition state="검은군단물러서기_2"/>  
+		</condition>
+	</state>
+	
+	<state name="검은군단물러서기_2">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="300" arg2="PatrolData_Turka_2" />			
+			<action name="NPC를이동시킨다" arg1="201" arg2="PatrolData_back_201" />
+			<action name="NPC를이동시킨다" arg1="202" arg2="PatrolData_back_202" />	
+			<action name="NPC를이동시킨다" arg1="205" arg2="PatrolData_back_205" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="300">
+				<transition state="검은군단물러서기_3"/>  
+		</condition>
+	</state>
+
+	<state name="검은군단물러서기_3">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="200" arg2="PatrolData_back_200" />		
+			<action name="NPC를이동시킨다" arg1="204" arg2="PatrolData_Back_204" />
+			<action name="NPC를이동시킨다" arg1="206" arg2="PatrolData_back_206" />
+			<action name="NPC를이동시킨다" arg1="203" arg2="PatrolData_back_203" />				
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+				<transition state="검은군단소멸시키기"/>  
+		</condition>
+	</state>
+
+	<state name="검은군단소멸시키기">
+		<onEnter>
+	   		<action name="몬스터소멸시킨다" arg1="200" />	
+	   		<action name="몬스터소멸시킨다" arg1="201" />	
+	   		<action name="몬스터소멸시킨다" arg1="202" />	
+	   		<action name="몬스터소멸시킨다" arg1="203" />	
+	   		<action name="몬스터소멸시킨다" arg1="204" />	
+	   		<action name="몬스터소멸시킨다" arg1="205" />
+	   		<action name="몬스터소멸시킨다" arg1="206" />		
+		</onEnter>
+		<condition name="WaitTick" waitTick="300">
+				<transition state="카메라전환_1"/>  
+		</condition>
+	</state>	
+
+	<state name="카메라전환_1">
+		<onEnter>
+	   		<action name="몬스터소멸시킨다" arg1="300" />
+			<action name="몬스터를생성한다" arg1="301" arg2="0"/>						
+			<action name="카메라를선택한다" arg1="11" arg2="1"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+				<transition state="투르카이동_1"/>  
+		</condition>
+	</state>
+
+	<state name="투르카이동_1">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="301" arg2="PatrolData_Turka_2" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+				<transition state="게오르크장교대사"/>  
+		</condition>
+	</state>			
+	
+	<state name="게오르크장교대사">
+		<onEnter>
+	   		<action name="AddCinematicTalk" npcID="11004426" illustID="" msg="$52100102_QD__MAIN__12$" duration="5000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="투르카공격1-1"/>  
+		</condition>
+	</state>
+	
+	<state name="투르카공격1-1">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004430" illustID=""  msg="$52100102_QD__MAIN__13$" duration="3000" align="left" />					
+			<action name="SetNpcEmotionLoop" arg1="301" arg2="Bore_B" arg3="3667"/>			
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="투르카공격1-2"/>  
+		</condition>
+	</state>
+
+	
+	<state name="투르카공격1-2">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="301" arg2="PatrolData_Turka_Attack" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="300">
+			<transition state="투르카공격1-3"/>  
+		</condition>
+	</state>
+	
+	<state name="투르카공격1-3">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="301" arg2="Attack_01_B" arg3="600"/>
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />					
+		</onEnter>
+		<condition name="WaitTick" waitTick="600">
+			<transition state="투르카공격1-4"/>  
+		</condition>
+	</state>
+	<state name="투르카공격1-4">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="11,12" arg2="0"/>			
+			<action name="SetNpcEmotionLoop" arg1="301" arg2="Attack_02_B" arg3="1400"/>
+			<action name="이펙트를설정한다" arg1="602" arg2="1" />
+			<action name="이펙트를설정한다" arg1="603" arg2="1" />			
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Dead_A" arg3="1333"/>
+			<action name="SetNpcEmotionLoop" arg1="103" arg2="Dead_A" arg3="1333"/>				
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="투르카공격카메라"/>  
+		</condition>
+	</state>		
+	
+	<state name="투르카공격카메라">
+		<onEnter>
+	   		<action name="몬스터소멸시킨다" arg1="101" />
+	   		<action name="몬스터소멸시킨다" arg1="103" />	
+	   		<action name="AddCinematicTalk" npcID="11004425" illustID="" msg="$52100102_QD__MAIN__14$" duration="1000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="100">
+			<transition state="투르카질문_1"/>  
+		</condition>
+	</state>	
+	
+	<state name="투르카질문_1">
+		<onEnter>
+	   		<action name="몬스터를생성한다" arg1="107" />
+	   		<action name="몬스터를생성한다" arg1="108" />			
+			<action name="카메라를선택한다" arg1="13" arg2="1"/>
+			<action name="AddCinematicTalk" npcID="11004426" illustID=""  msg="$52100102_QD__MAIN__15$" duration="3000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="100">
+			<transition state="투르카질문_2-1"/>  
+		</condition>
+	</state>
+
+	<state name="투르카질문_2-1">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="301" arg2="Bore_B" arg3="3667"/>	
+			<action name="AddCinematicTalk" npcID="11004430" illustID=""  msg="$52100102_QD__MAIN__16$" duration="5000" align="left" />
+			<action name="AddCinematicTalk" npcID="11004426" illustID=""  msg="$52100102_QD__MAIN__17$" duration="3000" align="left" />
+			<action name="AddCinematicTalk" npcID="11004430" illustID=""  msg="$52100102_QD__MAIN__18$" duration="5000" align="left" />				
+		</onEnter>
+		<condition name="WaitTick" waitTick="100">
+			<transition state="투르카공격2-1"/>  
+		</condition>
+	</state>	
+	
+	<state name="투르카공격2-1">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="301" arg2="Attack_01_B" arg3="600"/>
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />	
+		</onEnter>
+		<condition name="WaitTick" waitTick="600">
+			<transition state="투르카공격2-2"/>  
+		</condition>
+	</state>
+	
+	<state name="투르카공격2-2">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="100" enable="1" path="BG/Common/ScreenMask/Eff_fadein_3sec.xml"/>				
+			<action name="카메라를선택한다" arg1="14" arg2="1"/>
+			<action name="SetTimeScale" enable="1" startScale="0.3" endScale="1" duration="30" interpolator="1" />
+			<action name="SetNpcEmotionLoop" arg1="301" arg2="Attack_02_B" arg3="1400"/>
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Dead_A" arg3="1333"/>
+			<action name="AddCinematicTalk" npcID="11004426" illustID=""  msg="$52100102_QD__MAIN__19$" duration="1500" align="left" />	
+		</onEnter>
+		<condition name="WaitTick" waitTick="100">
+			<transition state="상황정리"/>  
+		</condition>
+	</state>	
+	
+	<state name="상황정리">
+		<onEnter>
+			<action name="SetTimeScale" enable="0" startScale="0.3" endScale="1" duration="50" interpolator="1" />
+	   		<action name="몬스터소멸시킨다" arg1="102" />
+	   		<action name="몬스터소멸시킨다" arg1="103" />
+	   		<action name="몬스터소멸시킨다" arg1="107" />			
+	   		<action name="몬스터소멸시킨다" arg1="108" />
+	   		<action name="몬스터를생성한다" arg1="109" />
+	   		<action name="몬스터를생성한다" arg1="110" />
+	   		<action name="몬스터를생성한다" arg1="111" />					
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="엔딩카메라1"/>  
+		</condition>
+	</state>	
+
+	<state name="엔딩카메라1">
+		<onEnter>
+	   		<action name="몬스터소멸시킨다" arg1="301" />
+	   		<action name="몬스터를생성한다" arg1="302" />
+			<action name="SetOnetimeEffect" id="100" enable="0" path="BG/Common/ScreenMask/Eff_fadein_3sec.xml"/> 		
+			<action name="카메라경로를선택한다" arg1="15,16" arg2="0"/>	
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="투르카엔딩대사_1"/>  
+		</condition>
+	</state>
+	
+	<state name="투르카엔딩대사_1">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="17" arg2="1"/>
+			<action name="NPC를이동시킨다" arg1="302" arg2="PatrolData_Turka_End_Move" />
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />				
+			<action name="AddCinematicTalk" npcID="11004430" illustID=""  msg="$52100102_QD__MAIN__20$" duration="5000" align="left" />	
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="엔딩암전"/>  
+		</condition>
+	</state>	
+
+	<state name="엔딩암전">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="101" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 	
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="연출끝"/>  
+		</condition>
+	</state>			
+
+	<state name="연출끝">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="all" arg2="0" />					
+			<action name="스킵을설정한다" arg1=""/>				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			<action name="카메라리셋" interpolationTime="0.0"/>	
+			<action name="VisibleMyPC" isVisible="1"/>
+			<action name="SetOnetimeEffect" id="101" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 			
+			<action name="유저를이동시킨다" arg1="02020029" arg2="4"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+		
+			<transition state=""/>  
+		</condition>
+	</state>
+</ms2>

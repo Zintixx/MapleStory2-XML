@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="Wait">
+        <onEnter>
+			<action name="SetUserValue" key="PortalOn" value="0" />			
+			<action name="SetUserValue" key="MissionStart" value="0" />		
+			<action name="SetUserValue" key="DungeonClear" value="0" />					
+			<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="20" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="21" arg2="0" arg3="0" arg4="0" />			
+        </onEnter>
+				<condition name="UserValue" key="PortalOn" value="1">
+					<transition state="PortalOnDelay" />	
+				</condition>		
+    </state>
+
+	<state name="PortalOnDelay">   
+        <onEnter> 		
+			</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="PortalOn"/>	
+				</condition>		
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="PortalOn">
+        <onEnter>							
+			<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="1" />
+			<action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1" />
+			<action name="포탈을설정한다" arg1="20" arg2="1" arg3="1" arg4="1" />
+			<action name="포탈을설정한다" arg1="21" arg2="1" arg3="1" arg4="1" />	
+        </onEnter>
+			<condition name="UserValue" key="MissionStart" value="1">
+					<transition state="CountDown" />	
+				</condition>		
+    </state>	
+	
+	<state name="CountDown">	
+        <onEnter>		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02100002_BF__99_BARRICADE__0$" arg3="3000" />
+        </onEnter>	
+			<condition name="WaitTick" waitTick="30000">
+				<transition state="ShutDown"/> 
+			</condition>
+	</state>	
+
+	<!-- 임시 테스트용 데이터 세팅 가능 지점 포탈 열어놓기 -->
+    <state name="ShutDown"> 
+        <onEnter>
+			<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="20" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="21" arg2="0" arg3="0" arg4="0" />		
+        </onEnter>
+			<condition name="UserValue" key="DungeonClear" value="1">
+					<transition state="Release" />	
+				</condition>		
+    </state>
+
+    <state name="Release">
+        <onEnter>
+			<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="0" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="Quit"/> 
+			</condition>
+    </state>
+
+    <state name="Quit">
+    </state>
+
+</ms2>

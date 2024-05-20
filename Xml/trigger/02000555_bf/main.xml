@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+<!-- 플레이어 감지 -->
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="기본셋팅" /> 
+		</condition>		
+	</state>  
+
+	<state name="기본셋팅">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8100,8101,8102,8103,8104" arg2="0" />
+			<action name="이펙트를설정한다" arg1="8200,8201,8202,8203" arg2="0" />
+			<action name="이펙트를설정한다" arg1="8300,8301,8302,8303,8304" arg2="0" />
+			<action name="이펙트를설정한다" arg1="8400,8401,8402,8403,8404,8405,8406,8407,8408,8409,8410,8411,8412,8413,8414,8415,8416,8417,8418,8419,8420,8421,8422,8423,8424,8425,8426" arg2="0" />
+			<action name="이펙트를설정한다" arg1="8500,8501,8502,8503,8504,8505,8506,8507,8508,8509,8510,8511,8512,8513,8514,8515,8516,8517" arg2="0" />
+			<action name="이펙트를설정한다" arg1="8600,8601,8602" arg2="0" /> 
+
+			<action name="이펙트를설정한다" arg1="8801" arg2="0" />  <!-- 1스테이지 유리문 파괴 효과음 초기화 -->
+			<action name="이펙트를설정한다" arg1="8802" arg2="0" />  <!-- 2스테이지 유리문 파괴 효과음 초기화 -->
+			<action name="이펙트를설정한다" arg1="8803" arg2="0" />  <!-- 3스테이지 유리문 파괴 효과음 초기화 -->
+			<action name="이펙트를설정한다" arg1="8804" arg2="0" />  <!-- 4스테이지 유리문 파괴 효과음 초기화 -->
+			<action name="이펙트를설정한다" arg1="8805" arg2="0" />  <!-- 5스테이지 철문 Open 효과음 초기화 -->
+			
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>	<!-- 최종 보스방으로 가기 포탈 최초에는 끄기-->			 		
+		    <action name="메쉬를설정한다" arg1="4012,4013" arg2="1" />   <!-- 4스테이지의 벽쪽 구멍 몬스터 등장하는 지점 투명벽으로 막기-->			 		
+		    <action name="메쉬를설정한다" arg1="4014,4015" arg2="1" />   <!-- 마지막 보스 방으로 가기 위한 입구, 문짝과 투명벽 트리거 막기-->			 		
+
+		    <action name="메쉬를설정한다" arg1="4001,4002,4003,4004" arg2="1" />   <!-- 각 스테이지 진입을 막는 유리문 뒤에 설치된 투명벽, 플레이어만 막음 -->			 		
+
+
+			<action name="오브젝트반응설정한다" arg1="10003145" arg2="0"/>	<!-- 최종 보스방으로 가기 위한 번호 누르기용 오브젝트 초기화 하기-->			 			
+		</onEnter>
+		
+			<condition name="유저를감지했으면" arg1="701" arg2="0">
+				<transition state="스테이지1_시작"/>
+			</condition>	
+			
+	</state>
+	
+	
+	<state name="스테이지1_시작">
+		<onEnter>			
+			<action name="SetUserValue" key="MonsterMany" value="0" />		<!-- MonsterMany변수 0으로 초기 셋팅, 소환몹이 한마리 나올때마다 1 더하고 한마리씩 죽으몬 1 빼기 함, 몬스터 등장 이전에 이 변수 0 초기화 하기-->		 	 
+			<action name="몬스터를생성한다" arg1="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021" arg2="1" />				
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="2900" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 2~3초 머둘도록 함 -->
+				<transition state="스테이지1_추가등장대기01"/> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="스테이지1_추가등장대기01">
+		<onEnter>			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000535_BF__MAIN__37$" arg3="5000" />			<!-- 시작안내문 -->				
+        </onEnter>
+
+			<condition name="UserValue" key="MonsterMany" value="6" operator="LessEqual"> 
+				<transition state="스테이지1_추가등장01" /> 
+			</condition>			
+			
+		<onExit>
+        </onExit>
+    </state> 	
+	
+
+	<state name="스테이지1_추가등장01">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="1201,1202,1203,1204,1205,1206,1207,1208,1209,1210" arg2="1" />	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="2837" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 2~3초 머둘도록 함 -->
+				<transition state="스테이지1_대기01" /> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="스테이지1_대기01">
+		<onEnter>			
+        </onEnter>
+		
+			<condition name="UserValue" key="MonsterMany" value="6" operator="LessEqual"> 
+				<transition state="스테이지1_추가등장02" /> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 
+
+
+	<state name="스테이지1_추가등장02">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="1301,1302,1303,1304,1305,1306,1307,1308,1309,1310,1311" arg2="1" />	
+        </onEnter>
+
+			<condition name="WaitTick" waitTick="2837" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 2~3초 머둘도록 함 -->
+				<transition state="스테이지1_대기02" /> 
+			</condition>		
+			
+	
+		<onExit>
+        </onExit>
+    </state> 		
+
+	<state name="스테이지1_대기02">
+		<onEnter>			
+        </onEnter>
+		
+			<condition name="UserValue" key="MonsterMany" value="6" operator="LessEqual"> 
+				<transition state="스테이지1_추가등장03" /> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 
+
+
+	<state name="스테이지1_추가등장03">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="1401,1402,1403,1404,1405,1406,1407,1408,1409,1410" arg2="1" />	
+        </onEnter>
+
+			<condition name="WaitTick" waitTick="3549" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 3~4초 머물도록 함 -->
+				<transition state="스테이지1_대기03" /> 
+			</condition>		
+			
+	
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="스테이지1_대기03">
+		<onEnter>			
+        </onEnter>
+			
+			<condition name="UserValue" key="MonsterMany" value="0">  <!-- 1스테이지의 몹 다 죽이면 이 변수 0이됨 -->
+				<transition state="스테이지1문파괴대기_스테이지2몬스터등장" /> 
+			</condition>		
+	
+		<onExit>
+        </onExit>
+    </state> 
+
+	
+	<state name="스테이지1문파괴대기_스테이지2몬스터등장">
+		<onEnter>			
+			<action name="SetUserValue" key="MonsterMany" value="0" />		<!-- MonsterMany변수 0으로 초기 셋팅, 소환몹이 한마리 나올때마다 1 더하고 한마리씩 죽으몬 1 빼기 함, 몬스터 등장 이전에 이 변수 0 초기화 하기-->			 
+			<action name="몬스터를생성한다" arg1="2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021" arg2="1" />	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="1750"> <!-- 몬스터 다 죽이면 1~2초 후에 문 파괴되기 -->	
+				<transition state="스테이지1_완료" /> 
+			</condition>				
+	
+		<onExit>
+        </onExit>
+    </state> 		
+	
+ 	<state name="스테이지1_완료">
+		<onEnter>
+			<action name="스킬을설정한다" arg1="61" arg2="1" />	<!-- 1스테이지 완료용 스킬 작동해서 막힌 유리문 파괴하기 -->	
+			<action name="이펙트를설정한다" arg1="8801" arg2="1" />  <!-- 1스테이지 유리문 파괴 효과음 출력 -->
+		    <action name="메쉬를설정한다" arg1="4001" arg2="0" />   <!-- 1 스테이지 진입을 막는 유리문 뒤에 설치된 투명벽 제거 -->			 		
+
+			<action name="이펙트를설정한다" arg1="8100,8101,8102,8103,8104" arg2="1" /> <!-- 진행방향 화살표 표시 -->	
+
+		
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="500">
+				<transition state="스테이지2_시작"/> 
+			</condition>		
+
+    </state> 	
+
+
+	
+	<state name="스테이지2_시작">
+		<onEnter>			
+			<action name="스킬을설정한다" arg1="61" arg2="0" />	<!-- 스킬 끄기 -->	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="2500" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 2~3초 머둘도록 함 -->
+				<transition state="스테이지2_대기01"/> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 	
+	
+	<state name="스테이지2_대기01">
+		<onEnter>			
+        </onEnter>
+		
+			<condition name="UserValue" key="MonsterMany" value="4" operator="LessEqual"> 
+				<transition state="스테이지2_추가등장01" /> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 	
+	
+	<state name="스테이지2_추가등장01">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="2201,2202,2203,2204,2205,2206,2207,2208,2209,2210,2211,2212,2213,2214,2215,2216,2217,2218,2219,2220,2221" arg2="1" />	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="3549" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 3~4초 머물도록 함 -->
+				<transition state="스테이지2_대기02"/> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 		
+	
+
+	<state name="스테이지2_대기02">
+		<onEnter>			
+        </onEnter>
+		
+			<condition name="UserValue" key="MonsterMany" value="0">  <!-- 2스테이지의 몹 다 죽이면 이 변수 0이됨 -->
+				<transition state="스테이지2문파괴대기_스테이지3몬스터등장" /> 
+			</condition>				
+	
+		<onExit>
+        </onExit>
+    </state> 	
+	
+	<state name="스테이지2문파괴대기_스테이지3몬스터등장">
+		<onEnter>			
+			<action name="SetUserValue" key="MonsterMany" value="0" />		<!-- MonsterMany변수 0으로 초기 셋팅, 소환몹이 한마리 나올때마다 1 더하고 한마리씩 죽으몬 1 빼기 함, 몬스터 등장 이전에 이 변수 0 초기화 하기-->			 
+			<action name="몬스터를생성한다" arg1="3001,3002,3003,3004,3005,3006,3007,3008,3009,3010,3011,3012,3013,3014,3015,3016,3017,3018,3019,3020,3021" arg2="1" />	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="1750"> <!-- 몬스터 다 죽이면 1~2초 후에 문 파괴되기 -->	
+				<transition state="스테이지2_완료" /> 
+			</condition>				
+	
+		<onExit>
+        </onExit>
+    </state> 			
+	
+	
+ 	<state name="스테이지2_완료">
+		<onEnter>
+			<action name="스킬을설정한다" arg1="62" arg2="1" />	<!-- 2스테이지 완료용 스킬 작동해서 막힌 유리문 파괴하기 -->	
+			<action name="이펙트를설정한다" arg1="8802" arg2="1" />  <!-- 2스테이지 유리문 파괴 효과음 출력 -->
+		    <action name="메쉬를설정한다" arg1="4002" arg2="0" />   <!-- 2스테이지 진입을 막는 유리문 뒤에 설치된 투명벽 제거 -->			 		
+
+			<action name="이펙트를설정한다" arg1="8200,8201,8202,8203" arg2="1" />  <!-- 진입 방향 화살표 표시 -->	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="500">
+				<transition state="스테이지3_시작"/> 
+			</condition>		
+
+    </state> 	  
+
+
+
+	<state name="스테이지3_시작">
+		<onEnter>			
+			<action name="스킬을설정한다" arg1="62" arg2="0" />	<!-- 스킬 끄기 -->	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="2853" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 2~3초 머둘도록 함 -->
+				<transition state="스테이지3_진행중"/> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="스테이지3_진행중">
+		<onEnter>			
+        </onEnter>
+		
+			<condition name="UserValue" key="MonsterMany" value="0">  <!-- 3스테이지의 몹 다 죽이면 이 변수 0이됨 -->
+				<transition state="스테이지3문파괴대기_스테이지4몬스터등장" /> 
+			</condition>				
+	
+		<onExit>
+        </onExit>
+    </state> 		
+	
+	<state name="스테이지3문파괴대기_스테이지4몬스터등장">
+		<onEnter>			
+			<action name="SetUserValue" key="MonsterMany" value="0" />		<!-- MonsterMany변수 0으로 초기 셋팅, 소환몹이 한마리 나올때마다 1 더하고 한마리씩 죽으몬 1 빼기 함, 몬스터 등장 이전에 이 변수 0 초기화 하기-->			 
+			<action name="몬스터를생성한다" arg1="4001" arg2="1" />	 <!-- 그외 나머지 몬스터는 AI_SignalSummon.xml 에서 소환함 -->	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000535_BF__MAIN__36$" arg3="5000" />			<!-- 앞으로더가세요 안내문 -->			 				
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="2470"> <!-- 몬스터 다 죽이면 2~3초 후에 문 파괴되기, 몬스터가 등장해서 시호 주고 받을 때까지 충분한 시간이 필요하기 때문에  waitTick 시간 2~3초 부여 -->	
+				<transition state="스테이지3_완료" /> 
+			</condition>				
+	
+		<onExit>
+        </onExit>
+    </state> 		
+	
+ 	<state name="스테이지3_완료">
+		<onEnter>
+			<action name="스킬을설정한다" arg1="63" arg2="1" />	<!-- 3스테이지 완료용 스킬 작동해서 막힌 유리문 파괴하기 -->	
+			<action name="이펙트를설정한다" arg1="8803" arg2="1" />  <!-- 3스테이지 유리문 파괴 효과음 출력 -->
+		    <action name="메쉬를설정한다" arg1="4003" arg2="0" />   <!-- 3스테이지 진입을 막는 유리문 뒤에 설치된 투명벽 제거 -->			 		
+
+			<action name="이펙트를설정한다" arg1="8300,8301,8302,8303,8304" arg2="1" />  <!-- 진입 방향 화살표 표시 -->	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="500">
+				<transition state="스테이지4_시작"/> 
+			</condition>		
+
+    </state> 	  
+
+
+
+	<state name="스테이지4_시작">
+		<onEnter>			
+			<action name="스킬을설정한다" arg1="63" arg2="0" />	<!-- 스킬 끄기 -->	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="2700" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 2~3초 머둘도록 함 -->
+				<transition state="스테이지4_진행중"/> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="스테이지4_진행중">
+		<onEnter>			
+        </onEnter>
+		
+			<condition name="UserValue" key="MonsterMany" value="0">  <!-- 4스테이지의 몹 다 죽이면 이 변수 0이됨 -->
+				<transition state="스테이지4문파괴대기_스테이지5몬스터등장" /> 
+			</condition>				
+	
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="스테이지4문파괴대기_스테이지5몬스터등장">
+		<onEnter>	
+			<action name="SetUserValue" key="MonsterMany" value="0" />		<!-- MonsterMany변수 0으로 초기 셋팅, 소환몹이 한마리 나올때마다 1 더하고 한마리씩 죽으몬 1 빼기 함, 몬스터 등장 이전에 이 변수 0 초기화 하기-->			 
+			<action name="몬스터를생성한다" arg1="5001,5002,5003,5004,5005,5006,5007,5008,5009,5010" arg2="1" />			
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="1750"> <!-- 몬스터 다 죽이면 1~2초 후에 문 파괴되기 -->	
+				<transition state="스테이지4_완료" /> 
+			</condition>				
+	
+		<onExit>
+        </onExit>
+    </state> 		
+	
+ 	<state name="스테이지4_완료">
+		<onEnter>
+ 			<action name="스킬을설정한다" arg1="64" arg2="1" />	<!-- 4스테이지 완료용 스킬 작동해서 막힌 유리문 파괴하기 -->	
+			<action name="이펙트를설정한다" arg1="8804" arg2="1" />  <!-- 4스테이지 유리문 파괴 효과음 출력 -->
+		    <action name="메쉬를설정한다" arg1="4004" arg2="0" />   <!-- 4스테이지 진입을 막는 유리문 뒤에 설치된 투명벽 제거 -->			 		
+
+			<action name="이펙트를설정한다" arg1="8400,8401,8402,8403,8404,8405,8406,8407,8408,8409,8410,8411,8412,8413,8414,8415,8416,8417,8418,8419,8420,8421,8422,8423,8424,8425,8426" arg2="1" />  <!-- 진입 방향 화살표 표시 -->	
+       </onEnter>
+		
+			<condition name="WaitTick" waitTick="500">
+				<transition state="스테이지5_시작"/> 
+			</condition>		
+
+    </state> 	
+	
+	
+	
+	
+	<state name="스테이지5_시작">
+		<onEnter>			
+			<action name="스킬을설정한다" arg1="64" arg2="0" />	<!-- 스킬 끄기 -->	
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="2500" >  <!-- 몬스터가 등장해서 AI 로직 타서 MonsterMany 변수가 1 이상 된 상태로 다음 단계로 넘어가야 하기 때문에, AI 로직 탈때까지 WaitTick 2~3초 머둘도록 함 -->
+				<transition state="스테이지5_완료대기"/> 
+			</condition>			
+	
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="스테이지5_완료대기">
+		<onEnter>			
+        </onEnter>
+		
+			<condition name="UserValue" key="MonsterMany" value="0">  <!-- 5스테이지의 몹 다 죽이면 이 변수 0이됨 -->
+				<transition state="스테이지5_완료" /> 
+			</condition>				
+	
+		<onExit>
+        </onExit>
+    </state> 
+	
+ 	<state name="스테이지5_완료">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8500,8501,8502,8503,8504,8505,8506,8507,8508,8509,8510,8511,8512,8513,8514,8515,8516,8517" arg2="1" /> 	<!-- 진입 방향 화살표 표시 -->		
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="500">
+				<transition state="보안게임준비중"/> 
+			</condition>		
+
+    </state> 	
+
+
+
+
+	
+ 	<state name="보안게임준비중">
+		<onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000535_BF__MAIN__38$" arg3="5000" />			<!-- 금고로 가는 입구를 발견했습니다.\n안으로 들어가 당신의 능력을 증명하세요! -->
+		<action name="오브젝트반응설정한다" arg1="10003145" arg2="1"/>						
+        </onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10003145" arg2="0">
+					<transition state="보안게임시작"/> 
+			</condition>	
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="보안게임시작">
+		<onEnter>			
+			<action name="SetUserValue" key="GameLogicEnd" value="999" />
+			<action name="WidgetAction" arg1="Round" arg2="InitWidgetRound" />
+			<action name="SetUserValue" triggerID="9002" key="GameLogicStart" value="999" />
+			<action name="LockMyPC" isLock="1"/>							
+      </onEnter>
+			<condition name="WaitTick" waitTick="500">
+			<transition state="문열기시작2"/>
+		</condition>
+		<onExit>
+		</onExit>			
+	</state>
+	
+	<state name="문열기시작2">
+		<onEnter>			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000535_BF__MAIN__39$" arg3="4000" />			<!-- [보안 시스템 동작]\n관리자 검증 코드를 입력해주세요.\n3번 실패 시, 시스템이 잠깁니다. -->
+			<action name="LockMyPC" isLock="1"/>				
+		</onEnter>		
+		<condition name="WaitTick" waitTick="1500">
+			<action name="SetUserValue" triggerID="9002" key="GameLogicStart" value="1" />  <!-- 이 변수가 1이 되면 gameLogic_9002.xml 트리거 작동함  -->
+			<transition state="게임로직종료대기" />
+		</condition>
+	</state>
+	
+	<state name="게임로직종료대기">
+		<condition name="UserValue" key="GameLogicEnd" value="1">
+			<transition state="게임로직종료및성공" />
+		</condition>
+		<condition name="UserValue" key="GameLogicEnd" value="2">
+			<transition state="게임로직종료및실패" />
+		</condition>
+    </state>
+	
+	<state name="게임로직종료및성공">
+		<condition name="무조건">
+			<transition state="게임로직종료" />
+		</condition>
+    </state>
+	
+	<state name="게임로직종료및실패">
+		<condition name="무조건">
+			<transition state="실패게임로직종료" />
+		</condition>
+    </state>
+	
+	<state name="게임로직종료">
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Idle_A" arg2="3000" />		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000535_BF__MAIN__40$" arg3="3000" />				<!-- 인증이 완료 되었습니다.\n금고 포탈이 활성화됩니다 -->
+			<action name="LockMyPC" isLock="0"/>							
+		</onEnter>		
+			<condition name="WaitTick" waitTick="3000">
+			<transition state="이동하자"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 			
+	
+	<state name="실패게임로직종료">
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Idle_A" arg2="3000" />			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000535_BF__MAIN__41$" arg3="3000" />				<!-- 인증이 실패하였습니다.\n시스템이 잠깁니다. -->
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$02000535_BF__MAIN__42$" duration="3500" delayTick=""/>		<!-- 에잇! 실패하다니… -->
+			<action name="LockMyPC" isLock="0"/>							
+		</onEnter>		
+		
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="문파괴안내"/>
+			</condition>	
+			
+		<onExit>
+        </onExit>
+    </state> 			
+
+	<state name="문파괴안내">
+		<onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>									
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000535_BF__MAIN__43$" arg3="7000" />							<!-- 금고 문을 파괴하여 포탈을 활성화시키세요. -->
+			<action name="LockMyPC" isLock="0"/>				
+			<action name="몬스터를생성한다" arg1="611" arg2="1" /> 			
+		</onEnter>		
+		
+			<condition name="몬스터가죽어있으면" arg1="611">
+				<transition state="이동하자"/>
+			</condition>	
+			
+		<onExit>
+        </onExit>
+    </state> 
+
+	<state name="이동하자">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="LockMyPC" isLock="0"/>				
+			<action name="SideNpcTalk" npcID="23300001" illust="Haren_smile" duration="4000" script="$02000535_BF__MAIN__44$" />				<!-- 뭐야, 금고 문이 열린 거야? 그렇다면… 내가 나설 차례군! --> 
+		    <action name="메쉬를설정한다" arg1="4014,4015" arg2="0" />   <!-- 마지막 보스 방으로 가기 위한 입구, 철문짝과 투명벽 트리거 제거-->			 		
+			<action name="이펙트를설정한다" arg1="8805" arg2="1" />  <!-- 5스테이지 철문Opne 효과음 출력 -->
+	
+			<action name="포탈을설정한다" arg1="2" arg2="1"/>	<!--보스방 맵으로 가는 포탈 활성화 시키기 -->				
+
+		</onEnter>		
+			<condition name="WaitTick" waitTick="2000">
+			<transition state="이동하자2"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+	
+	<state name="이동하자2">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="8500,8501,8502,8503,8504,8505,8506,8507,8508,8509,8510,8511,8512,8513,8514,8515,8516,8517" arg2="0" /> 	<!-- 숫자입력용 진입 방향 화살표 표시 끄기 -->		
+			<action name="이펙트를설정한다" arg1="8600,8601,8602" arg2="1" /> 	<!--보스방 진입 방향 화살표 표시 하기 -->		
+		
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$02000535_BF__MAIN__45$" duration="3500" delayTick=""/>					 <!-- Pc혼잣말 : 금고로 들어가는 입구를 발견했어	-->
+		</onEnter>		
+		<onExit>
+        </onExit>
+    </state> 	
+	
+</ms2>
+

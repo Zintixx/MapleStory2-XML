@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="Wait">
+        <onEnter>
+			<action name="SetUserValue" key="MoveToTeamPortal" value="0" />	
+			<action name="포탈을설정한다" arg1="6" arg2="0" arg3="0" arg4="0"/>	<!-- LeavePortal_Safe (arg3=작동여부)-->					
+        </onEnter>
+			<condition name="UserValue" key="MoveToTeamPortal" value="1">		
+			<transition state="MoveUserbyTag"/>
+		</condition> 
+    </state>
+
+    <state name="MoveUserbyTag">
+        <onEnter>
+			<action name="MoveToPortal" boxId="9900" userTagId="1" portalId="11"  />	<!-- Tag1=Blue -->
+			<action name="MoveToPortal" boxId="9900" userTagId="2" portalId="12"  />	<!-- Tag2=Red -->
+			<action name="SetUserValue" triggerID="11" key="BannerCheckIn" value="1" />		<!-- TheNumberOfBlueTeamWaiting -->
+			<action name="SetUserValue" triggerID="13" key="BannerCheckIn" value="1" />		<!-- TheNumberOfRedTeamWaiting -->
+        </onEnter>	
+			<condition name="유저를감지했으면" arg1="9900">	
+					<transition state="MoveUserbyTag" />	
+				</condition>
+			<condition name="UserValue" key="MoveToTeamPortal" value="2">		
+			<transition state="QuitDelay"/>
+		</condition> 				
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="QuitDelay">	
+		<onEnter>
+		</onEnter>	
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="Quit"/> 
+				</condition>
+		<onExit> 
+		</onExit>
+	</state>
+	
+    <state name="Quit">	
+        <onEnter>
+			<action name="포탈을설정한다" arg1="6" arg2="0" arg3="1" arg4="0"/>	<!-- 게임 시작 후 입장한 유저 퇴장 조치 -->					
+        </onEnter>
+    </state>	
+</ms2>

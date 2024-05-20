@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  990  -->
+<ms2>
+  <state name="시작대기중">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="2001-2022" arg2="0" /> <!--  몬스터는 밟을 수 있고 플레이어는 밟을 수 없는 투명벽 설정하기, 공중에서 등장하는 소환몹이 밟는  트리거박스임-->
+		
+        <action name="포탈을설정한다" arg1="20" arg2="0" arg3="0" arg4="0"/>	 <!--  던전 클리어 되면 나가는 포탈 최초에는 감추기, 2셋트 전투판에 배치된 포탈 -->			
+        <action name="포탈을설정한다" arg1="21" arg2="0" arg3="0" arg4="0"/>	 <!--  던전 클리어 되면 나가는 포탈 최초에는 감추기, 1셋트 12시 전투판에 배치된 포탈 -->			
+        <action name="포탈을설정한다" arg1="22" arg2="0" arg3="0" arg4="0"/>	 <!--  던전 클리어 되면 나가는 포탈 최초에는 감추기, 1셋트 8시 전투판에 배치된 포탈 -->			
+        <action name="포탈을설정한다" arg1="23" arg2="0" arg3="0" arg4="0"/>	 <!--  던전 클리어 되면 나가는 포탈 최초에는 감추기, 1셋트 4시 전투판에 배치된 포탈 -->			
+				
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="600"> <!--  ID 600 인 트리거 박스 안에 플레어가 들어서면 보스 생성시키기, 660 ID 트리거 박스는 스타트 지점만 포함되는 영역임-->						
+				<transition state="보스등장"/>
+		</condition>
+  </state>
+ 
+	<state name="보스등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="701,702,703" arg2="0" /><!--이슈라 렌듀비아 유페리아  등장-->
+
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="701,702,703">
+				<transition state="종료딜레이"/>
+			</condition>
+			<condition name="DungeonTimeOut" >						
+				<transition state="던전실패" />
+			</condition>				
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>		
+	</state>  
+ 
+	 <state name="종료딜레이">
+		<onEnter> 
+			<action name="DungeonStopTimer" />	 <!--보스 3마리 다 죽이면 제일 먼저 던전 시간 멈추게 하기-->				
+			<action name="DungeonMissionComplete" missionID="23040000" />  <!--DungeonMission.xml 에 등록된 숫자 코드 미션 완료 처리하기, 던전 클리어 미션 달성임-->
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="8000" > <!--보스 죽음 동작 연출이 끝날때까지 8초 정도 기다린 다음, 클리어 UI 화면연출 시작되도록 함-->				
+
+					<action name="DungeonClear" /> 
+					
+					 <action name="업적이벤트를발생시킨다" arg3="IshuraFinalDungeonClear"/>  <!--arg1 = "특정트리거 박스 안에 있는 유저만 체크하고자 할때"   arg2 = "trigger"    즉 trigger 이거만 쓸수 있음  특정 트리거 박스 안의 유저만 체크 방식을 사용하고자 할때 이 2개 넣어야 함-->	
+																		<!--   arg1 , arg2  넣지 않으면 맵 안에 있는 모든 유저에게 이 업적이 반영됨   -->
+																		
+					<transition state="종료" />
+				</condition>
+	</state> 
+
+	 <state name="던전실패">
+		<onEnter> 
+			<action name="몬스터소멸시킨다" arg1="all" />			
+			
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="1500" > 
+					<action name="DungeonFail" /> 
+					<transition state="종료" />
+				</condition>
+	</state> 	
+	
+
+	<state name="종료">
+		<onEnter> 
+			<action name="포탈을설정한다" arg1="20" arg2="1" arg3="1" arg4="1"/>	 <!--  던전 클리어 되면 나가는 포탈 등장 시키기 -->			
+			<action name="포탈을설정한다" arg1="21" arg2="1" arg3="1" arg4="1"/>	 <!--  던전 클리어 되면 나가는 포탈 등장 시키기 -->			
+			<action name="포탈을설정한다" arg1="22" arg2="1" arg3="1" arg4="1"/>	 <!--  던전 클리어 되면 나가는 포탈 등장 시키기 -->			
+			<action name="포탈을설정한다" arg1="23" arg2="1" arg3="1" arg4="1"/>	 <!--  던전 클리어 되면 나가는 포탈 등장 시키기 -->			
+			<action name="DungeonEnableGiveUp" isEnable="0" />		
+		</onEnter>		
+	</state>
+
+</ms2>

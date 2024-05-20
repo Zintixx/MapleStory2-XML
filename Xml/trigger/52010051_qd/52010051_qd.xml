@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 52000036 검은달 심연 배경 촬영용 트리거 -->
+<ms2>
+
+    <state name="start" >
+        <onEnter>	
+		</onEnter>	
+			<condition name="CheckUser">
+				<action name="VisibleMyPC" isVisible="0"/>	<!-- 유저 투명 처리 -->	
+				<action name="몬스터를생성한다" arg1="2003" arg2="0" /> <!-- 검은 마법사-->				
+				<action name="메쉬를설정한다" arg1="4000-4071" arg2="0" arg3="0" arg4="0" arg5="0" />			
+				<transition state="CameraEffect01"/>
+			</condition>
+						
+		<onExit> 
+		</onExit>
+    </state>
+
+	<state name="CameraEffect01" >
+		<onEnter>
+		
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>					
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="CameraEffect02"/>
+		</condition>
+	</state>
+
+	<state name="CameraEffect02" >
+		<onEnter>		
+			<!--action name="카메라를선택한다" arg1="1000" arg2="1"/-->				
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="CameraEffect03"/>
+		</condition>
+	</state>	
+		
+    <state name="CameraEffect03">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 		
+			<action name="카메라경로를선택한다" arg1="1002,1003" arg2="0"/>		
+			</onEnter>
+				<condition name="WaitTick" waitTick="10000">
+					<transition state="CameraEffect4"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="CameraEffect4">
+		<onEnter>		
+			<action name="카메라경로를선택한다" arg1="1004" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="2002" arg2="0" /> <!-- 더미 벨라-->				
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="CameraEffect4_b"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+		
+    <state name="CameraEffect4_b">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/> 			
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="Quit"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Quit" >
+        <onEnter>
+					
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/> 			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+			<action name="카메라리셋" interpolationTime="0.0"/>					 				
+				
+        </onEnter>	
+			<condition name="유저를감지했으면" arg1="101">
+				<transition state="버프부여"/>
+			</condition> 		
+        <onExit />
+    </state>
+
+    <state name="버프부여" >
+        <onEnter>
+			<action name="SetVisibleUI" uiName="MessengerBrowser,GroupMessengerBrowser" visible="0" />		
+			<action name="VisibleMyPC" isVisible="1"/>	<!-- 유저 투명 처리 -->			
+			<action name="몬스터소멸시킨다" arg1="2002" />			
+			<action name="버프를걸어준다" arg1="101" arg2="99910280" arg3="1" arg4="0" arg5="1" /> <!-- 벨라 변신 -->		
+			<action name="버프를걸어준다" arg1="101" arg2="99910280" arg3="1" arg4="0" arg5="0" /> <!-- 벨라 변신 -->					 				
+			<action name="ShowGuideSummary" entityID="25201503" textID="25201503" durationTime="10000" /> 				
+        </onEnter>	
+			<condition name="유저를감지했으면" arg1="9010">
+				<transition state="마법다리형성"/>
+			</condition> 		
+        <onExit />
+    </state>
+
+    <state name="마법다리형성" >
+        <onEnter>
+			<action name="SetLocalCamera" cameraId="1006" enable="1"/>		<!-- LocalTargetCamera -->					
+			<action name="메쉬를설정한다" arg1="4000-4071" arg2="1" arg3="1000" arg4="160" arg5="0" />					
+        </onEnter>	 
+			<condition name="유저를감지했으면" arg1="9020">
+				<transition state="검마발록연출01" />
+			</condition>
+    </state> 
+
+    <state name="검마발록연출01" >
+        <onEnter>		
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="연출UI를설정한다" arg1="1"/>						
+        </onEnter>	 
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="검마발록연출02"/>
+		</condition>
+    </state>
+	
+    <state name="검마발록연출02">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 		
+			<action name="카메라경로를선택한다" arg1="1000,1001" arg2="0"/>
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="검마발록연출03"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="검마발록연출03">
+		<onEnter>
+		
+			<action name="몬스터를생성한다" arg1="2000" arg2="0" /> <!-- 발록-->
+			<action name="몬스터를생성한다" arg1="2001" arg2="0" /> <!-- 검은 마법사-->			
+			</onEnter>
+				<condition name="WaitTick" waitTick="9000">
+					<transition state="검마발록연출03_b"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="검마발록연출03_b">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/> 			
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="검마발록연출04"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="검마발록연출04" >
+        <onEnter>
+					
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/> 			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="SetLocalCamera" cameraId="1005" enable="1"/>		<!-- LocalTargetCamera -->				
+				
+        </onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="101" arg2="91000046" arg3="3"> 
+				<transition state="완료연출01"/>
+			</condition>		
+        <onExit />
+    </state>
+	
+    <state name="완료연출01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/> 	
+			<action name="연출UI를설정한다" arg1="1"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="완료연출02"/>
+			</condition>	
+    </state>
+
+    <state name="완료연출02"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/>		
+			<action name="유저를이동시킨다" arg1="52010052" arg2="1"/>		
+		</onEnter>			
+    </state>	
+	
+</ms2>
+

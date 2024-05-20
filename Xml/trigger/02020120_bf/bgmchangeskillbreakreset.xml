@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  123,  여기에 맵 BGM 교체 설정 있음 , 이 트리거의 목적은 보스 BGM 교체와 스킬브레이크를 못막았을 때 초기화 설정하는 거  -->
+<ms2>      
+  <state name="Ready">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="1220" arg2="0" arg3="0" arg4="0"/>   <!-- 포탈ID 1220 , 큐브 파괴되어 추락된 플레이어 이전 전투판으로 보내는 순간이동 포탈 초기화 시키기-->										
+    	 <action name="SetUserValue" key="SkillBreakStart" value="0" />		<!-- SkillBreakStart 변수 0으로 초기화-->			 
+    	 <action name="SetUserValue" key="DungeonReset" value="0" />	<!-- DungeonReset 변수 0으로 초기화-->			 
+	</onEnter>	
+
+		<condition name="여러명의유저를감지했으면" arg1="299" arg2="1"> <!--   MS2TriggerBox   TriggerObjectID = 299, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        299은 모든 전투판 포함되는 엄청 넓은 범위-->
+				<transition state="던전시간작동대기"/>
+		</condition>			
+		
+    <onExit>			
+    </onExit> 
+  </state>	
+
+
+  <state name="던전시간작동대기">
+    <onEnter>
+	</onEnter>	
+
+		<condition name="여러명의유저를감지했으면" arg1="399" arg2="1"> <!--   MS2TriggerBox   TriggerObjectID = 399, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        399은 보스 메인 전투판만 포함되는 범위-->
+				<transition state="스킬브레이크신호대기_BGM교체"/>
+		</condition>		
+		
+		<condition name="UserValue" key="BgmChangeTriggerCancel" value="1">  <!-- 이슈라가 메인 전투판에 오기 전에 죽으면 BGM 변경 트리거 자체를 종료 시키기 , 이슈라가 Kill되면 나오는 이벤트 연출용 AI_IshuraRbladerDark_EventLeave.xml 에서 신호 보냄 -->
+			<transition state="종료" />															
+		</condition>			
+		
+    <onExit>			
+    </onExit> 
+  </state>	
+  
+  
+ <state name="스킬브레이크신호대기_BGM교체"> <!--   보스 메인 전투판에 최초 들어설때는 이 부분 딱 한번 실행-->
+    <onEnter>
+		<action name="사운드를설정한다" arg1="19600" arg2="1" /> <!-- 보스 메인 전투판으로 들어서면 보스용 BGM으로 교체하기, 스킬브레이크 막기 실패해서 원래 BGM으로 되돌리는 초기화 설정은 bossSpawn.xml 에 있음 --> 		
+    </onEnter>
+		<!-- #$# 이슈라 보스 AI에게 변수 신호 받을때까지 대기하기,  플레이어가 스킬 브레이크 잘 막으면 이 부분 절대 실행되지 않게 됨  -->
+		<condition name="UserValue" key="SkillBreakStart" value="1" operator="GreaterEqual">  <!-- 이슈라가 스킬브레이크 광역맵파괴 스킬 사용시  SkillBreakStart 이 변수 1로 설정하는 신호를 AI에서 보냄  -->
+			<transition state="스킬브레이크로직작동" />															
+		</condition>				
+		
+  </state>    
+  
+  
+  
+   
+    <state name="스킬브레이크로직작동" > 
+		<onEnter>		
+			<action name="포탈을설정한다" arg1="6201" arg2="0" arg3="0" arg4="0"/>   <!-- 5스테이지 가운데 전투판에 보스 메인 전투판으로 보내는 순간이동 포탈 이때 감추기, 이 포탈 PortalStage06Boss.xml 에서도 사용함 -->
+			<!--혹시 5스테이지 가운데로 진행했을 경우, 이 포탈이 미리 생성되어있을 수 있어서 그려면 파괴된 바닥 큐브가 재생되기 전에 플레이어가  미리 가버려서 허공에 도착하는 버그 상황이 생길 수 있어서 이 포탈 이 타이밍에 감추기 함-->
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">  <!-- 스킬브레이크 스킬 동작 연출에 맞게 타이밍 맞추어 신호 변화를 하기 위해, 여기  waitTick 시간 조절을 넣음 -->
+					<transition state="스킬브레이크실패초기화처리"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>  
+   
+  <state name="스킬브레이크실패초기화처리">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="1220" arg2="1" arg3="1" arg4="1"/>	<!-- 포탈ID 1220 , 큐브 파괴되어 추락된 플레이어 이전 전투판으로 보내는 순간이동 포탈 활성화 시키기-->										
+
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="6000" >  		 
+				<transition state="스킬브레이크실패연출출력" />
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>     
+  
+  <state name="스킬브레이크실패연출출력">
+		<onEnter>
+		<!--	<action name="이벤트UI를설정한다" arg1="1" arg2="10년은 이르다!!!" arg3="4000" arg4="" /> -->
+
+		</onEnter>
+			
+			<!-- 스킬 브레이크 막기 실패하면 이슈라AI에서  각 트리거에 DungeonReset = 1 신호를 보내서 던전 초기화 시킴 -->
+			<condition name="UserValue" key="DungeonReset" value="1">  
+				<transition state="Ready" />
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>       
+  
+  
+
+
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>	
+	
+  
+  
+  
+  
+  
+  <!-- 여기 아래는 사용 안함-->						
+  
+  <state name="보스한테보내는포탈생성">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="6201" arg2="1" arg3="1" arg4="1"/>   <!-- 5스테이지 가운데 전투판에 보스 메인 전투판으로 보내는 순간이동 포탈 생성시키기, 이 포탈 PortalStage06Boss.xml 에서도 사용함 -->
+			<action name="포탈을설정한다" arg1="1220" arg2="0" arg3="0" arg4="0"/> <!-- 포탈ID 1220 , 큐브 파괴되어 추락된 플레이어 이전 전투판으로 보내는 순간이동 포탈 다시 감추기-->							
+			 <action name="SetUserValue" key="SkillBreakStart" value="0" />		<!-- SkillBreakStart 변수 0으로 초기화-->			 
+		</onEnter>
+
+			
+			<condition name="WaitTick" waitTick="500" >  
+				<transition state="스킬브레이크신호대기_시간다시셋팅" /> <!-- 다시 처음 단계로 돌아가서 다시 던전시간 초기화 하기-->						
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>     
+  
+  
+  <state name="보스한테보내는포탈생성_시간초기화안함01">
+		<onEnter>		 
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="7000" >     <!-- 파괴된 전투판 큐브 다시 생성되는 타이밍에 맞추어 보스 전투판으로 가는 포탈을 생성해야 하기 때문에 waitTick 시간 조절 함 -->			 
+				<transition state="보스한테보내는포탈생성_시간초기화안함02" /> <!-- 던전시간 셋팅 하는 거 없는 초기화-->						
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>   
+  
+  <state name="보스한테보내는포탈생성_시간초기화안함02">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="6201" arg2="1" arg3="1" arg4="1"/>   <!-- 5스테이지 가운데 전투판에 보스 메인 전투판으로 보내는 순간이동 포탈 생성시키기, 이 포탈 PortalStage06Boss.xml 에서도 사용함 -->
+			<action name="포탈을설정한다" arg1="1220" arg2="0" arg3="0" arg4="0"/> <!-- 포탈ID 1220 , 큐브 파괴되어 추락된 플레이어 이전 전투판으로 보내는 순간이동 포탈 다시 감추기-->							
+			 <action name="SetUserValue" key="SkillBreakStart" value="0" />		<!-- SkillBreakStart 변수 0으로 초기화-->			 
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="500" >     <!-- 파괴된 전투판 큐브 다시 생성되는 타이밍에 맞추어 보스 전투판으로 가는 포탈을 생성해야 하기 때문에 waitTick 시간 조절 함 -->			 
+				<transition state="스킬브레이크신호대기_시간셋팅안함" /> <!-- 던전시간 셋팅 하는 거 없는 초기화-->						
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>      
+
+</ms2>

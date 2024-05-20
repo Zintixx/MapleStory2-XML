@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="대기">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="1001,1002,2002" arg2="0"/> 
+        </onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="10003042" arg3="2" >
+					<transition state="연출시작"/>
+			</condition>
+		<onExit>
+            <action name="몬스터소멸시킨다" arg1="2002" />
+			<action name="몬스터를생성한다" arg1="2001" arg2="0"/> 
+		</onExit>
+    </state>
+
+
+	<state name="연출시작">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라를선택한다" arg1="301" arg2="1"/>		
+			<action name="버프를걸어준다" arg1="199" arg2="70000095" arg3="1"/>			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="자베스대사01" />
+			</condition>
+    </state>
+
+    <state name="자베스대사01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001546" arg3="$52000046_QD__10003042__0$" arg4="3" /> 
+			<action name="스킵을설정한다" arg1="자베스대사01스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="브라보대사01"/>
+				</condition>
+    </state>	
+
+    <state name="자베스대사01스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="브라보대사01"/>
+				</condition>
+    </state>		
+
+    <state name="브라보대사01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000046_QD__10003042__1$" arg4="3" /> 
+			<action name="스킵을설정한다" arg1="브라보대사01스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="제이시대사01"/>
+				</condition>
+    </state>	
+
+    <state name="브라보대사01스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="제이시대사01"/>
+				</condition>
+    </state>	
+
+    <state name="제이시대사01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11000515" arg3="$52000046_QD__10003042__2$" arg4="5" /> 
+			<action name="스킵을설정한다" arg1="제이시대사01스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="연출종료"/>
+				</condition>
+    </state>	
+
+    <state name="제이시대사01스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="연출종료"/>
+				</condition>
+    </state>	
+
+    <state name="연출종료" > 
+		<onEnter>
+            <action name="몬스터소멸시킨다" arg1="2001" />
+			<action name="몬스터를생성한다" arg1="2002" arg2="0"/> 
+			<action name="버프를걸어준다" arg1="199" arg2="70000096" arg3="1"/>			
+		    <action name="유저를이동시킨다" arg1="52000046" arg2="2"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			<action name="카메라를선택한다" arg1="301" arg2="0"/>			
+		</onEnter>
+				<condition name="WaitTick" waitTick="10">
+					<action name="유저를경로이동시킨다" arg1="MS2PatrolData_9000" />		
+					<transition state="종료"/>
+				</condition>
+    </state>	
+	
+	<state name="종료">
+    </state>	
+
+</ms2>
+
+

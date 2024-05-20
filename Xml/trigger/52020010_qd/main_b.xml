@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 되돌린 시간의 집 : 52020010 -->
+<!-- 마지막 방 연출 -->
+
+<ms2>
+    <state name="Idle"> 
+        <onEnter>						
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2006" arg2="60200055" arg3="1">
+				<transition state="Object_Check"/> 
+			</condition>						
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="Object_Check"> 
+        <onEnter>								
+		</onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10001276" arg2="0">
+				<transition state="Ready" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Ready"> 
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="Move_6001"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="Move_6001"> 
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="52020010" arg2="6002"/>  
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="Event_01"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Event_01"> 
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="SetPcEmotionSequence" arg1="Object_React_H" />				
+			<action name="AddCinematicTalk" npcID="0" illustID="" msg="왜 아무일도 일어나지 않는거지?" duration="2800" align="" />		
+			<action name="SetSceneSkip" arg1="Next" arg2="nextState"/>										
+		</onEnter>
+			<condition name="WaitTick" waitTick="3500">
+				<transition state="Event_02"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="Event_02"> 
+        <onEnter>
+			<action name="SetPcEmotionSequence" arg1="Object_React_G" />				
+			<action name="AddCinematicTalk" npcID="0" illustID="" msg="두들겨 볼까?" duration="2800" align="" />				
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="Event_03"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="Event_03"> 
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003610" illustID="" msg="으으으.... 시끄럽구나!" duration="2800" align="" /> <!-- 11003610: 틱택톡 -->							
+			<action name="AddBalloonTalk" spawnPointID="0" msg="!!!" duration="2000" delayTick="1000"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="Event_04"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Event_04"> 
+        <onEnter>	
+            <action name="몬스터를생성한다" arg1="501" arg2="1" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="Event_05"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Event_05"> 
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="AddCinematicTalk" npcID="11003610" illustID="" msg="네 놈이냐! 내 잠을 깨운 녀석이!" duration="2800" align="" /> <!-- 11003610: 틱택톡 -->										
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="Event_06"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Event_06"> 
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="AddCinematicTalk" npcID="11003610" illustID="" msg="감히 내 시간을 방해하다니 가만두지 않겠다!" duration="2800" align="" /> <!-- 11003610: 틱택톡 -->										
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="Next"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Next"> 
+        <onEnter>	
+            <action name="몬스터소멸시킨다" arg1="501" />
+            <action name="몬스터를생성한다" arg1="601" arg2="1" />			
+		</onEnter>
+			<condition name="무조건">
+				<transition state="Battle" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Battle"> 
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="601">
+				<transition state="Mission_Clear" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="Mission_Clear"> 
+        <onEnter>	
+			<action name="업적이벤트를발생시킨다" arg1="" arg2="trigger" arg3="ClockDevil"/>	
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2006" arg2="60200050" arg3="1">
+				<transition state="Mission_Clear"/> 
+			</condition>					
+			<condition name="퀘스트유저를감지하면" arg1="2006" arg2="60200055" arg3="2">
+				<transition state="Event_07"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Event_07"> 
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="AddCinematicTalk" npcID="11003603" illustID="0" msg="인간! 파편이 돌아왔다! 어서 이리 와라!" duration="2800" align="Left" /> <!-- 11003603: 틱토그 -->										
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="Event_End"/> 
+			</condition>				
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Event_End"> 
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+		<onExit>
+		</onExit>
+    </state>		
+
+	
+</ms2>

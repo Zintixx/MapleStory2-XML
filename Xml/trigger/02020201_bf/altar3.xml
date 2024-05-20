@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--  MS2TriggerModel  TriggerModelID =  1004  -->
+
+<ms2>
+
+	<state name="대기">
+		<onEnter>
+			
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="901">
+			<transition state="전투시작체크"/>
+		</condition>
+		<onExit>
+		</onExit>
+	</state>
+ 
+	<state name="전투시작체크">
+		<onEnter>
+		</onEnter>
+			<condition name="몬스터가전투상태면" arg1="101">
+				<transition state="생성대기"/>
+			</condition>
+		<onExit>
+		</onExit>
+	</state>
+	
+	<state name="생성대기"> 
+		<onEnter>
+		</onEnter>
+			<condition name="UserValue" key="gogo" value="1">
+				<transition state="생성대기2"/>
+			</condition>
+		<onExit>
+		</onExit>
+	</state>
+	
+	<state name="생성대기2"> 
+		<onEnter>
+		</onEnter>
+			<condition name="WaitTick" waitTick="20000" >
+				<transition state="전투체크"/>
+			</condition>
+		<onExit>
+		</onExit>
+	</state> 
+	
+	<state name="전투체크">
+		<onEnter>
+		</onEnter>
+			<condition name="몬스터가전투상태면" arg1="101">
+				<transition state="제단생성"/>
+			</condition>
+		<onExit>
+		</onExit>
+	</state>
+	
+	<state name="제단생성">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="203" arg2="0" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" >
+				<transition state="제단파괴체크"/>
+			</condition>
+		<onExit>
+		</onExit>
+	</state>
+	
+	<state name="제단파괴체크"> 
+		<onEnter>
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="203">
+				<transition state="제단재생성시간"/>
+			</condition>
+		<onExit>
+		</onExit>
+	</state> 
+
+	<state name="제단재생성시간"> <!-- 제단 없으면 페이카ai skidephase +1 , 생성되면 -1 -->
+		<onEnter>
+			<action name="SetAiExtraData" key="Sidephase" value="1" isModify="true"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="40000" > 
+				<action name="SetAiExtraData" key="Sidephase" value="-1" isModify="true"/>
+				<transition state="전투체크"/>
+			</condition>
+		<onExit>
+		</onExit>
+	</state> 
+
+	<state name="종료"> 
+		<onEnter>
+		</onEnter>
+		<onExit>
+		</onExit>
+	</state> 
+
+</ms2>

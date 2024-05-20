@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+	<state name="대기"> 
+		<onEnter>	
+		<action name="이펙트를설정한다" arg1="200015-200018" arg2="0" />			
+		</onEnter>
+		
+			<condition name="UserValue" key="Phase_3_Interect_01" value="1">
+			<transition state="시작" />					
+			</condition>	
+	</state>
+	
+	<state name="시작"> 
+		<onEnter>
+		<action name="버프를걸어준다" arg1="1003" arg2="62100168" arg3="1" />	  <!--  포탑 기절 이뮨-->				
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3000" >
+			<transition state="인터렉트_설정" />					
+			</condition>	
+	</state>	
+
+	<state name="인터렉트_설정"> 
+		<onEnter>
+		    <action name="이펙트를설정한다" arg1="200015-200018" arg2="1" />				
+			<action name="오브젝트반응설정한다" arg1="10003122" arg2="1" />		
+		</onEnter>
+		
+			<condition name="오브젝트가반응했으면" arg1="10003122" arg2="0" >
+			<transition state="인터렉트_동작" />					
+			</condition>	
+			
+			<condition name="UserValue" key="Phase_3_Interect_01" value="0">
+			<transition state="대기" />					
+			</condition>				
+	</state>	
+	
+	<state name="인터렉트_동작"> 
+		<onEnter>
+		<action name="이펙트를설정한다" arg1="200015-200018" arg2="0" />			
+		<action name="SetAiExtraData" key="Shoot_Cannon_1" value="1" isModify="false" />			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="1000" >
+			<transition state="인터렉트_리셋" />					
+			</condition>	
+			
+			<condition name="UserValue" key="Phase_3_Interect_01" value="0">
+			<transition state="대기" />					
+			</condition>				
+	</state>
+
+	<state name="인터렉트_리셋"> 
+		<onEnter>		
+		<action name="SetAiExtraData" key="Shoot_Cannon_1" value="0" isModify="false" />			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="15000" >
+			<transition state="인터렉트_설정" />					
+			</condition>	
+			
+			<condition name="UserValue" key="Phase_3_Interect_01" value="0">
+			<transition state="대기" />					
+			</condition>				
+	</state>	
+	
+</ms2>
+

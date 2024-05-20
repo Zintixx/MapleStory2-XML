@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="입장">  
+        <onEnter>
+		<action name="메쉬를설정한다" arg1="3000-3003" arg2="1"/>	 	
+        </onEnter>	
+			<condition name="유저를감지했으면" arg1="101">
+				<!-- <action name="SetLocalCamera" cameraId="302" enable="1"/>		-->
+				<transition state="대기" />
+			</condition>
+    </state>
+
+    <state name="대기">
+			<condition name="WaitTick" waitTick="60000" > 
+					<transition state="어나운스0"/>
+			 </condition>
+			<condition name="UserValue" key="GameStart" value="1">
+				<transition state="어나운스0" />
+			</condition>	
+    </state>
+	
+	<state name="어나운스0">
+        <onEnter>	
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000010_ME__main__0$" arg3="3000" arg4="0" />		
+		<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="ShanghaiRunnersStart"/> 		
+		<!-- <action name="SetLocalCamera" cameraId="302" enable="0"/>		-->		
+		<!-- <action name="카메라리셋" interpolationTime="3.0"/>			 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000" > 		
+					<transition state="어나운스1"/>
+			</condition>
+    </state>
+
+    <state name="어나운스1">
+        <onEnter>
+			<action name="ShowCountUI" text="$61000006_ME__TRIGGER_03__1$" stage="0" count="5"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="6000" > 			
+						<transition state="시작"/>
+				 </condition>
+    </state>
+	
+	
+    <state name="시작">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="99" arg2="190" arg3="0" arg4="1"/>				
+			<action name="메쉬를설정한다" arg1="3000-3003" arg2="0"/>				
+			<action name="SetUserValue" triggerID="999111" key="gameStart" value="1" /> 	
+			<action name="StartMiniGame" boxId="199" round="1" gameName="shanghairunner"/>
+			<action name="StartMiniGameRound" boxId="199" round="1" />
+			<action name="MoveUserToBox" boxId="101" portalId="1" />
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="dailyquest_start"/>
+			<action name="GiveGuildExp" boxID="0" type="2"/>			
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="99">
+					<transition state="경기종료" />
+				</condition>
+    </state>
+
+    <state name="경기종료">
+        <onEnter>
+			<action name="이벤트UI를설정한다" arg1="3" arg2="$61000006_ME__TRIGGER_03__2$" arg3="5000" arg4="401"/>
+			<action name="이벤트UI를설정한다" arg1="6" arg2="$61000006_ME__TRIGGER_03__3$" arg3="5000" arg4="!401"/>		
+			<!-- <action name="버프를걸어준다" arg1="199" arg2="70000019" arg3="1"/>	  			 -->
+        </onEnter>	
+				<condition name="WaitTick" waitTick="3000">
+					<action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.25" meso="" isGainLoserBonus="true" />
+					<action name="MiniGameGiveReward" winnerBoxId="102" contentType="MiniGameType2" />
+					<action name="EndMiniGame" winnerBoxId="102" gameName="shanghairunner" /> 				
+					<transition state="강제이동" />	
+				</condition>				
+    </state>
+	
+    <state name="강제이동">
+				<condition name="WaitTick" waitTick="3000" > 
+					  <action name="유저를이동시킨다" arg1="0" arg2="0"/>
+					  <transition state="종료" />
+				</condition>				
+        <onExit />
+    </state>
+
+    <state name="종료">
+    </state>
+
+</ms2>

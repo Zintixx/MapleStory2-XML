@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  121  -->
+<ms2>    
+  <state name="Ready">
+    <onEnter>
+			<action name="스킬을설정한다" arg1="2222" arg2="1" />  <!--맵 스킬 초기화 셋팅, 태양빛의 저주 디버프 스킬 On으로 초기 셋팅하기, 이 맵은 낮으로 시작하기 때문에-->		
+			<action name="스킬을설정한다" arg1="1212" arg2="0" />  <!--맵 스킬 초기화 셋팅, 달빛의 저주 디버프 스킬 Off으로 초기 셋팅하기-->		
+	</onEnter>	
+
+		<condition name="여러명의유저를감지했으면" arg1="199" arg2="1"> <!--   MS2TriggerBox   TriggerObjectID = 199, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        199은 스타팅 지점   포함되는 범위-->
+				<transition state="낮밤변환신호대기"/>
+		</condition>		
+		
+    <onExit>			
+    </onExit> 
+  </state>	
+  
+  
+ <state name="낮밤변환신호대기">
+    <onEnter>
+
+    </onEnter>
+		<!-- 이슈라 보스 AI에게 변수 신호 받을때까지 대기하기  -->
+		<condition name="UserValue" key="DayNightChange" value="1">  <!-- 이슈라가 밤에서 낮으로 변화시킬때  DayNightChange 이 변수 1로 설정하는 신호를 AI에서 보냄  -->
+			<transition state="낮시간으로변화대기단계" />
+		</condition>		
+
+		<condition name="UserValue" key="DayNightChange" value="2">  <!-- 이슈라가 낮에서 밤으로 변화시킬때  DayNightChange 이 변수 2로 설정하는 신호를 AI에서 보냄  -->
+			<transition state="밤시간으로변화대기단계" />
+		</condition>		
+
+		<condition name="UserValue" key="DayNightChange" value="3"> <!-- 이슈라가 스킬브레이크 패턴 사용하거나 죽을 때  DayNightChange 이 변수 3으로로 설정하는 신호를 AI에서 보냄  --> 
+			<transition state="디버프모조리제거" />
+		</condition>		
+		
+		<!-- 스킬 브레이크 막기 실패하면 이슈라AI에서  DungeonReset = 1 신호를 보내서 던전 초기화 시킴 -->
+		<condition name="UserValue" key="DungeonReset" value="1">  
+			<transition state="낮시간으로변화하기_맵초기화" /> <!--낮으로 시간으로 셋팅하는 것이 이 맵의 초기화 셋팅임-->
+		</condition>		
+			
+  </state>    
+  
+  
+    <state name="낮시간으로변화대기단계" > 
+		<onEnter>		
+
+		</onEnter>
+				<condition name="WaitTick" waitTick="1400">  <!-- 이슈라 보스 낮밤 변화 마법 동작에 맞추어 타이밍 맞게 트리거 신호 변화를 하기 위해, 여기  waitTick 시간 조절을 넣음 -->
+					<transition state="낮시간으로변화하기"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>  
+  
+  <state name="낮시간으로변화하기">
+		<onEnter>
+			 <action name="ChangeBackground" dds="BG_RedLapenta_A.dds" />	
+			 <action name="SetAmbientLight" arg1="226, 197, 211"/>	<!-- arg1 = ambient color RGB값 -->
+			 <action name="SetDirectionalLight" arg1="224, 246, 249" arg2="170, 170, 170"/>		<!-- arg1 = diffuse color RGB값,  arg2 = specular color RGB값  -->	
+			 <action name="스킬을설정한다" arg1="2222" arg2="1" /> <!-- 태양빛의 저주 디버프 스킬 On -->		
+			 <action name="스킬을설정한다" arg1="1212" arg2="0" /> <!-- 달빛의 저주 디버프 스킬 Off -->		
+			 <action name="SetUserValue" key="DayNightChange" value="0" />		<!-- DayNightChange 변수 0으로 초기하 하여 위쪽 단계 "낮밤변환신호대기" 에서 대기 상태가 되도록 하기-->			 
+		</onEnter>
+
+			
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="낮밤변환신호대기" />
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>     
+ 
+  <state name="낮시간으로변화하기_맵초기화"> <!-- 이 낮으로 변화 설정은 스킬브레이크 실패하였을 때 낮으로 맵 초기화를 위해 설정된 것임, 즉 DungeonReset = 0 변수 초기화를 위한 설정임-->			 
+		<onEnter>
+			<action name="버프를걸어준다" arg1="299" arg2="50004547" arg3="2" arg4="0"/> <!-- 레벨2: 시야 효과 8초 이상, 낮으로 변하면서 필터 이펙트 시야효과 애디녀설 부여하기, MS2TriggerBox   TriggerObjectID = 299,   299는 모든 전투판 범위임,  arg3 는 애디셔널 레벨임  -->				
+			<action name="SetUserValue" key="DungeonReset" value="0" /> <!-- 스킬브레이크 실패하여 보스의 신호를 받아서 던전 리셋할때 사용하는 변수-->			 
+			 <action name="SetUserValue" key="DayNightChange" value="0" />		<!-- DayNightChange 변수 0으로 초기하 하여 위쪽 단계 "낮밤변환신호대기" 에서 대기 상태가 되도록 하기-->			 
+
+			<action name="ChangeBackground" dds="BG_RedLapenta_A.dds" />	
+			 <action name="SetAmbientLight" arg1="226, 197, 211"/>	<!-- arg1 = ambient color RGB값 -->
+			 <action name="SetDirectionalLight" arg1="224, 246, 249" arg2="170, 170, 170"/>		<!-- arg1 = diffuse color RGB값,  arg2 = specular color RGB값  -->	
+			 <action name="스킬을설정한다" arg1="2222" arg2="1" /> <!-- 태양빛의 저주 디버프 스킬 On -->		
+			 <action name="스킬을설정한다" arg1="1212" arg2="0" /> <!-- 달빛의 저주 디버프 스킬 Off -->		
+		</onEnter>
+
+			
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="낮밤변환신호대기" />
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>       
+  
+  
+    <state name="밤시간으로변화대기단계" > 
+		<onEnter>		
+
+		</onEnter>
+				<condition name="WaitTick" waitTick="1400"> <!-- 이슈라 보스 낮밤 변화 마법 동작에 맞추어 타이밍 맞게 트리거 신호 변화를 하기 위해, 여기  waitTick 시간 조절을 넣음 -->
+					<transition state="밤시간으로변화하기"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>  
+	
+  <state name="밤시간으로변화하기">
+		<onEnter>
+			 <action name="ChangeBackground" dds="BG_RedLapenta_B.dds" />	<!-- 이슈라 보스 낮밤 변화 마법 동작에 맞추어 타이밍 맞게 트리거 신호 변화를 하기 위해, 여기  waitTick 시간 조절을 넣음 -->
+			 <action name="SetAmbientLight" arg1="120, 119, 183"/>	<!-- arg1 = ambient color RGB값 -->
+			 <action name="SetDirectionalLight" arg1="193, 100, 119" arg2="170, 170, 170"/>		<!-- arg1 = diffuse color RGB값,  arg2 = specular color RGB값  -->
+			 <action name="스킬을설정한다" arg1="2222" arg2="0" /> <!-- 태양빛의 저주 디버프 스킬 Off -->		
+			 <action name="스킬을설정한다" arg1="1212" arg2="1" /> <!-- 달빛의 저주 디버프 스킬 On -->					 
+			 <action name="SetUserValue" key="DayNightChange" value="0" />		<!-- DayNightChange 변수 0으로 초기하 하여 위쪽 단계 "낮밤변환신호대기" 에서 대기 상태가 되도록 하기-->			 
+		</onEnter>
+
+			
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="낮밤변환신호대기" />
+			</condition>
+		 
+		<onExit>
+		
+		</onExit>
+  </state>     
+  
+
+	
+   <state name="디버프모조리제거" >	
+        <onEnter>
+			<action name="버프를걸어준다" arg1="299" arg2="50005315" arg3="1" arg4="0"/> <!-- 태양빛 달빛 각종 저주 디버프 전부 제거하기, MS2TriggerBox   TriggerObjectID = 299,   299는 모든 전투판 범위임,  arg3 는 애디셔널 레벨임  -->				
+			 <action name="SetUserValue" key="DayNightChange" value="0" />		<!-- DayNightChange 변수 0으로 초기하 하여 위쪽 단계 "낮밤변환신호대기" 에서 대기 상태가 되도록 하기-->			 
+        </onEnter>
+
+			<condition name="WaitTick" waitTick="1100" > 
+				<transition state="낮밤변환신호대기" />
+			</condition>
+				
+        <onExit>
+					
+        </onExit> 
+    </state>	
+	
+
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>	
+	
+</ms2>

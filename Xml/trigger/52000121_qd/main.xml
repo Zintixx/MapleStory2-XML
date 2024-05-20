@@ -1,0 +1,967 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 어두운 숲 : 50001563 아버지의 마음 퀘스트 진행 중인 상태-->
+<ms2>
+    <state name="대기">	 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+			<action name="몬스터를생성한다" arg1="121,122,123,124,125,126,127,128,129,130,131" arg2="0"/>		
+		</onEnter> 
+		<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001563" arg3="1"> <!--  50001563 퀘스트 진행 중 상태!-->
+			<transition state="연출준비"/>
+		</condition>	
+		<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001563" arg3="2"> <!-- 맵 튕기고 완료가능 상태일 때 대비 위한 스테이트 -->
+			<transition state="최종맵이동"/>
+		</condition>	
+		<onExit> 
+		</onExit>
+    </state>	
+
+    <state name="연출준비" > 
+		<onEnter>	
+			<action name="몬스터를생성한다" arg1="101,102,103,104" arg2="0"/>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+		</onEnter> 
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="위기상황00"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+    <state name="위기상황00">  <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set -->
+		<onEnter>			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+  			<action name="카메라경로를선택한다" arg1="8000" arg2="0"/> 		
+			<action name="SetSceneSkip" arg1="전투직전_스킵완료" arg2="nextState"/>      <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set -->
+		 </onEnter> 
+			<condition name="WaitTick" waitTick="700">
+				<transition state="위기상황01"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+    <state name="위기상황01"> 
+		<onEnter>			
+  			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/> 		
+		 </onEnter> 
+			<condition name="WaitTick" waitTick="800">
+				<transition state="위기상황02"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+    <state name="위기상황02"> 
+		<onEnter>			
+  			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/> 		
+		 </onEnter> 
+			<condition name="WaitTick" waitTick="800">
+				<transition state="위기상황03"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+    <state name="위기상황03"> 
+		<onEnter>			
+  			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/> 		
+		 </onEnter> 
+			<condition name="WaitTick" waitTick="800">
+				<transition state="위기상황04"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="위기상황04"> 
+		<onEnter>			
+  			<action name="카메라경로를선택한다" arg1="8004" arg2="0"/> 		
+		 </onEnter> 
+			<condition name="WaitTick" waitTick="800">
+				<transition state="대치상황시작"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+   <state name="대치상황시작"> 
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8010" arg2="0"/> 
+        </onEnter>
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="오스칼대사01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+   <state name="오스칼대사01"> 
+        <onEnter>	
+			<action name="대화를설정한다" arg1="2" arg2="11003309" arg3="$52000121_QD__MAIN__0$" arg4="4" arg5="0" />	
+			<action name="SetNpcEmotionLoop" arg1="103" arg2="Talk_B" arg3="4000"/>	
+			<action name="스킵을설정한다" arg1="오스칼대사01_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="투르카대사01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+    <state name="오스칼대사01_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="투르카대사01"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+    
+	<state name="투르카대사01"> 
+        <onEnter>	
+			<action name="대화를설정한다" arg1="2" arg2="11003362" arg3="$52000121_QD__MAIN__1$" arg4="4" arg5="0" />	
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Bore_B" arg3="4000"/>	
+			<action name="스킵을설정한다" arg1="투르카대사01_skip"/>			
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="마노비치대사01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="투르카대사01_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="마노비치대사01"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="마노비치대사01">
+        <onEnter>	
+			 <action name="카메라경로를선택한다" arg1="8022" arg2="0"/> 		
+			<action name="대화를설정한다" arg1="2" arg2="11003308" arg3="$52000121_QD__MAIN__2$" arg4="3" arg5="0" />	
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Talk_A" arg3="3000"/>	
+			<action name="스킵을설정한다" arg1="마노비치대사01_skip"/>			
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="투르카대사02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="마노비치대사01_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="투르카대사02"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="투르카대사02">
+        <onEnter>	
+			 <action name="카메라경로를선택한다" arg1="8023" arg2="0"/> 		 
+			<action name="대화를설정한다" arg1="2" arg2="11003362" arg3="$52000121_QD__MAIN__3$" arg4="3" arg5="0" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="3000"/>	
+			<action name="스킵을설정한다" arg1="투르카대사02_skip"/>			
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="투르카대사03" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="투르카대사02_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="투르카대사03"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="투르카대사03">
+        <onEnter>	
+			<action name="대화를설정한다" arg1="2" arg2="11003362" arg3="$52000121_QD__MAIN__4$" arg4="3" arg5="0" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="3000"/>	
+			<action name="스킵을설정한다" arg1="투르카대사03_skip"/>			
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="오스칼대사02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="투르카대사03_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="오스칼대사02"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+   <state name="오스칼대사02"> 
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8021" arg2="0"/> 		
+			<action name="대화를설정한다" arg1="2" arg2="11003309" arg3="$52000121_QD__MAIN__5$" arg4="3" arg5="0" />	
+			<action name="SetNpcEmotionLoop" arg1="103" arg2="Attack_Idle_A" arg3="4000"/>	
+			<action name="스킵을설정한다" arg1="오스칼대사02_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="투르카대사04" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+    <state name="오스칼대사02_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+		</onEnter>
+			<condition name="무조건" >
+				<transition state="투르카대사04"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+		<state name="투르카대사04">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8023" arg2="0"/> 
+			<action name="대화를설정한다" arg1="2" arg2="11003362" arg3="$52000121_QD__MAIN__6$" arg4="4" arg5="0" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="4000"/>	
+			<action name="스킵을설정한다" arg1="투르카대사04_skip"/>			
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="아르마노열폭준비" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="투르카대사04_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아르마노열폭준비"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="아르마노열폭준비">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8025" arg2="0"/> 
+			<action name="FaceEmotion" spawnPointID="104" emotionName="Angry"/> 
+<!-- 			<action name="SetNpcEmotionLoop" arg1="104" arg2="Talk_A" arg3="1000"/>	 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="아르마노열폭시작" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="아르마노열폭시작">
+        <onEnter>	
+			<action name="FaceEmotion" spawnPointID="104" emotionName="Angry"/> 
+			<action name="AddCinematicTalk" npcID="11003364" msg="$52000121_QD__MAIN__7$" duration="2000" align="left" />		
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="아르마노달려" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="아르마노달려">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8024" arg2="0"/> 
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_104_run" />
+<!-- 			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101_Attack" /> -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="투르카공격00" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="투르카공격00">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8030" arg2="0"/> 
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101_Attack" />
+			<action name="AddCinematicTalk" npcID="11003362" msg="$52000121_QD__MAIN__8$" duration="1000" align="left" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="투르카공격01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="투르카공격01">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8031" arg2="0"/> 
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Attack_02_B"/>	
+			<action name="SetNpcEmotionLoop" arg1="104" arg2="Run_A" arg3="3000"/> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="마노비치대사02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="마노비치대사02">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8022" arg2="0"/> 
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Attack_Idle_A" arg3="3000"/>			
+			<action name="AddCinematicTalk" npcID="11003308" msg="$52000121_QD__MAIN__9$" duration="1500" align="left" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="1500" > 
+				<transition state="암전" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="암전">
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+        </onEnter>			
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="리셋대기01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="리셋대기01">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="101,102,104"/>
+			<action name="몬스터를생성한다" arg1="105,106" arg2="0"/>	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="500" > 
+			<transition state="리셋대기02" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>			
+	
+	<state name="리셋대기02">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8040" arg2="0"/> 
+			<action name="SetNpcEmotionLoop" arg1="105" arg2="Down_Idle_A" arg3="30000"/>		
+			<action name="몬스터를생성한다" arg1="101" arg2="0"/>	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="500" > 
+			<transition state="잠시후" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="잠시후">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8041" arg2="0"/> 
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="500" > 
+			<transition state="불효자멘붕" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="불효자멘붕">
+        <onEnter>	
+			<action name="FaceEmotion" spawnPointID="106" emotionName="Cry"/> 
+			<action name="AddCinematicTalk" npcID="11003364" msg="$52000121_QD__MAIN__10$" duration="1500" align="left" /> 
+        </onEnter>
+			<condition name="WaitTick" waitTick="1500"> 
+				<transition state="오스칼멘붕" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="오스칼멘붕">
+        <onEnter>	
+			<action name="SetNpcEmotionLoop" arg1="103" arg2="Stun_A" arg3="3000" />			
+			<action name="AddCinematicTalk" npcID="11003309" illustID="Oskhal_normal" msg="$52000121_QD__MAIN__11$" duration="2000" align="left" /> 
+			<action name="스킵을설정한다" arg1="오스칼멘붕_skip"/>		
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000"> 
+				<transition state="투르카대사05" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="오스칼멘붕_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="투르카대사05"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="투르카대사05">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8035" arg2="0"/> 
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101_disappear_01" />
+			<action name="대화를설정한다" arg1="2" arg2="11003362" arg3="$52000121_QD__MAIN__12$" arg4="4" arg5="0" />
+			<action name="스킵을설정한다" arg1="투르카대사05_skip"/>			
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="PC등장대기" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="투르카대사05_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="PC등장대기"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="PC등장대기">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8036" arg2="0"/>
+			<action name="유저를이동시킨다" arg1="52000121" arg2="10"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="투르카대사06" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+			
+	<state name="투르카대사06">
+        <onEnter>	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101_disappear_02" /> 
+			<action name="대화를설정한다" arg1="2" arg2="11003362" arg3="$52000121_QD__MAIN__13$" arg4="3" arg5="0" />
+<!-- 		<action name="스킵을설정한다" arg1="투르카대사06_skip"/>		 -->	
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="PC등장" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+<!-- 	<state name="투르카대사06_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="PC등장"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 -->	
+
+	<state name="PC등장">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8034" arg2="0"/> 
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Run"/>
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101_disappear_04" />
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="$52000121_QD__MAIN__14$" arg4="2" arg5="0" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="투르카대사07" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="투르카대사07">
+        <onEnter>	
+ 			<action name="카메라경로를선택한다" arg1="8036" arg2="0"/> 
+<!-- 			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101_disappear_02" /> -->
+			<action name="대화를설정한다" arg1="2" arg2="11003362" arg3="$52000121_QD__MAIN__15$" arg4="3" arg5="0" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="투르카대사08" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="투르카대사08">
+        <onEnter>	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101_disappear_03" />
+			<action name="대화를설정한다" arg1="2" arg2="11003362" arg3="$52000121_QD__MAIN__16$" arg4="2" arg5="0" />
+				<action name="스킵을설정한다" arg1=""/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="몬스터등장00" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="몬스터등장00">
+        <onEnter>	
+			<action name="몬스터를생성한다" arg1="111" arg2="1"/>	
+			<action name="몬스터소멸시킨다" arg1="101"/>
+			<action name="스킵을설정한다" arg1=""/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="몬스터등장01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="몬스터등장01">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8037" arg2="0"/> 
+			<action name="몬스터소멸시킨다" arg1="103"/>
+			<action name="몬스터를생성한다" arg1="110" arg2="1"/>	
+			<action name="스킵을설정한다" arg1=""/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="몬스터등장02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="몬스터등장02">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8038" arg2="0"/> 
+			<action name="몬스터를생성한다" arg1="108" arg2="1"/>	
+			<action name="스킵을설정한다" arg1=""/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="몬스터등장03" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="몬스터등장03">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8039" arg2="0"/> 
+			<action name="몬스터를생성한다" arg1="112" arg2="1"/>	
+			<action name="스킵을설정한다" arg1=""/>
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="전투대기01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="전투직전_스킵완료"> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> 
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="카메라경로를선택한다" arg1="8036" arg2="0"/>
+			<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,108"/>
+			<action name="몬스터를생성한다" arg1="105,106" arg2="0" />
+			<action name="몬스터를생성한다" arg1="108,110,111,112" arg2="1" />
+			<action name="유저를이동시킨다" arg1="52000121" arg2="10"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="전투대기01"/>
+			</condition>
+		<onExit> 
+		</onExit>
+	</state>		
+
+	<state name="전투대기01">
+        <onEnter>	
+			<action name="카메라리셋" interpolationTime="2.0"/>	
+	<!--	<action name="AddCinematicTalk" npcID="29000251" illustID="Oskhal_normal" msg="$52000121_QD__MAIN__17$" duration="2000" align="left" />	 -->
+	<!-- 	<action name="스킵을설정한다" arg1=""/> -->
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="전투준비01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="전투준비01">
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="110,111,112">
+				<transition state="전투시작02"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="전투시작02">
+        <onEnter>	
+			<action name="몬스터를생성한다" arg1="113,114,115" arg2="1"/>	
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="113,114,115">
+				<transition state="전투끝"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+			
+	<state name="전투끝">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8040" arg2="0"/> 
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="ManovichMobKill"/>	 			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  				
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="암전02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="암전02">	
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+        </onEnter>			
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="npc교체01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="npc교체01">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="108"/>
+			<action name="몬스터를생성한다" arg1="103" arg2="0"/>	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="1000" > 
+			<transition state="아빠와아들대기" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>			
+	
+	<state name="아빠와아들대기"><!-- setsceneskip 2 set --> <!-- setsceneskip 2 set -->  <!-- setsceneskip 2 set -->	  	
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8040" arg2="0"/> 
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+			<action name="SetSceneSkip" arg1="마노비치리타이어_스킵완료" arg2="exit"/> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set -->  <!-- setsceneskip 2 set -->			
+		</onEnter>	
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="마노비치대사03" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="마노비치대사03">
+        <onEnter>	
+			<action name="대화를설정한다" arg1="2" arg2="11003361" arg3="$52000121_QD__MAIN__18$" arg4="2" arg5="0" />
+			<action name="스킵을설정한다" arg1="마노비치대사03_skip"/>		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="아르마노대사01" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="마노비치대사03_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아르마노대사01"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="아르마노대사01">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8042" arg2="0"/> 
+			<action name="대화를설정한다" arg1="2" arg2="11003364" arg3="$52000121_QD__MAIN__19$" arg4="3" arg5="0" />
+			<action name="스킵을설정한다" arg1="아르마노대사01_skip"/>
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="아르마노대사02" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="아르마노대사01_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아르마노대사02"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="아르마노대사02">
+        <onEnter>	
+			<action name="대화를설정한다" arg1="2" arg2="11003364" arg3="$52000121_QD__MAIN__20$" arg4="3" arg5="0" />
+			<action name="스킵을설정한다" arg1="아르마노대사02_skip"/>		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="마노비치대사04" /> 
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="아르마노대사02_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="마노비치대사04"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="마노비치대사04">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8041" arg2="0"/> 
+			<action name="대화를설정한다" arg1="2" arg2="11003361" arg3="$52000121_QD__MAIN__21$" arg4="3" arg5="0" />
+			<action name="스킵을설정한다" arg1="마노비치대사04_skip"/>		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="마노비치대사05" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="마노비치대사04_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="마노비치대사05"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+		<state name="마노비치대사05">
+        <onEnter>	
+				<!-- <action name="카메라경로를선택한다" arg1="8045" arg2="0"/>  -->
+			<action name="대화를설정한다" arg1="2" arg2="11003361" arg3="$52000121_QD__MAIN__22$" arg4="3" arg5="0" />
+			<action name="스킵을설정한다" arg1="마노비치대사05_skip"/>		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="마노비치대사06" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="마노비치대사05_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="마노비치대사06"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+		
+	<state name="마노비치대사06">
+        <onEnter>	
+				<action name="카메라경로를선택한다" arg1="8046" arg2="0"/>  
+			<action name="대화를설정한다" arg1="2" arg2="11003361" arg3="$52000121_QD__MAIN__23$" arg4="3" arg5="0" />
+			<action name="스킵을설정한다" arg1="마노비치대사06_skip"/>		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="마노비치대사07" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="마노비치대사06_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="마노비치대사07"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="마노비치대사07">
+        <onEnter>	
+				<action name="카메라경로를선택한다" arg1="8043" arg2="0"/> 
+			<action name="대화를설정한다" arg1="2" arg2="11003361" arg3="$52000121_QD__MAIN__24$" arg4="2" arg5="0" /> 
+			<action name="SetNpcEmotionSequence" arg1="105" arg2="Event_02_A"/>			
+			<action name="스킵을설정한다" arg1="마노비치대사07_skip"/>		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="마노비치대사08" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="마노비치대사07_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="마노비치대사08"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="마노비치대사08">
+        <onEnter>	
+				<action name="카메라경로를선택한다" arg1="8047" arg2="0"/> 
+			<action name="대화를설정한다" arg1="2" arg2="11003361" arg3="$52000121_QD__MAIN__25$" arg4="2" arg5="0" />
+<!-- 				<action name="SetNpcEmotionSequence" arg1="105" arg2="Event_03_A"/>	 -->
+			<action name="SetNpcEmotionLoop" arg1="105" arg2="Event_03_A" arg3="10000"/>	
+			<action name="스킵을설정한다" arg1="마노비치대사08_skip"/>		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="마노비치죽음" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="마노비치대사08_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="마노비치죽음"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="마노비치죽음">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8044" arg2="0"/> 
+			<action name="SetNpcEmotionSequence" arg1="105" arg2="Event_04_A"/>	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="1500" > 
+			<transition state="아르마노오열" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+
+	<state name="아르마노오열">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8050" arg2="0"/> 
+			<action name="AddCinematicTalk" npcID="11003364" msg="$52000121_QD__MAIN__26$" duration="4000" align="left" /> 
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close -->
+<!-- 			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/> -->	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="4000" > 
+			<transition state="연출종료" />
+		</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+		
+	<state name="마노비치리타이어_스킵완료"> <!-- setsceneskip 2 fin -->
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="몬스터소멸시킨다" arg1="108"/>
+			<action name="몬스터를생성한다" arg1="103" arg2="0" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="연출종료" />
+			</condition>
+		<onExit> 
+		</onExit>
+	</state>          
+		
+    <state name="연출종료" > 
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="ManovichRetire"/>	 
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/>	
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="최종맵이동"/>
+				</condition>
+    </state>	
+
+	<state name="최종맵이동">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="02000072" arg2="1"/>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/>	
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000">  	<!-- 맵 튕기고 이동 명령 못 받을 상태를 대비한 안전장치 -->
+				<transition state="최종맵이동"/> 
+			</condition> 
+		<onExit> 
+		</onExit>
+    </state>	
+
+</ms2>

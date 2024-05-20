@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="대기">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="101"/>
+			<action name="이펙트를설정한다" arg1="201" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="202" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="203" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="204" arg2="1"/>	
+			<action name="오브젝트반응설정한다" arg1="10000079" arg2="1"/>
+		</onEnter>
+	<condition name="오브젝트가반응했으면" arg1="10000079" arg2="0">
+		<transition state="매킨생성" />
+		<action name="몬스터소멸시킨다" arg1="101"/>
+		<action name="이펙트를설정한다" arg1="201" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="202" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="203" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="204" arg2="0"/>	
+	</condition>
+	</state>
+	
+	<state name="매킨생성">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="102"/>
+			<action name="타이머를설정한다" arg1="1" arg2="1"/>
+		</onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="매킨대사" />
+		</condition>
+	</state>
+	
+	<state name="매킨대사">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$02000163_BF__01_TRIGGER__0$" arg4="3"/>
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_102"/>
+		</onEnter>
+		<condition name="NPC를감지했으면" arg1="301" arg2="102">
+			<transition state="매킨이동302" />
+		</condition>
+	</state>
+	
+	<state name="매킨이동302">
+		<onEnter>
+			<action name="아이템을생성한다" arg1="201" arg2="0" arg3="10000079"/>
+			<action name="타이머를설정한다" arg1="1" arg2="1"/>
+		</onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="매킨이동304" />
+		</condition>
+	</state>
+		
+	<state name="매킨이동304">
+		<condition name="NPC를감지했으면" arg1="304" arg2="102">
+			<transition state="트리거초기화" />
+		</condition>
+	</state>
+	
+	<state name="트리거초기화">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="102"/>
+			<action name="타이머를설정한다" arg1="1" arg2="60"/>
+		</onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="대기" />
+		</condition>
+	</state>
+
+</ms2>

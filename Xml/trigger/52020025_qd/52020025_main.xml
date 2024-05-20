@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="감지">   
+        <onEnter>
+				<action name="메쉬를설정한다" arg1="1001" arg2="1" />
+				<action name="AGENT를설정한다" arg1="9001" arg2="1" />
+				<action name="AGENT를설정한다" arg1="9002" arg2="1" />
+				<action name="AGENT를설정한다" arg1="9003" arg2="1" />
+				<action name="AGENT를설정한다" arg1="9004" arg2="1" />
+				<action name="AGENT를설정한다" arg1="9005" arg2="1" />
+				<action name="AGENT를설정한다" arg1="9006" arg2="1" />
+				<action name="AGENT를설정한다" arg1="9007" arg2="1" />
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="901" >
+				<transition state="카메라_시작"/>
+			</condition> 
+    </state>
+	
+	<state name="카메라_시작">
+        <onEnter>
+				<action name="대화를설정한다" arg1="1" arg2="0" arg3="으아아악!!!" arg4="2" />
+				<action name="SetSceneSkip" arg1="카메라_종료" arg2="exit" />
+				<action name="연출UI를설정한다" arg1="1" />
+				<action name="연출UI를설정한다" arg1="3" />
+				<action name="메쉬를설정한다" arg1="1001" arg2="0" />
+		</onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="카메라_PC"/>
+			</condition> 
+    </state>
+	
+	<state name="카메라_PC">
+        <onEnter>
+				<action name="카메라를선택한다" arg1="501" arg2="1"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="카메라_보스등장"/>
+			</condition> 
+    </state>
+	
+	<state name="카메라_보스등장">   
+        <onEnter>
+				<action name="몬스터를생성한다" arg1="101" arg2="0"/>
+				<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Bossmove"/>
+				<action name="SetNpcRotation" arg1="0" arg2="180"/>
+				<action name="대화를설정한다" arg1="1" arg2="0" arg3="응??" arg4="2" />
+				<action name="카메라를선택한다" arg1="502" arg2="1"/>
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1000" >
+				<transition state="카메라_PC도망준비"/>
+			</condition> 
+    </state>
+	
+	<state name="카메라_PC도망준비">   
+        <onEnter>
+				<action name="SetNpcRotation" arg1="0" arg2="180"/>
+				<action name="대화를설정한다" arg1="1" arg2="0" arg3="튀자!!" arg4="2" />
+		</onEnter>	
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="카메라_종료"/>
+			</condition>
+    </state>
+	
+	<state name="카메라_종료">   
+        <onEnter>
+				<action name="몬스터소멸시킨다" arg1="101" /> 
+				<action name="카메라리셋" arg1="0.1" />
+				<action name="연출UI를설정한다" arg1="0" />
+				<action name="연출UI를설정한다" arg1="2" />
+				<action name="AGENT를설정한다" arg1="9001" arg2="0" />
+				<action name="AGENT를설정한다" arg1="9002" arg2="0" />
+				<action name="AGENT를설정한다" arg1="9003" arg2="0" />
+				<action name="AGENT를설정한다" arg1="9004" arg2="0" />
+				<action name="AGENT를설정한다" arg1="9005" arg2="0" />
+				<action name="AGENT를설정한다" arg1="9006" arg2="0" />
+				<action name="AGENT를설정한다" arg1="9007" arg2="0" />
+		</onEnter>	
+			<condition name="무조건" >
+				<transition state="달리기시작"/>
+			</condition>
+    </state>
+	
+	<state name="달리기시작">
+        <onEnter>
+				<action name="몬스터를생성한다" arg1="102" arg2="0"/>
+				<action name="SetLocalCamera" cameraId="511" enable="1" />
+				<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PCrun" />
+				<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_Bossrun"/>
+				<action name="이벤트UI를설정한다" arg1="1" arg2="무서운 몬스터로부터 도망치세요" arg3="4000" arg4="0" />
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="902" >
+				<transition state="탈출성공"/>
+			</condition>
+    </state>
+	
+	<state name="탈출성공">
+        <onEnter>
+				<action name="몬스터소멸시킨다" arg1="102" />
+				<action name="SetOnetimeEffect" id="1" enable="1" path="BG\Common\ScreenMask\Eff_CameraMasking_white.xml" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="종료"/>
+			</condition>
+    </state>
+
+    <state name="종료">
+		<onEnter>
+				<action name="유저를이동시킨다" arg1="02020008" arg2="6001" />
+		</onEnter>
+				
+	</state>
+ 
+</ms2>

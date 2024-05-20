@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 길 막고 있는 NPC에게 감정표현하기 --> 
+<ms2>	
+    <state name="Wait">  
+        <onEnter>
+			<action name="타이머를초기화한다" arg1="1"/>
+			<action name="타이머를초기화한다" arg1="10"/> 
+			<action name="EnableLocalCamera" isEnable="0"  />    <!--로컬카메라 전체 OFF-->		
+			<action name="SetUserValue" key="StandAsideTypeA" value="0" />	  		
+			<action name="SetUserValue" key="StandAsideTypeB" value="0" />				
+			<action name="메쉬를설정한다" arg1="15101" arg2="0" arg3="0" arg4="0" arg5="0"/> <!-- InvisibleBlock_Enterance -->	
+			<action name="메쉬를설정한다" arg1="15102" arg2="0" arg3="0" arg4="0" arg5="0"/> <!-- InvisibleBlock_Inside -->			
+			<action name="액터를설정한다" arg1="15100" arg2="0" arg3="Idle_A"/> <!-- Dummy RareBox --> 		
+			<action name="오브젝트반응설정한다" arg1="12000250" arg2="2" />	<!-- RareBox / 기믹 종료 오브젝트 / Additional Effect 71001151 걸어서 71001051 제거 -->	
+			<action name="오브젝트반응설정한다" arg1="12000078" arg2="2" />	<!-- NPC_TurnedAround / 기믹 시작 오브젝트 / TypeA / Additional Effect 71001051 71001231 부여 -->	
+			<action name="오브젝트반응설정한다" arg1="12000093" arg2="2" />	<!-- NPC_TurnedAround / 기믹 시작 오브젝트 / TypeB / Additional Effect 71001051 71001241 부여 -->			
+			<action name="몬스터소멸시킨다" arg1="15401,15402,15501,15502"/> 	<!-- TypeA 15401 15402 -->	<!-- TypeB 15501 15502 -->
+			<action name="이펙트를설정한다" arg1="15300" arg2="0"/> <!-- Success Sound Effect --> 
+			<action name="이펙트를설정한다" arg1="15301" arg2="0"/> <!-- Right Sound Effect --> 	
+			<action name="이펙트를설정한다" arg1="15302" arg2="0"/> <!-- Wrong Sound Effect -->
+			<action name="이펙트를설정한다" arg1="15303" arg2="0"/> <!-- Happy Sound Effect --> 	
+			<action name="이펙트를설정한다" arg1="15304" arg2="0"/> <!-- Shy Sound Effect --> 		
+        </onEnter>
+		<condition name="UserValue" key="TimeEventOn" value="1">	
+			<transition state="SettingDelay"/>
+		</condition>  		 
+        <onExit> 			
+        </onExit>       
+    </state>
+
+    <state name="SettingDelay"> <!-- 임시 스테이트 테스트용 -->
+        <onEnter>		 
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<action name="EnableLocalCamera" isEnable="1"  />    <!--로컬카메라 전체 ON-->
+			<transition state="InteractWithNpc_NpcTypeRandomPick"/>	
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="InteractWithNpc_NpcTypeRandomPick">
+        <onEnter>	
+		<action name="메쉬를설정한다" arg1="15101" arg2="1" arg3="0" arg4="0" arg5="0"/> <!-- InvisibleBlock_Enterance -->	
+		<action name="메쉬를설정한다" arg1="15002" arg2="1" arg3="0" arg4="0" arg5="0"/> <!-- InvisibleBlock_Inside -->			
+		<action name="액터를설정한다" arg1="15100" arg2="1" arg3="Idle_A"/> <!-- Dummy RareBox --> 			
+		<action name="SetUserValue" triggerID="15001" key="PortalOn" value="1"/> 				
+        </onEnter>
+			<condition name="랜덤조건" arg1="50">
+				<transition state="InteractWithNpc_NpcTypeA_Setting"/>
+			</condition>
+			<condition name="랜덤조건" arg1="50">
+				<transition state="InteractWithNpc_NpcTypeB_Setting"/>
+			</condition>	
+        <onExit>
+        </onExit>
+    </state>	
+
+
+<!-- 포잉 TypeA 경계하는 녀석 스폰 / 정중한 인사하면 비켜줌 -->  		
+	<state name="InteractWithNpc_NpcTypeA_Setting">
+        <onEnter>	 
+		<action name="오브젝트반응설정한다" arg1="12000078" arg2="1" />	<!-- NPC_TurnedAround / 기믹 시작 오브젝트 / Additional Effect 71001051 부여 -->		
+        </onEnter>	
+		<condition name="오브젝트가반응했으면" arg1="12000078" arg2="0">
+			<action name="타이머를설정한다" arg1="1" arg2="120" arg3="1" arg4="0" arg5="0" />  <!-- UI 표시 안함 / 황금 상자 소유권 Additional Effect 71001051 지속시간 동일 -->
+			<transition state="InteractWithNpc_NpcTypeA_NpcSpawn"/>
+		</condition>
+		<condition name="UserValue" key="TimeEventOn" value="0">	
+			<transition state="Wait"/>
+		</condition> 
+        <onExit>				
+        </onExit>	 		
+    </state>	
+	
+    <state name="InteractWithNpc_NpcTypeA_NpcSpawn" >
+        <onEnter>					
+			<action name="오브젝트반응설정한다" arg1="12000078" arg2="2" />			
+			<action name="몬스터를생성한다" arg1="15401" arg2="1" />
+			<action name="SetUserValue" triggerID="1000051" key="NPCTalk" value="1"/> 		
+        </onEnter>
+		<condition name="UserValue" key="StandAsideTypeA" value="1">	<!-- 몬스터 21001030 / AI_KritiasSlime_MiniPuzzle_TypeA 에서 받는 신호 -->			
+			<action name="SetUserValue" triggerID="1000051" key="NPCTalk" value="0"/>			
+			<transition state="InteractWithNpc_NpcTypeA_NpcChange"/>
+		</condition>
+		<condition name="시간이경과했으면" arg1="1"> 
+			<transition state="InteractWithNpc_Fail"/>
+		</condition>		
+        <onExit> 
+        </onExit>
+    </state>	
+
+    <state name="InteractWithNpc_NpcTypeA_NpcChange" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="15300" arg2="0"/> <!-- Success Sound Effect -->			
+			<action name="몬스터소멸시킨다" arg1="15401"/> 
+			<action name="몬스터를생성한다" arg1="15402" arg2="1" /> 	
+			<action name="SetUserValue" triggerID="15001" key="PortalOn" value="2"/>  	
+			<action name="메쉬를설정한다" arg1="15101" arg2="0" arg3="0" arg4="0" arg5="0"/> <!-- InvisibleBlock_Enterance -->	
+			<action name="메쉬를설정한다" arg1="15102" arg2="0" arg3="0" arg4="0" arg5="0"/> <!-- InvisibleBlock_Inside -->
+			<action name="버프를걸어준다" arg1="150001" arg2="71001052" arg3="1" arg4="0" arg5="0"/>
+			<action name="타이머를설정한다" arg1="10" arg2="60" arg3="1" arg4="0" arg5="0" />
+			<action name="SetUserValue" triggerID="151001" key="NPCKill" value="1"/>			
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="InteractWithNpc_NpcTypeA_StandAside"/>
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="InteractWithNpc_NpcTypeA_StandAside" >
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="15303" arg2="1"/>		
+			<action name="NPC를이동시킨다" arg1="15402" arg2="MS2PatrolData_15600" />
+        </onEnter>	
+		<condition name="무조건">
+			<transition state="InteractWithNpc_Success"/>
+		</condition>			
+        <onExit>
+        </onExit>
+    </state>	
+	
+	
+	
+<!-- 포잉 TypeB 딴청 피우는 녀석 스폰 / 빤히 쳐다보하면 비켜줌 -->  		
+	<state name="InteractWithNpc_NpcTypeB_Setting">
+        <onEnter>	 
+		<action name="오브젝트반응설정한다" arg1="12000093" arg2="1" />	<!-- NPC_TurnedAround / 기믹 시작 오브젝트 / Additional Effect 71001051 부여 -->		
+        </onEnter>	
+		<condition name="오브젝트가반응했으면" arg1="12000093" arg2="0">
+			<action name="타이머를설정한다" arg1="1" arg2="120" arg3="1" arg4="0" arg5="0" />
+			<transition state="InteractWithNpc_NpcTypeB_NpcSpawn"/>
+		</condition>
+		<condition name="UserValue" key="TimeEventOn" value="0">	
+			<transition state="Wait"/>
+		</condition>
+        <onExit>				 
+        </onExit>		
+    </state>	
+
+    <state name="InteractWithNpc_NpcTypeB_NpcSpawn" >
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="12000093" arg2="2" />			
+			<action name="몬스터를생성한다" arg1="15501" arg2="1" />
+			<action name="SetUserValue" triggerID="1000052" key="NPCTalk" value="1"/> 		
+        </onEnter>
+		<condition name="UserValue" key="StandAsideTypeB" value="1">	<!-- 몬스터 21001031 / AI_KritiasSlime_MiniPuzzle_TypeB 에서 받는 신호 --> 			
+			<action name="SetUserValue" triggerID="1000052" key="NPCTalk" value="0"/>			
+			<transition state="InteractWithNpc_NpcTypeB_NpcChange"/>
+		</condition>
+		<condition name="시간이경과했으면" arg1="1"> 
+			<transition state="InteractWithNpc_Fail"/>
+		</condition>		
+        <onExit>
+        </onExit> 
+    </state>	    
+
+    <state name="InteractWithNpc_NpcTypeB_NpcChange" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="15300" arg2="0"/> <!-- Success Sound Effect -->			
+			<action name="몬스터소멸시킨다" arg1="15501"/> 
+			<action name="몬스터를생성한다" arg1="15502" arg2="1" /> 	
+			<action name="SetUserValue" triggerID="15001" key="PortalOn" value="2"/>  	
+			<action name="메쉬를설정한다" arg1="15101" arg2="0" arg3="0" arg4="0" arg5="0"/> <!-- InvisibleBlock_Enterance -->	
+			<action name="메쉬를설정한다" arg1="15102" arg2="0" arg3="0" arg4="0" arg5="0"/> <!-- InvisibleBlock_Inside -->	
+			<action name="버프를걸어준다" arg1="150001" arg2="71001052" arg3="1" arg4="0" arg5="0"/>
+			<action name="타이머를설정한다" arg1="10" arg2="60" arg3="1" arg4="0" arg5="0" />
+			<action name="SetUserValue" triggerID="151001" key="NPCKill" value="1"/>			
+        </onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="InteractWithNpc_NpcTypeB_StandAside"/>
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+		
+    <state name="InteractWithNpc_NpcTypeB_StandAside" >
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="15304" arg2="1"/>		
+			<action name="NPC를이동시킨다" arg1="15502" arg2="MS2PatrolData_15600" />
+        </onEnter>	
+		<condition name="무조건">
+			<transition state="InteractWithNpc_Success"/>
+		</condition>			
+        <onExit>		
+        </onExit>
+    </state>	
+ 
+   
+	   
+	
+<!-- 퍼즐 성공 후 종료 -->  	
+    <state name="InteractWithNpc_Success" >
+        <onEnter>
+			<action name="SetUserValue" triggerID="15000" key="TimeEventOn" value="0"/> 		
+			<action name="액터를설정한다" arg1="15100" arg2="0" arg3="Idle_A"/> <!-- Dummy RareBox --> 			
+			<action name="이펙트를설정한다" arg1="15300" arg2="1"/> <!-- Success Sound Effect --> 	
+			<action name="오브젝트반응설정한다" arg1="12000250" arg2="1" />	<!-- RareBox / 기믹 종료 오브젝트 / Additional Effect 71001151 걸어서 71001051 제거 -->					
+        </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="12000250" arg2="0"> 
+			<transition state="InteractWithNpc_SuccessDelay"/>	 
+		</condition>
+		<condition name="시간이경과했으면" arg1="10"> 
+			<transition state="InteractWithNpc_Fail"/>
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	   
+
+    <state name="InteractWithNpc_SuccessDelay" >
+        <onEnter>		
+        </onEnter>
+		<condition name="WaitTick" waitTick="3000"> 
+			<transition state="InteractWithNpc_Quit"/>
+		</condition>				
+        <onExit>	
+        </onExit>
+    </state>	  
+
+	
+<!-- 제한 시간 종료 --> 	
+    <state name="InteractWithNpc_Fail" >
+        <onEnter>			
+			<action name="오브젝트반응설정한다" arg1="12000250" arg2="2" />	<!-- RareBox / 기믹 종료 오브젝트 / Additional Effect 71001151 걸어서 71001051 제거 -->	
+			<action name="오브젝트반응설정한다" arg1="12000078" arg2="2" />	<!-- NPC_TurnedAround / 기믹 시작 오브젝트 / TypeA / Additional Effect 71001051 71001231 부여 -->	
+			<action name="오브젝트반응설정한다" arg1="12000093" arg2="2" />	<!-- NPC_TurnedAround / 기믹 시작 오브젝트 / TypeB / Additional Effect 71001051 71001241 부여 -->			
+        </onEnter>
+		<condition name="시간이경과했으면" arg1="1">  <!-- 버프 유지 시간이 경과했으면 -->
+			<transition state="InteractWithNpc_Quit"/>	
+		</condition>	
+		<!-- 타임이벤트가 종료했으면 완전 초기화 -->
+        <onExit>	
+        </onExit>
+    </state>	
+
+
+	
+    <state name="InteractWithNpc_Quit" >
+        <onEnter>
+			<action name="타이머를초기화한다" arg1="1"/>
+			<action name="타이머를초기화한다" arg1="10"/> 		
+			<action name="SetUserValue" triggerID="15001" key="PortalOn" value="0"/>  		
+			<action name="몬스터소멸시킨다" arg1="15401,15402,15501,15502"/> 	<!-- TypeA 15401 15402 -->	<!-- TypeB 15501 15502 -->		
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="Wait"/>
+		</condition>	
+        <onExit>	
+        </onExit>
+    </state>	
+	
+</ms2>

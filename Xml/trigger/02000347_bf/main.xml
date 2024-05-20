@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+<!-- 플레이어 감지 -->
+  <state name="대기">
+    <onEnter>
+			<action name="사다리를설정한다" arg1="9001" arg2="0" arg3="0" arg4="0" /> <!-- 사다리 가려 -->
+			<action name="사다리를설정한다" arg1="9002" arg2="0" arg3="0" arg4="0" /> <!-- 사다리 가려 -->
+			<action name="사다리를설정한다" arg1="9003" arg2="0" arg3="0" arg4="0" /> <!-- 사다리 가려 -->
+			<action name="포탈을설정한다" arg1="4" arg2="0" arg3="0" arg4="0"/> <!-- 보상으로 연결되는 포탈 제어 (끔) -->
+		    <action name="오브젝트반응설정한다" arg1="10000787" arg2="0" /> <!-- 보상 상태 (없음) -->
+			<action name="메쉬를설정한다" arg1="6001,6011" arg2="1" /> <!-- 벽 생성 -->
+			<action name="메쉬를설정한다" arg1="6001-6010" arg2="0" /> <!-- 길 차단 -->	
+    </onEnter>
+			<condition name="여러명의유저를감지했으면" arg1="60001" arg2="1">
+					<transition state="오브젝티브_01"/>
+			</condition>			
+    <onExit>
+    </onExit>
+  </state>      
+  
+      <state name="오브젝티브_01">
+    <onEnter>
+		<action name="타이머를설정한다" arg1="2" arg2="2" arg4="0" />
+    </onEnter>
+			<condition name="시간이경과했으면" arg1="2">
+			<transition state="오브젝티브_02"/>
+			</condition>		
+		 <onExit>
+    </onExit>
+  </state>   
+  
+    <state name="오브젝티브_02">
+    <onEnter>
+		<action name="카메라경로를선택한다" arg1="8001,8002" arg2="1"/> --><!-- 연출 카메라 -->
+		<action name="연출UI를설정한다" arg1="1"/> 
+		<action name="몬스터를생성한다" arg1="101" arg2="1" /> <!-- 보스 등장 -->
+		<!-- <action name="유저를이동시킨다" arg1="02000347" arg2="3"/> -->
+		<action name="연출UI를설정한다" arg1="3" arg2="$02000347_BF__MAIN1__0$" /> <!-- 오브젝티브 -->
+		<action name="타이머를설정한다" arg1="5" arg2="5" arg4="0" />
+    </onEnter>
+			<condition name="시간이경과했으면" arg1="5">
+			<transition state="시작_01"/>
+			</condition>		
+    <onExit>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+  </state>  
+    
+<!--   플레이어 감지하면 1초 대기 -->
+    <state name="시작_01">
+		    <onEnter>
+				<action name="ShowCountUI" text="$02000347_BF__MAIN1__2$" stage="0" count="3"  />
+				<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+		    </onEnter>
+				<condition name="시간이경과했으면" arg1="3">
+				<transition state="시작_02"/>
+				</condition>	
+			<onExit>
+    </onExit>
+  </state>
+  
+    
+      <state name="시작_02">
+		    <onEnter>
+				<action name="사다리를설정한다" arg1="9001" arg2="1" arg3="1" arg4="0"/> <!-- 사다리 보여 -->
+				<action name="사다리를설정한다" arg1="9002" arg2="1" arg3="1" arg4="0"/> <!-- 사다리 보여 -->
+				<action name="사다리를설정한다" arg1="9003" arg2="1" arg3="1" arg4="0"/> <!-- 사다리 보여 -->	
+		    </onEnter>
+				<condition name="몬스터가죽어있으면" arg1="101">
+				<transition state="클리어"/>
+				</condition>	
+			<onExit>
+    </onExit>
+  </state>
+    
+	<state name="클리어">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1" arg4="1"/> <!-- 보상으로 연결되는 포탈 제어 (on) -->		
+			<action name="이벤트UI를설정한다" arg1="7" arg2="$02000347_BF__MAIN1__1$" arg3="3000" />
+			<action name="메쉬를설정한다" arg1="6001-6010" arg2="1" arg4="0" arg5="10" /> <!-- 길 생성 -->
+			<action name="메쉬를설정한다" arg1="6011" arg2="0" arg4="0" arg5="0" /> <!-- 벽 삭제 -->
+			<action name="오브젝트반응설정한다" arg1="10000787" arg2="1" /> <!-- 보상 상태 (없음) -->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>	
+			<condition name="시간이경과했으면" arg1="5">
+			<transition state="클리어_02"/>
+			</condition>
+		<onExit>
+		</onExit>
+  </state>     
+  
+ 	<state name="클리어_02">
+		<onEnter>
+			<action name="ShowGuideSummary" entityID="110" textID="40009"/> <!-- 포탈 이용하세요 -->	
+		</onEnter>	
+		<onExit>
+		</onExit>
+  </state>    
+ 
+</ms2>

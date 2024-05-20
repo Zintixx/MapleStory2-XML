@@ -1,0 +1,928 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="ready">
+        <onEnter>	
+        </onEnter>		
+				
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002635" arg3="1" >   
+			<transition state="ready_02"/>
+			<action name="HideGuideSummary" entityID="20020020"/>
+		</condition>
+	
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002635" arg3="2" >   
+			<transition state="start_22"/>
+		</condition>
+
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001445" arg3="3" >  
+			<transition state="end_01"/>
+		</condition>		
+		
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001445" arg3="2" >  
+			<transition state="sb_ready_b_13"/>
+		</condition>
+		
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001445" arg3="1" >  
+			<transition state="sb_ready_b_12"/>
+		</condition>
+	
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001444" arg3="3" >  
+			<transition state="sb_ready_b_12"/>
+		</condition>
+					
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001444" arg3="2" >   <!-- 소울바인더 퀘스트 진행 -->
+			<transition state="sb_ready_b_02"/>
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>
+			<action name="HideGuideSummary" entityID="20020020"/>
+		</condition>
+	
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001443" arg3="3" >   <!-- 소울바인더 퀘스트 완료 -->
+			<transition state="sb_ready_04"/>
+			<action name="버프를걸어준다" arg1="701" arg2="70000096" arg3="1"/> <!-- 현기증 없애 -->
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>
+			<action name="HideGuideSummary" entityID="20020020"/>
+		</condition>		
+
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001442" arg3="3" >   <!-- 소울바인더 퀘스트 진행 -->
+			<transition state="sb_ready_01"/>
+		</condition>	
+		
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001442" arg3="2" >   <!-- 소울바인더 퀘스트 진행 -->
+			<transition state="sb_ready_01"/>
+		</condition>	
+			
+	</state>
+	
+	<state name="sb_ready_01">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="145" arg2="1" />	
+        </onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001443" arg3="2" >   <!-- 소울바인더 퀘스트 진행 -->
+			<transition state="sb_ready_02"/>
+			<action name="버프를걸어준다" arg1="701" arg2="70000096" arg3="1"/> <!-- 현기증 없애 -->
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>
+			<action name="HideGuideSummary" entityID="20020020"/>
+		</condition>	
+
+	</state>
+	
+	
+	<state name="sb_ready_02">
+        <onEnter>
+			<action name="CreateWidget" arg1="SceneMovie"/>
+			<action name="WidgetAction" arg1="SceneMovie" arg2="Clear"/>
+			<action name="PlaySceneMovie" fileName="Cut_BeyondLink_CCTV.swf" movieID='1' /> 
+        </onEnter>
+		<condition name="WidgetCondition" arg1="SceneMovie" arg2="IsStop" arg3="1">
+			<transition state="sb_ready_03"/> 
+		</condition>		
+	</state>
+	
+	<state name="sb_ready_03">
+        <onEnter>			
+		<action name="몬스터를생성한다" arg1="144" arg2="1" />	
+		<action name="몬스터를생성한다" arg1="145" arg2="1" />	
+        </onEnter>		
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001443" arg3="3" >   <!-- 소울바인더 퀘스트 진행 -->
+			<transition state="sb_ready_04"/>
+		</condition>					
+	</state>
+	
+
+	<state name="sb_ready_04">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="201" arg2="1" />	
+			<action name="ShowGuideSummary" entityID="40010" textID="40010"/> <!-- 모든 몬스터를  처치하세요 -->
+        </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="201">
+            <transition state="sb_ready_05" />
+			<action name="버프를걸어준다" arg1="701" arg2="70000094" arg3="1"/> <!-- 현기증 버프 -->
+			<action name="HideGuideSummary" entityID="40010"/>
+        </condition>
+	</state>
+	
+	<state name="sb_ready_05">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+        </onEnter>				
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="sb_ready_06" />
+			</condition>			
+	</state>
+	
+	<state name="sb_ready_06">
+        <onEnter>
+			<action name="SetPcEmotionLoop" arg1="Push_A" arg2="5000" />
+			<action name="버프를걸어준다" arg1="701" arg2="70000095" arg3="1"/> <!-- 현기증 2단계 버프 -->
+        </onEnter>			
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="sb_ready_07" />
+			</condition>			
+	</state>
+	
+	<state name="sb_ready_07">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="4"/>
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000" > 
+				<action name="버프를걸어준다" arg1="701" arg2="70000096" arg3="1"/> <!-- 현기증 없애 -->
+				<transition state="sb_ready_08" />
+			</condition>			
+	</state>
+		
+		
+	<state name="sb_ready_08">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="52000017" arg2="1"/>
+        </onEnter>			
+	</state>
+
+	<!-- 이도 공간에서 돌아온 소울 바인더 -->
+		
+	<state name="sb_ready_b_02">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="52000040" arg2="2"/>
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="sb_ready_b_03" />
+			</condition>		
+	</state>
+	
+	
+	<state name="sb_ready_b_03">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="221,222,223" arg2="1" />	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라경로를선택한다" arg1="7001,7002,7003" arg2="0"/>
+        </onEnter>
+		<condition name="WaitTick" waitTick="11000" > 
+				<transition state="sb_ready_b_04" />
+		</condition>	
+	</state>
+
+	<state name="sb_ready_b_04">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7100" arg2="0"/>	
+			<action name="NPC를이동시킨다" arg1="221" arg2="MS2PatrolData_2101" />
+			<action name="NPC를이동시킨다" arg1="222" arg2="MS2PatrolData_2102" />
+			<action name="NPC를이동시킨다" arg1="223" arg2="MS2PatrolData_2103" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000" > 
+				<transition state="sb_ready_b_06" />
+		</condition>	
+	</state>	
+		
+	<state name="sb_ready_b_06">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001726" arg3="$52000040_QD__MAIN__26$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="sb_ready_b_07_skip" />
+			<action name="SetNpcEmotionLoop" arg1="221" arg2="Talk_A" arg3="5000" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="4000" > 
+			<transition state="sb_ready_b_07_skip" />
+		</condition>	
+	</state>
+
+	<state name="sb_ready_b_07_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="sb_ready_b_07"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="sb_ready_b_07">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001728" arg3="$52000040_QD__MAIN__27$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="sb_ready_b_08_skip" />
+			<action name="SetNpcEmotionLoop" arg1="222" arg2="Talk_A" arg3="5000" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="4000" > 
+			<transition state="sb_ready_b_08_skip" />
+		</condition>	
+	</state>
+
+	<state name="sb_ready_b_08_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="sb_ready_b_08"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="sb_ready_b_08">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001726" arg3="$52000040_QD__MAIN__28$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="sb_ready_b_09_skip" />
+			<action name="SetNpcEmotionLoop" arg1="221" arg2="Talk_A" arg3="5000" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="4000" > 
+			<transition state="sb_ready_b_09_skip" />
+		</condition>	
+	</state>		
+
+	<state name="sb_ready_b_09_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="sb_ready_b_09"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="sb_ready_b_09">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001724" arg3="$52000040_QD__MAIN__29$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="sb_ready_b_10_skip" />
+			<action name="SetNpcEmotionLoop" arg1="223" arg2="Talk_A" arg3="5000" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="4000" > 
+			<transition state="sb_ready_b_10_skip" />
+		</condition>	
+	</state>
+
+	<state name="sb_ready_b_10_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="sb_ready_b_10"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="sb_ready_b_10">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="145" arg2="1" />	
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>
+			<action name="카메라경로를선택한다" arg1="7010" arg2="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+        </onEnter>
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="sb_ready_b_11" />
+		</condition>	
+	</state>
+	
+	<state name="sb_ready_b_11">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="4"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onEnter>
+	</state>
+	
+	<state name="sb_ready_b_12">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="145" arg2="1" />	
+			<action name="몬스터를생성한다" arg1="221,222,223" arg2="1" />	
+			<action name="NPC를이동시킨다" arg1="221" arg2="MS2PatrolData_2101" />
+			<action name="NPC를이동시킨다" arg1="222" arg2="MS2PatrolData_2102" />
+			<action name="NPC를이동시킨다" arg1="223" arg2="MS2PatrolData_2103" />
+        </onEnter>
+	</state>
+
+	<state name="sb_ready_b_13">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="145" arg2="1" />	
+        </onEnter>
+	</state>		
+		
+	<state name="sb_end">
+        <onEnter>
+        </onEnter>
+	</state>		
+		
+	<state name="ready_02">
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_2001"/>
+			<action name="몬스터를생성한다" arg1="101,102" arg2="1" />	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+ 		<action name="카메라경로를선택한다" arg1="7001,7002,7003" arg2="0"/>
+        </onEnter>	
+		
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="ready_03" />
+		</condition>		
+	</state>
+
+	
+	<state name="ready_03">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__0$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="ready_04_skip" />
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Idle_A" arg3="5000" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="ready_04" />
+		</condition>				
+	</state>	
+	
+	<state name="ready_04_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="ready_04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="ready_04">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__1$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="ready_05_skip" />
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Idle_A" arg3="5000" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="ready_05" />
+		</condition>	
+	</state>	
+	
+	<state name="ready_05_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="ready_05"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="ready_05">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__2$" arg4="5"/>
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Idle_A" arg3="5000" />
+			<action name="스킵을설정한다" arg1="ready_06_skip" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="ready_06" />
+		</condition>				
+	</state>	
+	
+	<state name="ready_06_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="ready_06"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="ready_06">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7004" arg2="0"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001546" arg3="$52000040_QD__MAIN__3$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="ready_07_skip" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="ready_07" />
+		</condition>		
+	</state>	
+	
+	<state name="ready_07_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="ready_07"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	
+	<state name="ready_07">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7004" arg2="0"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__4$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="ready_08_skip" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="ready_08" />
+		</condition>				
+	</state>	
+	
+	<state name="ready_08_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="ready_08"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="ready_08">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7004" arg2="0"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001546" arg3="$52000040_QD__MAIN__5$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="ready_09_skip" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="ready_09" />
+		</condition>			
+	</state>
+	
+	
+	<state name="ready_09_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="ready_09"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="ready_09">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7004" arg2="0"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__6$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="ready_10_skip" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="ready_10" />
+		</condition>				
+	</state>
+
+	<state name="ready_10_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="ready_10"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="ready_10">
+        <onEnter>
+			<action name="CreateWidget" arg1="SceneMovie"/>
+			<action name="WidgetAction" arg1="SceneMovie" arg2="Clear"/>
+			<action name="PlaySceneMovie" fileName="Cut_BeyondLink_CCTV.swf" movieID='1' /> 
+        </onEnter>
+		<condition name="WidgetCondition" arg1="SceneMovie" arg2="IsStop" arg3="1">
+			<transition state="start_01"/> 
+		</condition>		
+	</state>
+
+	
+	<state name="start_01">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__7$" arg4="3"/>
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" >		
+			<transition state="start_01_ready" />
+		</condition>	
+	</state>
+
+	<state name="start_01_ready">
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_2004"/>
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_2003" />
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_2002" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="1000" >		
+			<transition state="start_02" />
+		</condition>	
+	</state>		
+	
+	<state name="start_02">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7005" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="103" arg2="1" />	
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__8$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_02_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_03" />
+		</condition>	
+	</state>	
+	
+	<state name="start_02_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="start_03">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001546" arg3="$52000040_QD__MAIN__9$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_03_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_04" />
+		</condition>	
+	</state>	
+	
+	<state name="start_03_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="start_04">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__10$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="start_04_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="4000" >		
+			<transition state="start_05" />
+		</condition>	
+	</state>	
+	
+	<state name="start_04_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_05"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="start_05">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7006, 7007" arg2="0"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__11$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_05_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_06" />
+		</condition>	
+	</state>	
+	
+	<state name="start_05_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_06"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="start_06">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__12$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="start_06_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="4000" >		
+			<transition state="start_07" />
+		</condition>	
+	</state>
+
+	<state name="start_06_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_07"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="start_07">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001546" arg3="$52000040_QD__MAIN__13$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_07_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_08" />
+		</condition>	
+	</state>	
+	
+	<state name="start_07_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_08"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	
+	<state name="start_08">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7008" arg2="0"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__14$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_08_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_09" />
+		</condition>	
+	</state>	
+	
+	<state name="start_08_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_09"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="start_09">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__15$" arg4="3"/>
+			<action name="스킵을설정한다" arg1="start_09_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" >		
+			<transition state="start_10" />
+		</condition>	
+	</state>	
+	
+	<state name="start_09_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_10"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	
+	<state name="start_10">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001545" arg3="$52000040_QD__MAIN__16$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_10_skip" />
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_11" />
+		</condition>	
+	</state>
+
+	<state name="start_10_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_11"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="start_11">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__17$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="start_11_skip" />	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="4000" >		
+			<transition state="start_12" />
+		</condition>	
+	</state>	
+
+	<state name="start_11_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_12"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="start_12">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001546" arg3="$52000040_QD__MAIN__18$" arg4="3"/>
+			<action name="스킵을설정한다" arg1="start_12_skip" />				
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" >		
+			<transition state="start_13" />
+		</condition>	
+	</state>
+	
+	<state name="start_12_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_13"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="start_13">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__19$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_13_skip" />			
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_14" />
+		</condition>	
+	</state>
+	
+	<state name="start_13_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_14"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="start_14">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__20$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_14_skip" />				
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_15" />
+		</condition>	
+	</state>
+	
+	<state name="start_14_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_15"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="start_15">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__21$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_15_skip" />				
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_16" />
+		</condition>	
+	</state>
+	
+	<state name="start_15_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_16"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="start_16">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__22$" arg4="5"/>
+			<action name="스킵을설정한다" arg1="start_16_skip" />				
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_17" />
+		</condition>	
+	</state>
+	
+	<state name="start_16_skip">
+		<onEnter>					
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="start_17"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="start_17">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001546" arg3="$52000040_QD__MAIN__23$" arg4="3"/>
+			<action name="스킵을설정한다" arg1="start_17_skip" />				
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000" >		
+			<transition state="start_18" />
+		</condition>	
+	</state>
+	
+	
+	<state name="start_18">
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_2005" />
+			<action name="카메라경로를선택한다" arg1="7009" arg2="0"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__24$" arg4="5"/>
+        </onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_19" />
+		</condition>	
+	</state>
+	
+	<state name="start_19">
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001548" arg3="$52000040_QD__MAIN__25$" arg4="5"/>
+		</onEnter>	
+		<condition name="WaitTick" waitTick="5000" >		
+			<transition state="start_20" />
+			<action name="몬스터소멸시킨다" arg1="103,102,101"/>
+		</condition>	
+	</state>
+	
+	<state name="start_20">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="7010" arg2="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000" >		
+			<transition state="start_21" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="몬스터를생성한다" arg1="104,111,112" arg2="1" />	
+			<action name="연출UI를설정한다" arg1="2"/>
+		</condition>	
+	</state>
+	
+	
+	<state name="start_21">
+        <onEnter>
+		<action name="ShowGuideSummary" entityID="20020020" textID="20020020"/> 
+		</onEnter>	
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002635" arg3="2" >   
+			<transition state="end_01"/>
+			<action name="HideGuideSummary" entityID="20020020"/>
+		</condition>		
+	</state>
+	
+		<state name="start_22">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="104,111,112" arg2="1" />	
+		</onEnter>	
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="40002635" arg3="2" >   
+			<transition state="end_01"/>
+			<action name="HideGuideSummary" entityID="20020020"/>
+		</condition>	
+	</state>	
+	
+	<state name="end_01">
+        <onEnter>
+		</onEnter>	
+	</state>
+</ms2>
+
+

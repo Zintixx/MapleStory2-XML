@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+<!-- MS2TriggerModel ID : 999991, 자쿰 몸통과 싸울 때 자쿰팔이 소환되면, 자쿰 몸체에 무적 버프 걸거, 자쿰팔 다 제거되면 자쿰몸 무적버프 지우는 기능의 트리거임-->
+
+  <state name="시작">
+    <onEnter>
+		<action name="SetUserValue" key="SummonZakumArmRegenCheck" value="0" /> <!-- 변수 0 초기화, 이 변수는 자쿰 몸통AI에서 자쿰손 소환할 때 이 변수 1로 만드는 신호를 보내서, 자쿰 손 마리수 체크 작업 시작하도록 함 -->
+		<action name="SetUserValue" key="SummonZakumArmMany" value="0" /> <!-- 변수 0 초기화, 이 변수 신호는 자쿰 몸통하고 싸울때 등장하는 소환몹 자쿰팔AI에서 보냄 -->
+    </onEnter>
+	
+		<condition name="유저를감지했으면" arg1="199">
+			<transition state="대기중" /> 
+		</condition>
+			
+
+  </state>
+ 
+  
+  <state name="대기중">
+    <onEnter>
+    </onEnter>  
+		<condition name="UserValue" key="SummonZakumArmRegenCheck" value="1" > <!-- 자쿰몸통 AI에서 이 변수 1 신호를 보내서 자쿰팔 소환을 소환하는데, 트리거는 이 변수 1 신호를 받게 되어서 자쿰팔 등장 유무를 알수있게 되는 것임-->
+			<transition state="자쿰몸통무적버프로직_시작대기중"/>	
+		</condition>	  
+  </state>		
+  
+  
+  <state name="자쿰몸통무적버프로직_시작대기중">
+    <onEnter>
+    </onEnter>  
+		<condition name="WaitTick" waitTick="4000" >  <!-- 중요!: 자쿰팔 리젠 동작 끝날때 쯤 버프 걸도록 설정함, 자쿰팔 리젠 애니 길이는 약 3.74초 임 이 시간보다 넉넉히 길게 설정함-->
+			<transition state="자쿰몸통무적버프로직_작동"/>	
+		</condition>	  
+  </state>		
+  
+  
+  <state name="자쿰몸통무적버프로직_작동">
+    <onEnter>
+		<!-- 자쿰 몸통에 일단 무적 버프 부여함-->
+	
+		<!-- 어려운 난이도 일반 난이도 어떤 곳에서 실행되는지 알지 못하니 2개 다 부여함 , 무적 애디셔널 50000265(레벨1) -->
+		<action name="버프를걸어준다" arg1="2011" arg2="50000265" arg3="1" arg4="1" arg5="0" />  <!-- 어려움 난이도 자쿰몸 스폰 ID가  arg1 = 2011    arg3="1" 은 애디셔널의 레벨, arg4="1" 은 대상이 몬스터라는 뜻 참고로 arg4="0"은 플레이어-->
+		<action name="버프를걸어준다" arg1="2012" arg2="50000265" arg3="1" arg4="1" arg5="0" />  <!-- 일반  난이도 자쿰몸 스폰 ID가  arg1 = 2012 -->	
+    </onEnter>
+		
+		<condition name="UserValue" key="SummonZakumArmMany" value="0" > <!-- 모든 자쿰팔 제거 되어서 이 변수 0이 되면, 버프 제거함 -->
+			<transition state="자쿰몸통무적버프_제거대기"/>	
+		</condition>	
+			
+		
+  </state>
+  
+  <state name="자쿰몸통무적버프_제거대기">
+    <onEnter>
+
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="1000" > <!-- 마지막 자쿰팔 죽이면 1초 뒤에 버프 사라지도록 함 -->
+			<transition state="자쿰몸통무적버프_제거작업" />
+		</condition>						
+		
+  </state>
+  
+  
+  <state name="자쿰몸통무적버프_제거작업">
+    <onEnter>
+		<!-- 어려운 난이도 일반 난이도 어떤 곳에서 실행되는지 알지 못하니 2개 다 제거함, 몬스터의 애디셔널을 트리거로 제거할 때는  NpcRemoveAdditionalEffect 사용해야 함 , 무적 애디셔널 50000265(레벨1) -->
+		<action name="NpcRemoveAdditionalEffect" spawnPointID="2011" additionalEffectID="50000265"/>  <!-- 어려움 난이도 자쿰몸 스폰 ID가  2011 -->
+		<action name="NpcRemoveAdditionalEffect" spawnPointID="2012" additionalEffectID="50000265"/>  <!-- 일반  난이도 자쿰몸 스폰 ID가  2012 -->
+		<action name="SetUserValue" key="SummonZakumArmRegenCheck" value="0" /> <!-- 자쿰팔 제거되고 무적버프 제거되었으면 이 변수 0 초기화 시켜 "대기중" 상태가 되도록 함 -->	
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="1200" > 
+			<transition state="대기중" />
+		</condition>						
+		
+  </state>
+
+
+  
+
+	<state name="종료">
+	</state>
+  
+</ms2>

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 폐쇄된 객실 : 할로윈 퀘스트 연출 트리거 -->
+<ms2>
+    <state name="standby">	
+		<onEnter>  
+            <action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>												
+		</onEnter>  		
+		<condition name="유저를감지했으면" arg1="9000" > 
+			<transition state="openingscene_start"/> 	 
+		</condition> 
+		<onExit> 
+		</onExit>
+    </state>	
+
+    <state name="openingscene_start">	
+		<onEnter>  
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="VisibleMyPC" isVisible="0"/>					
+			<action name="카메라경로를선택한다" arg1="8000,8001" arg2="0"/> 
+			<action name="몬스터를생성한다" arg1="101" arg2="0"/>		<!-- 연출용 NPC 준비 : 몽슈슈만 생성 -->		
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> 			
+			<action name="SetSceneSkip" arg1="openingskip_1" arg2="exit"/> <!--openingscene 전체스킵-->			
+		</onEnter>  		
+			<condition name="WaitTick" waitTick="2000" > 
+			<transition state="openingscene_1_1"/> 	 
+		</condition> 
+		<onExit> 
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>				<!-- 불끄기 -->
+		</onExit>
+    </state>	
+
+	<state name="openingscene_1_1">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>				<!-- 불켜기 -->	
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> 		
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$63000071_CS__63000071_MAIN__0$" duration="2500" delayTick="1000"/> <!--내 유언장 내놔!-->
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Attack_01_A,Attack_01_B"/>
+		</onEnter> 
+			<condition name="WaitTick" waitTick="3500" > 
+				<transition state="openingscene_1_2" /> 
+			</condition>
+		<onExit> 		
+		</onExit> 
+	</state>	
+
+	<state name="openingscene_1_2">
+		<onEnter>	
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Attack_Idle_A" arg3="3500"/>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$63000071_CS__63000071_MAIN__1$" duration="2500" delayTick="500"/><!--내 딸을! 내 딸을 찾아줘!-->
+		</onEnter> 
+			<condition name="WaitTick" waitTick="3500" > 
+				<transition state="openingscene_1_3" /> 
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="openingscene_1_3">
+		<onEnter>	
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Stun_A" arg3="8000"/>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$63000071_CS__63000071_MAIN__2$" duration="2500" delayTick="500"/><!--마리엔! 어디있니-->
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$63000071_CS__63000071_MAIN__3$" duration="3500" delayTick="4000"/><!--모든게 잘못됐어! 가만두지 않겠어!!-->
+		</onEnter> 
+			<condition name="WaitTick" waitTick="8500" > 
+				<transition state="openingscene_2" /> 
+			</condition>
+		<onExit> 
+			<action name="몬스터를생성한다" arg1="102" arg2="0"/>		<!-- 연출용 NPC : 마리엔 등장 -->	
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> 	
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/> 	
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>				<!-- 불끄기 -->
+		</onExit> 
+	</state>	
+	
+	<state name="openingscene_2">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>				<!-- 불켜기 -->
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> 				
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$63000071_CS__63000071_MAIN__4$" duration="2500" delayTick="500"/><!--아빠… -->
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$63000071_CS__63000071_MAIN__5$" duration="2500" delayTick="4000" /><!--아빠 나 여기있어… -->
+		</onEnter> 
+			<condition name="WaitTick" waitTick="7000" > 
+				<transition state="openingscene_3" /> 
+			</condition>
+		<onExit> 
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_marien3" />				
+		</onExit> 
+	</state>
+
+	<state name="openingscene_3">
+		<onEnter>	
+			<action name="AddCinematicTalk" npcID="11004310" msg="$63000071_CS__63000071_MAIN__6$" duration="2500" /><!--우리 아빠... 날 보지 못해 -->
+			<action name="AddCinematicTalk" npcID="11004310"  msg="$63000071_CS__63000071_MAIN__7$" duration="3000" /><!--화가 나서 그래 -->
+			<action name="AddCinematicTalk" npcID="11004310"  msg="$63000071_CS__63000071_MAIN__8$" duration="3500" /><!--우리 아빠가 편하게 눈감을 수 있도록 도와줘 -->
+		</onEnter> 
+			<condition name="WaitTick" waitTick="9500" > 
+				<transition state="openingscene_end" /> 
+			</condition>
+		<onExit> 
+			<!--<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>	-->
+		</onExit> 
+	</state>
+	
+	<state name="openingscene_end">
+		<onEnter>			
+			<action name="카메라리셋" interpolationTime="2.0"/>			
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+
+		</onEnter>							
+			<condition name="WaitTick" waitTick="1500" > 
+				<transition state="Bossbattle_ready" />
+			</condition>
+		<onExit>
+			<action name="몬스터소멸시킨다" arg1="101,102"/>	
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> 		
+			<action name="이펙트를설정한다" arg1="5003" arg2="1"/>			
+		</onExit> 
+	</state>		
+
+	<state name="openingskip_1">  
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="2.0"/>		
+			<action name="몬스터소멸시킨다" arg1="101,102"/>		
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> 	
+			<action name="이펙트를설정한다" arg1="5003" arg2="1"/>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>				<!-- 불켜기 -->
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="Bossbattle_ready"/>
+			</condition>
+		<onExit> 
+		</onExit> 	
+	</state>	
+			
+	<state name="Bossbattle_ready">		<!-- 전투준비 -->
+		<onEnter>						
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/>		
+			<action name="이펙트를설정한다" arg1="5003" arg2="0"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>	
+			<action name="VisibleMyPC" isVisible="1"/>	
+			<action name="몬스터를생성한다" arg1="201" arg2="0" />			
+		</onEnter>							
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="Bossbattle_start" />
+			</condition>
+		<onExit> 
+			<!--<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>-->
+		</onExit> 
+	</state>	
+
+	<state name="Bossbattle_start">
+		<onEnter>
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="201">
+				<transition state="endingscene_start"/>
+			</condition>
+		<onExit> 
+			<action name="몬스터를생성한다" arg1="103,104" arg2="0" />
+			<action name="이펙트를설정한다" arg1="5004" arg2="1"/>
+		    <action name="이펙트를설정한다" arg1="5005" arg2="1"/>
+			<action name="몬스터소멸시킨다" arg1="201"/>		
+		</onExit> 			
+	</state>  	
+
+    <state name="endingscene_start">	
+		<onEnter>  
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="VisibleMyPC" isVisible="0"/>					
+			<action name="카메라경로를선택한다" arg1="8000,8001" arg2="0"/> 	
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>		<!-- 불끄기 -->	
+			<action name="SetSceneSkip" arg1="endingskip_1" arg2="exit"/> <!--endingscene 전체스킵-->			
+			<action name="이펙트를설정한다" arg1="5004" arg2="0"/>
+		    <action name="이펙트를설정한다" arg1="5005" arg2="0"/>
+		</onEnter>  		
+			<condition name="WaitTick" waitTick="3000" > 
+			<transition state="endingscene_1"/> 	 
+		</condition> 
+		<onExit> 
+		</onExit>
+    </state>
+
+	<state name="endingscene_1">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>		<!-- 불켜기 -->			
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$63000071_CS__63000071_MAIN__9$" duration="2500" delayTick="500" /><!--아빠. 이제 다 끝났어 -->
+			<action name="AddBalloonTalk" spawnPointID="103" msg="$63000071_CS__63000071_MAIN__10$" duration="2500" delayTick="4000"/><!--오, 마리엔! 우리 아가! -->
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$63000071_CS__63000071_MAIN__11$" duration="2500" delayTick="8000"/><!--보고 싶었어. 아빠… -->
+			<action name="AddBalloonTalk" spawnPointID="103" msg="$63000071_CS__63000071_MAIN__12$" duration="2500" delayTick="11500"/><!--아빠가 죽고 얼마나 고생이 많았니 -->
+			<action name="AddBalloonTalk" spawnPointID="103" msg="$63000071_CS__63000071_MAIN__13$" duration="2500" delayTick="15000"/><!--아빤 너무 마음이 아팠단다 -->
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$63000071_CS__63000071_MAIN__14$" duration="2500" delayTick="19000"/><!--괜찮아... 이제 다 끝났잖아 -->
+		</onEnter> 
+			<condition name="WaitTick" waitTick="22000" > 
+				<transition state="endingscene_2" /> 
+			</condition>
+		<onExit>
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_marien" />		
+		</onExit> 
+	</state>
+
+	<state name="endingscene_2">
+		<onEnter>							
+			<action name="카메라경로를선택한다" arg1="8004" arg2="0"/> 	
+			<action name="AddCinematicTalk" npcID="11004310" msg="$63000071_CS__63000071_MAIN__15$" duration="6000" /><!--도와줘서 고마웠어.\n덕분에 나쁜 사람이 누군지 알게 됐어.\n그리고 호텔의 진짜 주인이 지배인 아저씨란 것도 알게 됐어.-->			
+		</onEnter> 
+			<condition name="WaitTick" waitTick="5500" > 
+				<transition state="endingscene_3" /> 
+			</condition>
+		<onExit>
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_marien1" />				
+		</onExit> 
+	</state>
+
+	<state name="endingscene_3">
+		<onEnter>							
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/> 	
+		</onEnter> 
+			<condition name="WaitTick" waitTick="500" > 
+				<transition state="endingscene_4" /> 
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="endingscene_4">
+		<onEnter>								
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$63000071_CS__63000071_MAIN__16$" duration="3000" delayTick="500"/><!--아빠. 여긴 이제 우리가 있을 곳이 아니야 -->
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$63000071_CS__63000071_MAIN__17$" duration="3000" delayTick="4000" /><!--우리가 가야할 곳으로 돌아가자 -->
+		</onEnter> 
+			<condition name="WaitTick" waitTick="7500" > 
+				<transition state="endingscene_5" /> 
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="endingscene_5">
+		<onEnter>							
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_papa" />	
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_marien2" />	
+		</onEnter> 
+		<condition name="NPC를감지했으면" arg1="9001" arg2="0"> 
+				<transition state="endingscene_end" /> 
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+   <state name="endingscene_end"> 
+        <onEnter>						
+			<action name="몬스터소멸시킨다" arg1="103"/>	
+			<action name="몬스터소멸시킨다" arg1="104"/>
+			<action name="이펙트를설정한다" arg1="5006" arg2="1"/>			
+			<action name="SetSceneSkip" arg1="" arg2=""/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="500" > 
+				<transition state="final" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>  	
+	
+	<state name="endingskip_1">  
+		<onEnter>							
+			<action name="몬스터소멸시킨다" arg1="103"/>	
+			<action name="몬스터소멸시킨다" arg1="104"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>		<!-- 불켜기 -->						
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="final"/>
+			</condition>
+		<onExit> 
+		</onExit> 	
+	</state>
+	
+	<state name="final">
+		<onEnter>			
+			<action name="카메라리셋" interpolationTime="2.0"/>			
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="VisibleMyPC" isVisible="1"/>			
+			<action name="이펙트를설정한다" arg1="5006" arg2="0"/>						
+		</onEnter>							
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="scene_fin" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="scene_fin">
+    </state>	
+	
+</ms2>

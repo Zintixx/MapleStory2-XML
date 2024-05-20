@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+<state name="idle">
+    <onEnter>
+		<action name="ShadowExpedition" type="CloseBossGauge" /> 
+		<action name="오브젝트반응설정한다" arg1="10002071" arg2="1" />
+		<action name="오브젝트반응설정한다" arg1="10002072" arg2="1" />
+		<action name="오브젝트반응설정한다" arg1="10002073" arg2="1" />
+		<action name="오브젝트반응설정한다" arg1="10002074" arg2="1" />
+		<action name="오브젝트반응설정한다" arg1="10002075" arg2="1" />
+		<action name="오브젝트반응설정한다" arg1="10002076" arg2="1" />
+		<action name="오브젝트반응설정한다" arg1="10002077" arg2="1" />
+		<action name="메쉬를설정한다" arg1="1001" arg2="1" arg3="0" arg4="0" arg5="0" />
+		<action name="메쉬를설정한다" arg1="1002" arg2="0" arg3="0" arg4="0" arg5="0" />
+		<action name="메쉬를설정한다" arg1="1101-1199" arg2="0" arg3="0" arg4="0" arg5="0" />
+		<action name="메쉬를설정한다" arg1="1201-1220" arg2="0" arg3="0" arg4="0" arg5="0" />
+		<action name="메쉬를설정한다" arg1="1801,1802" arg2="1" arg3="0" arg4="0" arg5="0" />
+		<action name="몬스터를생성한다" arg1="101,102,103,104" arg2="0" />
+		<action name="몬스터를생성한다" arg1="199" arg2="0" />
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="701">
+			<transition state="DungeonStart"/>		
+			<!--<transition state="CheckUserCount"/>-->
+		</condition>			
+    <onExit>
+    </onExit>
+  </state>
+
+  <!--<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />-->
+  <state name="DungeonStart">
+    <onEnter>
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="701">
+			<transition state="Ready"/>
+		</condition>			
+    <onExit>
+    </onExit>
+  </state>
+   
+  <state name="Ready">
+    <onEnter>
+		<action name="연출UI를설정한다" arg1="1"/> 
+		<action name="연출UI를설정한다" arg1="3"/> 
+		<action name="스킵을설정한다" arg1="start"/>
+		<action name="카메라경로를선택한다" arg1="8100,8101,8102" arg2="0"/>
+ 		<action name="SetAmbientLight" arg1="120, 120, 120"/>	
+		<action name="SetDirectionalLight" arg1="10, 10, 10" arg2="0,0,0"/>
+		<action name="버프를걸어준다" arg1="701" arg2="71000009" arg3="1" arg4="0" arg5="0" />
+    </onEnter>
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="start" />
+		</condition>
+		
+		<condition name="ShadowExpeditionReachPoint" point="1000">
+			<action name="ShadowExpedition" type="CloseBossGauge" /> 
+			<transition state="boss_scene" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="start">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="1801,1802" arg2="0" arg3="0" arg4="0" arg5="0" />
+		<action name="연출UI를설정한다" arg1="0"/> 
+		<action name="연출UI를설정한다" arg1="2"/> 
+		<action name="카메라리셋" interpolationTime="0.0"/>	
+    </onEnter>
+		<condition name="ShadowExpeditionReachPoint" point="1000">
+			<action name="ShadowExpedition" type="CloseBossGauge" /> 
+			<transition state="boss_scene" />
+		</condition>
+    <onExit>
+		<action name="몬스터소멸시킨다" arg1="105,106,107,108,109,111,112,113,114,115,116,117,118,119"/>	
+		<action name="몬스터소멸시킨다" arg1="120,121,122,123,124,125,126,127,128,129"/>	
+		<action name="몬스터소멸시킨다" arg1="130,131,132,133,134,135,136"/>	
+		<action name="몬스터소멸시킨다" arg1="150,151,152,153,154,155,156"/>	
+    </onExit>
+  </state>
+  
+  
+   <state name="boss_scene">
+    <onEnter>
+<!-- 		<action name="메쉬를설정한다" arg1="1002" arg2="0" arg3="0" arg4="200" arg5="35" />
+		<action name="메쉬를설정한다" arg1="1201-1206" arg2="0" arg3="0" arg4="200" arg5="35" /> -->
+		<action name="이펙트를설정한다" arg1="7999" arg2="1"/>
+ 		<action name="몬스터를생성한다" arg1="1999" arg2="0" />
+		<action name="연출UI를설정한다" arg1="1"/> 
+		<action name="연출UI를설정한다" arg1="3"/> 
+		<action name="스킵을설정한다" arg1="boss"/>
+  		<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+    </onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="boss_scene_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="boss_scene_02">
+    <onEnter>
+	
+		<action name="스킵을설정한다" arg1="boss"/>
+  		<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+		<action name="카메라경로를선택한다" arg1="8006,8007" arg2="0"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="boss_scene_03" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="boss_scene_03">
+    <onEnter>
+		<action name="스킵을설정한다" arg1="boss"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="boss_scene_04" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="boss_scene_04">
+    <onEnter>
+  		<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+		<action name="스킵을설정한다" arg1="boss"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="boss" />
+		</condition>
+    <onExit>
+		<action name="카메라리셋" interpolationTime="0.0"/>	
+    </onExit>
+  </state>
+      
+  <state name="boss">
+    <onEnter>
+		<action name="연출UI를설정한다" arg1="0"/> 
+		<action name="연출UI를설정한다" arg1="2"/> 
+		<action name="카메라리셋" interpolationTime="0.0"/>	
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$52100041_QD__MAIN__0$" arg3="3000" />
+	  	<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+    </onEnter>
+	    <condition name="몬스터가죽어있으면" arg1="1999">
+            <transition state="dungeonClear_ready" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+ 
+   <state name="dungeonClear_ready">
+    <onEnter>
+    </onEnter>
+		<condition name="WaitTick" waitTick="1500">
+			<transition state="dungeonClear" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+ 
+   <state name="dungeonClear">
+    <onEnter>
+			<action name="유저를이동시킨다" arg1="52010068" arg2="6001"/>		
+<!-- 		<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/> -->
+<!-- 	 	<action name="SetAmbientLight" arg1="250, 250, 250"/>	
+		<action name="SetDirectionalLight" arg1="100, 100, 100" arg2="0,0,0"/> -->
+		<action name="이펙트를설정한다" arg1="7999" arg2="0"/>
+		<action name="이펙트를설정한다" arg1="7998" arg2="1"/>
+		<action name="DungeonClear" /> 
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+
+  
+</ms2>

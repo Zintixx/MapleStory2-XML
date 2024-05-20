@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="대기">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="901,902,903,904,905,906" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10000851" arg2="0"/>  		
+			<action name="메쉬를설정한다" arg1="6000" arg2="1" arg3="0" arg4="0" arg5="0" /> 
+        </onEnter>	
+				<condition name="유저를감지했으면" arg1="9000" >   
+			<transition state="딜레이01"/>
+		</condition> 
+	</state>
+	
+    <state name="딜레이01" posX="300" posY="199">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="10" arg2="2"/>
+				</onEnter>	
+				<condition name="시간이경과했으면" arg1="10"> 
+					<transition state="전투안내01"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="전투안내01" posX="300" posY="199">
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="100" textID="40010" /> <!-- 적을 모두 처치하세요 -->
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="901,902,903,904,905,906">
+					<transition state="죄수찾기01"/>
+		</condition>
+    <onExit> 
+    </onExit>
+    </state>		 
+
+    <state name="죄수찾기01" posX="300" posY="199">
+        <onEnter>
+			<action name="HideGuideSummary" entityID="100"/>
+			<action name="오브젝트반응설정한다" arg1="10000851" arg2="1"/>  		
+        </onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000851" arg2="0">
+					<transition state="죄수등장01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state> 
+
+    <state name="죄수등장01" posX="300" posY="199">
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="6000" arg2="0" arg3="0" arg4="0" arg5="0" /> 
+			<action name="타이머를설정한다" arg1="11" arg2="1"/>
+			<action name="몬스터를생성한다" arg1="101" arg2="0" />	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_1010" />
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="11"> 
+					<transition state="죄수등장02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state> 
+
+    <state name="죄수등장02" posX="300" posY="199">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="12" arg2="2"/>
+			<action name="몬스터를생성한다" arg1="201" arg2="0" />
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_2010" />
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="12"> 
+					<transition state="벨마등장01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state> 
+
+    <state name="벨마등장01" posX="300" posY="199">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="20" arg2="1"/>
+			<action name="몬스터를생성한다" arg1="301" arg2="0" />
+			<action name="카메라를선택한다" arg1="601" arg2="1"/>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="20"> 
+					<transition state="벨마대화01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state> 
+
+    <state name="벨마대화01" posX="300" posY="199">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="21" arg2="3"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000521" arg3="$52010008_QD__CATCHJAILBREAKER01__0$" arg4="3" />	
+			<action name="스킵을설정한다" arg1="벨마대화02대기"/>
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="21"> 
+					<transition state="벨마대화02대기"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state> 
+			
+    <state name="벨마대화02대기" posX="300" posY="199">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="벨마대화02"/> 
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	 
+
+    <state name="벨마대화02" posX="300" posY="199">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="22" arg2="3"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000521" arg3="$52010008_QD__CATCHJAILBREAKER01__1$" arg4="3" />	
+			<action name="스킵을설정한다" arg1="벨마대화03대기"/>
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="22"> 
+					<transition state="벨마대화03대기"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state> 
+			
+    <state name="벨마대화03대기" posX="300" posY="199">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="벨마대화03"/> 
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	 
+
+    <state name="벨마대화03" posX="300" posY="199">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="23" arg2="3"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000521" arg3="$52010008_QD__CATCHJAILBREAKER01__2$" arg4="3" />	
+			<action name="스킵을설정한다" arg1="벨마연출종료01"/>
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="23"> 
+					<transition state="벨마연출종료01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state> 
+	
+    <state name="벨마연출종료01" posX="300" posY="199">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="타이머를설정한다" arg1="30" arg2="1"/>
+			<action name="카메라를선택한다" arg1="601" arg2="0"/>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/> 
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="catchjailbreaker" />
+			</onEnter>
+				<condition name="시간이경과했으면" arg1="30">
+					<transition state="유저이동준비"/>  
+				</condition>
+		<onExit>
+		</onExit> 
+    </state>			
+	
+    <state name="유저이동준비" posX="300" posY="199">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="31" arg2="1"/>
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="31">
+					<transition state="유저이동시작"/>  
+				</condition>
+    <onExit>
+    </onExit>
+    </state> 	
+	
+    <state name="유저이동시작" posX="300" posY="199">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="02010019" arg2="2" arg3="9000" />	
+			<action name="몬스터소멸시킨다" arg1="101,201,301" />
+			<action name="몬스터소멸시킨다" arg1="901,902,903,904,905,906" />
+        </onEnter>	
+    <onExit> 
+    </onExit>
+    </state>			
+	
+</ms2>
+

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+<!-- 플레이어 감지 -->
+<!-- 슈팅전 체크 에디셔널 이펙트를 계속 걸어줌 -->
+
+   <state name="ready"> 
+	    <onEnter>
+		</onEnter>
+		<condition name="IsDungeonRoom" > 
+			<transition state="idle" />	
+		</condition>		
+		<condition name="!IsDungeonRoom" > 
+			<transition state="quest_idle" />	
+		</condition>	
+		<onExit>
+		</onExit>
+	</state> 
+
+  <state name="idle">
+      <onEnter>
+    </onEnter>
+		<condition name="UserValue" key="Error" value="1">	
+			<transition state="end"/>	
+		</condition> 		
+		<condition name="유저를감지했으면" arg1="702">
+			<transition state="error"/>
+		</condition>						
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+  <state name="error">
+    <onEnter>
+		<action name="무작위유저를이동시킨다" arg1="02000390" arg2="2" arg3="702" arg4="4" />
+    </onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="idle"/> 
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+
+  
+    <state name="quest_idle">
+      <onEnter>
+    </onEnter>
+		<condition name="UserValue" key="Error" value="1">	
+			<transition state="end"/>	
+		</condition> 		
+		<condition name="유저를감지했으면" arg1="702">
+			<transition state="quest_error"/>
+		</condition>	
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001518" arg3="1">
+			<transition state="end"/>
+		</condition>				
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001517" arg3="2">
+			<transition state="end"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+  <state name="quest_error">
+    <onEnter>
+		<action name="무작위유저를이동시킨다" arg1="02000390" arg2="2" arg3="702" arg4="4" />
+    </onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="quest_idle"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001518" arg3="1">
+			<transition state="end"/>
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="50001517" arg3="2">
+			<transition state="end"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="end">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="1001-1002" arg2="0" />
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state>
+  
+   
+</ms2>
+

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 그림자 터널 -->
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 		
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 				
+				</onEnter>	
+<!-- 레논 -->				
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002684" arg3="2" >  
+			<transition state="NpcRemove01"/>		
+		</condition> 			
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002684" arg3="1" >  
+			<transition state="NpcChange01"/>		
+		</condition> 							
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002683" arg3="3" >  
+			<transition state="NpcChange01"/>		
+		</condition> 			
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002683" arg3="2" >  
+			<transition state="NpcChange01"/>		
+		</condition> 					
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002683" arg3="1" >  
+			<transition state="NpcChange01"/>		
+		</condition> 						
+<!-- 레논이 있던 자리 -->		
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002682" arg3="3" >  
+			<transition state="NpcChange02"/>		
+		</condition> 				
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002682" arg3="2" >  
+			<transition state="NpcChange02"/>		
+		</condition> 						
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002682" arg3="1" >  
+			<transition state="NpcChange02"/>		
+		</condition> 					
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002681" arg3="3" >  
+			<transition state="NpcChange02"/>		
+		</condition> 		
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002681" arg3="2" >  
+			<transition state="NpcChange02"/>		
+		</condition> 				
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002681" arg3="1" >  	<!-- NPC 패트롤 연출 -->
+			<transition state="SetCamera01"/>		
+		</condition> 						
+    <onExit> 	
+    </onExit>
+    </state>
+		
+    <state name="NpcChange01" >
+        <onEnter>		
+			<action name="몬스터를생성한다" arg1="201" arg2="0" /> 					
+				</onEnter>					
+    <onExit> 	
+    </onExit>
+    </state>	
+		
+    <state name="NpcChange02" >
+        <onEnter>		
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> 								
+				</onEnter>					
+    <onExit> 	
+    </onExit>
+    </state>	
+
+<!-- NPC 패트롤 연출 -->
+    <state name="SetCamera01">
+        <onEnter>
+			<action name="SetSceneSkip" arg1="ActEnd01" arg2="exit"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  			
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="SetCamera02"/>
+		</condition> 	
+    <onExit>  
+    </onExit>
+    </state>			
+		
+    <state name="SetCamera02">
+        <onEnter>
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>		
+			<action name="몬스터를생성한다" arg1="102,301,401" arg2="0" /> 					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">	
+			<transition state="ActStart01"/>	
+		</condition> 
+    <onExit>  	
+    </onExit>
+    </state>			
+
+    <state name="ActStart01">
+        <onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 	
+			<action name="NPC를이동시킨다" arg1="301" arg2="MS2PatrolData_301" />		
+			<action name="NPC를이동시킨다" arg1="401" arg2="MS2PatrolData_401" />					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+			<transition state="ActStart02"/>
+		</condition> 	
+    <onExit>  
+    </onExit>
+    </state>			
+
+    <state name="ActStart02">
+        <onEnter>		
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_102" />					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+			<transition state="ActStart03"/>
+		</condition> 	
+    <onExit>  
+    </onExit>
+    </state>		
+		
+    <state name="ActStart03">
+        <onEnter>
+			<action name="카메라를선택한다" arg1="601" arg2="1"/>					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="3000">		
+			<transition state="ActEnd01"/>	
+		</condition> 
+    <onExit>  	
+    </onExit>
+    </state>
+   
+
+    <state name="ActEnd01">
+        <onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 	
+			<action name="몬스터소멸시킨다" arg1="301,401" />
+				</onEnter>	
+				<condition name="WaitTick" waitTick="500">	
+			<transition state="ActEnd02"/>
+		</condition> 	
+    <onExit>  
+    </onExit>
+    </state>		
+
+    <state name="ActEnd02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="102" />		
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> 	
+			<action name="카메라리셋" interpolationTime="1.0"/>					
+			</onEnter>
+				<condition name="WaitTick" waitTick="1500">
+					<transition state="ActEnd03"/>		
+				</condition>
+		<onExit>
+		</onExit>	
+    </state>	
+		
+    <state name="ActEnd03">	
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 					
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="QuestComplete"/>
+				</condition>			
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="QuestComplete" >
+		<onEnter>		
+			<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="triangularRelation" />		
+		</onEnter>
+    </state>	
+		
+</ms2>
+

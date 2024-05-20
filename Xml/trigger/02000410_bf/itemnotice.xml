@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  9992  -->
+  <!-- 이 트리거는 인페르녹이 플레이어를 강제로 죽이는 스킬을 사용하는데, 이때 필수 아이템을 사용하라고 알려주는 것을 트리거 기능을 사용해 알림-->
+<ms2>  
+ 
+ <state name="Ready">
+    <onEnter>
+		
+    </onEnter>
+	
+		<condition name="여러명의유저를감지했으면" arg1="750" arg2="1"> <!--   MS2TriggerBox   TriggerObjectID = 750, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면          750은 스타팅 지점 전투판 다  포함되는 범위, 700은 전투판만 포함되는 범위-->
+			<transition state="전투시작"/>
+		</condition>		
+		
+    <onExit>
+    </onExit>
+  </state>
+  
+ 
+   <state name="전투시작">
+    <onEnter>
+
+    </onEnter>
+		
+		<condition name="UserValue" key="ItemNotice01" value="1">  <!-- 인페르녹이 최초 등장하여 광역기폭발 공격할 때 이 신호를 보냄-->
+		
+			<transition state="필수아이템01" />
+			
+		</condition>				
+	
+    <onExit>
+    </onExit>
+  </state>
+  
+ 
+ 
+
+   <state name="필수아이템01"> 
+    <onEnter> 	
+		<action name="ShowGuideSummary" entityID="20041008" textID="20041008"/> <!-- 부활불가 되었고 이제 파티가 전멸되면 게임오버 된다는 내여을 시스템메시지를 통해서 알려줌, 참고로 파티원전멸 체크 트리거는 ClearCheck.xml 이것임 -->
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="8000" > 
+			<transition state="다음대기" />
+		</condition>
+	
+    <onExit>
+		<action name="HideGuideSummary" entityID="20041008"/>
+    </onExit>
+  </state>
+  
+  
+  
+    <state name="다음대기">
+    <onEnter>
+
+    </onEnter>
+		
+		<condition name="UserValue" key="ItemNotice02" value="1">  <!-- 인페르녹이 광역공격 할때 이 신호를 보냄-->
+		
+			<transition state="필수아이템02" />
+			
+		</condition>				
+	
+    <onExit>
+    </onExit>
+  </state> 
+  
+  
+   <state name="필수아이템02"> 
+    <onEnter> 	
+		<action name="ShowGuideSummary" entityID="20041009" textID="20041009"/> <!-- 부활불가 되었고 이제 파티가 전멸되면 게임오버 된다는 내여을 시스템메시지를 통해서 알려줌, 참고로 파티원전멸 체크 트리거는 ClearCheck.xml 이것임 -->
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="8000" > 
+			<transition state="종료"/>
+		</condition>
+	
+    <onExit>
+		<action name="HideGuideSummary" entityID="20041009"/>
+    </onExit>
+  </state>
+  
+  
+
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>
+	
+
+</ms2>

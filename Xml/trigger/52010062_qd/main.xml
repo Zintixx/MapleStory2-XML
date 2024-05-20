@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 52010062 오르비스 깊은 동굴 인페르녹 부활 연출 트리거 -->
+<ms2>
+    <state name="start" >
+        <onEnter>	
+				<action name="VisibleMyPC" isVisible="0"/>	<!-- 유저 투명 처리 -->				
+				<action name="몬스터를생성한다" arg1="2000" arg2="0" /> <!-- 인페르녹--> 
+				<action name="몬스터를생성한다" arg1="2001" arg2="0" /> <!-- 크림슨 발록-->
+				<action name="몬스터를생성한다" arg1="2002" arg2="0" /> <!-- 크림슨 발록-->
+				<action name="몬스터를생성한다" arg1="2003" arg2="0" /> <!-- 크림슨 발록-->		
+				<action name="이펙트를설정한다" arg1="6000,6001,6002,6003,6010,6011,6031,6032,6033,6041,6042,6043,6051,6052,6053" arg2="0" /> <!-- 에너지충전이펙트 -->
+		</onEnter>	
+			<condition name="CheckUser">	
+				<transition state="퀘스트조건체크"/>
+			</condition>			
+		<onExit> 
+		</onExit>
+    </state>
+	
+    <state name="퀘스트조건체크">	
+			<condition name="퀘스트유저를감지하면" arg1="9001" arg2="91000051" arg3="3"> 
+				<transition state="돌아가"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9001" arg2="91000051" arg3="2"> 
+				<transition state="돌아가"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9001" arg2="91000051" arg3="1"> 
+				<transition state="스케치01"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9001" arg2="91000050" arg3="3"> 
+				<transition state="돌아가"/>
+			</condition>
+			<condition name="!퀘스트유저를감지하면" arg1="9001" arg2="91000051" arg3="1"> 
+				<transition state="돌아가"/>
+			</condition>				
+		<onExit> 
+		</onExit>
+    </state>	
+	
+	<state name="스케치01" >
+		<onEnter>
+			<action name="SetSceneSkip" arg1="스킵완료" arg2="nextState"/> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set -->			
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>					
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="스케치02"/>
+		</condition>
+			<onExit> 
+			</onExit>
+	</state>
+
+	<state name="스케치02" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="카메라경로를선택한다" arg1="4000,4001" arg2="0"/>			
+			<action name="이펙트를설정한다" arg1="6001,6002,6003,6010" arg2="1" />					
+		</onEnter>
+		<condition name="WaitTick" waitTick="9000">
+			<transition state="스케치03"/>
+		</condition>
+			<onExit> 
+			</onExit>		
+	</state>
+
+	<state name="스케치03" >
+		<onEnter>		
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="크림슨발록대사01"/>
+			</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+				
+	<state name="크림슨발록대사01">
+        <onEnter> 
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>	
+ 			<action name="이펙트를설정한다" arg1="6003" arg2="1" />			
+			<action name="AddCinematicTalk" npcID="11003835" msg="$52010062_QD__main__0$" duration="7000" align="right" />	<!-- 2003 -->
+			<action name="카메라경로를선택한다" arg1="4002,4003" arg2="0"/>
+			<action name="연출UI를설정한다" arg1="3"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="7000">
+				<transition state="크림슨발록대사02"/>
+			</condition>	
+		<onExit> 
+		</onExit>		
+    </state>
+
+	<state name="크림슨발록대사02">
+        <onEnter> 		
+			<action name="이펙트를설정한다" arg1="6001" arg2="1" />  
+			<action name="AddCinematicTalk" npcID="11003833" msg="$52010062_QD__main__1$" duration="5000" align="right" />	<!-- 2001 -->
+			<action name="카메라경로를선택한다" arg1="4004,4005" arg2="0"/>
+			<action name="SetNpcEmotionSequence" arg1="2001" arg2="Attack_01_C,Attack_Idle_A" />			
+		</onEnter>		
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="크림슨발록대사03"/>
+			</condition>	
+		<onExit> 
+		</onExit>	
+    </state>
+	
+	<state name="크림슨발록대사03">
+        <onEnter> 		
+			<action name="이펙트를설정한다" arg1="6002" arg2="1" />		
+			<action name="AddCinematicTalk" npcID="11003834" msg="$52010062_QD__main__2$" duration="5000" align="right" />	<!-- 2002 -->
+			<action name="카메라경로를선택한다" arg1="4006,4007" arg2="0"/>
+			<action name="SetNpcEmotionSequence" arg1="2002" arg2="Attack_01_B,Attack_Idle_A" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="크림슨발록대사04"/>
+			</condition>	
+		<onExit> 
+		</onExit>	
+    </state>
+
+	<state name="크림슨발록대사04">
+        <onEnter> 		
+			<action name="이펙트를설정한다" arg1="6001,6002,6003" arg2="1" />			
+			<action name="AddCinematicTalk" npcID="11003793" msg="$52010062_QD__main__3$" duration="4000" align="right" />	<!-- 원경 스케치 시작,인페르녹깨어나는장면 준비 -->	
+			<!-- &lt;font size='50'&gt;아니…그분의 손에 들어갈 테지…&lt;/font&gt; -->
+			<action name="카메라경로를선택한다" arg1="4008,4009,4013,4014" arg2="0"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="인페르녹부활00"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>
+
+	<state name="인페르녹부활00">
+        <onEnter> 		
+			<!-- <action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>			 -->
+			<action name="이펙트를설정한다" arg1="6031,6032,6033" arg2="1" />				
+		</onEnter>	
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="인페르녹부활01"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>
+	
+	<state name="인페르녹부활01">
+        <onEnter> 				
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="0">
+				<transition state="인페르녹부활02"/>
+			</condition>	
+		<onExit> 
+		</onExit>		
+    </state>	
+
+	<state name="인페르녹부활02">
+        <onEnter> 		
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>			
+			<!-- <action name="카메라경로를선택한다" arg1="4010,4011,4012" arg2="0"/> -->			
+			<action name="이펙트를설정한다" arg1="6000" arg2="1" />	<!-- 화면흔들림 on -->		
+			<action name="이펙트를설정한다" arg1="6041,6042,6043" arg2="1" />				
+			<action name="SetTimeScale" enable="1" startScale="1.0" endScale="0.1" duration="10.0" interpolator="1" />  <!-- 10초간 느려지기 시작 -->				
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="인페르녹부활03"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>		
+
+	<state name="인페르녹부활03">
+        <onEnter> 					
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/>		
+			<action name="이펙트를설정한다" arg1="6051,6052,6053" arg2="1" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="인페르녹부활04"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>		
+
+	<state name="인페르녹부활04">
+        <onEnter> 					
+			<action name="이펙트를설정한다" arg1="6000" arg2="1" />	<!-- 화면흔들림 on -->		
+			<action name="이펙트를설정한다" arg1="6010" arg2="0" />	<!-- 대기이펙트 off -->			
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="인페르녹부활05"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>	
+
+	<state name="인페르녹부활05">
+        <onEnter> 	
+			<action name="이펙트를설정한다" arg1="6031,6032,6033,6041,6042,6043,6051,6052,6053" arg2="0" />		
+			<action name="이펙트를설정한다" arg1="6011" arg2="1" />	<!-- 폭주이펙트 on -->					
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="인페르녹부활06"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>		
+	
+	<state name="인페르녹부활06">
+        <onEnter> 
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/>			
+			<action name="SetOnetimeEffect" id="5" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="이펙트를설정한다" arg1="6031,6032,6033,6041,6042,6043,6051,6052,6053" arg2="0" />		
+			<action name="이펙트를설정한다" arg1="6000" arg2="0" />	<!-- 화면흔들림 off -->				
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="인페르녹대사00"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>
+
+	<state name="인페르녹대사00">
+        <onEnter> 		
+			<action name="카메라경로를선택한다" arg1="4010,4011,4012" arg2="0"/>			
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/>					
+			<action name="SetOnetimeEffect" id="5" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>								
+			<action name="연출UI를설정한다" arg1="3"/>					
+		</onEnter>		
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="인페르녹대사01"/>
+			</condition>	
+		<onExit> 
+		</onExit>	
+    </state>	
+	
+	<state name="인페르녹대사01">
+        <onEnter> 			
+			<action name="카메라경로를선택한다" arg1="4021" arg2="0"/>		
+			<action name="AddCinematicTalk" npcID="11003831" illustID="infernog_nomal" msg="$52010062_QD__main__4$" duration="4000" align="right" />	
+			<action name="이펙트를설정한다" arg1="6011" arg2="0" />	<!-- 폭주이펙트 off -->					
+			<action name="연출UI를설정한다" arg1="3"/>				
+		</onEnter>		
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="인페르녹대사02"/>
+			</condition>	
+		<onExit> 
+		</onExit>	
+    </state>
+
+	<state name="인페르녹대사02">
+        <onEnter> 		
+			<action name="AddCinematicTalk" npcID="11003831" illustID="infernog_nomal" msg="$52010062_QD__main__5$" duration="4000" align="right" />	
+			<action name="SetNpcEmotionSequence" arg1="2000" arg2="Attack_01_B" />	
+			<action name="이펙트를설정한다" arg1="6000" arg2="1" />	<!-- 화면흔들림 on -->				
+			<action name="이펙트를설정한다" arg1="6011" arg2="1" />	<!-- 폭주이펙트 on -->				
+		</onEnter>		
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="부하대사01"/>
+			</condition>	
+		<onExit> 
+		</onExit>	
+    </state>	
+
+	<state name="부하대사01">
+        <onEnter> 		
+			<action name="AddCinematicTalk" npcID="11003834" msg="$52010062_QD__main__6$" duration="4000" align="right" />	<!-- 2002 -->
+			<action name="이펙트를설정한다" arg1="6000" arg2="0" />	<!-- 화면흔들림 off -->	
+			<action name="이펙트를설정한다" arg1="6011" arg2="0" />	<!-- 폭주이펙트 on -->					
+			<action name="카메라경로를선택한다" arg1="4006,4007" arg2="0"/>
+			<action name="SetNpcEmotionSequence" arg1="2002" arg2="Attack_01_B,Attack_Idle_A" />			
+		</onEnter>		
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="부하대사02"/>
+			</condition>	
+		<onExit> 
+		</onExit>	
+    </state>	
+	
+	<state name="부하대사02">
+        <onEnter> 
+			<action name="AddCinematicTalk" npcID="11003835" msg="$52010062_QD__main__7$" duration="4000" align="right" />	<!-- 2003 -->
+			<action name="카메라경로를선택한다" arg1="4002,4003" arg2="0"/>
+			<action name="SetNpcEmotionSequence" arg1="2003" arg2="Attack_01_B,Attack_Idle_A" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="부하대사03"/>
+			</condition>	
+		<onExit> 
+		</onExit>		
+    </state>
+
+	<state name="부하대사03">
+        <onEnter> 		
+			<action name="AddCinematicTalk" npcID="11003833" msg="$52010062_QD__main__8$" duration="4000" align="right" />	<!-- 2001 -->
+			<action name="카메라경로를선택한다" arg1="4004,4005" arg2="0"/>
+			<action name="SetNpcEmotionSequence" arg1="2001" arg2="Attack_01_C,Attack_Idle_A" />			
+		</onEnter>		
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="인페르녹대사03"/>
+			</condition>	
+		<onExit> 
+		</onExit>	
+    </state>
+
+	<state name="인페르녹대사03">
+        <onEnter> 		
+			<action name="카메라경로를선택한다" arg1="4013,4012" arg2="0"/>			
+			<action name="AddCinematicTalk" npcID="11003831" illustID="infernog_nomal" msg="$52010062_QD__main__9$" duration="4000" align="right" />				
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="인페르녹대사04"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>		
+	
+	<state name="인페르녹대사04">
+        <onEnter> 		
+			<action name="카메라경로를선택한다" arg1="4021" arg2="0"/>		
+			<action name="AddCinematicTalk" npcID="11003831" illustID="infernog_nomal" msg="$52010062_QD__main__10$" duration="4000" align="right" />				
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="인페르녹대사05"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>		
+
+	<state name="인페르녹대사05">
+        <onEnter> 		
+			<action name="카메라경로를선택한다" arg1="4021,4022" arg2="0"/>					
+			<action name="AddCinematicTalk" npcID="11003831" illustID="infernog_nomal" msg="$52010062_QD__main__11$" duration="4000" align="right" />				
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="인페르녹대사06"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>		
+
+	<state name="인페르녹대사06">
+        <onEnter> 		
+			<action name="카메라경로를선택한다" arg1="4022,4023" arg2="0"/>			
+			<action name="SetOnetimeEffect" id="6" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/>				
+			<action name="AddCinematicTalk" npcID="11003831" illustID="infernog_nomal" msg="$52010062_QD__main__12$" duration="4000" align="right" />	
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> 			
+			<action name="이펙트를설정한다" arg1="6000" arg2="1" />	<!-- 흔들림 on -->				
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="연출종료"/>
+			</condition>	
+		<onExit> 
+		</onExit>			
+    </state>	
+ 
+    <state name="스킵완료" >  <!-- setsceneskip 1 fin -->	<!-- setsceneskip 1 fin -->	<!-- setsceneskip 1 fin -->			
+		<onEnter>
+			<action name="SetOnetimeEffect" id="5" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>				
+			<action name="이펙트를설정한다" arg1="6000,6001,6002,6003,6010,6011,6031,6032,6033,6041,6042,6043,6051,6052,6053" arg2="0" /> <!-- 이펙트다끄기 -->			
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000"> 
+					<transition state="연출종료"/> 
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+    <state name="연출종료" > 
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="2.0"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+			<action name="업적이벤트를발생시킨다" arg1="9001" arg2="trigger" arg3="infernogrevive"/>	<!-- 퀘스트 완료 업적 -->
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000"> 
+					<transition state="최종맵이동"/> 
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="최종맵이동">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="52010052" arg2="1"/> 	<!--작전실로 자동 이동 -->  
+			<action name="VisibleMyPC" isVisible="1"/>			
+			<action name="SetOnetimeEffect" id="6" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_SlowFade.xml"/>
+			<action name="SetOnetimeEffect" id="5" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000">  	<!-- 맵 튕기고 이동 명령 못 받을 상태를 대비한 안전장치 -->
+				<transition state="최종맵이동"/> 
+			</condition> 
+		<onExit> 
+		</onExit>
+    </state>		
+
+	<state name="돌아가">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="52010052" arg2="1"/> 	<!--작전실로 자동 이동 -->  
+			<action name="VisibleMyPC" isVisible="1"/>			
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000">  	<!-- 맵 튕기고 이동 명령 못 받을 상태를 대비한 안전장치 -->
+				<transition state="돌아가"/> 
+			</condition> 
+		<onExit> 
+		</onExit>
+    </state>		
+			
+	<state name="종료">
+		
+    </state>
+	
+</ms2>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+	<state name="시작"> 
+		<onEnter>
+		</onEnter>
+		
+		<condition name="유저를감지했으면" arg1="1002" >
+				<transition state="소환준비" />		
+		</condition>		
+	</state>
+	
+	<state name="소환준비"> 
+		<onEnter>		
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3000">
+					<transition state="몬스터등장"/>
+			</condition>	
+	</state>	
+
+	<state name="몬스터등장"> 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="141,142,143,144,145,146"  />			
+		</onEnter>
+        <condition name="UserValue" key="monster_die" value="1">		
+				<transition state="몬스터소멸" />				
+	     </condition>		
+		<condition name="몬스터가죽어있으면" arg1="141,142,143,144,145,146" >	
+				<transition state="대기" />				
+		</condition>				
+		
+	</state>
+	
+	<state name="대기"> 
+		<onEnter>
+		</onEnter>
+
+            <condition name="UserValue" key="monster_die" value="1">		
+				<transition state="몬스터소멸" />				
+		    </condition>			
+			<condition name="WaitTick" waitTick="10000">
+					<transition state="몬스터등장"/>			
+			</condition>						
+			
+	</state>	
+	
+	<state name="몬스터소멸"> 
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="141,142,143,144,145,146"  />					
+		</onEnter>
+		
+        <condition name="UserValue" key="SkillBreakFail" value="1">		
+				<transition state="시작" />				
+	     </condition>	
+	</state>	
+
+
+</ms2>

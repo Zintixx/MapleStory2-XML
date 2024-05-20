@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+  <state name="대기">
+      <onEnter>
+	  	  	<action name="이펙트를설정한다" arg1="6920" arg2="0" /> <!--Train_bomb_03-->	
+	  		<action name="메쉬를설정한다" arg1="6091-6093" arg2="0"/> <!-- 안보이는 상태 -->	
+			<action name="오브젝트반응설정한다" arg1="10000786" arg2="1" />
+    </onEnter>
+			<condition name="여러명의유저를감지했으면" arg1="709" arg2="1">
+					<transition state="시작"/>
+			</condition>
+    <onExit>
+    </onExit>
+  </state>
+
+  <state name="시작">
+      <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>   
+	  		<action name="ShowGuideSummary" entityID="113" textID="20003363"/> <!--  [b:레버]를 조작하여 드럼통을 폭파시키세요. -->
+	  </onEnter>
+	        <condition name="오브젝트가반응했으면" arg1="10000786" arg2="0">
+            <transition state="작동_01" />
+        </condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="113"/>
+    </onExit>
+  </state>
+     
+     <state name="작동_01">
+    <onEnter>
+		 <action name="이펙트를설정한다" arg1="6922" arg2="1" /> <!--Train_bomb_03-->	
+		<action name="메쉬를설정한다" arg1="6081-6083" arg2="0" arg4="300" arg5="10" /> <!--빨간 선이-->	
+		<action name="메쉬를설정한다" arg1="6091-6093" arg2="1" arg4="300" arg5="10" /> <!--파란 선으로-->	
+		<action name="타이머를설정한다" arg1="3" arg2="3"/>
+	</onEnter>
+		<condition name="시간이경과했으면" arg1="3">
+		<transition state="작동_02"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state> 
+  
+    <state name="작동_02">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="6099,6076" arg2="0" arg4="30" arg5="0" /> <!--드럼통 폭발-->
+		<action name="메쉬를설정한다" arg1="6091-6093" arg2="0" arg4="0" arg5="10" /> <!--파란 선도 마저 삭제-->			
+		<action name="메쉬를설정한다" arg1="6000" arg2="0" arg4="50" arg5="1" /> <!--유리창 해제-->	
+		<action name="타이머를설정한다" arg1="1" arg2="1"/>
+	</onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="벽제거"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+      <state name="벽제거">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1="6920" arg2="1" /> <!--Train_bomb_03-->	
+		<action name="스킬을설정한다" arg1="5807" arg2="1" /> <!--벽 날리는 스킬-->	
+		<action name="스킬을설정한다" arg1="5808" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="스킬을설정한다" arg1="5809" arg2="1" /> <!--벽 날리는 스킬-->			
+		<action name="메쉬를설정한다" arg1="7071-7074" arg2="0" arg4="15" arg5="8" /> <!--벽 해제-->	
+		<action name="타이머를설정한다" arg1="1" arg2="1"/>
+	</onEnter>
+			<condition name="여러명의유저를감지했으면" arg1="701" arg2="1">
+					<transition state="몬스터등장"/>
+			</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+        <state name="몬스터등장">
+    <onEnter>
+				<action name="몬스터를생성한다" arg1="113" arg2="1" /> <!-- 추가 이벤트 스폰 몬스터 -->
+		<action name="타이머를설정한다" arg1="1" arg2="1"/>
+	</onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_01_조건"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="관문_01_조건">
+    <onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>   
+		<action name="ShowGuideSummary" entityID="105" textID="20003361"/> <!-- 키 몬스터를 처치하세요. -->
+		<action name="몬스터를생성한다" arg1="115,116,137,139" arg2="1" /> <!-- 추가 이벤트 스폰 몬스터 -->
+	</onEnter>
+  		<condition name="몬스터가죽어있으면" arg1="113">
+		<transition state="관문_01_개방"/>
+		</condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="105"/>
+    </onExit>
+  </state>
+  
+  <state name="관문_01_개방">
+    <onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>   
+		<action name="ShowGuideSummary" entityID="106" textID="20003362"/> <!-- 다음 구역으로 이동할 수 있습니다. -->
+		<action name="메쉬를설정한다" arg1="6211-6218" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+		<action name="타이머를설정한다" arg1="3" arg2="3"/>
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="3">
+		<transition state="관문_01_개방_02"/>
+		</condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="106"/>
+    </onExit>
+  </state>
+  
+   <state name="관문_01_개방_02">
+    <onEnter>
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state>
+ </ms2>

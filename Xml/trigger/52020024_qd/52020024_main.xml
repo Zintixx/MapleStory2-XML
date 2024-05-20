@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="감지">   
+		<onEnter>
+			<action name="SetUserValue" triggerID="99990002" key="TimerStart" value="0" />
+			<action name="SetUserValue" triggerID="99990003" key="FinalPhase" value="0" />
+			<action name="이펙트를설정한다" arg1="5001" arg2="0" />
+			<action name="액터를설정한다" arg1="10001" arg2="1" arg3="ks_quest_movewall_A02_off" />
+			<action name="액터를설정한다" arg1="10002" arg2="1" arg3="ks_quest_movewall_A02_off" />
+			<action name="액터를설정한다" arg1="10003" arg2="1" arg3="ks_quest_fusiondevice_A01_off" />
+			<action name="메쉬를설정한다" arg1="1001" arg2="1" />
+			<action name="메쉬를설정한다" arg1="2001" arg2="1" />
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />
+			<action name="오브젝트반응설정한다" arg1="10002006" arg2="2" />
+			<action name="오브젝트반응설정한다" arg1="10002007" arg2="2" />
+			<action name="오브젝트반응설정한다" arg1="10002008" arg2="2" />
+			<action name="오브젝트반응설정한다" arg1="10002009" arg2="2" />
+		</onEnter>	
+		<condition name="유저를감지했으면" arg1="901" >
+			<transition state="1차전투감지"/>
+		</condition> 
+	</state>
+
+	<state name="1차전투감지">   
+		<condition name="유저를감지했으면" arg1="902" >
+			<transition state="1차전투"/>
+		</condition> 
+	</state>	
+
+	<state name="1차전투">
+		<onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="방 안을 수색하세요" arg3="5000" arg4="0"/>
+			<action name="몬스터를생성한다" arg1="101,102,103" arg2="1"/>
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="101,102,103" arg2="0" >
+			<transition state="1번레버활성화"/>
+		</condition> 
+	</state>
+
+	<state name="1번레버활성화">
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10002006" arg2="1"/>
+			<action name="AddBalloonTalk" spawnPointID="0" msg="파편 융합 장치 전원을 찾아야해" duration="3000" delayTick="0"/>	
+		</onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10002006" arg2="0" >
+			<transition state="2차전투감지"/>
+		</condition> 
+	</state>
+
+	<state name="2차전투감지">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="1001" arg2="0" arg3="500" />
+			<action name="액터를설정한다" arg1="10001" arg2="1" arg3="ks_quest_movewall_A02_start" />
+			<action name="AddBalloonTalk" spawnPointID="0" msg="헐... 대박..." duration="3000" delayTick="0"/>	
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="903" >
+			<transition state="2차전투"/>
+		</condition> 
+	</state>
+
+	<state name="2차전투">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="111,112" arg2="1"/>
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="111,112" arg2="0" >
+			<transition state="2번레버활성화"/>
+		</condition> 
+	</state>
+
+	<state name="2번레버활성화">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="0" msg="여기엔 없는것 같네" duration="3000" delayTick="0"/>	
+			<action name="오브젝트반응설정한다" arg1="10002007" arg2="1"/>
+		</onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10002007" arg2="0" >
+			<transition state="3차전투감지"/>
+		</condition> 
+	</state>
+
+	<state name="3차전투감지">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="2001" arg2="0" arg3="500" />
+			<action name="액터를설정한다" arg1="10002" arg2="1" arg3="ks_quest_movewall_A02_start" />
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="904" >
+			<transition state="3차전투"/>
+		</condition> 
+	</state>
+
+	<state name="3차전투">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="121,122" arg2="1"/>
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="121,122" arg2="0" >
+			<transition state="3번레버활성화"/>
+		</condition> 
+	</state>
+
+	<state name="3번레버활성화">
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10002008" arg2="1"/>
+		</onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10002008" arg2="0" >
+			<transition state="파편모으기"/>
+		</condition> 
+	</state>
+
+	<state name="파편모으기">
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10002009" arg2="1"/>
+			<action name="AddBalloonTalk" spawnPointID="0" msg="중앙으로 가보자!" duration="3000" delayTick="0"/>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="융합장치 전원 활성화." arg3="5000" arg4="0"/>
+		</onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10002009" arg2="0" >
+			<transition state="파이널전투"/>
+		</condition>
+	</state>	
+
+	<state name="파이널전투">
+		<onEnter>
+			<action name="액터를설정한다" arg1="10003" arg2="1" arg3="ks_quest_fusiondevice_A01_on" />
+			<action name="SetUserValue" triggerID="99990002" key="TimerStart" value="1" />
+			<action name="SetUserValue" triggerID="99990003" key="FinalPhase" value="1" />
+		</onEnter>
+		<condition name="UserValue" key="TimerStart" value="2" >
+			<transition state="파편합성완료"/>
+		</condition>
+		<condition name="UserValue" key="FinalPhase" value="2" >
+			<transition state="파편합성완료"/>
+		</condition> 
+	</state>
+
+	<state name="파편합성완료"> 
+		<onEnter>
+			<action name="액터를설정한다" arg1="10003" arg2="1" arg3="ks_quest_fusiondevice_A01_off" />
+			<action name="몬스터소멸시킨다" arg1="all" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000" >
+			<transition state="카메라_미카엘등장"/>
+		</condition>
+	</state>
+
+	<state name="카메라_미카엘등장"> 
+		<onEnter>
+			<action name="SetSceneSkip" arg1="카메라_종료" arg2="exit"/>
+			<action name="유저를이동시킨다" arg1="52020024" arg2="2" />
+			<action name="몬스터를생성한다" arg1="201" arg2="0" />
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_Michael" />
+			<action name="카메라를선택한다" arg1="501" arg2="1" />
+			<action name="연출UI를설정한다" arg1="1" />
+			<action name="연출UI를설정한다" arg1="3" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="카메라_미카엘대사1"/>
+		</condition>
+	</state>
+
+	<state name="카메라_미카엘대사1">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="201" arg3="아주 좋아!" arg4="5" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000" >
+			<transition state="카메라_미카엘대사2"/>
+		</condition>
+	</state>
+
+	<state name="카메라_미카엘대사2">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="502" arg2="1" />
+			<action name="대화를설정한다" arg1="1" arg2="201" arg3="파편이 어쩌구~ 저쩌구~" arg4="5" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000" >
+			<transition state="카메라_지진사태"/>
+		</condition>
+	</state>
+
+	<state name="카메라_지진사태">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="503" arg2="1" />
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="왜...왜 이러지?" arg4="4" />
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG\Common\Eff_Com_Vibrate_Lowamp.xml" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000" >
+			<transition state="카메라_바닥부서짐"/>
+		</condition>
+	</state>
+
+	<state name="카메라_바닥부서짐">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="으아아악!!!" arg4="2" />
+			<action name="카메라를선택한다" arg1="504" arg2="1" />
+			<action name="스킬을설정한다" arg1="1" arg2="1" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000" >
+			<transition state="카메라_종료"/>
+		</condition>
+	</state>
+
+	<state name="카메라_종료">
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="52020025" arg2="1" />
+		</onEnter>
+	</state>
+
+
+
+</ms2>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 미혹의 길 Round11 --> 
+  
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 		
+			<action name="메쉬를설정한다" arg1="4031" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- RoundBarrier -->				
+			<action name="메쉬를설정한다" arg1="3011" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOff -->		
+			<action name="메쉬를설정한다" arg1="3111" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOn -->		
+			<action name="메쉬애니를설정한다" arg1="3011" arg2="1" arg3="0" arg4="0" /> <!-- CrystalOff -->					
+			<action name="메쉬애니를설정한다" arg1="3111" arg2="0" arg3="0" arg4="0" /> <!-- CrystalOn -->					
+			<action name="이펙트를설정한다" arg1="5211" arg2="0" /> <!-- Sound_CrystalOn -->						
+			<action name="SetUserValue" key="FindWay" value="0" /> 					
+				</onEnter>	
+			<condition name="UserValue" key="FindWay" value="1">	
+			<transition state="ReadyToWalkIn01"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+
+	
+<!-- 왼쪽에서 진입 -->	
+    <state name="ReadyToWalkIn01" >	
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="4031" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- RoundBarrier -->				
+			<action name="NPC를이동시킨다" arg1="108" arg2="MS2PatrolData_111" />			
+			<action name="NPC를이동시킨다" arg1="208" arg2="MS2PatrolData_211" />	
+			<action name="대화를설정한다" arg1="1" arg2="208" arg3="$52000052_QD__04_FINDWAY__0$" arg4="2" arg5="0" />	    <!-- 준타 -->					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="ReadyToWalkIn02"/>  
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="ReadyToWalkIn02" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="1311" key="RouteSelected" value="1" /> 		
+			<action name="SetUserValue" triggerID="2311" key="RouteSelected" value="1" /> 						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="ReadyToWalkIn03"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="ReadyToWalkIn03" > 	
+        <onEnter>			
+			<action name="대화를설정한다" arg1="1" arg2="108" arg3="$52000052_QD__04_FINDWAY__1$" arg4="2" arg5="2" />	    <!-- 틴차이 -->						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="Round11_Start"/>
+				</condition>		
+    <onExit> 
+			<action name="몬스터소멸시킨다" arg1="108,208" />		
+    </onExit>
+    </state>		
+	
+    <state name="Round11_Start" >	
+        <onEnter>				
+			<action name="몬스터를생성한다" arg1="1011" arg2="0" /> 		<!-- 수호대상 틴차이 -->		
+			<action name="몬스터를생성한다" arg1="2011" arg2="0" /> 		<!-- 전투용 준타 -->			
+			<action name="대화를설정한다" arg1="1" arg2="1011" arg3="$52000052_QD__04_FINDWAY__2$" arg4="3" arg5="2" />	    <!-- 틴차이 -->					
+			<action name="SetUserValue" triggerID="911" key="MobWaveStart" value="1" /> 		
+				</onEnter>		
+			<condition name="UserValue" key="11RoundSuccess" value="1">	
+			<transition state="Round11_Sucess"/>	
+		</condition> 		
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="Round11_Sucess" >	
+        <onEnter>				
+			<action name="NPC를이동시킨다" arg1="2011" arg2="MS2PatrolData_2011" />	
+			<action name="몬스터소멸시킨다" arg1="1011" />	
+			<action name="몬스터를생성한다" arg1="111" arg2="0" /> 		<!-- 연출용 틴차이 -->		
+			<action name="메쉬를설정한다" arg1="3011" arg2="0" arg3="100" arg4="0" arg5="0" /> <!-- CrystalOff -->		
+			<action name="메쉬를설정한다" arg1="3111" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOn -->		
+			<action name="메쉬애니를설정한다" arg1="3011" arg2="0" arg3="0" arg4="0" /> <!-- CrystalOff -->					
+			<action name="메쉬애니를설정한다" arg1="3111" arg2="1" arg3="0" arg4="0" /> <!-- CrystalOn -->					
+			<action name="이펙트를설정한다" arg1="5211" arg2="1" /> <!-- Sound_CrystalOn -->		
+			<action name="대화를설정한다" arg1="1" arg2="111" arg3="$52000052_QD__04_FINDWAY__3$" arg4="2" arg5="1" />	    <!-- 틴차이 -->						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Round11_RouteSelect"/>
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+	<state name="Round11_RouteSelect">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="2011" />			
+			<action name="몬스터를생성한다" arg1="211" arg2="0" /> 		<!-- 연출용 준타 -->			
+		</onEnter>	
+				<condition name="랜덤조건" arg1="50">	
+					<transition state="Round11_PickRoute_Left"/>
+				</condition> 
+				<condition name="랜덤조건" arg1="50"> 
+					<transition state="Round11_PickRoute_Right" />
+				</condition>	
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="Round11_PickRoute_Left">
+		<onEnter>
+			<action name="SetUserValue" triggerID="1311" key="MakeTrue" value="1" /> 	
+			<action name="SetUserValue" triggerID="2311" key="MakeFalse" value="1" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="GoToPortal19"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+	<state name="GoToPortal19">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="111" arg2="MS2PatrolData_19" />			
+			<action name="NPC를이동시킨다" arg1="211" arg2="MS2PatrolData_29" />			
+			<action name="SetUserValue" triggerID="12" key="FindWay" value="1" />  
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="Quit"/>	
+				</condition> 			
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="Round11_PickRoute_Right">	
+		<onEnter>
+			<action name="SetUserValue" triggerID="1311" key="MakeFalse" value="1" /> 	
+			<action name="SetUserValue" triggerID="2311" key="MakeTrue" value="1" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="GoToPortal10"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+	<state name="GoToPortal10">
+		<onEnter>
+			<action name="SetUserValue" triggerID="12" key="FindWay" value="1" /> 
+			<action name="NPC를이동시킨다" arg1="111" arg2="MS2PatrolData_10" />			
+			<action name="NPC를이동시킨다" arg1="211" arg2="MS2PatrolData_20" />					
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="Quit"/>	
+				</condition> 			
+		<onExit> 	
+		</onExit> 	
+	</state>	
+	
+	<state name="Quit">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="111,211" />			
+		</onEnter>
+		<onExit> 
+		</onExit> 
+	</state>		
+</ms2>
+

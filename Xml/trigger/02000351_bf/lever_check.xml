@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+
+  <state name="레버체크">
+     <onEnter>
+	 	<action name="오브젝트반응설정한다" arg1="10000819" arg2="0" />
+		<action name="오브젝트반응설정한다" arg1="10000820" arg2="0" />
+    </onEnter>
+	    <condition name="오브젝트가반응했으면" arg1="10000819" arg2="1">
+            <transition state="레버체크2" />
+        </condition>
+		<condition name="오브젝트가반응했으면" arg1="10000820" arg2="1">
+            <transition state="레버체크2" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+
+  <state name="레버체크2">
+      <onEnter>
+    </onEnter>
+	    <condition name="오브젝트가반응했으면" arg1="10000820" arg2="0">
+            <transition state="레버체크3_1개" />
+        </condition>
+		<condition name="오브젝트가반응했으면" arg1="10000819" arg2="0">
+            <transition state="레버체크4_1개" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="레버체크3_1개">
+      <onEnter>
+    </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10000819" arg2="0">
+            <transition state="레버체크완료" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+      <state name="레버체크4_1개">
+      <onEnter>
+    </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10000820" arg2="0">
+            <transition state="레버체크완료" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="레버체크완료">
+      <onEnter>
+<!-- 	  	<action name="연출UI를설정한다" arg1="1"/> 	
+		<action name="연출UI를설정한다" arg1="3"/>  -->
+<!-- 		<action name="카메라를선택한다" arg1="8002" arg2="1"/> --><!-- 연출 카메라 -->
+<!-- 		<action name="스킵을설정한다" arg1="열림" /> -->		
+	  	<action name="타이머를설정한다" arg1="3" arg2="3" />
+		</onEnter>
+			<condition name="시간이경과했으면" arg1="3">
+			<transition state="열림"/>
+			</condition>	
+		<onExit>
+		</onExit>
+  </state>
+  
+  
+      <state name="열림">
+      <onEnter>
+	  	<action name="타이머를설정한다" arg1="2" arg2="2" />
+		<action name="메쉬를설정한다" arg1="6005" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+		</onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="열림_끝"/>
+		</condition>
+		<onExit>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+		</onExit>
+  </state>
+
+     <state name="열림_끝">
+    <onEnter>
+<!-- 		 <action name="카메라를선택한다" arg1="8002" arg2="0"/> --><!-- 연출 카메라 -->
+		 <action name="타이머를설정한다" arg1="3" arg2="3" />
+		<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="관문이 개방되었습니다. \n다음 지역으로 이동하십시오." arg3="3000"/> -->
+    </onEnter>
+			<condition name="시간이경과했으면" arg1="3">
+		<transition state="종료"/>
+		</condition>
+		<condition name="여러명의유저를감지했으면" arg1="704" arg2="1">
+		<transition state="종료"/>
+		</condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="113"/>
+    </onExit>
+  </state>
+ 
+   
+   <state name="종료">
+    <onEnter>
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state> 
+</ms2>

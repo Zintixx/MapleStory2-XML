@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 목표 지점에 타임어택으로 도착하기 --> 
+<ms2>	
+    <state name="Wait">
+        <onEnter>	
+		<action name="메쉬를설정한다" arg1="16001" arg2="0" arg3="0" arg4="0" arg5="0"/> <!-- Destination_FootHold -->		
+		<action name="오브젝트반응설정한다" arg1="12000071" arg2="2" />	<!-- RareBox / 기믹 종료 오브젝트 / Additional Effect 71001161 걸어서 71001061 제거 -->	
+		<action name="오브젝트반응설정한다" arg1="12000079" arg2="0" />	<!-- Start_FootHold / 기믹 시작 오브젝트 / Additional Effect 71001061 71001271 71001281 부여 -->	
+		<action name="오브젝트반응설정한다" arg1="12000098" arg2="0" />	<!-- ReStart_FootHold / 제한 시간 리셋용 오브젝트 / Additional Effect 71001061 71001271 71001281 부여  / 71001061 버프 소유자만 반응 가능 -->			
+		<action name="이펙트를설정한다" arg1="16200" arg2="0"/> <!-- Success Sound Effect --> 	
+		<action name="이펙트를설정한다" arg1="16201" arg2="0"/> <!-- Right Sound Effect --> 		
+        </onEnter>
+		<condition name="UserValue" key="TimeEventOn" value="1">	
+			<transition state="SettingDelay"/>	
+		</condition>	
+        <onExit> 			
+        </onExit>  
+    </state>
+
+    <state name="SettingDelay"> <!-- 임시 스테이트 테스트용 -->
+        <onEnter>		
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="Setting"/>	
+		</condition>				
+        <onExit>
+        </onExit>
+    </state>	
+	
+	<state name="Setting" >
+        <onEnter>			
+		<action name="오브젝트반응설정한다" arg1="12000079" arg2="1" />	<!-- Start_FootHold / 기믹 시작 오브젝트 / Additional Effect 71001061 71001271 71001281 부여 -->	
+        </onEnter>
+		<condition name="UserValue" key="TimeEventOn" value="0">	
+			<transition state="Wait"/>	
+		</condition>		
+		<condition name="오브젝트가반응했으면" arg1="12000079" arg2="0">
+			<action name="타이머를설정한다" arg1="10" arg2="90" arg3="1" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="1" arg2="15" arg3="1" arg4="0" arg5="0" />  <!-- UI 표시 안함 / 황금 상자 소유권 Additional Effect 71001061 지속시간 동일 -->
+			<transition state="TimeTrial_StartDelay"/>
+		</condition> 
+        <onExit>				
+        </onExit>			
+    </state>	
+
+    <state name="TimeTrial_StartDelay"> 
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="16201" arg2="1"/> <!-- Right Sound Effect --> 			
+		<action name="메쉬를설정한다" arg1="16001" arg2="1" arg3="0" arg4="0" arg5="0"/> <!-- Destination_FootHold -->				
+        </onEnter>
+		<condition name="WaitTick" waitTick="3000">	
+			<transition state="TimeTrial_Start"/>	
+		</condition>				
+        <onExit>
+        </onExit>
+    </state>	
+	
+    <state name="TimeTrial_Start" >
+        <onEnter>	
+        </onEnter>
+		<!-- <condition name="오브젝트가반응했으면" arg1="12000098" arg2="0"> -->
+			<!-- <action name="타이머를초기화한다" arg1="1"/> -->
+			<!-- <transition state="TimeTrial_TimerReset01"/> --> 
+		<!-- </condition>		 -->
+		<condition name="CheckAnyUserAdditionalEffect" triggerBoxID="16100" additionalEffectID="71001271" level="1">  <!-- 목표 지점에 도착 성공 -->
+			<action name="버프를걸어준다" arg1="160001" arg2="71001062" arg3="1" arg4="0" arg5="0"/>
+			<action name="타이머를설정한다" arg1="100" arg2="60" arg3="1" arg4="0" arg5="0" />		
+			<transition state="TimeTrial_Success"/>	
+		</condition>			
+		<condition name="시간이경과했으면" arg1="1">  <!-- 타임 아웃 실패 -->	
+			<transition state="TimeTrial_Fail"/>	
+		</condition>	
+        <onExit>
+        </onExit> 
+    </state>
+	
+    <state name="TimeTrial_Reset" >
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="12000098" arg2="1" />	<!-- ReStart_FootHold / 제한 시간 리셋용 오브젝트 / Additional Effect 71001061 71001271 71001281 부여  / 71001061 버프 소유자만 반응 가능 -->			
+        </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="12000098" arg2="0">
+			<!-- <action name="타이머를초기화한다" arg1="1"/> -->
+			<transition state="TimeTrial_TimerReset01"/>
+		</condition>
+		<condition name="시간이경과했으면" arg1="10">
+			<action name="오브젝트반응설정한다" arg1="12000098" arg2="0" />
+			<action name="타이머를초기화한다" arg1="10"/> 
+			<transition state="Setting"/>	
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>
+
+<!-- 타이머 리셋 시퀀스 -->	
+	<state name="TimeTrial_TimerReset01">	
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="16201" arg2="1"/> <!-- Right Sound Effect --> 			
+			<action name="타이머를설정한다" arg1="1" arg2="15" arg3="1" arg4="0" arg5="0" />  <!-- UI 표시 안함 / 황금 상자 소유권 Additional Effect 71001061 지속시간 동일 --> 		
+			<action name="오브젝트반응설정한다" arg1="12000098" arg2="0" />	<!-- ReStart_FootHold / 제한 시간 리셋용 오브젝트 / Additional Effect 71001061 71001271 71001281 부여  / 71001061 버프 소유자만 반응 가능 -->		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="TimeTrial_Start"/>	
+		</condition>		
+        <onExit>				
+        </onExit>			
+    </state>	
+	
+    <!-- <state name="TimeTrial_TimerReset02"> -->
+        <!-- <onEnter>				 -->
+        <!-- </onEnter> -->
+		<!-- <condition name="오브젝트가반응했으면" arg1="12000098" arg2="0"> -->
+			<!-- <transition state="TimeTrial_TimerReset01"/> -->
+		<!-- </condition>		 -->
+		<!-- <condition name="CheckAnyUserAdditionalEffect" triggerBoxID="16100" additionalEffectID="71001271" level="1">  	 -->
+			<!-- <transition state="TimeTrial_Success"/>	 -->
+		<!-- </condition>			 -->
+		<!-- <condition name="시간이경과했으면" arg1="1">   -->
+			<!-- <transition state="TimeTrial_Fail"/>	 -->
+		<!-- </condition>	 -->
+        <!-- <onExit> -->
+        <!-- </onExit> -->
+    <!-- </state> -->
+
+<!-- 목표 지점에 도착 성공 -->		  
+    <state name="TimeTrial_Success">  
+        <onEnter>	
+			<!-- <action name="버프를삭제한다" arg1="16100" arg2="71001271"/> 		 -->
+			<action name="타이머를초기화한다" arg1="1"/> 			
+			<action name="이펙트를설정한다" arg1="16200" arg2="1"/> <!-- Success Sound Effect --> 	
+			<action name="오브젝트반응설정한다" arg1="12000071" arg2="1" />	<!-- RareBox / 기믹 종료 오브젝트 / Additional Effect 71001161 걸어서 71001061 제거 -->			
+        </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="12000071" arg2="0">
+			<action name="SetUserValue" triggerID="16000" key="TimeEventOn" value="0"/>
+			<transition state="TimeTrial_SuccessDelay"/>	  
+		</condition>
+		<condition name="시간이경과했으면" arg1="100">
+			<action name="오브젝트반응설정한다" arg1="12000071" arg2="0" />
+			<action name="타이머를초기화한다" arg1="100"/> 
+			<transition state="TimeTrial_SuccessDelay"/>	
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="TimeTrial_SuccessDelay" >
+        <onEnter>		
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="TimeTrial_Quit"/>
+		</condition>			
+        <onExit>	
+        </onExit>
+    </state>	
+	
+    <state name="TimeTrial_Quit">	
+        <onEnter>
+		
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="Wait"/>
+		</condition>	
+        <onExit>	
+        </onExit>
+    </state>	
+ 		
+<!-- 타임 아웃 실패 -->	
+    <state name="TimeTrial_Fail" >	
+        <onEnter>	
+			<action name="타이머를초기화한다" arg1="1"/> 	
+        </onEnter>
+		<condition name="UserValue" key="TimeEventOn" value="0">	
+			<transition state="Wait"/>	
+		</condition>
+		<condition name="시간이경과했으면" arg1="10">
+			<action name="오브젝트반응설정한다" arg1="12000098" arg2="0" />
+			<action name="타이머를초기화한다" arg1="10"/> 
+			<transition state="Setting"/>	
+		</condition>		
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="TimeTrial_Reset"/>	
+		</condition>	
+        <onExit>	
+        </onExit>
+    </state>	
+	
+</ms2>

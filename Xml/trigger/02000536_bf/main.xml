@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+<!-- 플레이어 감지 -->
+	<state name="idle">
+		<onEnter>	
+		<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>			
+		<action name="몬스터를생성한다" arg1="501,502,504,505,506,507,508,509,510,511" arg2="0" /> 
+		<action name="오브젝트반응설정한다" arg1="10003147" arg2="0"/>	
+		<action name="메쉬를설정한다" arg1="9999" arg2="1"/>  			
+        </onEnter>		
+		<condition name="유저를감지했으면" arg1="701" arg2="0">
+			<transition state="ready"/>
+		</condition>			
+	</state>	
+		
+	<state name="ready">
+		<onEnter>
+		<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>					
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>				
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="SetSceneSkip" arg1="" arg2="" />			
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> 								
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="start"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+			
+   <state name="start">
+        <onEnter> 
+			<action name="SetSceneSkip" arg1="전투시작" arg2="nextState" />			
+			<action name="카메라경로를선택한다" arg1="7000,7003" arg2="0"/>			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="ShowCaption" type="VerticalCaption" title="$02000536_BF__MAIN__0$" desc="$02000536_BF__MAIN__1$" align="centerRight" offsetRateX="0" offsetRateY="0" duration="3000" scale="2"/>						
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="하렌인사"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+						
+	<state name="하렌인사">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="7003,7001" arg2="0"/>		
+		<action name="SetNpcEmotionLoop" arg1="102" arg2="Bore_A" arg3="5000"/>				
+		<action name="AddCinematicTalk" npcID="23300001" msg="$02000536_BF__MAIN__2$" align="center" illustID="" duration="4000" />									
+        </onEnter>
+			<condition name="WaitTick" waitTick="4500">
+				<transition state="하렌인사2"/> 
+			</condition>			
+    </state> 				
+			
+	<state name="하렌인사2">
+        <onEnter>	
+		<action name="SetNpcEmotionSequence" arg1="102" arg2="Attack_01_E,Attack_01_B"/>				
+		<action name="AddCinematicTalk" npcID="23300001" msg="$02000536_BF__MAIN__3$" align="center" illustID="" duration="4000" />																		
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="전투시작"/> 
+			</condition>			
+    </state> 							
+
+	<state name="전투시작">
+        <onEnter>
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>			
+		<action name="카메라리셋" interpolationTime="1"/>	
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000536_BF__MAIN__4$" arg3="3000" />			
+		<action name="몬스터를생성한다" arg1="101" arg2="0" /> 
+		<action name="몬스터소멸시킨다" arg1="102"/>			
+        </onEnter>					
+			<condition name="CheckNpcHp" compare="lowerEqual" value="70" spawnPointId="101" isRelative="true">
+					<transition state="메이드군단을스폰"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="메이드군단을스폰">
+		<onEnter>	
+			<action name="몬스터를생성한다" arg1="301,302,303,304" arg2="0" /> 
+			<action name="SideNpcTalk" npcID="23300001" illust="Haren_serious" duration="4000" script="$02000536_BF__MAIN__5$" />																		
+        </onEnter>					
+			<condition name="CheckNpcHp" compare="lowerEqual" value="50" spawnPointId="101" isRelative="true">
+					<transition state="메이드군단을스폰2"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 
+		
+	<state name="메이드군단을스폰2">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="401,402,403,404" arg2="0" /> 		
+        </onEnter>					
+			<condition name="CheckNpcHp" compare="lowerEqual" value="30" spawnPointId="101" isRelative="true">
+					<transition state="몬스터사망체크"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+	
+ 	<state name="몬스터사망체크">
+		<onEnter>
+			<action name="SideNpcTalk" npcID="23300001" illust="Haren_serious" duration="4000" script="$02000536_BF__MAIN__6$" />																				
+			<action name="몬스터를생성한다" arg1="201,202,203,204" arg2="0" /> 		
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="101">
+				<transition state="던전클리어"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+<!--
+	<state name="금고찾기">
+        <onEnter> 		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000536_BF__MAIN__7$" arg3="3000" />		
+			<action name="오브젝트반응설정한다" arg1="10003147" arg2="1"/>
+			<action name="몬스터소멸시킨다" arg1="201,202,203,204,301,302,303,304,401,402,403,404"/>			
+        </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10003147" arg2="0">
+				<transition state="던전클리어"/> 
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> -->
+	
+ 	<state name="던전클리어">
+		<onEnter>
+			<action name="SideNpcTalk" npcID="23300001" illust="Haren_serious" duration="3000" script="$02000536_BF__MAIN__8$" />				
+			<action name="메쉬를설정한다" arg1="9999" arg2="0"/>  					
+			<action name="몬스터소멸시킨다" arg1="all" />			
+  			<action name="DungeonClear"/>			<!-- 보스 잡히고 던전 클리어 선언 먼저 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="트리거완료"/> 
+			</condition>		
+    </state> 	
+
+
+ 	<state name="트리거완료">
+		<onEnter>
+  			<!-- <action name="DungeonClear"/> -->
+			<action name="몬스터소멸시킨다" arg1="all" />	<!--  보스가 순삭 될 경우 트리거 타이밍이 어긋나서 소환몹 제거 안될 수 있기 때문에 혹시 몰라 최종 마지막에 몬스터 제거 명령 설정함-->	
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>		<!-- 보스가 순삭될 경우 던전 클리어 선언되기 전에 포털로 나갈 우려가 있으므로 포털 오픈은 던전 클리어 이후 시점으로  -->
+        </onEnter>
+		<onExit>
+        </onExit>
+    </state> 	
+		
+	
+</ms2>
+

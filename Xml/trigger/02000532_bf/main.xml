@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+<!-- 플레이어 감지 -->
+	<state name="idle">
+		<onEnter>	
+		<action name="메쉬를설정한다" arg1="3000,3001" arg2="1"/> 
+		<action name="메쉬를설정한다" arg1="3002,3003" arg2="1"/>  
+		<action name="메쉬를설정한다" arg1="3004" arg2="1"/>  		
+		<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>			
+		<action name="이펙트를설정한다" arg1="7001" arg2="0"/> 			
+		<action name="이펙트를설정한다" arg1="7006" arg2="0"/> 			
+		<action name="이펙트를설정한다" arg1="7007" arg2="0"/> 		
+        </onEnter>		
+		<condition name="유저를감지했으면" arg1="701" arg2="0">
+			<transition state="ready"/>
+		</condition>			
+	</state> 
+	
+	<state name="ready">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>				
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="SetSceneSkip" arg1="" arg2="" />			
+			<action name="몬스터를생성한다" arg1="216,101,102,103,104,105,106,107,108,109,111,112,113" arg2="1" />
+			<action name="몬스터를생성한다" arg1="110,111" arg2="1" /> 	
+			<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_8000" />
+			<action name="NPC를이동시킨다" arg1="111" arg2="MS2PatrolData_8001" />
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>
+			<action name="메쉬를설정한다" arg1="3000,3001" arg2="1"/>  				
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="start"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+	
+   <state name="start">
+        <onEnter> 
+			<action name="SetSceneSkip" arg1="목표" arg2="nextState" />			
+			<action name="카메라경로를선택한다" arg1="604,603" arg2="1"/>			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="ShowCaption" type="VerticalCaption" title="$02000532_BF__MAIN__0$" desc="$02000532_BF__MAIN__1$" align="centerRight" offsetRateX="0" offsetRateY="0" duration="3000" scale="2"/>						
+        </onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="목표"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+
+   <state name="목표">
+        <onEnter> 
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="LockMyPC" isLock="0"/>		
+		<action name="카메라리셋" interpolationTime="1"/>		
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000532_BF__MAIN__2$" arg3="3000" />				
+        </onEnter>
+			<condition name="WaitTick" waitTick="3500">
+				<transition state="문들어가기"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+		
+	<state name="문들어가기">
+        <onEnter>
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>						
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000532_BF__MAIN__3$" arg3="3000" />						
+		<action name="이펙트를설정한다" arg1="7006" arg2="1"/> 	 		
+		<action name="이펙트를설정한다" arg1="7007" arg2="1"/> 
+		<action name="몬스터를생성한다" arg1="408" arg2="1" /> 					
+        </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="408" arg2="0">
+			<transition state="문이열림"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 				
+			
+	<state name="문이열림">
+        <onEnter> 
+		<action name="메쉬를설정한다" arg1="3004" arg2="0"/>  			
+			<action name="AddBalloonTalk" spawnPointID="112" msg="$02000532_BF__MAIN__4$" duration="3500" delayTick="0"/>
+			<action name="AddBalloonTalk" spawnPointID="112" msg="$02000532_BF__MAIN__5$" duration="3500" delayTick="3500"/>			
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$02000532_BF__MAIN__6$" duration="3500" delayTick="500"/>			
+			<action name="AddBalloonTalk" spawnPointID="113" msg="$02000532_BF__MAIN__7$" duration="3500" delayTick="900"/>				
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Talk_A" arg3="10000" />
+			<action name="SetNpcEmotionLoop" arg1="113" arg2="Sit_Down_A" arg3="10000" />			
+			<action name="SetNpcEmotionLoop" arg1="112" arg2="Talk_A" arg3="10000" />		
+			<action name="이펙트를설정한다" arg1="7001" arg2="1"/> 		
+			<action name="메쉬를설정한다" arg1="3000,3001" arg2="0"/>  				
+			<action name="SetSceneSkip" arg1="" arg2="" />			
+        </onEnter>	
+		<condition name="유저를감지했으면" arg1="702" arg2="0">
+			<transition state="경계하기"/>
+		</condition>				
+		<onExit>
+		</onExit>			
+    </state>		
+
+   <state name="경계하기">
+        <onEnter> 
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>				
+			<action name="LockMyPC" isLock="1"/>
+			<action name="SetSceneSkip" arg1="흑성회의반격" arg2="nextState" />			
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$02000532_BF__MAIN__8$" duration="3500" delayTick="0"/>
+			<action name="AddBalloonTalk" spawnPointID="105" msg="$02000532_BF__MAIN__9$" duration="3500" delayTick="2500"/>			
+			<action name="AddBalloonTalk" spawnPointID="103" msg="$02000532_BF__MAIN__10$" duration="3500" delayTick="2800"/>			 		
+			<action name="이펙트를설정한다" arg1="7006" arg2="0"/> 
+			<action name="이펙트를설정한다" arg1="7007" arg2="0"/> 		
+        </onEnter>
+			<condition name="WaitTick" waitTick="6500">
+				<transition state="통신을받은제이부하"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+	
+	<state name="통신을받은제이부하">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="602" arg2="0"/>	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="800">
+				<transition state="통신을받은제이부하2"/> 
+			</condition>				
+		<onExit>
+		</onExit>			
+    </state>			
+
+	<state name="통신을받은제이부하2">
+        <onEnter>				
+			<action name="AddBalloonTalk" spawnPointID="205" msg="$02000532_BF__MAIN__11$" duration="3500" delayTick="500"/>			
+			<action name="AddBalloonTalk" spawnPointID="300" msg="$02000532_BF__MAIN__12$" duration="3500" delayTick="3000"/>			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="불안한제이"/> 
+			</condition>				
+		<onExit>
+		</onExit>			
+    </state>			
+	
+	<state name="불안한제이">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="500">
+				<transition state="불안한제이2"/> 
+			</condition>				
+		<onExit>
+		</onExit>			
+    </state>	
+
+	<state name="불안한제이2">
+        <onEnter>			
+			<action name="SideNpcTalk" npcID="11004639" illust="Jay_normal" duration="4000" script="$02000532_BF__MAIN__13$" />	
+			<action name="AddBalloonTalk" spawnPointID="205" msg="$02000532_BF__MAIN__14$" duration="3500" delayTick="4100"/>				
+        </onEnter>	
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="흑성회의반격"/> 
+			</condition>				
+		<onExit>
+		</onExit>			
+    </state>	
+	
+	  <state name="흑성회의반격">
+        <onEnter> 
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+			<action name="메쉬를설정한다" arg1="3002,3003" arg2="0"/>  		
+			<action name="LockMyPC" isLock="0"/>		
+			<action name="카메라리셋" interpolationTime="1"/>		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000532_BF__MAIN__15$" arg3="3000" />				
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="흑성회의반격2"/> 
+			</condition>				
+		<onExit>
+		</onExit>			
+    </state>
+
+	<state name="흑성회의반격2">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,110,111,112,113" />
+			<action name="몬스터를생성한다" arg1="401,402,403,404,412,405" arg2="1" />	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="흑성회의반격22"/> 
+			</condition>
+		<onExit>
+		</onExit>			
+    </state>				
+
+	<state name="흑성회의반격22">
+        <onEnter>	
+			<action name="SideNpcTalk" npcID="21450001" illust="Mafia1_normal" duration="3000" script="$02000532_BF__MAIN__16$" />		
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="골목체크"/> 
+			</condition>
+		<onExit>
+		</onExit>			
+    </state>			
+		
+	<state name="골목체크">
+		<onEnter>	
+			<action name="SideNpcTalk" npcID="11004639" illust="Jay_normal" duration="3000" script="$02000532_BF__MAIN__17$" />					
+        </onEnter>		
+		<condition name="유저를감지했으면" arg1="705" arg2="0">
+			<transition state="길목에서나오는몬스터"/>
+		</condition>		
+    </state>		
+
+  <state name="길목에서나오는몬스터">
+        <onEnter> 			
+			<action name="몬스터소멸시킨다" arg1="108,109" />		
+			<action name="몬스터를생성한다" arg1="406,407,409,410,411" arg2="1" />
+			<action name="AddBalloonTalk" spawnPointID="409" msg="$02000532_BF__MAIN__18$" duration="3500" delayTick="1500"/>							
+			<action name="AddBalloonTalk" spawnPointID="410" msg="$02000532_BF__MAIN__19$" duration="3500" delayTick="1500"/>						
+			<action name="AddBalloonTalk" spawnPointID="407" msg="$02000532_BF__MAIN__20$" duration="3500" delayTick="500"/>							
+        </onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="401,402,403,404,405,406,407,409,410,411,412">
+				<transition state="2차생성"/> 
+			</condition>				
+		<onExit>
+		</onExit>			
+    </state>	
+			
+	  <state name="2차생성">
+        <onEnter> 			
+			<action name="SideNpcTalk" npcID="11004639" illust="Jay_normal" duration="3000" script="$02000532_BF__MAIN__21$" />						
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="엘리베이터안내"/> 
+			</condition>			
+		<onExit>
+		</onExit>			
+    </state>	
+	
+	  <state name="엘리베이터안내">
+        <onEnter> 			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000532_BF__MAIN__22$" arg3="3000" />
+		<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>					
+        </onEnter>		
+		<onExit>
+		</onExit>			
+    </state>		
+	
+</ms2>
+

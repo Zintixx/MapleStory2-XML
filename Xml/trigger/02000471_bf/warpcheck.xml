@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+  <state name="idle">
+    <onEnter>
+      <action name="SetUserValue" triggerID="2040318" key="InteractClear" value="0" />
+      <action name="SetUserValue" triggerID="2040323" key="Warp" value="0" />
+    </onEnter>
+    <condition name="UserValue" key="Boss" value="1" >
+			<transition state="warp_condition"/>
+		</condition>
+  </state>
+  
+  <!-- <state name="warp">
+    <condition name="AnyOne">
+      <group>
+        <condition name="!UserValue" key="10002019clear" value="1" />
+        <condition name="!UserValue" key="10002020clear" value="1" />
+        <condition name="!UserValue" key="10002021clear" value="1" />
+        <condition name="!UserValue" key="10002022clear" value="1" />
+        <condition name="!UserValue" key="10002023clear" value="1" />
+        <condition name="!UserValue" key="10002024clear" value="1" />
+		  </group>
+      <transition state="warp_condition"/>
+    </condition>
+  </state> -->
+
+  <state name="warp_condition">
+    <condition name="몬스터가죽어있으면" arg1="1999">
+      <transition state="end" />
+    </condition>
+    <condition name="CheckNpcHp" compare="lowerEqual" value="70" spawnPointId="1999" isRelative="true" >
+			<transition state="warp_1st"/>
+		</condition>
+  </state>
+
+  <state name="warp_1st">
+    <onEnter>
+      <action name="오브젝트반응설정한다" arg1="10002106" arg2="1" />
+      <action name="오브젝트반응설정한다" arg1="10002107" arg2="1" />
+      <action name="메쉬를설정한다" arg1="1207-1208" arg2="1" arg3="0" arg4="0" arg5="0" />
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02000471_BF__WARPCHECK__0$" arg3="5000" arg4="0" />
+      <action name="버프를걸어준다" arg1="720" arg2="70002061" arg3="1" arg4="0" arg5="0" />
+		</onEnter>
+    <condition name="몬스터가죽어있으면" arg1="1999">
+      <transition state="end" />
+    </condition>
+    <condition name="WaitTick" waitTick="10000" >
+			<transition state="warp_go"/>
+		</condition>
+    <condition name="오브젝트가반응했으면" arg1="10002106" arg2="0" >
+			<transition state="warp_cancel"/>
+		</condition>
+    <condition name="오브젝트가반응했으면" arg1="10002107" arg2="0" >
+			<transition state="warp_cancel"/>
+		</condition>
+  </state>
+
+  <state name="warp_cancel">
+    <onEnter>
+      <action name="오브젝트반응설정한다" arg1="10002106" arg2="0" />
+      <action name="오브젝트반응설정한다" arg1="10002107" arg2="0" />
+      <action name="메쉬를설정한다" arg1="1207-1208" arg2="0" arg3="0" arg4="0" arg5="0" />
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02000471_BF__WARPCHECK__1$" arg3="5000" arg4="0" />
+      <action name="버프를걸어준다" arg1="720" arg2="70002062" arg3="1" arg4="0" arg5="0" />
+		</onEnter>
+    <condition name="몬스터가죽어있으면" arg1="1999">
+      <transition state="end" />
+    </condition>
+    <condition name="CheckNpcHp" compare="lowerEqual" value="30" spawnPointId="1999" isRelative="true" >
+			<transition state="warp_2nd"/>
+		</condition>
+  </state>
+
+  <state name="warp_go">
+    <onEnter>
+      <action name="오브젝트반응설정한다" arg1="10002106" arg2="0" />
+      <action name="오브젝트반응설정한다" arg1="10002107" arg2="0" />
+      <action name="메쉬를설정한다" arg1="1207-1208" arg2="0" arg3="0" arg4="0" arg5="0" />
+      <action name="SetUserValue" triggerID="2040323" key="Warp" value="1" />
+      <action name="버프를걸어준다" arg1="720" arg2="70002062" arg3="1" arg4="0" arg5="0" />
+		</onEnter>
+    <condition name="몬스터가죽어있으면" arg1="1999">
+      <transition state="end" />
+    </condition>
+    <condition name="CheckNpcHp" compare="lowerEqual" value="30" spawnPointId="1999" isRelative="true" >
+			<transition state="warp_2nd"/>
+		</condition>
+  </state>
+
+  <state name="warp_2nd">
+    <onEnter>
+      <action name="오브젝트반응설정한다" arg1="10002106" arg2="1" />
+      <action name="오브젝트반응설정한다" arg1="10002107" arg2="1" />
+      <action name="메쉬를설정한다" arg1="1207-1208" arg2="1" arg3="0" arg4="0" arg5="10" />
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02000471_BF__WARPCHECK__0$" arg3="5000" arg4="0" />
+      <action name="버프를걸어준다" arg1="720" arg2="70002061" arg3="1" arg4="0" arg5="0" />
+		</onEnter>
+    <condition name="몬스터가죽어있으면" arg1="1999">
+      <transition state="end" />
+    </condition>
+    <condition name="WaitTick" waitTick="10000" >
+			<transition state="warp_go2"/>
+		</condition>
+    <condition name="오브젝트가반응했으면" arg1="10002106" arg2="0" >
+			<transition state="warp2_cancel"/>
+		</condition>
+    <condition name="오브젝트가반응했으면" arg1="10002107" arg2="0" >
+			<transition state="warp2_cancel"/>
+		</condition>
+  </state>
+
+  <state name="warp2_cancel">
+    <onEnter>
+      <action name="오브젝트반응설정한다" arg1="10002106" arg2="0" />
+      <action name="오브젝트반응설정한다" arg1="10002107" arg2="0" />
+      <action name="메쉬를설정한다" arg1="1207-1208" arg2="0" arg3="0" arg4="0" arg5="0" />
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02000471_BF__WARPCHECK__1$" arg3="5000" arg4="0" />
+      <action name="버프를걸어준다" arg1="720" arg2="70002062" arg3="1" arg4="0" arg5="0" />
+		</onEnter>
+    <condition name="몬스터가죽어있으면" arg1="1999">
+      <transition state="end" />
+    </condition>
+    <condition name="무조건" >
+			<transition state="end"/>
+		</condition>
+  </state>
+
+  <state name="warp_go2">
+    <onEnter>
+      <action name="오브젝트반응설정한다" arg1="10002106" arg2="0" />
+      <action name="오브젝트반응설정한다" arg1="10002107" arg2="0" />
+      <action name="메쉬를설정한다" arg1="1207-1208" arg2="0" arg3="0" arg4="0" arg5="0" />
+      <action name="SetUserValue" triggerID="2040323" key="Warp" value="2" />
+      <action name="버프를걸어준다" arg1="720" arg2="70002062" arg3="1" arg4="0" arg5="0" />
+		</onEnter>
+    <condition name="몬스터가죽어있으면" arg1="1999">
+      <transition state="end" />
+    </condition>
+    <condition name="무조건" >
+			<transition state="end"/>
+		</condition>
+  </state>
+
+  <state name="end">
+    <onEnter>
+		</onEnter>
+  </state>
+  
+</ms2>

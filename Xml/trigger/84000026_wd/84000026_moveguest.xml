@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="초기화"> <!-- 트리거 초기화 -->
+		<onEnter>		
+			<action name="SetUserValue" key="Weddingceremonystartsready" value="0" /> <!-- 초기화 -->
+			<action name="SetUserValue" key="Weddingceremonyfail" value="0" /> <!-- 초기화 -->
+        </onEnter>
+		<condition name="무조건" > 
+			<transition state="시작" />
+		</condition>				
+    </state>
+
+	 <state name="시작"> <!-- 중간입장손님 위치잡기, 난입방지.  -->
+			<condition name="WeddingHallState" hallState="weddingComplete">	<!-- 결혼 연출 끝나서 보상받고 결혼상태로 변경되는 시점부터는 자리옮김 멈춤 -->
+				<transition state="종료" />
+			</condition>
+		   	<condition name="UserValue" key="Weddingceremonystartsready" value="1"> <!-- 결혼하시겠습니까 입력창 띄우자마자 쏘는 신호 받으면 하객옮기기 트리거 시작되도록-->
+				<action name="SetUserValue" key="Weddingceremonystartsready" value="0" /> <!-- 초기화 -->
+				<transition state="새로운하객있는지감지" />
+			</condition>			
+    </state>
+	
+	 <state name="새로운하객있는지감지"> <!-- 중간입장손님들어오시는거확인 -->
+			<condition name="WeddingHallState" hallState="weddingComplete">	<!-- 결혼 연출 끝나서 보상받고 결혼상태로 변경되는 시점부터는 자리옮김 멈춤 -->
+				<transition state="종료" />
+			</condition>
+			<condition name="UserValue" key="Weddingceremonyfail" value="1">	<!-- 결혼 실패-->	
+				<action name="SetUserValue" key="Weddingceremonyfail" value="0" /> <!-- 초기화 -->
+				<transition state="시작"/>
+			</condition>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="방금입장한하객은하객석으로위치이동" />
+			</condition>
+    </state>
+
+   <state name="방금입장한하객은하객석으로위치이동"> 		<!-- 하객 이동시키고 나면 다시 처음으로 돌아감 --> 
+        <onEnter>		
+			<action name="WeddingMoveUser"  entryType="Guest" arg1="84000026" arg2="22,23" arg3="701"/> <!-- 799번 박스(입장구역)에 있는 하객들은 22,23번으로 랜덤이동-->	
+        </onEnter>
+        <condition name="무조건" > 
+			<transition state="새로운하객있는지감지" />
+		</condition>	
+    </state>	
+
+   <state name="하객은버진로드밖으로위치이동"> 		<!-- 하객 이동시키고 나면 다시 처음으로 돌아감 --> 
+        <onEnter>		
+			<action name="WeddingMoveUser"  entryType="Guest" arg1="84000026" arg2="22,23" arg3="701"/> <!-- 701번 박스(버진로드)에 있는 하객들은 22,23번으로 랜덤이동-->				
+        </onEnter>
+        <condition name="무조건" > 
+			<transition state="새로운하객있는지감지" />
+		</condition>		
+    </state>	
+	
+	<state name="종료">
+		<onEnter>
+		</onEnter>
+    </state>
+		
+</ms2>
+

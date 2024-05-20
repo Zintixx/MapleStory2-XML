@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="대기">   
+        <onEnter> 
+			<action name="사운드를설정한다" arg1="99999" arg2="0" />
+    		<action name="이펙트를설정한다" arg1="100000001" arg2="0" />	<!-- wall01 사라짐 -->	 	
+			<action name="이펙트를설정한다" arg1="100000002" arg2="0" />   <!-- 다리 생성 -->	
+			<action name="이펙트를설정한다" arg1="100000003" arg2="0" />   <!-- 다리 제거 -->	
+ 
+			<action name="이펙트를설정한다" arg1="100000004" arg2="0" />	<!-- wall01 사라짐 -->		
+			<action name="이펙트를설정한다" arg1="100000005" arg2="0" />   <!-- 다리 생성 -->	
+			<action name="이펙트를설정한다" arg1="100000006" arg2="0" />   <!-- 다리 제거 -->	
+            <action name="메쉬를설정한다" arg1="1000-1008" arg2="1" arg3="0" arg4="0" arg5="0" /> 	
+            <action name="메쉬를설정한다" arg1="1100-1111" arg2="0" arg3="0" arg4="0" arg5="0" /> 	
+	
+            <action name="메쉬를설정한다" arg1="1200-1211" arg2="0" arg3="0" arg4="0" arg5="0" /> 	
+
+            <action name="메쉬를설정한다" arg1="1300-1308" arg2="1" arg3="0" arg4="0" arg5="0" /> 	
+            <action name="메쉬를설정한다" arg1="1400" arg2="1" arg3="0" arg4="0" arg5="0" /> 				
+            <action name="메쉬를설정한다" arg1="1500" arg2="1" arg3="0" arg4="0" arg5="0" /> 		
+
+            <action name="AGENT를설정한다" arg1="1000001, 1000002, 1000003, 1000004, 1000005, 1000006" arg2="0" /> 					
+            <action name="AGENT를설정한다" arg1="1100001, 1100002, 1100003" arg2="0" /> 		
+			
+            <action name="오브젝트반응설정한다" arg1="10000065" arg2="2" /> 				
+            <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" /> 			
+
+			</onEnter>	
+		<condition name="유저를감지했으면" arg1="1">
+			<transition state="생성_1"/>
+		</condition> 
+    <onExit> 
+    </onExit>
+    </state>
+
+	<state name="생성_1">   
+        <onEnter> 
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> 		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="연출시작_1"/>
+		</condition> 
+ 
+ <onExit> 
+    </onExit>
+    </state>	
+
+   <state name="연출시작_1"> 
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="2000001" arg2="1" />	
+    		<action name="연출UI를설정한다" arg1="3"/>				
+			<action name="연출UI를설정한다" arg1="1"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="대화_1"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	   <state name="대화_1" > 
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="101" arg3="신입사원인가요?" arg4="5" />	
+			<action name="스킵을설정한다" arg1="대화_1_스킵"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="대화_1_스킵"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="대화_1_스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="대화_2"/>
+				</condition>
+    </state>
+
+	   <state name="대화_2" > 
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="101" arg3="반가워요.\n그럼 저를 따라와 보시겠어요??" arg4="3" />
+			<action name="스킵을설정한다" arg1="연출끝_1"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="대화_2_스킵"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="대화_2_스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="연출끝_1"/>
+				</condition>
+    </state>
+	
+   <state name="연출끝_1" > 
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="2000001" arg2="0" />	
+    		<action name="연출UI를설정한다" arg1="2"/>				
+			<action name="연출UI를설정한다" arg1="0"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="돌사운드_1"/>				
+				</condition>
+		<onExit> 	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData0_101_1"/>			
+            <action name="메쉬를설정한다" arg1="1000-1008" arg2="0" arg3="2000" arg4="100" arg5="0" /> 	
+            <action name="메쉬를설정한다" arg1="1100-1111" arg2="1" arg3="5000" arg4="100" arg5="0" /> 				
+		</onExit> 
+	</state>
+	
+   <state name="돌사운드_1" > 
+		<onEnter>		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="자경대장 오스칼과 함께 몬스터들을 처치하세요." arg3="4000"/> 
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="다리사운드_1"/>				
+				</condition>
+		<onExit> 
+			<action name="이펙트를설정한다" arg1="100000001" arg2="1" />	<!-- wall01 사라짐 -->				
+		
+		</onExit> 
+	</state>	
+
+   <state name="다리사운드_1" > 
+		<onEnter>		
+
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="몬스터등장_1"/>				
+				</condition>
+		<onExit> 
+			<action name="이펙트를설정한다" arg1="100000002" arg2="1" />	<!-- 다리 생성 -->				
+		
+		</onExit> 
+	</state>	
+	
+   <state name="몬스터등장_1"> 
+		<onEnter>		
+            <action name="메쉬를설정한다" arg1="1400" arg2="0" arg3="1000" arg4="0" arg5="0" /> 				
+			<action name="몬스터를생성한다" arg1="1001" arg2="0" /> 				
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">		
+				<transition state="유저감지_2"/>					
+				</condition>
+		<onExit> 				
+		</onExit> 
+	</state>			
+	
+   <state name="유저감지_2"> 
+		<onEnter>		
+
+		</onEnter>
+
+				<condition name="유저를감지했으면" arg1="2" arg2="0" >			
+				<transition state="길막추가_1"/>	
+				</condition>
+		<onExit> 				
+			</onExit> 
+	</state>		
+
+   <state name="길막추가_1"> 
+		<onEnter>
+            <action name="AGENT를설정한다" arg1="1000001, 1000002, 1000003, 1000004, 1000005, 1000006" arg2="1" /> 			
+            <action name="메쉬를설정한다" arg1="1400" arg2="1" arg3="0" arg4="0" arg5="0" /> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="200">
+				<transition state="npc감지_1"/>					
+				</condition>
+		<onExit> 				
+			</onExit> 
+	</state>	
+	
+   <state name="npc감지_1"> 
+		<onEnter>		
+			</onEnter>
+				<condition name="AllOf">	
+					<group>
+		            	<condition name="유저를감지했으면" arg1="2" arg2="0" />	
+			        	<condition name="NPC를감지했으면" arg1="2" arg2="101" />	
+					</group>
+						<transition state="다리제거_1"/>
+				</condition>	
+		<onExit> 				
+			</onExit> 
+	</state>	
+
+   <state name="다리제거_1"> 
+		<onEnter>		
+            <action name="메쉬를설정한다" arg1="1100-1111" arg2="0" arg3="100" arg4="100" arg5="0" /> 			
+			<action name="이펙트를설정한다" arg1="100000003" arg2="1" />	<!-- 다리 생성 -->		
+			</onEnter>	
+
+				<condition name="WaitTick" waitTick="200">
+			    <transition state="몬스터사망_1"/>		
+				</condition>
+		<onExit> 			
+
+			</onExit> 
+	</state>	
+	
+   <state name="몬스터사망_1"> 
+		<onEnter>
+			</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="1001" >					
+			    <transition state="3번째구역통로오픈"/>		
+				</condition>
+		<onExit> 			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="다리를 건너 마지막 몬스터를 처치하세요!" arg3="4000"/> 
+			</onExit> 
+	</state>		
+	
+   <state name="3번째구역통로오픈"> 
+		<onEnter>
+           <action name="AGENT를설정한다" arg1="1000001, 1000002, 1000003, 1000004, 1000005, 1000006" arg2="0" /> 		
+    		<action name="메쉬를설정한다" arg1="1300-1308" arg2="0" arg3="2000" arg4="100" arg5="0" /> 	
+            <action name="메쉬를설정한다" arg1="1200-1211" arg2="1" arg3="4000" arg4="100" arg5="0" /> 					
+			</onEnter>
+				<condition name="WaitTick" waitTick="200">			
+			    <transition state="돌사운드_2"/>	
+				</condition>
+		<onExit> 					
+            <action name="메쉬를설정한다" arg1="1500" arg2="0" arg3="5000" arg4="0" arg5="0" /> 			
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData0_101_2"/>	
+			</onExit> 
+	</state>
+
+   <state name="돌사운드_2" > 
+		<onEnter>		
+
+			</onEnter>
+				<condition name="WaitTick" waitTick="1800">
+					<transition state="다리사운드_2"/>				
+				</condition>
+		<onExit> 
+			<action name="이펙트를설정한다" arg1="100000004" arg2="1" />	<!-- wall01 사라짐 -->				
+		
+		</onExit> 
+	</state>	
+
+   <state name="다리사운드_2" > 
+		<onEnter>		
+
+			</onEnter>
+				<condition name="WaitTick" waitTick="1900">
+					<transition state="유저감지_3"/>				
+				</condition>
+		<onExit> 
+			<action name="이펙트를설정한다" arg1="100000005" arg2="1" />	<!-- 다리 생성 -->				
+		
+		</onExit> 
+	</state>		
+			
+
+   <state name="유저감지_3"> 
+		<onEnter>		
+			</onEnter>
+				<condition name="AllOf">	
+					<group>
+		            	<condition name="유저를감지했으면" arg1="3" arg2="0" />	
+			        	<condition name="NPC를감지했으면" arg1="3" arg2="101" />	
+					</group>
+						<transition state="길막추가_2"/>
+				</condition>	
+
+					<onExit> 				
+			</onExit> 
+	</state>		
+
+   <state name="길막추가_2"> 
+		<onEnter>		
+            <action name="메쉬를설정한다" arg1="1500" arg2="1" arg3="0" arg4="0" arg5="0" /> 			
+            <action name="AGENT를설정한다" arg1="1100001, 1100002, 1100003" arg2="1" /> 
+			</onEnter>
+				<condition name="WaitTick" waitTick="200">
+				<transition state="다리제거_2"/>					
+				</condition>
+
+				<onExit> 				
+			</onExit> 
+	</state>		
+	
+	
+   <state name="다리제거_2"> 
+		<onEnter>	
+ 			<action name="사운드를설정한다" arg1="99999" arg2="1" />
+            <action name="몬스터를생성한다" arg1="1002" arg2="0" /> 			
+            <action name="메쉬를설정한다" arg1="1200-1211" arg2="0" arg3="100" arg4="100" arg5="0" /> 	
+			<action name="이펙트를설정한다" arg1="100000006" arg2="1" />	<!-- 다리 제거 -->				
+			</onEnter>	
+
+				<condition name="WaitTick" waitTick="200">
+					<transition state="몬스터사망_2"/>		
+				</condition>
+		<onExit> 			
+			</onExit> 
+	</state>	
+
+   <state name="몬스터사망_2"> 
+		<onEnter>
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="1002" >					
+			    <transition state="연출시작_2"/>		
+				</condition>
+		<onExit> 			
+
+			</onExit> 
+	</state>
+	
+  <state name="연출시작_2"> 
+		<onEnter>		
+			<action name="사운드를설정한다" arg1="99999" arg2="0" />
+	    	<action name="카메라를선택한다" arg1="2000002" arg2="1" />	  
+    		<action name="연출UI를설정한다" arg1="3"/>				
+			<action name="연출UI를설정한다" arg1="1"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="레버생성_1"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+   <state name="레버생성_1"> 
+		<onEnter>
+            <action name="오브젝트반응설정한다" arg1="10000065" arg2="1" /> 		
+		</onEnter>
+				<condition name="WaitTick" waitTick="200">				
+			    <transition state="대화_3"/>		
+				</condition>
+		<onExit> 			
+
+			</onExit> 
+	</state>		
+	
+	   <state name="대화_3" > 
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="101" arg3="저 스위치를 당겨야해요!" arg4="5" />	
+			<action name="스킵을설정한다" arg1="대화_3_스킵"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="대화_3_스킵"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="대화_3_스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="연출끝_2"/>
+				</condition>
+    </state>
+
+   <state name="연출끝_2" > 
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="2000002" arg2="0" />	
+    		<action name="연출UI를설정한다" arg1="2"/>				
+			<action name="연출UI를설정한다" arg1="0"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="레버생성_1_완료"/>				
+				</condition>
+		<onExit> 				
+			<action name="이벤트UI를설정한다" arg1="1" arg2="생성된 스위치를 작동시키세요!" arg3="4000"/> 
+		</onExit> 
+	</state>
+	
+    <state name="레버생성_1_완료"> 
+		<onEnter>
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000065" arg2="0">				
+			    <transition state="포탈생성"/>		
+				</condition>
+		<onExit> 			
+
+			</onExit> 
+	</state>	
+ 
+    <state name="포탈생성"> 
+		<onEnter>
+            <action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" /> 	
+		</onEnter>
+				<condition name="WaitTick" waitTick="200">					
+			    <transition state="NPC이동_2"/>	
+				</condition>
+		<onExit> 			
+
+			</onExit> 
+	</state>	
+ 
+    <state name="NPC이동_2"> 
+		<onEnter>		
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData0_101_3"/>				
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="오예~끝났당~" arg4="3" arg5="7" />	
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">		
+				<transition state="npc감지_4"/>					
+				</condition>
+		<onExit> 			
+		</onExit> 
+	</state>	
+ 
+ 	<state name="npc감지_4"> 
+		<onEnter>		
+			</onEnter>
+				<condition name="NPC를감지했으면" arg1="4" arg2="101" >			
+					<transition state="마무리"/>	
+				</condition>
+		<onExit> 				
+			</onExit> 
+	</state>	
+ 
+  	<state name="마무리"> 
+		<onEnter>		
+			<action name="몬스터소멸시킨다" arg1="101" />		
+		</onEnter>
+				<condition name="WaitTick" waitTick="100">				
+				</condition>
+
+				<onExit> 				
+			</onExit> 
+	</state>	
+ 
+</ms2>

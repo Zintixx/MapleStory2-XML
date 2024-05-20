@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="시작대기중">
+    <onEnter>
+    </onEnter> 
+			<condition name="CheckUser">
+				<transition state="시작"/>
+			</condition>
+    <onExit>
+    </onExit>
+  </state>
+
+    <state name="시작" >
+        <onEnter>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="보스등장"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+	<state name="보스등장">
+		<onEnter>
+            <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>
+			<action name="몬스터를생성한다" arg1="99"  arg2="0"/>   <!-- arg2="0" 을 넣으면 보스 등장하자마자 바로 공격 상태가 되는 것을 막을 수 있음 -->
+			<action name="NPC를이동시킨다" arg1="99" arg2="MS2PatrolData_99" />	
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="99">
+			<transition state="종료체크"/>
+		</condition>
+		<onExit>
+		</onExit>
+	</state>  
+
+	<state name="종료체크">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="99"/>		
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="Quit"/>	
+				</condition>			
+		<onExit>
+		</onExit>
+	</state>
+	 
+    <state name="Quit"> 
+        <onEnter>
+  			<action name="DungeonClear"/>				
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>		
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+	
+</ms2>

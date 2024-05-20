@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="시작" posX="281" posY="48">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="60" arg2="30" arg3="0" arg4="1"/>
+        </onEnter>
+				<!--최대 인원 설정-->
+				<condition name="여러명의유저를감지했으면" arg1="104" arg2="20">
+					<transition state="PvP" />
+				</condition>
+				 <condition name="시간이경과했으면" arg1="60">
+					<transition state="대기" />
+				</condition>
+		<onExit>
+			<action name="타이머를초기화한다" arg1="60"/>
+		</onExit>	
+    </state>
+
+    <state name="대기" posX="245" posY="240">
+        <onEnter>
+				<action name="타이머를초기화한다" arg1="1"/>
+        </onEnter>
+				<!--최소 인원 설정-->
+				<condition name="여러명의유저를감지했으면" arg1="104" arg2="2">
+					<transition state="PvP" />
+				</condition>
+				<condition name="!여러명의유저를감지했으면" arg1="104" arg2="2">
+					<transition state="비김" />
+				</condition>
+    </state>
+
+    <state name="PvP" posX="238" posY="108">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="1" arg3="0" />
+			<!--action name="업적이벤트를발생시킨다" arg1="106" arg2="trigger" arg3="dailyquest_start"/-->
+			<action name="PVP존을설정한다" arg1="104" arg2="3" arg3="600" arg4="90001002" arg5="3" arg6="1,2,101,102,103" />
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="1" >
+					<transition state="문열림" />
+				</condition>
+    </state>
+
+    <state name="문열림" posX="857" posY="303">
+		 <condition name="유저를감지했으면" arg1="105">
+					<transition state="PvP종료" />
+        </condition>
+    </state>
+
+    <state name="PvP종료" posX="238" posY="108">
+				<condition name="PVP존이종료했으면" arg1="104" >
+					<transition state="게임종료" />
+				</condition>
+    </state>
+
+  <state name="게임종료">
+    <onEnter>
+      <action name="타이머를설정한다" arg1="10" arg2="10"/>
+    </onEnter>
+				<condition name="시간이경과했으면" arg1="10">
+				  <transition state="종료"/>
+				</condition>
+  </state>
+
+    <state name="비김" posX="857" posY="303">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="3" arg2="3" arg3="0" />
+        </onEnter>
+			 <condition name="시간이경과했으면" arg1="3">
+				<action name="이벤트UI를설정한다" arg1="5" arg2="$65000002_BD__PVP__5$" arg3="3000" arg4="0" />
+				<transition state="완료" />
+			</condition>
+    </state>
+
+  <state name="완료">
+    <onEnter>
+			 <action name="타이머를설정한다" arg1="5" arg2="5"/>
+			 <action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+    </onEnter>
+			<condition name="시간이경과했으면" arg1="5">
+				  <action name="유저를이동시킨다" arg1="0" arg2="0"/>
+				  <transition state="종료"/>
+			</condition>
+  </state>
+
+  <state name="종료">
+  </state>
+
+</ms2>

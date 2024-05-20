@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+  <state name="대기">
+      <onEnter>
+	  	  	<action name="오브젝트반응설정한다" arg1="10000897" arg2="0" />
+	  		<action name="이펙트를설정한다" arg1="7003" arg2="0" /> <!-- 전원 붙는 소리 -->	
+			<action name="이펙트를설정한다" arg1="7004" arg2="0" /> <!-- 전원 붙는 소리 -->	
+	  		<action name="메쉬를설정한다" arg1="1161-1163" arg2="0"/> <!-- 파랑 안보이는 상태 -->	
+    </onEnter>
+	        <condition name="오브젝트가반응했으면" arg1="10000897" arg2="1">
+            <transition state="시작" />
+        </condition>
+    <onExit>
+
+    </onExit>
+  </state>
+
+  <state name="시작">
+      <onEnter>
+	  		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+	  		<action name="ShowGuideSummary" entityID="113" textID="20003363"/> <!--  [b:레버]를 조작하여 드럼통을 폭파시키세요. -->
+	  </onEnter>
+	        <condition name="오브젝트가반응했으면" arg1="10000897" arg2="0">
+            <transition state="작동_01" />
+        </condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="113"/>
+    </onExit>
+  </state>
+     
+     <state name="작동_01">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1="7003" arg2="1" /> <!-- 전원 붙는 소리 -->	
+		<action name="이펙트를설정한다" arg1="7004" arg2="1" /> <!-- 전원 붙는 소리 -->	
+		<action name="메쉬를설정한다" arg1="1171-1173" arg2="0" arg4="300" arg5="10" /> <!--빨간 선이-->	
+		<action name="메쉬를설정한다" arg1="1161-1163" arg2="1" arg4="300" arg5="10" /> <!--파란 선으로-->	
+		<action name="타이머를설정한다" arg1="3" arg2="3"/>
+	</onEnter>
+		<condition name="시간이경과했으면" arg1="3">
+		<transition state="작동_02"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state> 
+  
+    <state name="작동_02">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="2111" arg2="0" arg4="30" arg5="0" /> <!--드럼통 폭발-->
+		<action name="메쉬를설정한다" arg1="1161-1163" arg2="0" arg4="0" arg5="10" /> <!--파란 선도 마저 삭제-->			
+		<action name="메쉬를설정한다" arg1="2101" arg2="0" arg4="50" arg5="1" /> <!--유리창 해제-->	
+		<action name="타이머를설정한다" arg1="2" arg2="2"/>
+	</onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="벽제거"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+      <state name="벽제거">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/> <!-- 보상으로 연결되는 포탈 제어 (켬) -->
+	</onEnter>
+    <onExit>
+    </onExit>
+  </state>
+  
+ </ms2>

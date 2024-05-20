@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+  <state name="대기">
+    <onEnter>
+		<action name="SetUserValue" triggerID="99990001" key="Battle_2_Clear" value="0" />
+		<action name="StartCombineSpawn" groupId="10000600" isStart="false"/> <!-- 거대화 보급 상자 -->
+		<action name="StartCombineSpawn" groupId="10000601" isStart="false"/>
+		<action name="StartCombineSpawn" groupId="10000602" isStart="false"/>
+		<action name="SetUserValue" triggerID="99990007" key="TurretSpawn_1" value="0" />
+		<action name="SetUserValue" triggerID="99990008" key="TurretSpawn_2" value="0" />
+		<action name="SetUserValue" triggerID="99990009" key="TurretSpawn_3" value="0" />
+		<action name="SetUserValue" triggerID="99990010" key="TurretSpawn_4" value="0" />
+		<action name="SetUserValue" triggerID="99990015" key="TurretSpawn_5" value="0" />
+    </onEnter>
+    <condition name="UserValue" key="Battle_2_Start" value="1" >
+		<transition state="포탑소환_1"/>
+    </condition>
+  </state>
+
+  <state name="포탑소환_1">
+    <onEnter>
+		<action name="StartCombineSpawn" groupId="10000600" isStart="true"/> <!-- 상자 소환 1-->
+		<action name="SetUserValue" triggerID="99990007" key="TurretSpawn_1" value="1" />
+    </onEnter>
+    <condition name="UserValue" key="Battle_2_Start" value="0" >
+		<transition state="대기"/>
+    </condition>
+	<condition name="WaitTick" waitTick="5000">  
+		<transition state="추가대사_1" />
+	</condition>
+	<condition name="몬스터가죽어있으면" arg1="711" >
+		<action name="SetUserValue" triggerID="99990007" key="TurretSpawn_1" value="0" />
+		<transition state="포탑소환_2"/>
+    </condition>
+  </state>
+
+  <state name="추가대사_1">
+    <onEnter>
+		<action name="SideNpcTalk" type="talk" npcID="11001813" illust="Turka_normal" duration="5000" script="$02020063_BF__BATTLE_2__0$" />
+    </onEnter>
+    <condition name="UserValue" key="Battle_2_Start" value="0" >
+		<transition state="대기"/>
+    </condition>
+	<condition name="WaitTick" waitTick="5000">  
+		<transition state="추가대사_2" />
+	</condition>
+    <condition name="몬스터가죽어있으면" arg1="711" >
+		<action name="SetUserValue" triggerID="99990007" key="TurretSpawn_1" value="0" />
+		<transition state="포탑소환_2"/>
+    </condition>
+  </state>
+
+  <state name="추가대사_2">
+    <onEnter>
+		<action name="SideNpcTalk" type="talk" npcID="11003536" illust="Neirin_surprise" duration="5000" script="$02020063_BF__BATTLE_2__1$" />
+    </onEnter>
+    <condition name="UserValue" key="Battle_2_Start" value="0" >
+		<transition state="대기"/>
+    </condition>
+	<condition name="WaitTick" waitTick="5000">  
+		<transition state="추가대사_3" />
+	</condition>
+    <condition name="몬스터가죽어있으면" arg1="711" >
+		<action name="SetUserValue" triggerID="99990007" key="TurretSpawn_1" value="0" />
+		<transition state="포탑소환_2"/>
+    </condition>
+  </state>
+ 
+  <state name="추가대사_3">
+    <onEnter>
+		<action name="SideNpcTalk" type="talk" npcID="11003533" illust="Bliche_normal" duration="5000" script="$02020063_BF__BATTLE_2__2$" />
+    </onEnter>
+	<condition name="WaitTick" waitTick="5000">  
+		<transition state="추가대사_4" />
+	</condition>
+    <condition name="UserValue" key="Battle_2_Start" value="0" >
+		<transition state="대기"/>
+    </condition>
+    <condition name="몬스터가죽어있으면" arg1="711" >
+		<action name="SetUserValue" triggerID="99990007" key="TurretSpawn_1" value="0" />
+		<transition state="포탑소환_2"/>
+    </condition>
+  </state>
+ 
+  <state name="추가대사_4">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02020063_BF__BATTLE_2__3$" arg3="5000" />
+    </onEnter>
+    <condition name="UserValue" key="Battle_2_Start" value="0" >
+		<transition state="대기"/>
+    </condition>
+    <condition name="몬스터가죽어있으면" arg1="711" >
+		<transition state="포탑소환_2"/>
+    </condition>
+  </state>
+  
+  <state name="포탑소환_2">
+    <onEnter>
+		<action name="SideNpcTalk" type="talk" npcID="11003536" illust="Neirin_surprise" duration="5000" script="$02020063_BF__BATTLE_2__4$" />
+		<action name="SetUserValue" triggerID="99990008" key="TurretSpawn_2" value="1" />
+		<action name="SetUserValue" triggerID="99990009" key="TurretSpawn_3" value="1" />
+    </onEnter>
+    <condition name="몬스터가죽어있으면" arg1="712,713" >
+		<transition state="포탑소환_3"/>
+    </condition>
+    <condition name="UserValue" key="Battle_2_Start" value="0" >
+		<transition state="대기"/>
+    </condition>
+  </state>
+
+  <state name="포탑소환_3">
+    <onEnter>
+		<action name="SideNpcTalk" type="talk" npcID="11003536" illust="Neirin_surprise" duration="5000" script="$02020063_BF__BATTLE_2__5$" />
+		<action name="SetUserValue" triggerID="99990010" key="TurretSpawn_4" value="1" />
+		<action name="SetUserValue" triggerID="99990015" key="TurretSpawn_5" value="1" />
+    </onEnter>
+    <condition name="몬스터가죽어있으면" arg1="714,715" >
+      <transition state="종료대기"/>
+    </condition>
+    <condition name="UserValue" key="Battle_2_Start" value="0" >
+      <transition state="대기"/>
+    </condition>
+  </state>
+  
+  <state name="종료대기">
+    <onEnter>
+		<action name="SideNpcTalk" type="talk" npcID="11003536" illust="Neirin_smile" duration="5000" script="$02020063_BF__BATTLE_2__6$" />
+    </onEnter>
+	<condition name="WaitTick" waitTick="5000">    
+	  <transition state="포탑소환_클리어" />
+    </condition>
+	<condition name="UserValue" key="Battle_2_Start" value="0" >
+		<transition state="대기"/>
+	</condition>
+  </state>
+   
+  <state name="포탑소환_클리어">
+    <onEnter>
+      <action name="SetUserValue" triggerID="99990001" key="Battle_2_Clear" value="1" />
+	  <action name="SetUserValue" triggerID="99990005" key="Battle_2_SpawnStart" value="0" />
+      <action name="StartCombineSpawn" groupId="10000600" isStart="false"/>
+      <action name="SetUserValue" triggerID="99990007" key="TurretSpawn_1" value="0" />
+      <action name="SetUserValue" triggerID="99990008" key="TurretSpawn_2" value="0" />
+      <action name="SetUserValue" triggerID="99990009" key="TurretSpawn_3" value="0" />
+      <action name="SetUserValue" triggerID="99990010" key="TurretSpawn_4" value="0" />
+      <action name="SetUserValue" triggerID="99990015" key="TurretSpawn_5" value="0" />
+    </onEnter>
+	<condition name="UserValue" key="Battle_2_Start" value="0" >
+      <transition state="대기"/>
+    </condition>
+  </state>
+  
+</ms2>

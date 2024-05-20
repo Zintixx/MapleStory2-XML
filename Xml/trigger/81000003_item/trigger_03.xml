@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="입장">
+		<onEnter>
+            <action name="타이머를설정한다" arg1="59" arg2="180" arg3="1" arg4="1" arg5="-90" desc="wait.xml 시작 타이머 설정 UI"/> <!--3분 후 시작-->		
+		</onEnter>
+			    <condition name="유저를감지했으면" arg1="402">
+					<transition state="대기" />
+				</condition>
+    </state>
+
+    <state name="대기">
+        <onEnter>
+			<action name="포탈을설정한다" arg1="999" arg2="1" arg3="1" arg4="1"/>
+			<action name="메쉬를설정한다" arg1="501-509" arg2="1"/>		
+        </onEnter>
+				<condition name="WaitTick" waitTick="180000" > <!--3분 후 시작-->
+						<transition state="어나운스0"/>
+				 </condition>
+				<!--<condition name="여러명의유저를감지했으면" arg1="402" arg2="20">
+					<transition state="어나운스0" />
+				</condition>-->
+    </state>
+	
+	  <state name="어나운스0">
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="ME_Trigger_03_00"/>  			
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000006_ME__TRIGGER_03__0$" arg3="4000" arg4="0" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+						<transition state="어나운스1"/>
+				 </condition>
+    </state>
+
+    <state name="어나운스1">
+        <onEnter>
+			<action name="ShowCountUI" text="$61000006_ME__TRIGGER_03__1$" stage="0" count="5"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="6000" > 
+						<transition state="시작"/>
+				 </condition>
+    </state>
+	
+	
+    <state name="시작">
+        <onEnter>
+			<action name="SetUserValue" triggerID="999111" key="gameStart" value="1" /> 	
+			<action name="타이머를설정한다" arg1="160" arg2="160" arg3="0" arg4="1" desc="trigger_03.xml 시작 타이머 설정"/>	
+			<action name="메쉬를설정한다" arg1="501-509" arg2="0"/>		
+            <action name="오브젝트반응설정한다" arg1="10000224" arg2="1"/>
+            <action name="오브젝트반응설정한다" arg1="10000214" arg2="1"/>
+			<!--<action name="업적이벤트를발생시킨다" arg1="402" arg2="trigger" arg3="dailyquest_start"/>-->
+			<!--길드 경험치 지급 / boxID="타겟박스id", 0이면 맵전체, type="GuildGainExp의 id" 2가 매시브이벤트-->
+			<!--<action name="GiveGuildExp" boxID="0" type="2"/>-->
+			<action name="StartMiniGame" isShowResultUI="false" boxId="499" round="1" gameName="UserMassive_Crazyrunner"/>
+			<action name="StartMiniGameRound" boxId="499" round="1" />
+			<action name="MoveUserToBox" boxId="400" portalId="1" />
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="160">
+					<transition state="경기종료" />
+				</condition>
+    </state>
+
+    <state name="경기종료">
+        <onEnter>
+			<!--<action name="업적이벤트를발생시킨다" arg1="401" arg2="trigger" arg3="crazyrunner_win"/>-->
+			<!--action name="MiniGameCameraDirection" boxId="401" cameraId="301" /-->
+			<action name="이벤트UI를설정한다" arg1="3" arg2="$61000006_ME__TRIGGER_03__2$" arg3="5000" arg4="401"/>
+			<action name="이벤트UI를설정한다" arg1="4" arg2="$61000006_ME__TRIGGER_03__3$" arg3="5000" arg4="!401"/>
+			<action name="버프를걸어준다" arg1="401" arg2="70000132" arg3="1"/>	  
+            <!--action name="이벤트UI를설정한다" arg1="5" arg2="$61000004_ME__TRIGGER_01__2$" arg3="3000" arg4="0" /-->
+        </onEnter>	
+		<condition name="WaitTick" waitTick="6000">
+			<action name="EndMiniGameRound" winnerBoxId ="401" expRate ="0.133333333" meso="" isGainLoserBonus="true" gameName="UserMassive_Crazyrunner"/>  <!--승리자 및 실패자도 경험치 지급함-->
+			<action name="EndMiniGame" winnerBoxId="401" gameName="UserMassive_Crazyrunner" /> 
+			<!--action name="SetLocalCamera" cameraId="301" enable="0"/-->	
+			<transition state="강제이동" />
+		</condition>
+    </state>
+	
+    <state name="강제이동">
+				<condition name="WaitTick" waitTick="15000" > 
+					  <action name="유저를이동시킨다" arg1="0" arg2="0"/>
+					  <transition state="종료" />
+				</condition>				
+        <onExit />
+    </state>
+
+    <state name="종료" posX="861" posY="45">
+    </state>
+
+ 
+</ms2>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="시작">
+		<onEnter> 
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>				
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>		
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/>					
+			<action name="메쉬를설정한다" arg1="3000,3001" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3002" arg2="1" arg3="0" arg4="0" arg5="0" />			
+			<action name="SetUserValue" key="ZakumBodyAppearance" value="0" /> <!-- 이 변수 신호 받아서 자쿰 몸체 등장시키는데 사용함 -->	
+			
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="199">
+				<transition state="던전코드별보스등장" />
+			</condition>
+	</state>    
+	
+	<state name="던전코드별보스등장">
+		<onEnter>
+		</onEnter>
+
+			<condition name="DungeonID" dungeonID="23040003">  <!-- 10인던전으로 입장하면 10인용 보스 등장,   dungeonID 의 숫자는 DungeonRoom.xlsx 에 정의된 던전코드-->			 
+				<transition state="어려운난이도보스등장" />
+			</condition>	
+		
+			<condition name="DungeonID" dungeonID="23041003">   <!-- 6인던전으로 입장하면 6인용 보스 등장-->			 
+				<transition state="쉬운난이도보스등장" />
+			</condition>	
+
+			<condition name="WaitTick" waitTick="2000" > <!-- 그냥 테스트용으로 맵코드로 바로 들어왔으면 10인용 보스 등장-->			 
+				<transition state="어려운난이도보스등장" />
+			</condition>	
+			
+	</state>
+
+	<state name="어려운난이도보스등장"> <!-- 10인던전으로 입장하면 10인용 보스 등장,  디버그 모드로 바로 맵으로 들어가도 이 부분 실행함-->			 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2001" arg2="0" /> <!-- 어려운 난이도의 자쿰 등장-->			 		
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기" />
+			</condition>				
+		
+	</state>  
+
+	<state name="쉬운난이도보스등장"> <!-- 10인던전으로 입장하면 10인용 보스 등장,  디버그 모드로 바로 맵으로 들어가도 이 부분 실행함-->			 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2002" arg2="0" /> <!-- 쉬운 난이도의 자쿰 등장-->			 		
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기" />
+			</condition>				
+		
+	</state>    	
+	
+  
+	<state name="대기"> 
+		<onEnter> 
+		</onEnter>	
+		
+				<condition name="UserValue" key="ZakumBodyAppearance" value="1">	 <!-- AI_ZakumBrownImitation.xml 로 부터 신호 받아서 자쿰몸체를 스폰시키기-->			 					
+					<transition state="자쿰몸체등장" />
+				</condition>		
+				
+		
+				<condition name="UserValue" key="ZakumDungeonEnd" value="1">						
+					<transition state="종료딜레이" />
+				</condition>		
+				<condition name="DungeonTimeOut" >						
+					<transition state="던전실패" />
+				</condition>
+				<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+					<transition state="던전실패" />
+				</condition>
+	</state>
+
+	
+	<state name="자쿰몸체등장">
+		<onEnter>
+			<action name="SetUserValue" key="ZakumBodyAppearance" value="0" /> <!-- 이 변수 0 초기화 하여 무한루프 빠지는거 방지 -->	
+		</onEnter>
+
+			<condition name="DungeonID" dungeonID="23040003">  <!-- 10인던전으로 입장하면 10인용 자쿰몸 등장,   dungeonID 의 숫자는 DungeonRoom.xlsx 에 정의된 던전코드-->			 
+				<transition state="어려운난이도_자쿰몸등장" />
+			</condition>	
+		
+			<condition name="DungeonID" dungeonID="23041003">   <!-- 4인던전으로 입장하면 4인용 자쿰몸 등장-->			 
+				<transition state="쉬운난이도_자쿰몸등장" />
+			</condition>	
+
+			<condition name="WaitTick" waitTick="2000" > <!-- 그냥 테스트용으로 맵코드로 바로 들어왔으면 10인용 자쿰몸 등장-->			 
+				<transition state="어려운난이도_자쿰몸등장" />
+			</condition>	
+			
+	</state>
+
+	<state name="어려운난이도_자쿰몸등장"> <!-- 10인던전으로 입장하면 10인용 자쿰몸 등장,  디버그 모드로 바로 맵으로 들어가도 이 부분 실행함-->			 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2011" arg2="0" /> <!-- 어려운 난이도의 자쿰몸 등장-->			 		
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기" />
+			</condition>				
+		
+	</state>  
+
+	<state name="쉬운난이도_자쿰몸등장"> <!-- 10인던전으로 입장하면 10인용 자쿰몸 등장,  디버그 모드로 바로 맵으로 들어가도 이 부분 실행함-->			 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2012" arg2="0" /> <!-- 쉬운 난이도의 자쿰몸 등장-->			 		
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기" />
+			</condition>				
+		
+	</state>    		
+	
+	
+	
+	
+	 <state name="종료딜레이">
+		<onEnter> 
+			<action name="DungeonSetEndTime" /> <!--시간 기능 종료시킴-->		
+			<action name="DungeonCloseTimer" />		
+			
+			<action name="업적이벤트를발생시킨다" arg3="ZakumKritiasClear"/>
+			<!-- arg3="ZakumKritiasClear" 는 퀘스트와 트로피 업적 당설 완료 조건 처리 키값임, arg1="??" arg2="trigger" 은 해당 트리거 안에 만 있으면 클리어 처리 할때 사용하는 것인데, 이거 생략하면 맵 안에만 있으면 무조건 퀘스트와 트로피 업적을 완료 처리함  -->
+			
+			<action name="SetUserValue" triggerID="999103" key="BattleEnd" value="1" /> 		
+			<action name="SetUserValue" triggerID="999102" key="BattleEnd2" value="1" /> 	<!--자쿰 팔 제거때 용암 올라오게 하는 트리거 xml 담당, 999102_Lavaflow.xml-->					
+			<action name="SetUserValue" triggerID="999108" key="BattleEnd2" value="1" /> 	<!--계약의 토템에 의해 왼쪽 용암 올라오게 하는 트리거 xml 담당, 999108_Lavaflow.xm-->									
+			<action name="SetUserValue" triggerID="999109" key="BattleEnd2" value="1" /> 	<!--계약의 토템에 의해 오른쪽 용암 올라오게 하는 트리거 xml 담당, 999109_Lavaflow.xml-->											
+			<action name="메쉬를설정한다" arg1="3002" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--자쿰 몸통 아래쪽 부위를 둘러싸고 있는 트리거 박스 제거하기-->	
+			<action name="메쉬를설정한다" arg1="3003" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--자쿰 몸통 위쪽 부위를 둘러싸고 있는 트리거 박스 제거하기-->	
+			
+			<!--  던전 클리어 하면 토템의 저주 자쿰의 저주 제거하기 -->			
+			<action name="버프를삭제한다" arg1="199" arg2="50005300" />	 
+			<action name="버프를삭제한다" arg1="199" arg2="50005301" />		
+			<action name="버프를삭제한다" arg1="199" arg2="50001450" />	<!--  죽음의 저주 걸렸을때 자쿰 클리어 하면, 해제함-->				
+			
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="2000" > 
+					<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+					<action name="DungeonClear" /> 
+					<transition state="종료" />
+				</condition>
+	</state> 
+
+	 <state name="던전실패">
+		<onEnter> 
+			<action name="몬스터소멸시킨다" arg1="all" />			
+			<action name="DungeonSetEndTime" /> <!--시간 기능 종료시킴, 이 기능 잘 작동시키려면 DungeonRoom.xlsx 의 제한 시간 만료 시(isExpireTimeOut) 빈칸 설정 해야 함  -->		
+			<action name="DungeonCloseTimer" />		
+			
+			<action name="SetUserValue" triggerID="999103" key="BattleEnd" value="1" /> 		
+			<action name="메쉬를설정한다" arg1="3002" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--자쿰 몸통 아래쪽 부위를 둘러싸고 있는 트리거 박스 제거하기-->		
+			<action name="메쉬를설정한다" arg1="3003" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--자쿰 몸통 위쪽 부위를 둘러싸고 있는 트리거 박스 제거하기-->	
+
+			<!--  던전 클리어 하면 토템의 저주 자쿰의 저주 제거하기 -->			
+			<action name="버프를삭제한다" arg1="199" arg2="50005300" />	 
+			<action name="버프를삭제한다" arg1="199" arg2="50005301" />					
+			<action name="버프를삭제한다" arg1="199" arg2="50001450" />	<!--  죽음의 저주 걸렸을때 자쿰 클리어 하면, 해제함-->				
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="1500" > 
+					<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+					<action name="DungeonFail" /> 
+					<transition state="종료" />
+				</condition>
+	</state> 	
+	
+
+	<state name="종료">
+		<onEnter> 
+			<action name="DungeonEnableGiveUp" isEnable="0" />		
+		</onEnter>		
+	</state>
+	
+</ms2>

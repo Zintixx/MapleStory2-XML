@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Wait">
+        <onEnter>					
+			<action name="오브젝트반응설정한다" arg1="10001137" arg2="0" />	<!-- ToWall_True -->			
+			<action name="오브젝트반응설정한다" arg1="10001138" arg2="0" />	<!-- ToRoom_True -->		
+			<action name="오브젝트반응설정한다" arg1="10001139" arg2="0" />	<!-- ToTower_True -->					
+			<action name="메쉬를설정한다" arg1="3200" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CurtainBarrier-->	
+			<action name="메쉬를설정한다" arg1="3201,3202" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CurtainOpen-->	
+			<action name="메쉬를설정한다" arg1="3300" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- ToTowerDoorBarrier-->	
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- DoorOpen -->			
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="Closed" />		<!-- NextMap -->			
+			<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0"/>	<!-- ToWall -->
+			<action name="포탈을설정한다" arg1="20" arg2="0" arg3="0" arg4="0"/>	<!-- ToRoom -->
+			<action name="포탈을설정한다" arg1="30" arg2="0" arg3="0" arg4="0"/>	<!-- ToTower -->	
+			<action name="SetUserValue" key="SearchStart" value="0" />					
+        </onEnter>	
+				<condition name="UserValue" key="SearchStart" value="1" >		
+			<transition state="PickRandomPortal"/>	
+		</condition> 
+		<onExit>
+		</onExit>		
+	</state>
+	
+	
+<!-- 3개의 문 중에서 하나 뽑기 -->	
+	<state name="PickRandomPortal">
+		<onEnter>
+		</onEnter>
+				<condition name="랜덤조건" arg1="30">
+					<transition state="ToWall01"/>
+				</condition>		
+				<condition name="랜덤조건" arg1="30">	
+					<transition state="ToRoom01"/>
+				</condition>
+				<condition name="랜덤조건" arg1="30">
+					<transition state="ToTower01" />
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 테라스로 나가서 성 외벽으로 -->	
+    <state name="ToWall01">	
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10001137" arg2="1" />	<!-- ToWall_True -->		
+			<action name="SetUserValue" triggerID="6" key="ToRoomFalse" value="1" /> 	<!-- ToRoom_False -->			
+			<action name="SetUserValue" triggerID="7" key="ToTowerFalse" value="1" /> 	<!-- ToTowerFalse -->				
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10001137" arg2="0" >
+					<transition state="ToWall02"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="ToWall02">	
+        <onEnter>	
+			<action name="메쉬를설정한다" arg1="3200" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- CurtainBarrier-->	
+			<action name="메쉬를설정한다" arg1="3201,3202" arg2="0" arg3="0" arg4="0" arg5="3" /> <!-- CurtainOpen-->			
+			<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="0"/>	<!-- ToWall -->		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000396_BF__04_RANDOMPORTAL__0$" arg3="2000" arg4="0" />					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="ToWallGuide01"/>	
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+   <state name="ToWallGuide01" >	
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="대화를설정한다" arg1="2" arg2="11000006" arg3="$02000396_BF__04_RANDOMPORTAL__1$" arg4="5" />  <!-- 블랙아이 -->		
+			<action name="스킵을설정한다" arg1="ToWallGuide01Skip" />				
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">		
+					<transition state="ToWallGuide01Skip"/>		
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+	
+	<state name="ToWallGuide01Skip" >		
+        <onEnter>	
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="Quit"/>	
+				</condition>			
+         <onExit />
+    </state>
+	
+	
+	
+<!-- 문을 통해 다른 방으로 -->	
+    <state name="ToRoom01">	
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10001138" arg2="1" />	<!-- ToRoom_True -->		
+			<action name="SetUserValue" triggerID="5" key="ToWallFalse" value="1" /> 	<!-- ToWall_False -->			
+			<action name="SetUserValue" triggerID="7" key="ToTowerFalse" value="1" /> 	<!-- ToTowerFalse -->		
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10001138" arg2="0" >
+					<transition state="ToRoom02"/>
+				</condition>
+    <onExit>  
+    </onExit>
+    </state>		
+
+    <state name="ToRoom02">	
+        <onEnter>		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000396_BF__04_RANDOMPORTAL__2$" arg3="2000" arg4="0" />					
+			<action name="포탈을설정한다" arg1="20" arg2="1" arg3="1" arg4="0"/>	<!-- ToRoom -->
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="ToRoomGuide01"/>	
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+   <state name="ToRoomGuide01" >	
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="대화를설정한다" arg1="2" arg2="11000006" arg3="$02000396_BF__04_RANDOMPORTAL__3$" arg4="5" />  <!-- 블랙아이 -->		
+			<action name="스킵을설정한다" arg1="ToRoomGuide01Skip" />				
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">		
+					<transition state="ToRoomGuide01Skip"/>		
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+	
+	<state name="ToRoomGuide01Skip" >		
+        <onEnter>	
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="Quit"/>	
+				</condition>		
+         <onExit />
+    </state>
+	
+	
+	
+<!-- 계단을 통해 탑으로 -->	
+    <state name="ToTower01">	
+        <onEnter>	
+			<action name="SetUserValue" triggerID="5" key="ToWallFalse" value="1" /> 	<!-- ToWall_False -->			
+			<action name="SetUserValue" triggerID="6" key="ToRoomFalse" value="1" /> 	<!-- ToRoom_False -->		
+			<action name="오브젝트반응설정한다" arg1="10001139" arg2="1" />	<!-- ToTower_True -->			
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10001139" arg2="0" >
+					<transition state="ToTower02"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="ToTower02">	
+        <onEnter>		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000396_BF__04_RANDOMPORTAL__4$" arg3="2000" arg4="0" />					
+			<action name="메쉬를설정한다" arg1="3300" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- ToTowerDoorBarrier-->	
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- DoorOpen -->			
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="Opened" />		<!-- NextMap -->					
+			<action name="포탈을설정한다" arg1="30" arg2="1" arg3="1" arg4="0"/>	<!-- ToTower -->	
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="ToTowerGuide01"/>	
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+   <state name="ToTowerGuide01" >	
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="대화를설정한다" arg1="2" arg2="11000006" arg3="$02000396_BF__04_RANDOMPORTAL__5$" arg4="5" />  <!-- 블랙아이 -->		
+			<action name="스킵을설정한다" arg1="ToTowerGuide01Skip" />				
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">		
+					<transition state="ToTowerGuide01Skip"/>		
+				</condition>		
+        <onExit>	
+        </onExit>
+    </state>	
+	
+	<state name="ToTowerGuide01Skip" >		
+        <onEnter>	
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="Quit"/>	
+				</condition>			
+         <onExit />
+    </state>
+
+    <state name="Quit">
+        <onEnter>
+			<action name="SetUserValue" triggerID="1" key="FindWay" value="1" /> 					
+        </onEnter>
+		<onExit>
+		</onExit> 
+    </state>		
+</ms2>

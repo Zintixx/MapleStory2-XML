@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 왕궁 지하 감옥 -->
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 	 
+			<action name="AGENT를설정한다" arg1="8000,8001,8002,8003,8004,8005,8006,8007,8008,8009,8010,8011,8012,8013,8014,8015,8016,8017" arg2="0" /> 		
+			<action name="몬스터를생성한다" arg1="101,201" arg2="0" /> 			<!-- 레이먼, 경비병 -->
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 				
+				</onEnter>	
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002668" arg3="3" >  	
+			<transition state="RemoveNpc01"/>		
+		</condition> 							
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002668" arg3="2" >  	
+			<transition state="GuardDown01"/>		
+		</condition> 						
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002668" arg3="1" >  	
+			<transition state="GuardDown01"/>		
+		</condition> 						
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002667" arg3="3" >  	
+			<transition state="GuardDown01"/>		
+		</condition> 		
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002667" arg3="2" >  	
+			<transition state="GuardDown01"/>		
+		</condition> 				
+					<condition name="퀘스트유저를감지하면" arg1="9900" arg2="40002667" arg3="1" >  	
+			<transition state="NpcChange01"/>		
+		</condition> 		
+    <onExit> 	
+    </onExit>
+    </state>
+		
+<!-- 40002668 퀘스트 완료 상태 -->				
+    <state name="RemoveNpc01" >	
+        <onEnter>			
+			<action name="몬스터소멸시킨다" arg1="101,201"/>							
+				</onEnter>				
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+<!-- 40002667 퀘스트 진행중 상태 -->				
+    <state name="NpcChange01" >	
+        <onEnter>		
+			<action name="AGENT를설정한다" arg1="8000,8001,8002,8003,8004,8005,8006,8007,8008,8009,8010,8011,8012,8013,8014,8015,8016,8017" arg2="1" /> 			
+			<action name="몬스터소멸시킨다" arg1="101,201"/>			
+			<action name="몬스터를생성한다" arg1="202,900,901,902" arg2="0" /> 					
+				</onEnter>	
+        <condition name="몬스터가죽어있으면" arg1="900,901,902">		
+					<transition state="MobChange01"/>	
+				</condition>					
+    <onExit> 	
+    </onExit>
+    </state>	
+		
+    <state name="MobChange01" >	
+        <onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  			
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="MobChange02"/>
+				</condition>			
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="MobChange02" >	
+        <onEnter>		
+			<action name="유저를이동시킨다" arg1="52000075" arg2="10" />			
+			<action name="몬스터를생성한다" arg1="301" arg2="0" />  	<!--  어둠의 졸개 --> 						
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="MobChange03"/>
+				</condition>			
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="MobChange03">
+        <onEnter>							
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+			<transition state="MobChange04"/>	
+		</condition> 
+    <onExit>  
+    </onExit>
+    </state>			
+	
+    <state name="MobChange04">
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 			
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>			
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+			<transition state="MobTalk01"/>		
+		</condition> 
+    <onExit>  
+    </onExit>
+    </state>		
+	
+    <state name="MobTalk01">
+		<onEnter>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  							
+			<action name="대화를설정한다" arg1="2" arg2="11001960" arg3="$52000075_QD__QUESTNPCSPAWN01__0$" arg4="4" />  	<!--  어둠의 졸개 --> 					
+			<action name="스킵을설정한다" arg1="MobTalk02"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="MobTalk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="MobTalk02">
+		<onEnter>			
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+			</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="MobTalk03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="MobTalk03">
+		<onEnter>			
+			<action name="카메라를선택한다" arg1="600" arg2="0"/>		
+			<action name="몬스터소멸시킨다" arg1="301"/>						
+			</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="QuestComplete01"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="QuestComplete01" >	
+        <onEnter>		
+			<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="abductedRamon"/>				
+				</onEnter>					
+    <onExit> 	
+    </onExit>
+    </state>		
+		
+<!-- 40002667 퀘스트 완료 가능 상태 -->		
+    <state name="GuardDown01" >	
+        <onEnter>		
+			<action name="몬스터소멸시킨다" arg1="101,201"/>			
+			<action name="몬스터를생성한다" arg1="202" arg2="0" /> 					
+				</onEnter>				
+    <onExit> 	
+    </onExit>
+    </state>		
+</ms2>
+

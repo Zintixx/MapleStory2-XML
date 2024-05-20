@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="시작대기">
+		<onEnter>
+            <action name="메쉬를설정한다" arg1="3100" arg2="1" arg3="0" arg4="0" arg5="0" />
+            <action name="메쉬를설정한다" arg1="3101" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <action name="메쉬를설정한다" arg1="3000,3001,3002,3003,3004" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/> 
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/> 
+			<action name="몬스터를생성한다" arg1="1001,1002" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="1101,1102,1103,1104,1105" arg2="0"/>
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="199">
+						<transition state="퀘스트분기"/>
+				</condition>
+  </state>
+
+	<state name="퀘스트분기">
+				<condition name="퀘스트유저를감지하면" arg1="199" arg2="90000640" arg3="2" >   
+					<transition state="90000640완료가능"/>
+				</condition> 
+				<condition name="!퀘스트유저를감지하면" arg1="199" arg2="90000640" arg3="2" >   
+					<transition state="연출시작"/>
+				</condition> 
+	</state>
+
+   <state name="90000640완료가능">
+        <onEnter>
+            <action name="몬스터소멸시킨다" arg1="1001,1002" />
+			<action name="몬스터를생성한다" arg1="1003,1004" arg2="0"/>
+        </onEnter>
+				<condition name="퀘스트유저를감지하면" arg1="199" arg2="90000640" arg3="3" >   
+						<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/> 
+						<transition state="종료"/>
+				</condition>
+    </state>
+
+	<state name="연출시작">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="301" arg2="1"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라를선택한다" arg1="302" arg2="1"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000168" arg3="$52000063_QD__90000640__0$" arg4="5"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000"> 
+					<transition state="K대사02"/>
+				</condition>
+	</state>
+
+	<state name="K대사02">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="1104" arg2="MS2PatrolData_1104A"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000168" arg3="$52000063_QD__90000640__1$" arg4="5"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000"> 
+					<transition state="마칸대사01"/>
+				</condition>
+	</state>
+
+	<state name="마칸대사01">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="1101" arg2="MS2PatrolData_1101A"/>
+			<action name="NPC를이동시킨다" arg1="1102" arg2="MS2PatrolData_1102A"/>
+			<action name="NPC를이동시킨다" arg1="1103" arg2="MS2PatrolData_1103A"/>
+			<action name="NPC를이동시킨다" arg1="1105" arg2="MS2PatrolData_1105A"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001872" arg3="$52000063_QD__90000640__2$" arg4="3"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000"> 
+					<transition state="마칸대사02"/>
+				</condition>
+	</state>
+
+	<state name="마칸대사02">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001872" arg3="$52000063_QD__90000640__3$" arg4="4"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000"> 
+					<transition state="연출종료"/>
+				</condition>
+	</state>
+
+	<state name="연출종료">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		    <action name="카메라를선택한다" arg1="302" arg2="0"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="100"> 
+					<transition state="90000640진행중"/>
+				</condition>
+	</state>
+
+	<state name="90000640진행중">
+				<condition name="퀘스트유저를감지하면" arg1="101" arg2="90000640" arg3="1" >   
+					<action name="유저를이동시킨다" arg1="52000063" arg2="1"/>
+					<transition state="2차연출시작"/>
+				</condition> 
+	</state>
+
+	<state name="2차연출시작">
+		<onEnter>
+			<!--action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC01" /-->			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라를선택한다" arg1="303" arg2="1"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000168" arg3="$52000063_QD__90000640__4$" arg4="3"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000"> 
+					<transition state="K대사03"/>
+				</condition>
+	</state>
+
+	<state name="K대사03">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="304" arg2="1"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000168" arg3="$52000063_QD__90000640__5$" arg4="2"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="2500"> 
+					<transition state="카운트"/>
+				</condition>
+	</state>
+
+   <state name="카운트">
+        <onEnter>
+            <action name="메쉬를설정한다" arg1="3100" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <action name="메쉬를설정한다" arg1="3000,3001,3002,3003,3004,3101" arg2="1" arg3="0" arg4="0" arg5="0" />
+            <action name="몬스터소멸시킨다" arg1="1001,1002" />
+			<action name="카메라를선택한다" arg1="304" arg2="0"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+            <!--action name="이벤트UI를설정한다" arg1="0" arg2="0,0" /-->
+			<action name="ShowCountUI" text="$52000063_QD__90000640__6$" stage="1" count="3"  />
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="경기시작" />
+				</condition> 
+    </state>
+
+   <state name="경기시작">
+        <onEnter>
+			<action name="SetUserValue" triggerID="99999102" key="gameStart" value="1" /> 	
+			<action name="SetUserValue" triggerID="99999103" key="gameStart" value="1" /> 	
+			<action name="SetUserValue" triggerID="99999104" key="gameStart" value="1" /> 	
+			<action name="아이템을생성한다" arg1="9000,9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025" />
+			<action name="NPC를이동시킨다" arg1="1101" arg2="MS2PatrolData_1101R"/>
+			<action name="NPC를이동시킨다" arg1="1102" arg2="MS2PatrolData_1102R"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="500" > 
+					<transition state="NPC2차이동" />
+				</condition> 
+    </state>
+
+   <state name="NPC2차이동">
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="1103" arg2="MS2PatrolData_1103R"/>
+			<action name="NPC를이동시킨다" arg1="1104" arg2="MS2PatrolData_1104R"/>
+			<action name="NPC를이동시킨다" arg1="1105" arg2="MS2PatrolData_1105R"/>
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="102">
+						<transition state="완료대기"/>
+				</condition>
+    </state>
+
+   <state name="완료대기">
+        <onEnter>
+			<action name="아이템을생성한다" arg1="9026,9027,9028,9029" />
+            <action name="메쉬를설정한다" arg1="3000,3001,3002,3003,3004,3101" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터를생성한다" arg1="1003,1004" arg2="0"/>
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="103">
+						<transition state="완료알림케이대사"/>
+				</condition>
+    </state>
+
+	<state name="완료알림케이대사">
+		<onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000168" arg3="$52000063_QD__90000640__7$" arg4="3"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000"> 
+					<transition state="완료"/>
+				</condition>
+	</state>	
+	
+  <state name="완료">
+		<onEnter>
+			<action name="아이템을생성한다" arg1="9030,9031,9032,9033,9034,9035" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="ArrivedSupercar"/>
+		</onEnter>
+				<condition name="퀘스트유저를감지하면" arg1="199" arg2="90000640" arg3="3" >   
+					<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/> 
+					<transition state="종료"/>
+				</condition> 
+  </state>
+
+	<state name="종료">
+	</state>
+
+</ms2>

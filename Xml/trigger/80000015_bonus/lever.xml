@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  
+	<state name="대기">
+		<onEnter> 
+			<action name="스킬을설정한다" arg1="7101" arg2="0" />				
+			<action name="오브젝트반응설정한다" arg1="10001314" arg2="1" />
+			<action name="메쉬를설정한다" arg1="3000-3005" arg2="1" arg3="0" arg4="0" arg5="0" />				
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="199" >   
+				<transition state="반응대기"/>
+			</condition>			
+	</state>  
+
+	<state name="반응대기">
+			<condition name="유저를감지했으면" arg1="101" >   
+				<transition state="안내"/>
+			</condition>		
+			<condition name="오브젝트가반응했으면" arg1="10001314" arg2="0">
+				<transition state="문열림" />
+			</condition>				
+	</state>  	
+ 
+	<state name="안내">
+		<onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$80000015_bonus__lever__0$" arg3="2000" arg4="101" />						
+		</onEnter>	
+			<condition name="오브젝트가반응했으면" arg1="10001314" arg2="0">
+				<transition state="문열림" />
+			</condition>				
+			<condition name="WaitTick" waitTick="5000">			
+				<transition state="반응대기"/>	
+			</condition>					
+	</state>  		
+	
+	<state name="문열림">
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="6000" arg2="1"/>				
+			<action name="SpawnNpcRange" rangeID="2001-2001" isAutoTargeting="0" score="1500"/>					
+			<action name="메쉬를설정한다" arg1="3000-3005" arg2="0" arg3="0" arg4="0" arg5="0" />				
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="2001">							
+				<transition state="딜레이"/>
+			</condition>					
+	</state>  	
+
+	<state name="딜레이">
+		<onEnter>		
+			<action name="SetUserValue" triggerID="999101" key="Dead_A" value="1"/>						
+			<action name="이펙트를설정한다" arg1="6000" arg2="1"/>			
+		</onEnter>				
+			<condition name="WaitTick" waitTick="2000">			
+				<action name="스킬을설정한다" arg1="7101" arg2="1" />							
+				<transition state="종료"/>	
+			</condition>				
+	</state>  	
+ 
+	<state name="종료">
+	</state> 
+	
+</ms2>

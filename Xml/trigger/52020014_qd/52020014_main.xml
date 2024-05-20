@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="감지">
+        <onEnter>
+				<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg="0" />
+				<action name="이펙트를설정한다" arg1="5001" arg2="0" />
+				<action name="메쉬를설정한다" arg1="9101" arg2="1"  />
+				<action name="메쉬를설정한다" arg1="9102" arg2="1"  />
+				<action name="SetVisibleBreakableObject" arg1="1" arg2="0"  />
+				<action name="메쉬를설정한다" arg1="9001-9010" arg2="0"  />
+				<action name="사다리를설정한다" arg1="10001" arg2="0" arg3="0" />
+				<action name="사다리를설정한다" arg1="10002" arg2="0" arg3="0" />
+				<action name="사다리를설정한다" arg1="10003" arg2="0" arg3="0" />
+				<action name="사다리를설정한다" arg1="10004" arg2="0" arg3="0" />
+				<action name="사다리를설정한다" arg1="10005" arg2="0" arg3="0" />
+				<action name="사다리를설정한다" arg1="10006" arg2="0" arg3="0" />
+				<action name="움직이는발판을설정한다" arg1="10001" arg2="0"  />
+				<action name="오브젝트반응설정한다" arg1="10002004" arg2="0"  />
+				<action name="오브젝트반응설정한다" arg1="10002005" arg2="0"  />
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="901">
+				<transition state="1차전투"/>
+			</condition> 
+    </state>
+
+	<state name="1차전투">
+        <onEnter>
+				<action name="몬스터를생성한다" arg1="101" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="102" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="103" arg2="1"  />
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="904">
+				<transition state="2차전투"/>
+			</condition> 
+    </state>
+
+	<state name="2차전투"> 
+        <onEnter> 					 
+				<action name="몬스터를생성한다" arg1="104" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="105" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="106" arg2="1"  />
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="101,102,103,104,105,106" >
+				<transition state="사다리발견"/> 
+			</condition> 
+    </state>	
+	
+	<state name="사다리발견">
+        <onEnter>
+				<action name="이펙트를설정한다" arg1="5001" arg2="1" />
+				<action name="메쉬를설정한다" arg1="9102" arg2="0"  />
+				<action name="SetVisibleBreakableObject" arg1="1" arg2="1"  />
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="907">
+				<transition state="이펙트꺼주기"/>
+			</condition>
+    </state>
+	
+	<state name="이펙트꺼주기">
+        <onEnter>
+				<action name="이펙트를설정한다" arg1="5001" arg2="0" />
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="902">
+				<transition state="3차전투"/>
+			</condition>
+    </state>
+	
+	<state name="3차전투">   
+        <onEnter>
+				<action name="몬스터를생성한다" arg1="111" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="112" arg2="1"  />
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="903">
+				<transition state="4차전투"/>
+			</condition> 
+    </state>
+	
+	<state name="4차전투">   
+        <onEnter> 					 
+				<action name="몬스터를생성한다" arg1="113" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="114" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="115" arg2="1"  />
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="111,112,113,114,115" >
+				<transition state="이공간레버활성"/>
+			</condition>
+    </state>
+	
+    <state name="이공간레버활성"> 
+		<onEnter>
+				<action name="오브젝트반응설정한다" arg1="10002004" arg2="1"  />
+		</onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10002004" arg2="0" >
+				<transition state="이공간다리활성"/>
+			</condition>
+	</state>
+	
+	<state name="이공간다리활성"> 
+		<onEnter>
+				<action name="메쉬를설정한다" arg1="9001-9010" arg2="1" arg3="0" arg4="200" arg5="3" />
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="905">
+				<transition state="레버힌트_카메라"/>
+			</condition> 
+	</state>
+	
+	<state name="레버힌트_카메라"> 
+		<onEnter>
+				<action name="SetSceneSkip" arg1="이공간1차전투" arg2="nextState"/>
+				<action name="카메라를선택한다" arg1="502" arg2="1" />
+				<action name="연출UI를설정한다" arg1="1" />
+				<action name="연출UI를설정한다" arg1="3" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" >
+				<transition state="레버힌트_카메라대사"/>
+			</condition>
+	</state>
+	
+	<state name="레버힌트_카메라대사"> 
+		<onEnter>
+				<action name="대화를설정한다" arg1="2" arg2="" arg3="저 레버를 작동시키면 되는건가...?" arg4="3000" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="이공간1차전투"/>
+			</condition>
+	</state>
+	
+	<state name="이공간1차전투"> 
+		<onEnter>
+				<action name="연출UI를설정한다" arg1="0" />
+				<action name="연출UI를설정한다" arg1="2" />
+				<action name="카메라리셋" interpolationTime="1" />
+				<action name="몬스터를생성한다" arg1="121" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="122" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="123" arg2="1"  />
+				<action name="이벤트UI를설정한다" arg1="1" arg2="에고 웨폰을 모두 처치하고 레버를 작동시키세요." arg3="5000" />
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="906">
+				<transition state="이공간2차전투"/>
+			</condition> 
+	</state>
+
+	<state name="이공간2차전투"> 
+		<onEnter>
+				<action name="몬스터를생성한다" arg1="124" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="125" arg2="1"  />
+				<action name="몬스터를생성한다" arg1="126" arg2="1"  />
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="121,122,123,124,125,126" >
+				<transition state="사다리활성"/>
+			</condition>
+	</state>
+	
+	<state name="사다리활성">
+		<onEnter>
+				<action name="사다리를설정한다" arg1="10001" arg2="1" arg3="1" arg4="0" />
+				<action name="사다리를설정한다" arg1="10002" arg2="1" arg3="1" arg4="2" />
+				<action name="사다리를설정한다" arg1="10003" arg2="1" arg3="1" arg4="4" />
+				<action name="사다리를설정한다" arg1="10004" arg2="1" arg3="1" arg4="6" />
+				<action name="사다리를설정한다" arg1="10005" arg2="1" arg3="1" arg4="8" />
+				<action name="사다리를설정한다" arg1="10006" arg2="1" arg3="1" arg4="10" />
+				<action name="오브젝트반응설정한다" arg1="10002005" arg2="1"  />
+		</onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10002005" arg2="0" >
+				<transition state="비밀의문"/>
+			</condition>
+	</state>
+	
+	<state name="비밀의문">
+		<onEnter>
+				<action name="SetSceneSkip" arg1="카메라리셋" arg2="nextState"/>
+				<action name="카메라를선택한다" arg1="501" arg2="1" />
+				<action name="연출UI를설정한다" arg1="1" />
+				<action name="연출UI를설정한다" arg1="3" />
+				<action name="움직이는발판을설정한다" arg1="10001" arg2="1"  />
+				<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1" />
+				<action name="메쉬를설정한다" arg1="9101" arg2="0" arg3="0" arg4="0" arg5="30" />
+				<action name="대화를설정한다" arg1="1" arg2="0" arg3="성공이야!" arg4="3000" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="카메라리셋"/>
+			</condition>
+	</state>
+	
+	<state name="카메라리셋"> 
+		<onEnter>
+				<action name="연출UI를설정한다" arg1="0" />
+				<action name="연출UI를설정한다" arg1="2" />
+				<action name="카메라리셋" interpolationTime="1" />
+		</onEnter>
+			<condition name="무조건"  >
+				<transition state="종료"/>
+			</condition>
+	</state>
+	
+	<state name="종료"> 
+		<onEnter>
+		</onEnter>
+	</state>
+	
+</ms2>

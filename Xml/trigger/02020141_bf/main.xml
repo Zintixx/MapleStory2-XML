@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID = 101, 보스 생성하고  타임 체크 클리어 유무 체크 트리거임 -->
+<ms2>
+
+
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="기본셋팅" /> 
+		</condition>		
+	</state>  
+	
+
+	<state name="기본셋팅"> 
+		<onEnter>
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>	<!-- 나가기 포탈 최초에는 감추기 -->					
+		</onEnter>  			
+		
+			<condition name="유저를감지했으면" arg1="102"> <!--   MS2TriggerBox   TriggerObjectID = 102, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        102는 공중에 떠있는 스타팅 포인트 지점 , 이전 첫번째 두번째 페이즈 맵을 통해서 정상 트리거를 타고 이 맵으로 오면 이 공중 떠있는 스타팅 포인트로 오게 될 것임-->
+				<transition state="보스등장준비"/>
+			</condition>	
+
+			<condition name="WaitTick" waitTick="2000" > <!-- 테스트를 위해 바로 이 맵으로 들어왔을 경우,  WaitTick = 2초 지난 후 다음 단계로 넘어가도록 함-->		
+				<transition state="보스등장준비" />
+			</condition>
+			
+	</state>  
+
+
+	<state name="보스등장준비"> 
+		<onEnter>			
+			<!-- 공중에 떠있는 스타팅 지점의 바닥 트리거 메쉬 제거하여 플레이어가 공중에서 추락하면서 시작 하도록 하기 -->
+			<action name="메쉬를설정한다" arg1="301" arg2="0" arg3="0" arg4="0" arg5="0" />		
+
+		</onEnter>  			
+		
+			<condition name="WaitTick" waitTick="2000" > <!-- 플레이어 추락해서 바닥에 떨어진 이후 보스 등장하도록 타이밍 조절-->		
+				<transition state="보스등장" />
+			</condition>
+		
+	</state>  
+
+ 
+	<state name="보스등장"> 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="99" arg2="0" />  <!--  EventSpawnPointNPC 의 SpawnPointID가 99 번, 즉   arg1="99" -->
+		</onEnter>  			
+		
+			<condition name="WaitTick" waitTick="1100" >
+				<transition state="클리어성공유무체크시작"/>
+			</condition>	
+			
+
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>					
+		
+	</state>  
+	
+
+	<state name="클리어성공유무체크시작">
+		<onEnter>
+	
+		</onEnter>
+			
+			<!-- 보스가 죽을 경우, 즉 던전 클리어 -->
+			<condition name="몬스터가죽어있으면" arg1="99">
+				<transition state="연출딜레이"/>
+			</condition>	
+				 
+				 
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>				 
+	</state>  
+	
+
+
+	 <state name="던전실패">
+		<onEnter> 
+			<action name="DungeonSetEndTime" />  <!--시간 기능 종료시킴, 이 기능 잘 작동시키려면 DungeonRoom.xlsx 의 제한 시간 만료 시(isExpireTimeOut) 빈칸 설정 해야 함  -->		
+			<action name="DungeonCloseTimer" />			
+		
+			<action name="몬스터소멸시킨다" arg1="all" />		
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>	<!-- 메인 전투판에 나가기 포탈 생성하기 -->	
+		
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="500" > 
+
+					<action name="DungeonFail" /> 
+					<transition state="종료" />
+				</condition>
+	</state> 	
+	
+  
+	<state name="종료">
+		<onEnter> 
+			<action name="DungeonEnableGiveUp" isEnable="0" />		
+		</onEnter>		
+	</state>
+	
+	
+	
+	
+	<state name="연출딜레이">
+		<onEnter>			
+			<!-- 음모의 전당 두번째 마지막 전투판에서 일부 파티원은 투르카 보스를 때리지 않고 로봇 탈것해서 졸몹만 처리하는 경우가 있는데 이때 보스 처치 조건을 보스 코드로 입력할 경우 조건을 만족하지 못하는 버그 스러운 경우가 있어서 , 보스Kill이 목적인 던전미션과 트로피 달성을 트리거를 통해서 이루어 지도록 설정  하였음-->
+			<action name="DungeonMissionComplete" missionID="23090000" />  <!--DungeonMission.xml 에 등록된 숫자 코드 미션 완료 처리하기, 던전 클리어 미션 달성임-->		
+			<action name="업적이벤트를발생시킨다" arg2="trigger" arg3="TurkaDungeonClear"/> 	<!--  achieve.xlsx 트로피 투르카던전클리어 조건 체크, arg1을 넣지 않으면 이 맵 전체에 있는 플레이어를 체크함 , 참고로 arg1을 넣으면 트리거 박스 안에 있는 플레이어만 체크하는 것임-->			
+		</onEnter>	
+			
+		<condition name="WaitTick" waitTick="9000">  <!-- 보스 죽으면 보스 죽음 동작 충분히 본 다음에(9초 딜레이) 클리어 UI 나오도록 함 -->
+			<transition state="연출종료"/>
+		</condition>
+	</state>  
+  
+  
+	<state name="연출종료">
+		<onEnter>
+		
+			<action name="DungeonSetEndTime" />  <!--보스 죽음과 동시에 자체 60초 늘어나기 때문에,  <state name="연출딜레이"> 단계 끝나고 WaitTick=9초 후에 시간 기능 종료시킴, 이 기능 잘 작동시키려면 DungeonRoom.xlsx 의 제한 시간 만료 시(isExpireTimeOut) 빈칸 설정 해야 함  -->		
+			<action name="DungeonCloseTimer" />			
+		
+			<action name="DungeonClear" /> 
+			
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/> <!-- 메인 전투판에 나가기 포탈 생성하기 -->	
+			
+		</onEnter>
+	</state>  
+
+	
+</ms2>

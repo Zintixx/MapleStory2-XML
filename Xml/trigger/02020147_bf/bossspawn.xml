@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  990  -->
+<ms2>
+
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="기본셋팅" /> 
+		</condition>		
+	</state>  
+  
+  
+  <state name="기본셋팅">
+    <onEnter>
+		
+        <action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>	 <!--  던전맵 나가는 포탈, 시작 지점에 위치-->			
+        <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>  <!--  던전맵 나가는 포탈, 전투판에 위치-->			
+        <action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0"/>	 <!--  시작지점에서 전투판으로 가기위한 포탈 -->			
+				
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="601"> <!--  ID 601 인 트리거 박스 안에 플레어가 들어서면 보스 생성시키기-->						
+				<transition state="보스등장"/>
+		</condition>
+  </state>
+  
+ 
+	<state name="보스등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="701,702,703" arg2="0" /><!--이슈라 렌듀비아 유페리아  등장-->
+
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3000" >		
+				<transition state="클리어체크시작"/>
+			</condition>
+		
+	</state>  
+	
+	
+ 
+ 	<state name="클리어체크시작">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/>	 <!--  시작지점에서 전투판으로 가기위한 포탈 -->			
+		</onEnter>
+		
+			<condition name="몬스터가죽어있으면" arg1="701,702,703">
+				<transition state="종료딜레이"/>
+			</condition>
+	</state>  
+	
+ 
+ 
+	 <state name="종료딜레이">
+		<onEnter> 
+		</onEnter>		 
+		
+			<condition name="WaitTick" waitTick="6000" > <!--보스 죽음 동작 연출이 끝날때까지 6~8초 정도 기다림-->				
+					
+				 <action name="업적이벤트를발생시킨다" arg3="IshuraFinalDungeonClear_Quest"/>  <!--arg1 = "특정트리거 박스 안에 있는 유저만 체크하고자 할때"   arg2 = "trigger"    즉 trigger 이거만 쓸수 있음  특정 트리거 박스 안의 유저만 체크 방식을 사용하고자 할때 이 2개 넣어야 함-->	
+																	<!--   arg1 , arg2  넣지 않으면 맵 안에 있는 모든 유저에게 이 업적이 반영됨   -->
+																	
+				<transition state="종료" />
+			</condition>
+			
+	</state> 
+
+
+	<state name="종료">
+		<onEnter> 
+		
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>	 <!--  던전맵 나가는 포탈, 시작 지점에 위치-->			
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>  <!--  던전맵 나가는 포탈, 전투판에 위치-->			
+		
+		</onEnter>		
+	</state>
+
+</ms2>

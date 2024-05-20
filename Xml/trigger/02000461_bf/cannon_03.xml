@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+   
+<ms2> 
+	<state name="대기">
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="693" arg2="0" />
+			<action name="이펙트를설정한다" arg1="793" arg2="0" />		
+			<action name="메쉬를설정한다" arg1="3903" arg2="1" arg3="0" arg4="0" arg5="0" />					
+		</onEnter>
+		<condition name="UserValue" key="cannon03" value="1">
+			<transition state="생성" />
+		</condition>
+	</state>
+  
+	<state name="생성">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="2903" arg2="1" />			
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="2903">
+			<action name="이펙트를설정한다" arg1="693" arg2="1" />					
+			<action name="메쉬를설정한다" arg1="3903" arg2="0" arg3="0" arg4="0" arg5="5" />					
+			<transition state="보스전_대기" />
+		</condition>
+	</state>
+
+	<state name="보스전_대기">
+		<condition name="UserValue" key="Bosscannon03" value="1">
+			<transition state="보스전용_생성" />
+		</condition>
+	</state>
+
+	<state name="보스전용_생성">
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="693" arg2="0" />	
+			<action name="이펙트를설정한다" arg1="793" arg2="1" />	
+			<action name="메쉬를설정한다" arg1="3903" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터를생성한다" arg1="2903" arg2="1" />
+			<action name="버프를걸어준다" arg1="2099" arg2="70002081" arg3="1" arg4="1" arg5="0" />
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="2903">
+			<action name="이펙트를설정한다" arg1="693" arg2="1" />
+			<action name="이펙트를설정한다" arg1="793" arg2="0" />					
+			<action name="메쉬를설정한다" arg1="3903" arg2="0" arg3="0" arg4="0" arg5="5" />
+			<action name="버프를걸어준다" arg1="2099" arg2="70002082" arg3="1" arg4="1" arg5="0" />	
+			<action name="버프를걸어준다" arg1="2903" arg2="40444001" arg3="1" arg4="1" arg5="0" />	
+			<transition state="보스전용_재생성대기" />
+		</condition>
+		<condition name="UserValue" key="DungeonClear" value="1">
+			<transition state="종료" />
+		</condition>
+	</state>
+
+	<state name="보스전용_재생성대기">
+			<condition name="WaitTick" waitTick="90000" >
+				<transition state="보스전용_생성" />
+			</condition>
+			<condition name="UserValue" key="DungeonClear" value="1">
+			<transition state="종료" />
+		</condition>
+	</state>
+  
+	<state name="종료">
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="693" arg2="0" />	
+			<action name="이펙트를설정한다" arg1="793" arg2="0" />	
+			<action name="메쉬를설정한다" arg1="3903" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터소멸시킨다" arg1="2903" />
+		</onEnter>
+	</state> 	
+	
+</ms2>
+

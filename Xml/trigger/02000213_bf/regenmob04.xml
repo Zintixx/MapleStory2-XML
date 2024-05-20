@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	 <state name="시작대기중">
+		<onEnter>
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="101">
+				<transition state="소환몹등장"/>
+		</condition>
+		<onExit>
+		</onExit>
+	 </state>
+
+	<state name="소환몹등장">
+		<onEnter>
+		</onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10000259" arg2="1" >
+			<action name="몬스터를생성한다" arg1="1004" arg2="0"/>   <!-- arg2="0" 을 넣으면 몬스터가  등장하자마자 바로 공격 상태가 되는 것을 막을 수 있음 -->
+			<transition state="소멸체크" />
+        </condition>
+		<onExit>
+		</onExit>
+	</state>
+ 
+	<state name="소멸체크">
+		<condition name="오브젝트가반응했으면" arg1="10000259" arg2="0" >
+ 			<transition state="소멸"/> 
+		</condition>
+		<condition name="오브젝트가반응했으면" arg1="10000259" arg2="2" >
+ 			<transition state="소멸"/> 
+		</condition>
+		<condition name="몬스터가죽어있으면" arg1="1004" >
+			<transition state="대기시간" />
+		</condition>
+	</state>  
+
+	<state name="대기시간">
+		<onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="15"/>
+		</onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+ 			<transition state="소환몹등장"/> 
+		</condition>
+		<onExit>
+			<action name="타이머를초기화한다" arg1="1"/>
+		</onExit>
+	</state>
+
+	<state name="소멸">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="1004"/>
+			<action name="타이머를설정한다" arg1="1" arg2="1200"/>
+		</onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+ 			<transition state="시작대기중"/> 
+		</condition>
+		<onExit>
+			<action name="타이머를초기화한다" arg1="1"/>
+		</onExit>
+	</state>  
+</ms2>

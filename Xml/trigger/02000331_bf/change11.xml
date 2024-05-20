@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+    <state name="대기" >
+        <onEnter>
+        </onEnter>
+	        <condition name="NPC를감지했으면" arg1="9022" arg2="602" >
+				<transition state="시작" />
+			</condition>
+    <onExit> 
+    </onExit>
+    </state>	
+
+    <state name="시작" >
+        <onEnter>
+        </onEnter>
+	        <condition name="NPC를감지했으면" arg1="9030" arg2="990" >
+				<transition state="분기점" />
+			</condition>
+        <onExit />
+    </state>	
+
+
+<!-- 자코 몬스터 웨이브 중 꼬마가 사망했는지 체크 -->	
+    <state name="분기점" >
+        <onEnter>
+        </onEnter>
+	        <condition name="NPC를감지했으면" arg1="9030" arg2="999" >
+				<transition state="보스전투" />
+			</condition>
+	        <condition name="몬스터가죽어있으면" arg1="602" >
+				<transition state="교체딜레이" />
+			</condition>
+        <onExit />
+    </state>
+
+<!-- 보스 몬스터 웨이브 중 꼬마가 사망했는지 체크 -->		
+    <state name="보스전투" >
+        <onEnter>
+        </onEnter>
+	        <condition name="몬스터가죽어있으면" arg1="999" >
+				<transition state="전투종료" />
+			</condition>
+	        <condition name="몬스터가죽어있으면" arg1="602" >
+				<transition state="교체딜레이" />
+			</condition>
+        <onExit />
+    </state>
+
+<!-- 보스 몬스터가 죽을 때 까지 꼬마 NPC가 살아 있는지 체크 -->			
+    <state name="전투종료" >
+        <onEnter>
+        </onEnter>
+	        <condition name="NPC를감지했으면" arg1="9022" arg2="602" >
+				<transition state="디펜스성공" />
+			</condition>
+        <onExit />
+    </state>
+
+<!-- 모든 전투가 끝날 때 까지 꼬마 NPC가 살아 있으면 교체 없이 종료 -->		
+    <state name="디펜스성공" >
+        <onEnter>
+        </onEnter>
+        <onExit />
+    </state>	
+	
+<!-- 자코 또는 보스 몬스터와 전투 중 꼬마가 쓰러졌을 때 교체 진행 -->		
+    <state name="교체딜레이" >
+        <onEnter>
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="교체쓰러짐"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>
+
+    <state name="교체쓰러짐" >
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="612" />
+        </onEnter>
+	        <condition name="NPC를감지했으면" arg1="9020" arg2="600">
+				<transition state="교체일어남" />
+			</condition>
+        <onExit />
+    </state>	
+	
+    <state name="교체일어남" >
+        <onEnter>
+			<action name="몬스터를변경한다" arg1="612" arg2="210" />		    
+        </onEnter>	
+        <onExit />
+    </state>
+
+</ms2>

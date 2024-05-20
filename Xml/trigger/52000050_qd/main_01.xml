@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+<!-- 
+[출연진]
+101 : 준타 (퀘스트)
+111,121 : 준타 (연출)
+102,122 : 틴차이 (퀘스트)
+112 : 틴차이 (연출)
+103 : 애니마르 에너지
+ -->
+ 
+ <state name="ready"> <!-- 입장 대기 -->
+        <onEnter>
+			<action name="이펙트를설정한다" arg1 = "7011" arg2="0" /> <!-- 참새 조용함 -->
+			<action name="움직이는발판을설정한다" arg1="9001,9002,9003,9004,9005" arg2="0" /> <!-- 참새들 조용히 있음 -->
+			<action name="SetVisibleBreakableObject" arg1="9001,9002,9003,9004,9005" arg2="0" /> <!-- 참새들 조용히 있음 -->
+            <action name="메쉬를설정한다" arg1="6001-6010" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터를생성한다" arg1="101,102,103" arg2="0"/> 	
+        </onEnter>
+
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003056" arg3="3" > <!-- 준타와 틴차이 없는 스테이트 -->
+				<transition state="quest_end"/> 
+			</condition>	
+		
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003056" arg3="2" > <!-- 준타와 틴차이 없는 스테이트 -->
+				<transition state="quest_end"/> 
+			</condition>
+
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003055" arg3="3" >
+					<transition state="start_02_resume"/> 
+			</condition>
+	
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003055" arg3="2" >
+					<transition state="start_02_j_resume"/> 
+			</condition>
+	
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003055" arg3="1" >
+					<transition state="start_02_resume"/> 
+			</condition>
+
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003054" arg3="3" > 
+					<transition state="start_02_Ready"/> 
+			</condition>
+			
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003054" arg3="2" > 
+					<transition state="start_02_Ready"/> 
+			</condition>
+	
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003054" arg3="1" > 
+					<transition state="start"/> 
+			</condition>
+    </state>	
+	
+	<state name="start"> 
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="몬스터소멸시킨다" arg1="101,102"/> <!-- 퀘스트용 소멸 -->
+			<action name="몬스터를생성한다" arg1="111,112" arg2="0"/> 	<!-- 연출용 리젠 -->
+			<action name="NPC를이동시킨다" arg1="112" arg2="MS2PatrolData_1201" /> <!-- 연출용 틴차이 이동 -->
+			<action name="대화를설정한다" arg1="1" arg2="112" arg3="$52000050_QD__MAIN_01__8$" arg4="2" arg5="0"/>
+			<action name="대화를설정한다" arg1="1" arg2="112" arg3="$52000050_QD__MAIN_01__0$" arg4="2" arg5="3"/>
+		</onEnter>	
+		
+			<condition name="WaitTick" waitTick="5000" > 
+				<transition state="ready_02" />
+				<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="MovetoNewHouse"/> <!-- 퀘스트 목표 체크용 업적이벤트 발생 --> 
+			</condition>
+    </state>	
+	
+	
+	<state name="ready_02"> <!-- 입장 대기 -->
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="몬스터소멸시킨다" arg1="112"/> <!-- 퀘스트용 소멸 -->
+			<action name="몬스터를생성한다" arg1="122" arg2="0"/> 	<!-- 퀘스트용 리젠 -->
+        </onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003055" arg3="1" >  <!-- 10003055 가 진행중일 때 -->
+					<transition state="start_02"/> 
+			</condition>
+    </state>
+
+	<state name="start_02_Ready"> 
+        <onEnter>
+ 			<action name="몬스터소멸시킨다" arg1="101,102"/> 
+			<action name="몬스터를생성한다" arg1="111,122" arg2="0"/>  
+		</onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003055" arg3="1" >  <!-- 10003055 가 진행중일 때 -->
+					<transition state="start_02"/> 
+			</condition>
+    </state>
+	
+	
+	<state name="start_02"> 
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="101,102"/> <!-- 퀘스트용 소멸 -->
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="NPC를이동시킨다" arg1="111" arg2="MS2PatrolData_1101" /> <!-- 연출용 틴차이 이동 -->
+			<action name="카메라경로를선택한다" arg1="8005" arg2="0"/>			
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000050_QD__MAIN_01__1$" arg4="4" /> 
+			<action name="NPC를이동시킨다" arg1="122" arg2="MS2PatrolData_1205" /> <!-- 연출용 틴차이 이동 -->	
+		</onEnter>	
+ 			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="start_02_b" />
+				<action name="유저를경로이동시킨다" arg1="MS2PatrolData_9901" />  <!-- 유저를 이동시킨다 -->
+			</condition> 
+    </state>
+	
+	<state name="start_02_resume"> <!-- 도중에 들어왔을 때 --> 
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="101,102"/> 
+			<action name="몬스터를생성한다" arg1="111,122" arg2="0"/>  
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="NPC를이동시킨다" arg1="111" arg2="MS2PatrolData_1101" /> <!-- 연출용 틴차이 이동 -->
+			<action name="카메라경로를선택한다" arg1="8005" arg2="0"/>			
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000050_QD__MAIN_01__2$" arg4="4" /> 
+			<action name="NPC를이동시킨다" arg1="122" arg2="MS2PatrolData_1205" /> <!-- 연출용 틴차이 이동 -->	
+		</onEnter>	
+ 			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="start_02_b" />
+				<action name="유저를경로이동시킨다" arg1="MS2PatrolData_9901" />  <!-- 유저를 이동시킨다 -->
+			</condition> 
+    </state>
+
+	<state name="start_02_b"> 
+        <onEnter>
+			<action name="SetNpcEmotionLoop" arg1="111" arg2="Talk_A" arg3="3000"/>	
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000050_QD__MAIN_01__3$" arg4="5" /> 
+		</onEnter>	
+			<condition name="WaitTick" waitTick="5000" > 
+				<transition state="start_02_c" />
+			</condition>
+    </state>	
+
+	<state name="start_02_c"> 
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000050_QD__MAIN_01__4$" arg4="3" /> 
+			<action name="SetNpcEmotionLoop" arg1="122" arg2="Talk_A" arg3="3000"/>	
+		</onEnter>	
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="start_02_d" />
+			</condition>
+    </state>	
+
+	<state name="start_02_d"> 
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="122" arg2="MS2PatrolData_1202" /> <!-- 연출용 틴차이 이동 -->
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000050_QD__MAIN_01__5$" arg4="5" /> 
+		</onEnter>	
+			<condition name="WaitTick" waitTick="5000" > 
+				<transition state="start_02_e" />
+			</condition>
+    </state>	
+	
+		
+	<state name="start_02_e"> 
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/>
+			<action name="움직이는발판을설정한다" arg1="9001,9002,9003,9004,9005" arg2="1" /> <!-- 참새들 조용히 있음 -->
+			<action name="SetVisibleBreakableObject" arg1="9001,9002,9003,9004,9005" arg2="1" /> <!-- 참새들 조용히 있음 -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="7000" > 
+				<transition state="start_02_f" />
+				<action name="메쉬를설정한다" arg1="6001,6002,6003,6004,6005" arg2="1" /> <!-- 참새들 표시 -->
+				<action name="메쉬애니를설정한다" arg1="6001,6002,6003,6004,6005" arg2="1" arg3="0" arg4="0" /> 
+		</condition>		
+    </state>	
+	
+	
+	<state name="start_02_f"> 
+        <onEnter>
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000" > 
+			<action name="이펙트를설정한다" arg1 = "7011" arg2="1" /> 
+			<transition state="start_02_g" />
+		</condition>
+    </state>
+		
+	<state name="start_02_g"> 
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8003,8004" arg2="0"/>	
+			<action name="SetNpcEmotionLoop" arg1="122" arg2="Talk_A" arg3="3000"/>	
+		</onEnter>	
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="start_02_h" />
+			<action name="움직이는발판을설정한다" arg1="9001,9002,9003,9004,9005" arg2="0" /> <!-- 참새들 조용히 있음 -->
+			<action name="SetVisibleBreakableObject" arg1="9001,9002,9003,9004,9005" arg2="0" /> <!-- 참새들 조용히 있음 -->
+			<action name="NPC를이동시킨다" arg1="122" arg2="MS2PatrolData_1203" /> <!-- 연출용 틴차이 이동 -->	
+		</condition>	
+    </state>
+
+	<state name="start_02_h"> 
+        <onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000050_QD__MAIN_01__6$" arg4="5" /> 
+		</onEnter>	
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="start_02_i" />
+		</condition>
+    </state>
+	
+	
+	<state name="start_02_i"> 
+        <onEnter>
+			<action name="SetNpcEmotionLoop" arg1="122" arg2="Talk_A" arg3="3000"/>	
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000050_QD__MAIN_01__7$" arg4="5" /> 
+		</onEnter>	
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="start_02_j" />
+			<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="SingingOfBirds"/> <!-- 퀘스트 목표 체크용 업적이벤트 발생 --> 
+		</condition>
+    </state>
+	
+	<state name="start_02_j"> 
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8002" arg2="1"/>
+			<action name="몬스터소멸시킨다" arg1="111"/> <!-- 퀘스트용 소멸 -->
+			<action name="몬스터를생성한다" arg1="121" arg2="0"/> 	<!-- 퀘스트용 리젠 -->
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>	
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003056" arg3="2" >
+			<transition state="start_02_k"/> 
+		</condition>
+    </state>
+	
+	<state name="start_02_j_resume"> 
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="101,102"/> 
+			<action name="몬스터소멸시킨다" arg1="111"/> <!-- 퀘스트용 소멸 -->
+			<action name="몬스터를생성한다" arg1="121,122" arg2="0"/> 	<!-- 퀘스트용 리젠 -->
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="메쉬를설정한다" arg1="6001,6002,6003,6004,6005" arg2="1" /> <!-- 참새들 표시 -->
+			<action name="이펙트를설정한다" arg1 = "7011" arg2="1" /> <!-- 참새 조용함 -->
+		</onEnter>	
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="10003056" arg3="2" >
+			<transition state="start_02_k"/> 
+		</condition>
+    </state>
+	
+	<state name="start_02_k"> 
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="121" arg2="MS2PatrolData_1204" /> <!-- 연출용 준타 이동 -->			
+			<action name="NPC를이동시킨다" arg1="122" arg2="MS2PatrolData_1204" /> <!-- 연출용 틴차이 이동 -->	
+		</onEnter>	
+    </state>
+	
+	<state name="quest_end"> 
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="101,102"/> <!-- 퀘스트용 소멸 -->
+		</onEnter>	
+    </state>
+</ms2>
+
+

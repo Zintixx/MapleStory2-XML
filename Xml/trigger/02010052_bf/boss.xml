@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+    <state name="Idle">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="4" arg2="0" arg3="0" arg4="0"/>
+		<action name="메쉬를설정한다" arg1="6801-6900" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- 블록 없음 -->
+		<action name="이펙트를설정한다" arg1 = "7031" arg2="0" /> <!-- 횃불에 불이 붙는 이펙트 -->
+		<action name="이펙트를설정한다" arg1 = "7032" arg2="0" /> <!-- 횃불에 불이 붙는 이펙트 -->
+		<action name="이펙트를설정한다" arg1 = "7033" arg2="0" /> <!-- 횃불에 불이 붙는 이펙트 -->
+		<action name="이펙트를설정한다" arg1 = "7034" arg2="0" /> <!-- 횃불에 불이 붙는 이펙트 -->
+		<action name="이펙트를설정한다" arg1 = "7035" arg2="0" /> <!-- 횃불에 불이 붙는 이펙트 -->
+		<action name="이펙트를설정한다" arg1 = "7999" arg2="0" /> <!-- 인트로 사운드 -->				
+		<action name="이펙트를설정한다" arg1 = "7910" arg2="0" />	<!-- 카나 텔레포트 -->
+		<action name="이펙트를설정한다" arg1 = "7911" arg2="0" />	<!-- 카나 텔레포트 -->
+		<action name="이펙트를설정한다" arg1 = "7912" arg2="0" />	<!-- 카나 텔레포트 -->		
+
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+		<condition name="여러명의유저를감지했으면" arg1="750" arg2="1">
+		<transition state="Echo"/>
+		</condition>	
+    <onExit>
+		<action name="포탈을설정한다" arg1="5" arg2="1" arg3="1" arg4="1"/>
+    </onExit>
+  </state>
+  
+        <state name="Echo">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1 = "7800" arg2="1" />	<!-- 카나 메아리-->					
+    </onEnter>	
+		<condition name="여러명의유저를감지했으면" arg1="720" arg2="1">
+		<transition state="Boss_01"/>
+		</condition>				
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+      <state name="Boss_01">
+    <onEnter>
+			<action name="이펙트를설정한다" arg1 = "7531" arg2="1" />	<!-- 얼어붙는 소리 -->			
+			<action name="메쉬를설정한다" arg1="6801-6810" arg2="1" arg3="80" arg4="70" arg5="8" /> <!-- 얼음! -->
+			<action name="타이머를설정한다" arg1="1" arg2="1" />			
+    </onEnter>	
+	        <condition name="시간이경과했으면" arg1="1">
+				<transition state="Boss_01b"/>
+			</condition>			
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+        <state name="Boss_01b">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1 = "7910" arg2="1" />	<!-- 카나 텔레포트 -->
+		<action name="몬스터를생성한다" arg1="995" arg2="0" /> <!-- 카나 (995) -->		
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="Boss_01c"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="Boss_01c">
+    <onEnter>
+		<action name="ShowGuideSummary" entityID="200" textID="20105201"/> <!-- 화로를 공격하여 불을 붙이세요 -->
+		<action name="대화를설정한다" arg1="1" arg2="995" arg3="$02010052_BF__BOSS__0$" arg4="3" arg5="0"/>  <!-- 카나 말풍선 대사 -->
+		<action name="몬스터를생성한다" arg1="120" arg2="0" /> <!-- 화로 (107) -->		
+		<action name="몬스터를생성한다" arg1="621,622,623,624,625" arg2="1" /> <!-- 몬스터 웨이브 -->		
+    </onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="120">
+		<transition state="burn_state_01"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="burn_state_01">
+    <onEnter>
+		<action name="HideGuideSummary" entityID="200"/>
+		<action name="이펙트를설정한다" arg1 = "7507" arg2="1" /> <!-- 얼음 녹는 소리 -->
+		<action name="메쉬를설정한다" arg1="6801-6810" arg2="0" arg3="800" arg4="100" arg5="0" /> <!--벽 해제-->
+		<action name="메쉬를설정한다" arg1="600003" arg2="0" arg3="800" arg4="100" arg5="0" /> <!--벽 해제-->
+		<action name="이펙트를설정한다" arg1 = "7910" arg2="1" />	<!-- 카나 텔레포트 -->
+		<action name="몬스터소멸시킨다" arg1="995"/> <!-- 카나 사라짐 (995) -->
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02010052_BF__BOSS__1$" arg3="3000"/>		
+		<action name="이펙트를설정한다" arg1 = "7031" arg2="1" /> <!-- 횃불에 불이 붙는 이펙트 -->
+		<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="Boss_02_idle"/> 
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+
+   <state name="Boss_02_idle">
+    <onEnter>
+    </onEnter>	
+		<condition name="여러명의유저를감지했으면" arg1="721" arg2="1">
+		<transition state="Boss_02"/>
+		</condition>				
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+     <state name="Boss_02">
+    <onEnter>
+			<action name="이펙트를설정한다" arg1 = "7532" arg2="1" />	<!-- 얼어붙는 소리 -->	
+			<action name="메쉬를설정한다" arg1="6821-6830" arg2="1" arg3="80" arg4="70" arg5="8" /> <!-- 얼음! -->
+			<action name="타이머를설정한다" arg1="1" arg2="1" />			
+    </onEnter>	
+	        <condition name="시간이경과했으면" arg1="1">
+				<transition state="Boss_02b"/>
+			</condition>			
+    <onExit>
+    </onExit>
+  </state>
+  
+          <state name="Boss_02b">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1 = "7911" arg2="1" />	<!-- 카나 텔레포트 -->
+		<action name="몬스터를생성한다" arg1="996" arg2="0" /> <!-- 카나 (995) -->		
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="Boss_02c"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="Boss_02c">
+    <onEnter>
+		<action name="ShowGuideSummary" entityID="200" textID="20105201"/> <!-- 화로를 공격하여 불을 붙이세요 -->
+		<action name="대화를설정한다" arg1="1" arg2="996" arg3="$02010052_BF__BOSS__2$" arg4="3" arg5="0"/>  <!-- 카나 말풍선 대사 -->
+		<action name="몬스터를생성한다" arg1="121" arg2="0" /> <!-- 화로 (107) -->		
+		<action name="몬스터를생성한다" arg1="631,632,633,634,635" arg2="1" /> <!-- 몬스터 웨이브 -->	
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="121">
+		<transition state="burn_state_02"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="burn_state_02">
+    <onEnter>
+		<action name="HideGuideSummary" entityID="200"/>
+		<action name="이펙트를설정한다" arg1 = "7508" arg2="1" /> <!-- 얼음 녹는 소리 -->
+		<action name="메쉬를설정한다" arg1="6821-6830" arg2="0" arg3="800" arg4="100" arg5="0" /> <!--벽 해제-->
+		<action name="메쉬를설정한다" arg1="600004" arg2="0" arg3="800" arg4="100" arg5="0" /> <!--벽 해제-->
+		<action name="이펙트를설정한다" arg1 = "7911" arg2="1" />	<!-- 카나 텔레포트 -->
+		<action name="몬스터소멸시킨다" arg1="996"/> <!-- 카나 사라짐 (995) -->
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02010052_BF__BOSS__3$" arg3="3000"/>		
+		<action name="이펙트를설정한다" arg1 = "7032" arg2="1" /> <!-- 횃불에 불이 붙는 이펙트 -->
+		<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="Boss_03_idle"/> 
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="Boss_03_idle">
+    <onEnter>
+    </onEnter>	
+		<condition name="여러명의유저를감지했으면" arg1="722" arg2="1">
+		<transition state="Boss_03"/>
+		</condition>				
+    <onExit>
+    </onExit>
+  </state>
+  
+       <state name="Boss_03">
+    <onEnter>
+			<action name="이펙트를설정한다" arg1 = "7533" arg2="1" />	<!-- 얼어붙는 소리 -->	
+			<action name="메쉬를설정한다" arg1="6830-6840" arg2="1" arg3="80" arg4="70" arg5="8" /> <!-- 얼음! -->
+			<action name="타이머를설정한다" arg1="1" arg2="1" />			
+    </onEnter>	
+	        <condition name="시간이경과했으면" arg1="1">
+				<transition state="Boss_03b"/>
+			</condition>			
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="Boss_03b">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1 = "7912" arg2="1" />	<!-- 카나 텔레포트 -->
+		<action name="몬스터를생성한다" arg1="997" arg2="0" /> <!-- 카나 (995) -->		
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="Boss_03c"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="Boss_03c">
+    <onEnter>
+			<action name="ShowGuideSummary" entityID="200" textID="20105201"/> <!-- 화로를 공격하여 불을 붙이세요 -->
+		<action name="대화를설정한다" arg1="1" arg2="997" arg3="$02010052_BF__BOSS__4$" arg4="3" arg5="0"/>  <!-- 카나 말풍선 대사 -->
+		<action name="몬스터를생성한다" arg1="641,642,643,644,645" arg2="1" /> <!-- 몬스터 웨이브 -->	
+		<action name="몬스터를생성한다" arg1="122" arg2="0" /> <!-- 화로 (107) -->		
+    </onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="122">
+		<transition state="burn_state_03"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="burn_state_03">
+    <onEnter>
+		<action name="HideGuideSummary" entityID="200"/>
+		<action name="이펙트를설정한다" arg1 = "7509" arg2="1" /> <!-- 얼음 녹는 소리 -->
+		<action name="메쉬를설정한다" arg1="6830-6840" arg2="0" arg3="800" arg4="100" arg5="0" /> <!--벽 해제-->
+		<action name="메쉬를설정한다" arg1="600005" arg2="0" arg3="800" arg4="100" arg5="0" /> <!--벽 해제-->
+		<action name="이펙트를설정한다" arg1 = "7912" arg2="1" />	<!-- 카나 텔레포트 -->
+		<action name="몬스터소멸시킨다" arg1="997"/> <!-- 카나 사라짐 (995) -->
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02010052_BF__BOSS__5$" arg3="3000"/>		
+		<action name="이펙트를설정한다" arg1 = "7033" arg2="1" /> <!-- 횃불에 불이 붙는 이펙트 -->
+		<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />	
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="724" arg2="1">
+		<transition state="Boss_04_idle"/>
+		</condition>	
+<!-- 		<condition name="시간이경과했으면" arg1="1">
+		<transition state="Boss_04_idle"/> 
+		</condition>	 -->	
+    <onExit>
+		<action name="몬스터를생성한다" arg1="123,124" arg2="0" /> <!-- 마지막 두 화로 -->		
+    </onExit>
+  </state>
+
+  <state name="Boss_04_idle">
+    <onEnter>
+		<action name="ShowGuideSummary" entityID="200" textID="20105201"/> <!-- 화로를 공격하여 불을 붙이세요 -->
+	</onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="123">
+		<transition state="Boss_04_idle_A"/>
+		</condition>			
+		<condition name="몬스터가죽어있으면" arg1="124">
+		<transition state="Boss_04_idle_B"/>
+		</condition>						
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="Boss_04_idle_A">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1 = "7034" arg2="1" /> <!-- 횃불에 불이 붙는 이펙트 -->
+    </onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="124">
+		<transition state="burn_state_04"/>
+		</condition>						
+    <onExit>
+		<action name="이펙트를설정한다" arg1 = "7035" arg2="1" /> <!-- 횃불에 불이 붙는 이펙트 -->
+    </onExit>
+  </state>
+  
+      <state name="Boss_04_idle_B">
+    <onEnter>
+			<action name="이펙트를설정한다" arg1 = "7035" arg2="1" /> <!-- 횃불에 불이 붙는 이펙트 -->
+    </onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="123">
+		<transition state="burn_state_04"/>
+		</condition>							
+    <onExit>
+		<action name="이펙트를설정한다" arg1 = "7034" arg2="1" /> <!-- 횃불에 불이 붙는 이펙트 -->
+    </onExit>
+  </state>
+  
+    <state name="burn_state_04">
+    <onEnter>
+		<action name="HideGuideSummary" entityID="200"/>
+		<action name="연출UI를설정한다" arg1="1"/> 
+		<action name="연출UI를설정한다" arg1="3"/> 
+		<action name="이펙트를설정한다" arg1 = "7999" arg2="1" /> <!-- 컷인 사운드 -->	
+		<action name="대화를설정한다" arg1="2" arg2="21800073" arg3="$02010052_BF__BOSS__6$" arg4="5" /> <!-- 카나 대사 -->
+		<action name="스킵을설정한다" arg1="Boss_Battle" />
+		<action name="메쉬를설정한다" arg1="6201-6699" arg2="0" arg3="80" arg4="10" arg5="0" /> <!--벽 해제-->
+		<action name="카메라경로를선택한다" arg1="80004,80005" arg2="1"/> <!-- 연출 카메라 -->
+		<action name="타이머를설정한다" arg1="6" arg2="6" ara3="1" arg4="0"  />	
+		<action name="몬스터를생성한다" arg1="998" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+			<action name="NPC를이동시킨다" arg1="998" arg2="MS2PatrolData_1008" />  <!-- 카나의 분신 991 (이동) -->
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="6">
+		<transition state="Boss_battle_01"/> 
+		</condition>		
+		
+    <onExit>
+		<action name="메쉬를설정한다" arg1="6890-6895" arg2="1" arg3="50" arg4="70" arg5="0" /> <!-- 벽 생성 -->		
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+  </state>
+  
+  
+      <state name="Boss_battle_01">
+    <onEnter>
+			<action name="메쉬를설정한다" arg1="6701-6799" arg2="0" arg3="80" arg4="50" arg5="0" /> <!--벽 해제-->
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02010052_BF__BOSS__7$" arg3="3000"/>	
+    </onEnter>
+			<condition name="여러명의유저를감지했으면" arg1="723" arg2="1">
+		<transition state="Boss_Spawn_01"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+        <state name="Boss_Spawn_01">
+    <onEnter>
+		<action name="몬스터소멸시킨다" arg1="998"/> <!-- 카나 사라짐 (998) -->
+		<action name="몬스터를생성한다" arg1="999" arg2="0" /> <!-- 보스 카나 등장 -->
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="999">
+		<transition state="Clear_01"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+            <state name="Clear_01">
+    <onEnter>
+		<action name="연출UI를설정한다" arg1="1"/> 
+		<action name="연출UI를설정한다" arg1="3"/> 
+		<action name="카메라를선택한다" arg1="80006" arg2="1"/>
+		<action name="몬스터를생성한다" arg1="9998" arg2="0" /> <!-- 카나 등장 -->
+		<action name="이펙트를설정한다" arg1 = "7998" arg2="1" /> <!-- 텔레포트 -->
+		<action name="NPC를이동시킨다" arg1="9998" arg2="MS2PatrolData_1009" />  <!-- 카나의 분신 991 (이동) -->
+		<action name="대화를설정한다" arg1="2" arg2="21800073" arg3="$02010052_BF__BOSS__8$" arg4="4" /> <!-- 카나 대사 -->
+		<action name="타이머를설정한다" arg1="5" arg2="5" ara3="1" arg4="0"  />	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="5">
+		<transition state="Clear"/> 
+		</condition>		
+    <onExit>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+		<action name="이펙트를설정한다" arg1 = "7998" arg2="1" /> <!-- 텔레포트 -->
+		<action name="몬스터소멸시킨다" arg1="9998"/> <!-- 카나 사라짐 (998) -->	
+		<action name="카메라를선택한다" arg1="80006" arg2="0"/>	
+		
+    </onExit>
+  </state>
+  
+  
+	<state name="Clear">
+    <onEnter>
+<!-- 		<action name="이벤트UI를설정한다" arg1="7" arg2="미션 성공!" arg3="3000" arg4="0" /> -->
+		<!-- <action name="ShowGuideSummary" entityID="112" textID="40009"/> --> <!--  포탈을 타세요 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="3000"> 
+			<transition state="end"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="end">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="6890-6895" arg2="0" arg3="80" arg4="10" arg5="0" /> <!--벽 해제-->
+		<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1" arg4="1"/>
+		<action name="DungeonClear" /> 
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state>
+  
+</ms2>
+

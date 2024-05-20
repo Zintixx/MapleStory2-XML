@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 미혹의 길 Round06 --> 
+  
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 		
+			<action name="메쉬를설정한다" arg1="4026" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- RoundBarrier -->				
+			<action name="메쉬를설정한다" arg1="3006" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOff -->		
+			<action name="메쉬를설정한다" arg1="3106" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOn -->		
+			<action name="메쉬애니를설정한다" arg1="3006" arg2="1" arg3="0" arg4="0" /> <!-- CrystalOff -->					
+			<action name="메쉬애니를설정한다" arg1="3106" arg2="0" arg3="0" arg4="0" /> <!-- CrystalOn -->					
+			<action name="이펙트를설정한다" arg1="5206" arg2="0" /> <!-- Sound_CrystalOn -->					
+			<action name="SetUserValue" key="FindWay" value="0" /> 					
+				</onEnter>	
+			<condition name="UserValue" key="FindWay" value="1">	
+			<transition state="ReadyToWalkIn_FromPortal"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 20170223 업데이트 던전 개편 단축 -->		
+<!-- 왼쪽에서 진입 	
+    <state name="ReadyToWalkIn01" >	
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="4026" arg2="0" arg3="0" arg4="0" arg5="0" /> 		
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_106" />			
+			<action name="NPC를이동시킨다" arg1="204" arg2="MS2PatrolData_206" />	
+			<action name="대화를설정한다" arg1="1" arg2="204" arg3="$02000378_BF__06_FINDWAY__0$" arg4="2" arg5="0" />	  				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="ReadyToWalkIn02"/>  
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="ReadyToWalkIn02" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="1306" key="RouteSelected" value="1" /> 		
+			<action name="SetUserValue" triggerID="2306" key="RouteSelected" value="1" /> 						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="ReadyToWalkIn03"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="ReadyToWalkIn03" > 	
+        <onEnter>			
+			<action name="대화를설정한다" arg1="1" arg2="104" arg3="$02000378_BF__06_FINDWAY__1$" arg4="2" arg5="2" />	    						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="Round06_Start"/>
+				</condition>		
+    <onExit> 
+			<action name="몬스터소멸시킨다" arg1="104,204" />		
+    </onExit>
+    </state>		-->
+	
+
+<!-- 포탈로 진입 -->	
+    <state name="ReadyToWalkIn_FromPortal" >	
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="4026" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- RoundBarrier -->	 				
+			<action name="SetUserValue" triggerID="1306" key="RouteSelected" value="1" /> 		
+			<action name="SetUserValue" triggerID="2306" key="RouteSelected" value="1" /> 		  					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="ReadyToWalkIn_FromPortal02"/>  
+				</condition>					
+    <onExit> 
+			<action name="몬스터를생성한다" arg1="106" arg2="0" /> 		
+			<action name="몬스터를생성한다" arg1="2006" arg2="0" /> 		<!-- 전투용 준타 -->					
+    </onExit>
+    </state>	
+
+    <state name="ReadyToWalkIn_FromPortal02" > 	
+        <onEnter>			
+			<action name="대화를설정한다" arg1="1" arg2="106" arg3="$02000378_BF__06_FINDWAY__1$" arg4="3" arg5="0" />	    					
+				</onEnter>		
+				<condition name="WaitTick" waitTick="3000">  
+					<transition state="Round06_Start"/>
+				</condition>		
+    <onExit> 
+			<action name="몬스터소멸시킨다" arg1="106" />		
+    </onExit>
+    </state>		
+	
+	
+	
+    <state name="Round06_Start" >	
+        <onEnter>				
+			<action name="몬스터를생성한다" arg1="1006" arg2="0" /> 		<!-- 수호대상 틴차이 -->			
+			<action name="대화를설정한다" arg1="1" arg2="1006" arg3="$02000378_BF__06_FINDWAY__2$" arg4="3" arg5="2" />	    <!-- 틴차이 -->					
+			<action name="SetUserValue" triggerID="906" key="MobWaveStart" value="1" /> 		
+				</onEnter>		
+			<condition name="UserValue" key="06RoundSuccess" value="1">	
+			<transition state="Round06_Sucess"/>	
+		</condition> 		
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="Round06_Sucess" >	
+        <onEnter>				
+			<action name="NPC를이동시킨다" arg1="2006" arg2="MS2PatrolData_2006" />	
+			<action name="몬스터소멸시킨다" arg1="1006" />	
+			<action name="몬스터를생성한다" arg1="106" arg2="0" /> 		<!-- 연출용 틴차이 -->		
+			<action name="메쉬를설정한다" arg1="3006" arg2="0" arg3="100" arg4="0" arg5="0" /> <!-- CrystalOff -->		
+			<action name="메쉬를설정한다" arg1="3106" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOn -->		
+			<action name="메쉬애니를설정한다" arg1="3006" arg2="0" arg3="0" arg4="0" /> <!-- CrystalOff -->					
+			<action name="메쉬애니를설정한다" arg1="3106" arg2="1" arg3="0" arg4="0" /> <!-- CrystalOn -->						
+			<action name="이펙트를설정한다" arg1="5206" arg2="1" /> <!-- Sound_CrystalOn -->			
+			<action name="대화를설정한다" arg1="1" arg2="106" arg3="$02000378_BF__06_FINDWAY__3$" arg4="2" arg5="1" />	    <!-- 틴차이 -->						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Round06_RouteSelect"/>
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+	<state name="Round06_RouteSelect">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="2006" />			
+			<action name="몬스터를생성한다" arg1="206" arg2="0" /> 		<!-- 연출용 준타 -->			
+		</onEnter>	
+				<condition name="랜덤조건" arg1="50">	
+					<transition state="Round06_PickRoute_Left"/>
+				</condition> 
+				<condition name="랜덤조건" arg1="50"> 
+					<transition state="Round06_PickRoute_Right" />
+				</condition>	
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="Round06_PickRoute_Left">
+		<onEnter>
+			<action name="SetUserValue" triggerID="1306" key="MakeTrue" value="1" /> 	
+			<action name="SetUserValue" triggerID="2306" key="MakeFalse" value="1" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="GoToPortal13"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+	<state name="GoToPortal13">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="106" arg2="MS2PatrolData_13" />			
+			<action name="NPC를이동시킨다" arg1="206" arg2="MS2PatrolData_23" />			
+			<action name="SetUserValue" triggerID="12" key="FindWay" value="1" />  
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="Quit"/>	
+				</condition> 			
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="Round06_PickRoute_Right">	
+		<onEnter>
+			<action name="SetUserValue" triggerID="1306" key="MakeFalse" value="1" /> 	
+			<action name="SetUserValue" triggerID="2306" key="MakeTrue" value="1" /> 				
+		</onEnter>	
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="GoToPortal14"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+	<state name="GoToPortal14">
+		<onEnter>
+			<action name="SetUserValue" triggerID="12" key="FindWay" value="1" /> 
+			<action name="NPC를이동시킨다" arg1="106" arg2="MS2PatrolData_14" />			
+			<action name="NPC를이동시킨다" arg1="206" arg2="MS2PatrolData_24" />					
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">  
+					<transition state="Quit"/>	
+				</condition> 			
+		<onExit> 	
+		</onExit> 	
+	</state>	
+	
+	<state name="Quit">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="106,206" />			
+		</onEnter>
+		<onExit> 
+		</onExit> 
+	</state>		
+</ms2>
+

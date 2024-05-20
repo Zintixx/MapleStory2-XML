@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 커닝시티 하수구 : 랜덤 레버-->
+
+<ms2>
+    <state name="대기" > 
+        <onEnter>		
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="0" />	
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	
+		</onEnter>
+				<condition name="랜덤조건" arg1="30">
+					<transition state="1번패턴"/>
+				</condition> 
+				<condition name="랜덤조건" arg1="30"> 
+					<transition state="2번패턴" />
+				</condition>	
+				<condition name="랜덤조건" arg1="30">
+					<transition state="3번패턴" />
+				</condition>	
+    </state> 			
+
+<!-- 첫 번째 레버 정답 패턴 -->
+    <state name="1번패턴" >
+		<onEnter>	
+		</onEnter>
+			<condition name="UserValue" key="SetLever" value="1">
+					<transition state="1번패턴_모든레버켜기" />
+				</condition>	
+    </state>	
+
+    <state name="1번패턴_모든레버켜기" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="1" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Wrong -->	
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Wrong -->	
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000475" arg2="0" >
+					<transition state="1번패턴_정답"/>
+				</condition>
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="1번패턴_2번레버_오답01"/>
+				</condition>			
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="1번패턴_3번레버_오답01"/>
+				</condition>					
+    </state>		
+
+<!-- 첫 번째 레버 정답 맞춤 -->	
+    <state name="1번패턴_정답" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	<!-- Wrong -->	
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Wrong -->			
+			<action name="SetUserValue" triggerID="1" key="TrapOpen" value="1" />	
+			<action name="SetUserValue" triggerID="3" key="TrapOpen" value="1" />				
+		</onEnter>
+				<condition name="WaitTick" waitTick="10000">
+					<transition state="종료"/>
+				</condition>
+    </state>	
+	
+<!-- 첫 번째 레버 정답 패턴에서 두 번째 레버 오답 -->	
+    <state name="1번패턴_2번레버_오답01" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__0$" arg4="3" arg5="0"/>		
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="0" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Wrong -->				
+			<action name="몬스터를생성한다" arg1="921" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="1번패턴_2번레버_재도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="1번패턴_2번레버_재도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="1" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Wrong -->				
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000475" arg2="0" >
+					<transition state="1번패턴_정답"/>
+				</condition>
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="1번패턴_2번레버_오답02"/>
+				</condition>		
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="1번패턴_2번레버_오답02" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__1$" arg4="3" arg5="0"/>			
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="0" />	<!-- Correct -->			
+			<action name="몬스터를생성한다" arg1="922" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="1번패턴_2번레버_마지막도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="1번패턴_2번레버_마지막도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="1" />	<!-- Correct -->		
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000475" arg2="0" >
+					<transition state="1번패턴_정답"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+
+<!-- 첫 번째 레버 정답 패턴에서 세 번째 레버 오답 -->		
+    <state name="1번패턴_3번레버_오답01" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__0$" arg4="3" arg5="0"/>		
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="0" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	<!-- Wrong -->				
+			<action name="몬스터를생성한다" arg1="921" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="1번패턴_3번레버_재도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="1번패턴_3번레버_재도전" >
+		<onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="1" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Wrong -->				
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000475" arg2="0" >
+					<transition state="1번패턴_정답"/>
+				</condition>
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="1번패턴_3번레버_오답02"/>
+				</condition>		
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="1번패턴_3번레버_오답02" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__1$" arg4="3" arg5="0"/>				
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="0" />	<!-- Correct -->			
+			<action name="몬스터를생성한다" arg1="922" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="1번패턴_3번레버_마지막도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="1번패턴_3번레버_마지막도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="1" />	<!-- Correct -->		
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000475" arg2="0" >
+					<transition state="1번패턴_정답"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>		
+	
+
+
+<!-- 두 번째 레버 정답 패턴 -->
+    <state name="2번패턴" >
+		<onEnter>	
+		</onEnter>
+			<condition name="UserValue" key="SetLever" value="1">
+					<transition state="2번패턴_모든레버켜기" />
+				</condition>	
+    </state>	
+
+    <state name="2번패턴_모든레버켜기" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="1" />	<!-- Wrong -->
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Correct -->	
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Wrong -->	
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000475" arg2="0" >
+					<transition state="2번패턴_1번레버_오답01"/>
+				</condition>
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="2번패턴_정답"/>
+				</condition>			
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="2번패턴_3번레버_오답01"/>
+				</condition>					
+    </state>		
+
+<!-- 두 번째 레버 정답 맞춤 -->	
+    <state name="2번패턴_정답" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="0" />	<!-- Wrong -->	
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Wrong -->			
+			<action name="SetUserValue" triggerID="1" key="TrapOpen" value="1" />	
+			<action name="SetUserValue" triggerID="3" key="TrapOpen" value="1" />					
+		</onEnter>
+				<condition name="WaitTick" waitTick="10000">
+					<transition state="종료"/>
+				</condition>
+    </state>	
+	
+<!-- 두 번째 레버 정답 패턴에서 두 번째 레버 오답 -->	
+    <state name="2번패턴_1번레버_오답01" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__0$" arg4="3" arg5="0"/>		
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Wrong -->				
+			<action name="몬스터를생성한다" arg1="921" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="2번패턴_1번레버_재도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="2번패턴_1번레버_재도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Wrong -->				
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="2번패턴_정답"/>
+				</condition>
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="2번패턴_1번레버_오답02"/>
+				</condition>		
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="2번패턴_1번레버_오답02" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__1$" arg4="3" arg5="0"/>				
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	<!-- Correct -->			
+			<action name="몬스터를생성한다" arg1="922" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="2번패턴_1번레버_마지막도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="2번패턴_1번레버_마지막도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Correct -->		
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="2번패턴_정답"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+
+<!-- 두 번째 레버 정답 패턴에서 세 번째 레버 오답 -->		
+    <state name="2번패턴_3번레버_오답01" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__0$" arg4="3" arg5="0"/>		
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Wrong -->				
+			<action name="몬스터를생성한다" arg1="921" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="2번패턴_3번레버_재도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="2번패턴_3번레버_재도전" >
+		<onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Correct -->
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Wrong -->				
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="2번패턴_정답"/>
+				</condition>
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="2번패턴_3번레버_오답02"/>
+				</condition>		
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="2번패턴_3번레버_오답02" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__1$" arg4="3" arg5="0"/>					
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	<!-- Correct -->			
+			<action name="몬스터를생성한다" arg1="922" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="2번패턴_3번레버_마지막도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="2번패턴_3번레버_마지막도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Correct -->		
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="2번패턴_정답"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>		
+	
+
+
+<!-- 세 번째 레버 정답 패턴 -->
+    <state name="3번패턴" >
+		<onEnter>	
+		</onEnter>
+			<condition name="UserValue" key="SetLever" value="1">
+					<transition state="3번패턴_모든레버켜기" />
+				</condition>	
+    </state>	
+
+    <state name="3번패턴_모든레버켜기" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="1" />	<!-- Wrong -->
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Wrong -->	
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Correct -->	
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000475" arg2="0" >
+					<transition state="3번패턴_1번레버_오답01"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="3번패턴_2번레버_오답01"/>
+				</condition>			
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="3번패턴_정답"/>
+				</condition>					
+    </state>		
+
+<!-- 세 번째 레버 정답 맞춤 -->	
+    <state name="3번패턴_정답" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="0" />	<!-- Wrong -->	
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	<!-- Wrong -->			
+			<action name="SetUserValue" triggerID="1" key="TrapOpen" value="1" />	
+			<action name="SetUserValue" triggerID="3" key="TrapOpen" value="1" />					
+		</onEnter>
+				<condition name="WaitTick" waitTick="10000">
+					<transition state="종료"/>
+				</condition>
+    </state>	
+	
+<!-- 세 번째 레버 정답 패턴에서 두 번째 레버 오답 -->	
+    <state name="3번패턴_1번레버_오답01" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__0$" arg4="3" arg5="0"/>		
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="0" />	<!-- Wrong -->				
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Correct -->			
+			<action name="몬스터를생성한다" arg1="921" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="3번패턴_1번레버_재도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="3번패턴_1번레버_재도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000476" arg2="1" />	<!-- Wrong -->			
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Correct -->			
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000476" arg2="0" >
+					<transition state="3번패턴_1번레버_오답02"/>
+				</condition>		
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="3번패턴_정답"/>
+				</condition>				
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="3번패턴_1번레버_오답02" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__1$" arg4="3" arg5="0"/>				
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Correct -->			
+			<action name="몬스터를생성한다" arg1="922" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="3번패턴_1번레버_마지막도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="3번패턴_1번레버_마지막도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Correct -->		
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="3번패턴_정답"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+
+<!-- 세 번째 레버 정답 패턴에서 세 번째 레버 오답 -->		
+    <state name="3번패턴_2번레버_오답01" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__0$" arg4="3" arg5="0"/>		
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="0" />	<!-- Wrong -->	
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Correct -->			
+			<action name="몬스터를생성한다" arg1="921" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="3번패턴_2번레버_재도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="3번패턴_2번레버_재도전" >
+		<onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10000475" arg2="1" />	<!-- Wrong -->			
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Correct -->			
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000475" arg2="0" >
+					<transition state="3번패턴_2번레버_오답02"/>
+				</condition>		
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="3번패턴_정답"/>
+				</condition>				
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="3번패턴_2번레버_오답02" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="102" arg3="$52000027_QD__RANDOMLEVER02__1$" arg4="3" arg5="0"/>				
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="0" />	<!-- Correct -->			
+			<action name="몬스터를생성한다" arg1="922" arg2="1" /> 	
+		</onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="921" >
+					<transition state="3번패턴_2번레버_마지막도전"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>	
+    <state name="3번패턴_2번레버_마지막도전" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000477" arg2="1" />	<!-- Correct -->		
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10000477" arg2="0" >
+					<transition state="3번패턴_정답"/>
+				</condition>
+		<onExit>
+		</onExit>						
+    </state>		
+	
+	
+    <state name="종료" >
+        <onEnter>	
+		</onEnter>	
+		<onExit>
+		</onExit>					
+    </state>	
+	
+</ms2>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+
+<state name="idle">
+    <onEnter>
+		<action name="몬스터를생성한다" arg1="101,102,103,104,105" arg2="1" /> <!-- 몬스터 등장 -->
+		<action name="사다리를설정한다" arg1="1011" arg2="0" arg3="1" />
+		<action name="사다리를설정한다" arg1="1012" arg2="0" arg3="1" />
+		<action name="사다리를설정한다" arg1="1013" arg2="0" arg3="1" />		
+		<action name="몬스터를생성한다" arg1="201,202,203,204,205,206,207,208,209" arg2="1" /> <!-- 마지막 섹터 몬스터 등장 -->
+		<action name="메쉬를설정한다" arg1="29991-29999" arg2="0"/> <!-- 안보이는 상태 -->
+		<action name="이펙트를설정한다" arg1="7010" arg2="1" /> <!-- 전원 붙는 소리 -->	
+		<action name="이펙트를설정한다" arg1="7011" arg2="1" /> <!-- 전원 붙는 소리 -->	
+		<action name="이펙트를설정한다" arg1="7012" arg2="1" /> <!-- 전원 붙는 소리 -->
+		<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="1" />
+		<action name="EnableSpawnPointPC" spawnPointID="991" isEnable="0" />
+		<action name="EnableSpawnPointPC" spawnPointID="992" isEnable="0" />
+		<action name="EnableSpawnPointPC" spawnPointID="993" isEnable="0" />
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="701" arg2="1">
+			<transition state="CheckUserCount" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+	
+  <state name="DungeonStart">
+    <onEnter>			
+		<action name="연출UI를설정한다" arg1="1"/> 
+		<action name="연출UI를설정한다" arg1="3"/> 
+		<action name="스킵을설정한다" arg1="시작_03" />
+		<action name="카메라경로를선택한다" arg1="80001,80002" arg2="1"/>
+	</onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="시작_03"/>	
+		</condition>	
+    <onExit>
+		<action name="RemoveCinematicTalk"/>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+  </state>
+  
+ 
+  <state name="시작_03">
+    <onEnter>
+		<action name="카메라경로를선택한다" arg1="80003" arg2="1"/>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02010086_BF__MAIN__0$" arg3="3000"/>
+		<action name="액터를설정한다" arg1="1001" arg2="1" arg3="Opened" />
+		<action name="메쉬를설정한다" arg1="1002" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+		<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="시작_04"/>
+		</condition>
+    <onExit>
+
+    </onExit>
+  </state>
+  
+  
+  
+   <state name="시작_04">
+    <onEnter>
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="702" arg2="1">
+		<transition state="전투_01"/>
+		</condition>			
+    <onExit>
+    </onExit>
+  </state>
+    
+     <state name="전투_01">
+    <onEnter>
+		<action name="몬스터를생성한다" arg1="999" arg2="1" /> <!-- 몬스터 등장 -->
+ 		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/> 
+		<action name="ShowGuideSummary" entityID="110" textID="40010"/>  <!-- 적을 모두 처치하세요 -->
+    </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="101,102,103,104,105">
+		<transition state="관문_01_개방"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+       <state name="관문_01_개방">
+    <onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="106" textID="20003362" durationTime="3000" /> <!-- 다음 구역으로 이동할 수 있습니다. -->
+		<action name="액터를설정한다" arg1="1003" arg2="1" arg3="Opened" />
+		<action name="액터를설정한다" arg1="5001" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="액터를설정한다" arg1="5002" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="메쉬를설정한다" arg1="1004" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->
+		<action name="이펙트를설정한다" arg1="7020" arg2="0" /> <!-- 알람 소리 -->
+    </onEnter>		
+		<condition name="여러명의유저를감지했으면" arg1="703" arg2="1">
+		<transition state="전투_02"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+       <state name="전투_02">
+    <onEnter>
+ 		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+ 		<action name="ShowGuideSummary" entityID="110" textID="40010"/>  <!-- 적을 모두 처치하세요 -->
+		<action name="몬스터를생성한다" arg1="111,112,113,114,115,116,117,118,119" arg2="1" /> <!-- 몬스터 등장 -->
+    </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="111,112,113,114,115,116,117,118,119">
+		<transition state="관문_02_개방"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+         <state name="관문_02_개방">
+    <onEnter>
+		<action name="사다리를설정한다" arg1="1011" arg2="1" arg3="1" />
+		<action name="사다리를설정한다" arg1="1012" arg2="1" arg3="1" />
+		<action name="사다리를설정한다" arg1="1013" arg2="1" arg3="1" />		
+		<action name="액터를설정한다" arg1="5003" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="액터를설정한다" arg1="5004" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="액터를설정한다" arg1="5005" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="이펙트를설정한다" arg1="7021" arg2="0" /> <!-- 알람 소리 -->
+		<action name="ShowGuideSummary" entityID="106" textID="20003362" durationTime="3000" /> <!-- 다음 구역으로 이동할 수 있습니다. -->
+    </onEnter>	
+		<condition name="여러명의유저를감지했으면" arg1="704" arg2="1">
+		<transition state="전투_03"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="전투_03">
+    <onEnter>
+ 		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/> 
+	 	<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+		<action name="몬스터를생성한다" arg1="121,122,123,124,125,126,127,128,129" arg2="1" /> <!-- 몬스터 등장 -->
+		<action name="몬스터를생성한다" arg1="994" arg2="1" /> <!-- 새틀라이트 등장 -->
+    </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="121,122,123,124,125,126,127,128,129">
+		<transition state="관문_03_개방"/>
+		</condition>
+		<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+		<transition state="전투_04"/>
+		</condition>	
+    <onExit>
+		<action name="오브젝트반응설정한다" arg1="10000896" arg2="1" />
+		<action name="몬스터소멸시킨다" arg1="994" />
+    </onExit>
+  </state>
+  
+   <state name="관문_03_개방">
+    <onEnter>
+		<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="0" />
+		<action name="EnableSpawnPointPC" spawnPointID="991" isEnable="1" />	
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="106" textID="20003362" durationTime="3000" /> <!-- 다음 구역으로 이동할 수 있습니다. -->
+    </onEnter>	
+		<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+		<transition state="전투_04"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="전투_04">
+    <onEnter>
+ 		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/> 
+		<action name="ShowGuideSummary" entityID="110" textID="40010"/>  <!-- 적을 모두 처치하세요 -->
+		<action name="몬스터를생성한다" arg1="131,132,133,134,135,136,137,138,139" arg2="1" /> <!-- 몬스터 등장 -->
+    </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="131,132,133,134,135,136,137,138,139">
+		<transition state="관문_04_개방"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="관문_04_개방">
+    <onEnter>
+		<action name="액터를설정한다" arg1="5006" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="액터를설정한다" arg1="5007" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="액터를설정한다" arg1="1006" arg2="1" arg3="Opened" /> <!--문 열림-->
+		<action name="메쉬를설정한다" arg1="1007" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->
+		<action name="이펙트를설정한다" arg1="7022" arg2="0" /> <!-- 알람 소리 -->
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="106" textID="20003362" durationTime="3000" /> <!-- 다음 구역으로 이동할 수 있습니다. -->
+    </onEnter>	
+		<condition name="여러명의유저를감지했으면" arg1="706" arg2="1">
+		<transition state="전투_05"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+       <state name="전투_05">
+    <onEnter>
+		<action name="액터를설정한다" arg1="1009" arg2="1" arg3="Opened" /> <!--문 열림-->
+ 		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+ 		<action name="ShowGuideSummary" entityID="110" textID="40010"/><!-- 적을 모두 처치하세요 -->
+		<action name="몬스터를생성한다" arg1="141,142,143,144,145,146,147,148,149" arg2="1" /> <!-- 몬스터 등장 -->
+    </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="141,142,143,144,145,146,147,148,149">
+		<transition state="관문_05_개방"/>
+		</condition>
+		<condition name="여러명의유저를감지했으면" arg1="707" arg2="1">
+		<transition state="전투_06"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+       <state name="관문_05_개방">
+    <onEnter>
+		<action name="EnableSpawnPointPC" spawnPointID="991" isEnable="0" />
+		<action name="EnableSpawnPointPC" spawnPointID="992" isEnable="1" />		
+		<action name="액터를설정한다" arg1="5008" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="액터를설정한다" arg1="5009" arg2="1" arg3="sf_quest_light_A01_Off" /> <!-- 알람 꺼 -->
+		<action name="ShowGuideSummary" entityID="106" textID="20003362" durationTime="3000" /> <!-- 다음 구역으로 이동할 수 있습니다. -->
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="707" arg2="1">
+		<transition state="전투_06"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+         <state name="전투_06">
+    <onEnter>
+ 		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+ 		<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+		<action name="몬스터를생성한다" arg1="151,152,153,154,155,156,157,158,159" arg2="1" /> <!-- 몬스터 등장 -->
+    </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="151,152,153,154,155,156,157,158,159">
+		<transition state="관문_06_개방_02"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+         <state name="관문_06_개방">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="2001-2003" arg2="0" arg4="300" arg5="10" /> <!--빨간 선이-->	
+		<action name="메쉬를설정한다" arg1="2011-2013" arg2="1" arg4="300" arg5="10" /> <!--파란 선으로-->	
+		<action name="타이머를설정한다" arg1="3" arg2="3"/>
+	</onEnter>
+		<condition name="시간이경과했으면" arg1="3">
+		<transition state="관문_06_개방_02"/>
+		</condition>			
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+    <state name="관문_06_개방_02">
+    <onEnter>
+		<action name="몬스터를생성한다" arg1="161,162,163,164,165,166,167,168,169" arg2="1" /> <!-- 몬스터 등장 -->
+		<action name="메쉬를설정한다" arg1="2014-2016" arg2="0" arg4="30" arg5="0" /> <!--문 폭발-->
+		<action name="메쉬를설정한다" arg1="2011-2013" arg2="0" arg4="0" arg5="10" /> <!--파란 선도 마저 삭제-->	
+		<action name="ShowGuideSummary" entityID="106" textID="20003362" durationTime="3000" /> <!-- 다음 구역으로 이동할 수 있습니다. -->
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="708" arg2="1">
+		<transition state="전투_07"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+    
+         <state name="전투_07">
+    <onEnter>
+ 		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+ 		<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+		<action name="몬스터를생성한다" arg1="171,172,173,174,175,176,177,178,179" arg2="1" /> <!-- 몬스터 등장 -->
+    </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="171,172,173,174,175,176,177,178,179">
+		<transition state="관문_07_개방"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+         <state name="관문_07_개방">
+    <onEnter>
+		<action name="EnableSpawnPointPC" spawnPointID="992" isEnable="0" />
+		<action name="EnableSpawnPointPC" spawnPointID="993" isEnable="1" />		
+		<action name="메쉬를설정한다" arg1="2021-2023" arg2="0" arg4="0" arg5="0" /> <!--관문 개방-->	
+		<action name="ShowGuideSummary" entityID="106" textID="20003362" durationTime="3000" /> <!-- 다음 구역으로 이동할 수 있습니다. -->
+    </onEnter>		
+		<condition name="몬스터가죽어있으면" arg1="201,202,203,204,205,206,207,208,209">
+		<transition state="끝"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+           <state name="끝">
+    <onEnter>
+		<action name="오브젝트반응설정한다" arg1="10000897" arg2="1" />
+    </onEnter>		
+
+    <onExit>
+    </onExit>
+  </state>
+</ms2>

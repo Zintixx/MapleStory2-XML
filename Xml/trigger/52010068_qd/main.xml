@@ -1,0 +1,731 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<ms2>
+
+	<state name="Ready">
+    <onEnter>
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/>
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/>
+    </onEnter>  
+			<condition name="!퀘스트유저를감지하면" arg1="2001" arg2="20002391" arg3="3"> <!-- 인트로 퀘스트-->
+				<transition state="틴차이_준타_스폰01"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="3"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="2"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="1"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100400" arg3="3"> 
+				<transition state="Orde_In_Effect"/>
+			</condition>
+		<!-- 	<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100640" arg3="2" > 
+				<transition state="챕터10에필로그연출01" />
+			</condition> -->		<!-- 구 에픽 엔딩 연출 발동 트리거-->		
+
+		<onExit>	
+		</onExit>
+	</state>
+
+	<state name="틴차이_준타_스폰01">
+        <onEnter>
+            <action name="몬스터를생성한다" arg1="102" arg2="1"/>
+            <action name="몬스터를생성한다" arg1="103" arg2="1"/>			
+        </onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="3"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="2"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="1"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100400" arg3="3"> 
+				<transition state="Orde_In_Effect"/>
+			</condition> 
+		<!--	<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100640" arg3="2" >
+				<transition state="챕터10에필로그연출01" /> 
+			</condition> -->		<!-- 구 에픽 엔딩 연출 발동 트리거-->			
+	</state>
+
+	<state name="Orde_In_Effect" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/>
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="Orde_In"/>
+			</condition>
+    </state>
+	
+	<state name="Orde_In">
+        <onEnter>
+            <action name="몬스터를생성한다" arg1="101" arg2="1"/>
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="Orde_In_Turn"/>
+			</condition>
+		<onExit> 
+		</onExit>
+    </state>		
+	<state name="Orde_In_Turn">
+        <onEnter>
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>		
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/>
+			<action name="SetNpcRotation" arg1="101" arg2="-45" />		
+			<action name="AddCinematicTalk" npcID="11004033" illustID="Orde_normal" msg="$52010068_QD__MAIN__0$" align="left" />
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="Orde_In_Talk"/>
+			</condition>			
+		<onExit> 
+		</onExit>
+    </state>		
+	
+	<state name="Orde_In_Talk">
+        <onEnter>	
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="IceSphere_A"/>
+	   		<action name="AddCinematicTalk" npcID="11004033" illustID="Orde_normal" msg="$52010068_QD__MAIN__1$" align="left" />			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="Orde_In_Talk_End"/>
+			</condition>				
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="Orde_In_Talk_End">
+        <onEnter>	
+			<action name="카메라리셋"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="Orde_In_ReTurn"/>
+			</condition>				
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="Orde_In_ReTurn">
+        <onEnter>
+			<action name="SetNpcRotation" arg1="101" arg2="360" />					
+        </onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="3"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="2"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="50100420" arg3="1"> 
+				<transition state="Orde_Out_Effect"/>
+			</condition>
+		<onExit> 
+		</onExit>
+    </state>
+
+	<state name="Orde_Out_Effect">
+        <onEnter>
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Wizard_Teleport_A"/>					
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$52010068_QD__MAIN__2$" duration="2800" delayTick="0"/>	
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/>			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="Orde_Out"/>
+			</condition>			
+		<onExit> 	
+		</onExit>
+    </state>	
+
+	<state name="Orde_Out">
+        <onEnter>
+            <action name="몬스터소멸시킨다" arg1="101"/>					
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/>			
+        </onEnter>	
+		<onExit> 
+		</onExit>
+    </state>
+
+    <state name="챕터10에필로그연출01"> 
+	
+		<onEnter>
+	
+			<action name="SetOnetimeEffect" id="10" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+						
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="챕터10에필로그연출02"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출02">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>							
+			<action name="연출UI를설정한다" arg1="9" arg2="큰 희생이 있었지만, 우리는 $npc:11001698$를 상대로 승리를 얻었다.\n메이플월드를 공격한 그들에게 죄값을 치르게 만든것이다."/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출02스킵"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출02스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="챕터10에필로그연출02스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출03">
+		<onEnter>
+			 			
+			<action name="연출UI를설정한다" arg1="9" arg2="비록 $npc:11001698$는 무사히 도망쳤지만, \n그녀 스스로의 의지로 도망친것은 아니었다."/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출03스킵"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출03스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="챕터10에필로그연출03스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출05"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출05">
+		<onEnter>
+			 			
+			<action name="연출UI를설정한다" arg1="9" arg2="오히려 $npc:11001698$는 이번 전투에서 자신의 요새를 잃고 말았다."/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출05스킵"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출05스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출05스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출05b"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출05b">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/> 			
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="챕터10에필로그연출06"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+	
+	
+
+    <state name="챕터10에필로그연출06">
+		<onEnter>
+			<action name="사운드를설정한다" arg1="90000" arg2="1" /> <!--마드리아 고조 브금-->			
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__3$" arg4="6" />
+			<action name="SetOnetimeEffect" id="2007" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_01_00002007.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출06스킵"/>	
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="챕터10에필로그연출06스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출06스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출07"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="챕터10에필로그연출07">
+		<onEnter>
+				
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__4$" arg4="6" />
+			<action name="SetOnetimeEffect" id="2008" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_02_00002008.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출07스킵"/>				
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="챕터10에필로그연출07스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출07스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출08"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출08">
+		<onEnter>
+				
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__5$" arg4="9" />
+			<action name="SetOnetimeEffect" id="2009" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_03_00002009.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출08스킵"/>				
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="9000">
+					<transition state="챕터10에필로그연출08스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출08스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출09"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="챕터10에필로그연출09">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__6$" arg4="5" />
+			<action name="SetOnetimeEffect" id="2009" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_03_00002009.xml"/>					
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출9스킵"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="챕터10에필로그연출9스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="챕터10에필로그연출9스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출10"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출10">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2=""/>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/> 			
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__7$" arg4="5" />
+			<action name="SetOnetimeEffect" id="2010" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_04_00002010.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출10스킵"/>				
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="챕터10에필로그연출10스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출10스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출11"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="챕터10에필로그연출11">
+		<onEnter>
+				
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__8$" arg4="5" />
+			<action name="SetOnetimeEffect" id="2011" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_05_00002011.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출11스킵"/>				
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="챕터10에필로그연출11스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출11스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출12"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출12">
+		<onEnter>
+				
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__9$" arg4="5" />
+			<action name="SetOnetimeEffect" id="2011" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_05_00002011.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출12스킵"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출12스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="챕터10에필로그연출12스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출13"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="챕터10에필로그연출13">
+		<onEnter>
+				
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__10$" arg4="5" />
+			<action name="SetOnetimeEffect" id="2011" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_05_00002011.xml"/>	 
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출13스킵"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출13스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출13스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출13_b"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출13_b">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2=""/>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/> 			
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__11$" arg4="5" />
+			<action name="SetOnetimeEffect" id="2012" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_06_00002012.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출13b스킵"/>				
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="챕터10에필로그연출13b스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출13b스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출14"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출14">
+		<onEnter>
+				
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__12$" arg4="5" />
+			<action name="SetOnetimeEffect" id="2013" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_07_00002013.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출14스킵"/>				
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출14스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출14스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출15"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출15">
+		<onEnter>
+				
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__13$" arg4="6" />
+			<action name="SetOnetimeEffect" id="2014" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_08_00002014.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출15스킵"/>				
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="챕터10에필로그연출15스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출15스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출16"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출16">
+		<onEnter>
+				
+			<action name="대화를설정한다" arg1="2" arg2="11001820" arg3="$52010068_QD__MAIN__14$" arg4="5" />
+			<action name="SetOnetimeEffect" id="2015" enable="1" path="BG/Common/Sound/Eff_Madria_Chapter10_End_09_00002015.xml"/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출16스킵"/>				
+			
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="챕터10에필로그연출16스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출16스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출17"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+   <state name="챕터10에필로그연출17">
+		<onEnter>
+				
+			
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="챕터10에필로그연출18"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="챕터10에필로그연출18">
+		<onEnter>
+				
+			<action name="연출UI를설정한다" arg1="9" arg2="$npc:11001698$는 그녀의 용을 타고 날아올랐다\n그리고 이 것이 마드라칸 요새의 최후였다."/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출18스킵"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출18스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출18스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출18b"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="챕터10에필로그연출18b">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$npc:11001698$는 분명 다시 돌아올 것이다.\n그리고 또다시 서로에게 소중한 존재들을 빼앗을지도 모른다."/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출18b스킵"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출18b스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출18b스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출19"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="챕터10에필로그연출19">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="그렇지만, 할 수 있다면 $npc:11001698$와 싸우지 않아도 될 방법을 찾고자 한다.\n복수의 나선은 결국 서로의 모든것을 파괴할것이기 때문이다."/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출19스킵"/>					
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출19스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+    <state name="챕터10에필로그연출19스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출20"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+
+	
+	
+    <state name="챕터10에필로그연출20">
+		<onEnter>
+				
+			<action name="연출UI를설정한다" arg1="9" arg2="그리고 나는 어떤 방법으로든 테룬칼리브들이 살아있다고 굳게 믿고 있다.\n그들이 나를 살렸듯 그들 스스로 어떻게 살아날 방법을 찾았을거라 믿고 싶다."/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출20스킵"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출20스킵"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출20스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="챕터10에필로그연출21"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="챕터10에필로그연출21">
+		<onEnter>
+				
+			<action name="연출UI를설정한다" arg1="9" arg2="하여, 나는 블랙 샤드의 폭심지, '아이 오브 라펜타'의 수색과\n라펜샤드의 조사에 최선을 다할 것이라고 다짐했다."/>	
+			<action name="스킵을설정한다" arg1="챕터10에필로그연출22"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="챕터10에필로그연출22"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="챕터10에필로그연출22">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>					
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Quit"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="Quit" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="10" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+			<action name="유저를이동시킨다" arg1="52010068" arg2="2"/>	
+		</onEnter>	
+        <onExit />
+    </state>		
+</ms2>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 다수의 interactObject 동시 스폰하는 경우 렉이 발생함 / 40개의 타워를 4개 그룹으로 나누어서 순차적으로 스폰시킴 / 스폰 알림 메시지 2초 전부터 스폰 시작함 -->
+<!-- groupId="10000000-10000039" 황금 상자 Rare Box -->	
+<ms2>
+
+    <state name="Setting" >
+        <onEnter>		
+			<action name="StartCombineSpawn" groupId="10000165-10000204" isStart="false"/>	<!-- groupId="10000165-10000204" 황금 상자 Rare Box -->			
+			<action name="SetUserValue" key="RareBoxOnCount" value="0" />		
+			<action name="SetUserValue" key="RareBoxOff" value="0" />	
+			<action name="SetUserValue" key="RareBoxStartTowerNumber" value="0" />					
+        </onEnter>
+				<condition name="UserValue" key="RareBoxOnCount" value="1">	
+					<transition state="Delay"/>
+				</condition> 	
+        <onExit>			
+        </onExit>	
+    </state>
+
+    <state name="Delay" >
+        <onEnter>				
+        </onEnter>
+				<condition name="WaitTick" waitTick="178000">      	<!-- test용 데이터 수정 가능 지점 / 3분 180000 / 그룹 스폰 순차적으로 하는데 걸리는 시간 2000 미리 차감 178000 -->
+					<transition state="BoxOnRandom"/>	
+				</condition> 		
+				<condition name="UserValue" key="RareBoxOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 					
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="BoxOnRandom" >	
+		<onEnter>		
+		</onEnter>
+			<condition name="랜덤조건" arg1="25">
+				<transition state="StartToTower01to10"/>
+			</condition>
+			<condition name="랜덤조건" arg1="25">
+				<transition state="StartToTower11to20"/>
+			</condition>	
+			<condition name="랜덤조건" arg1="25">
+				<transition state="StartToTower21to30"/>
+			</condition> 
+			<condition name="랜덤조건" arg1="25">
+				<transition state="StartToTower31to40"/>
+			</condition>	
+        <onExit>			
+        </onExit>				
+    </state>
+
+
+	<state name="StartToTower01to10" >
+        <onEnter>	
+			<action name="SetUserValue" key="RareBoxStartTowerNumber" value="1" />					
+        </onEnter>	
+			<condition name="무조건" >
+				<transition state="Tower01to10"/>
+			</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+	<state name="StartToTower11to20" >
+        <onEnter>	
+			<action name="SetUserValue" key="RareBoxStartTowerNumber" value="11" />					
+        </onEnter>	
+			<condition name="무조건" >
+				<transition state="Tower11to20"/>
+			</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+	<state name="StartToTower21to30" >
+        <onEnter>	
+			<action name="SetUserValue" key="RareBoxStartTowerNumber" value="21" />					
+        </onEnter>	
+			<condition name="무조건" >
+				<transition state="Tower21to30"/>
+			</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+	<state name="StartToTower31to40" >
+        <onEnter>	
+			<action name="SetUserValue" key="RareBoxStartTowerNumber" value="31" />					
+        </onEnter>	
+			<condition name="무조건" >
+				<transition state="Tower31to40"/>
+			</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+	
+	
+	<state name="Tower01to10" >
+        <onEnter>				
+			<action name="StartCombineSpawn" groupId="10000165-10000174" isStart="true"/>	<!-- 황금 상자 Rare Box Tower01to10 -->		
+        </onEnter>	
+			<condition name="UserValue" key="RareBoxStartTowerNumber" value="11">	
+					<transition state="BoxOn"/>
+				</condition> 	
+			<condition name="WaitTick" waitTick="500" >
+				<transition state="Tower11to20"/>
+			</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+	
+	<state name="Tower11to20" >
+        <onEnter>					
+			<action name="StartCombineSpawn" groupId="10000175-10000184" isStart="true"/>	<!-- 황금 상자 Rare Box Tower11to20 -->		
+        </onEnter>	
+			<condition name="UserValue" key="RareBoxStartTowerNumber" value="21">	
+					<transition state="BoxOn"/>
+				</condition> 			
+			<condition name="WaitTick" waitTick="500" >
+				<transition state="Tower21to30"/>
+			</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+	
+	<state name="Tower21to30" >
+        <onEnter>				
+			<action name="StartCombineSpawn" groupId="10000185-10000194" isStart="true"/>	<!-- 황금 상자 Rare Box Tower21to30 -->		
+        </onEnter>	
+			<condition name="UserValue" key="RareBoxStartTowerNumber" value="31">	
+					<transition state="BoxOn"/>
+				</condition> 				
+			<condition name="WaitTick" waitTick="500" >
+				<transition state="Tower31to40"/>
+			</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+	
+	<state name="Tower31to40" >
+        <onEnter>				
+			<action name="StartCombineSpawn" groupId="10000195-10000204" isStart="true"/>	<!-- 황금 상자 Rare Box Tower31to40 -->		
+        </onEnter>	
+			<condition name="UserValue" key="RareBoxStartTowerNumber" value="1">	
+					<transition state="BoxOn"/>
+				</condition> 				
+			<condition name="WaitTick" waitTick="500" >
+				<transition state="Tower01to10"/>
+			</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+	
+	
+    <state name="BoxOn" >
+        <onEnter>		
+			<action name="SideNpcTalk" npcID="23500110" illust="Mushking_normal" duration="5000" script="$82000000_survival__05_RAREBOX__0$" />			
+        </onEnter>
+				<condition name="UserValue" key="RareBoxOff" value="1">	
+					<transition state="Quit"/>	
+				</condition> 						
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="Quit" >
+        <onEnter>	
+			<action name="StartCombineSpawn" groupId="10000165-10000204" isStart="false"/>	<!-- groupId="10000165-10000204" 황금 상자 Rare Box -->								
+        </onEnter>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	
+</ms2>

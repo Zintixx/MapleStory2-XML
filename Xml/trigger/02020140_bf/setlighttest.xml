@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  109 , 테스트용 트리거로 실제 게임에서는 사용 안함 -->
+<ms2>    
+	<state name="전투체크"> <!--테스트용-->	
+		<onEnter>
+			<action name="포탈을설정한다" arg1="4401" arg2="0" arg3="0" arg4="0"/>   <!--스타트 지점에서 1페이즈 전투판으로 가는 포탈 처음에는 감추기 -->
+			<action name="포탈을설정한다" arg1="4403" arg2="0" arg3="0" arg4="0"/>    <!-- 1페이즈에서 2페이즈 전투판으로 가는 포탈 처음에는 감추기 -->
+		</onEnter>
+	
+		<condition name="CheckUser">
+			<transition state="트리거시작" />  
+		</condition>	
+	</state>  
+
+
+ <state name="트리거시작">
+    <onEnter>
+		 <action name="SetUserValue" key="TestSetLight" value="0" />
+    </onEnter>
+			
+			<condition name="UserValue" key="TestSetLight" value="1">
+				<transition state="어둠조명설정" />
+			</condition>							
+			
+			<condition name="UserValue" key="TestSetLight" value="2">
+				<transition state="밝은조명설정" />
+			</condition>									
+			
+		<onExit> 
+		</onExit> 			
+  </state>    
+  
+  
+ <state name="어둠조명설정">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1="301" arg2="1" /> <!-- 1페이즈 전투판의 빛기둥 생성-->	
+		 <action name="SetAmbientLight" arg1="45, 21, 28"/>	<!-- arg1 = AmbientColor RGB값 -->
+		 <action name="SetDirectionalLight" arg1="16, 30, 29" arg2="130, 130, 130"/>		<!-- arg1 = DiffuseColor RGB값,  arg2 = SpecularColor RGB값  -->	
+
+		<action name="포탈을설정한다" arg1="4401" arg2="1" arg3="1" arg4="1"/>   <!--스타트 지점에서 1페이즈 전투판으로 가는 포탈 등장 -->
+		<action name="포탈을설정한다" arg1="4403" arg2="1" arg3="1" arg4="1"/>    <!-- 1페이즈에서 2페이즈 전투판으로 가는 포탈 등장 -->		 
+    </onEnter>
+			
+			<condition name="WaitTick" waitTick="500" > 
+				<transition state="트리거시작" />
+			</condition>					
+			
+		<onExit> 
+		</onExit> 			
+  </state>    
+  
+  
+
+  
+  <state name="밝은조명설정">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="301" arg2="0" /> <!-- 1페이즈 전투판 빛기둥 제거-->	
+			 <action name="SetAmbientLight" arg1="255, 140, 172"/>	<!-- arg1 = AmbientColor RGB값 -->
+			 <action name="SetDirectionalLight" arg1="146, 221, 218" arg2="130, 130, 130"/>		<!-- arg1 = DiffuseColor RGB값,  arg2 = SpecularColor RGB값  -->	
+			 <action name="ChangeBackground" dds="BG_Turka_D.dds" />	<!-- 2페이즈 부터 맵이 밝아지면서, 백그라운드 이미지 교체함-->	
+
+			<action name="포탈을설정한다" arg1="4401" arg2="1" arg3="1" arg4="1"/>   <!--스타트 지점에서 1페이즈 전투판으로 가는 포탈 등장 -->
+			<action name="포탈을설정한다" arg1="4403" arg2="1" arg3="1" arg4="1"/>    <!-- 1페이즈에서 2페이즈 전투판으로 가는 포탈 등장 -->		 
+			
+			
+			<action name="메쉬를설정한다" arg1="10001-10349" arg2="1" arg3="1" arg4="1" arg5="0.5" />	 
+			<action name="메쉬를설정한다" arg1="15001-15467" arg2="1" arg3="1" arg4="1" arg5="0.5" />	 
+
+			<action name="메쉬를설정한다" arg1="20001-20215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	 
+			<action name="메쉬를설정한다" arg1="23001-23215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	 
+			<action name="메쉬를설정한다" arg1="26001-26215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	
+
+			<action name="메쉬를설정한다" arg1="30001-30413" arg2="1" arg3="1" arg4="1" arg5="0.5" />	 
+			<action name="메쉬를설정한다" arg1="35001-35402" arg2="1" arg3="1" arg4="1" arg5="0.5" />	
+			
+			
+		</onEnter>
+
+			
+			<condition name="WaitTick" waitTick="500" > 
+				<transition state="트리거시작" />
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>     
+
+	
+</ms2>

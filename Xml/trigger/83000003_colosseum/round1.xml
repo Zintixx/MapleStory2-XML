@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+	<!-- 1라운드_로베 -->
+	<state name="대기">            
+		<onEnter>
+			<action name="사운드를설정한다" arg1="11000" arg2="0" />
+			<action name="사운드를설정한다" arg1="11001" arg2="0" />
+			<action name="사운드를설정한다" arg1="12000" arg2="0" />
+			<action name="사운드를설정한다" arg1="12001" arg2="0" />
+			<action name="사운드를설정한다" arg1="13000" arg2="0" />
+			<action name="사운드를설정한다" arg1="13001" arg2="0" />			
+		</onEnter>
+		<condition name="UserValue" key="StartRound1" value="1">
+			<!-- <action name="SetUserValue" triggerID="910001" key="StartRound1" value="0" />		 -->
+			<transition state="시작딜레이"/>
+		</condition> 
+	</state>  
+	 
+	<state name="시작딜레이">              
+		<onEnter>
+			<action name="LockMyPC" isLock="1" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<action name="MoveUserToPos" pos="300,-225,1500" rot="0,0,270" />		
+			<transition state="방향조정"/> 
+		</condition>
+	</state>
+
+	<state name="방향조정">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_01" />
+			<transition state="라운드조건체크"/>
+		</condition>
+	</state>	
+
+	<state name="라운드조건체크">      
+		<onEnter>
+		</onEnter>
+		<condition name="DungeonRoundRequire" round="1" >
+			<action name="SideNpcTalk" type="talk" npcID="11004288" illust="nagi_normal" script="$83000002_COLOSSEUM__ROUND1__0$" duration="5000" />				
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="첫 번째 상대가 곧 출현합니다. 전투 준비를 하세요!!" arg3="3000" />				 -->
+			<transition state="라운드대기"/> 
+		</condition>
+		
+		<condition name="True" >
+			<action name="DebugString" string="던전 요구 아이템 점수를 달성 못해 실패 처리 됩니다." />
+			<transition state="FailRound"/> 
+		</condition> 
+	</state>
+	
+	<state name="라운드대기">
+		<onEnter>
+			<action name="사운드를설정한다" arg1="11000" arg2="1" />
+			<action name="사운드를설정한다" arg1="11001" arg2="1" />			
+		</onEnter>		 
+		<condition name="WaitTick" waitTick="5000" >
+            <action name="SideNpcTalk" type="cutin" illust="Robe_normal" duration="3000"/>
+			<action name="ShowRoundUI" isFinalRound="" round="1" duration="3000" />			
+			<transition state="몬스터스폰대기"/> 
+		</condition>
+	</state>	
+
+	<state name="몬스터스폰대기">
+		<onEnter>
+		</onEnter>		
+		<condition name="WaitTick" waitTick="1000" >		
+			<transition state="몬스터스폰"/> 
+		</condition>
+	</state>
+
+	<state name="몬스터스폰">      
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="101" arg2="0" />
+			<action name="버프를걸어준다" arg1="101" arg2="69000501" arg3="1" arg4="1" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >		
+			<transition state="카운트"/> 
+		</condition> 
+	</state>	
+	
+	<state name="카운트">
+		<onEnter> 
+			<action name="ShowCountUI" text="$83000002_COLOSSEUM__ROUND1__1$" count="3" soundType="2" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3500" > 
+			<transition state="전투시작"/> 
+		</condition>
+	</state>
+	
+	<!-- <state name="카운트2"> -->
+		<!-- <onEnter>  -->
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="2" arg3="1000" /> -->
+		<!-- </onEnter> -->
+		<!-- <condition name="WaitTick" waitTick="1000" >  -->
+			<!-- <transition state="카운트3"/>  -->
+		<!-- </condition> -->
+	<!-- </state> -->
+	
+	<!-- <state name="카운트3"> -->
+		<!-- <onEnter>  -->
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="1" arg3="1000" /> -->
+		<!-- </onEnter> -->
+		<!-- <condition name="WaitTick" waitTick="2000" >  -->
+			<!-- <transition state="전투시작"/>  -->
+		<!-- </condition> -->
+	<!-- </state> -->
+	
+	<state name="전투시작">
+		<onEnter>
+			<action name="LockMyPC" isLock="0" />
+			<!-- <action name="SetUserValue" triggerID="900001" key="Nextmonster" value="0" />		 -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="스폰대사"/>
+		</condition>
+	</state>
+	
+	<state name="스폰대사">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$83000002_COLOSSEUM__ROUND1__2$" duration="3000" />
+			<action name="SetUserValue" triggerID="900002" key="Timer" value="1" />
+			<action name="타이머를설정한다" arg1="LimitTimer" arg2="60" arg3="1"/>
+			<action name="SetNpcDuelHpBar" isOpen="true" spawnPointID="101" durationTick="60000" npcHpStep="10" />
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="101" >
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$83000002_COLOSSEUM__ROUND1__3$" duration="3000" />
+			<action name="SetNpcDuelHpBar" isOpen="false" spawnPointID="101" />			
+			<transition state="ClearRoundDelay" />		
+		</condition>
+		
+		<condition name="시간이경과했으면" arg1="LimitTimer" >
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="경기시간을 초과했습니다. 도전에 실패 하였습니다. 전투를 종료합니다." arg3="3000" /> -->
+			<action name="SideNpcTalk" type="talk" npcID="11004288" illust="nagi_switchon" script="$83000002_COLOSSEUM__ROUND1__4$" duration="3000" />				
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="SetNpcDuelHpBar" isOpen="false" spawnPointID="101" />	
+			<transition state="FailRoundDelay"/>
+		</condition>		
+		
+		<condition name="유저를감지했으면" arg1="902" >
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="경기장을 이탈했습니다. 전투가 종료됩니다. 다시 도전해 주세요." arg3="3000" /> -->
+			<action name="SideNpcTalk" type="talk" npcID="11004288" illust="nagi_switchon" script="$83000002_COLOSSEUM__ROUND1__5$" duration="3000" />							
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="SetNpcDuelHpBar" isOpen="false" spawnPointID="101" />
+			<transition state="FailRoundDelay"/>
+		</condition>
+
+		<condition name="!유저를감지했으면" arg1="904" >
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="패배했습니다. 전투가 종료됩니다." arg3="3000" /> -->
+			<action name="SideNpcTalk" type="talk" npcID="11004288" illust="nagi_switchon" script="$83000002_COLOSSEUM__ROUND1__6$" duration="3000" />				
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="SetNpcDuelHpBar" isOpen="false" spawnPointID="101" />
+			<transition state="FailRoundDelay"/>
+		</condition>		
+		
+	</state>
+	
+	<state name="ClearRoundDelay">
+		<onEnter>
+			<action name="LockMyPC" isLock="1" />
+			<action name="사운드를설정한다" arg1="12000" arg2="1" />
+			<action name="사운드를설정한다" arg1="12001" arg2="1" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000" >
+			<action name="버프를걸어준다" arg1="904" arg2="69000503" arg3="1" arg4="0" arg5="0"/>
+			<action name="이벤트UI를설정한다" arg1="3" arg2="$83000002_COLOSSEUM__ROUND1__7$" arg3="3000" />			
+			<transition state="ClearRound"/>
+		</condition>
+	</state>
+
+	<state name="FailRoundDelay">
+		<onEnter>
+			<action name="사운드를설정한다" arg1="13000" arg2="1" />
+			<action name="사운드를설정한다" arg1="13001" arg2="1" />	
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="이벤트UI를설정한다" arg1="5" arg2="$83000002_COLOSSEUM__ROUND1__8$" arg3="3000" />			
+			<transition state="FailRound"/>
+		</condition>
+	</state>	
+
+	<state name="ClearRound">
+		<onEnter>
+			<!-- <action name="이벤트UI를설정한다" arg1="7" arg2="SUCCESS" arg3="3000" /> -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="MoveUserToPos" pos="300,-225,1500" rot="0,0,270" />
+			<!-- <action name="버프를걸어준다" arg1="904" arg2="69000505" arg3="1" arg4="0" arg5="0"/> -->
+			<action name="SideNpcTalk" type="talk" npcID="11004288" illust="nagi_normal" script="$83000002_COLOSSEUM__ROUND1__9$" duration="3000" />				
+			<action name="SetUserValue" triggerID="900001" key="StartRound1" value="2" />
+			<transition state="이동대기"/>
+		</condition>
+	</state>
+	
+	<state name="이동대기">
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_01" />
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="FailRound">
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >		
+			<action name="SetUserValue" triggerID="900001" key="StartRound1" value="3" />		
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+
+
+	
+	<!-- <state name="대사"> -->
+		<!-- <onEnter>	 -->
+		<!-- </onEnter> -->
+		<!-- <condition name="WaitTick" waitTick="3000" > -->
+			<!-- <transition state="종료"/> -->
+		<!-- </condition> -->
+	<!-- </state>	 -->
+	
+	<!-- <state name="종료"> -->
+		<!-- <onEnter> -->
+			<!-- <action name="이벤트UI를설정한다" arg1="7" arg2="SUCCESS" arg3="3000" /> -->
+		<!-- </onEnter> -->
+		<!-- <condition name="WaitTick" waitTick="3000" > -->
+			<!-- <transition state="안내"/> -->
+		<!-- </condition> -->
+	<!-- </state> -->
+	
+	<!-- <state name="실패">   -->
+		<!-- <onEnter> -->
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="전투에 실패 하였습니다. 조금 더 수련하고 도전 해 주십시오^^." arg3="5000" /> -->
+			<!-- <action name="SetUserValue" triggerID="900001" key="Reset" value="1" /> -->
+		<!-- </onEnter> -->
+		<!-- <condition name="UserValue" key="Reset" value="1"> -->
+			<!-- <action name="SetUserValue" triggerID="900001" key="Fail" value="0" /> -->
+			<!-- <action name="SetUserValue" triggerID="900002" key="Timer" value="0" /> -->
+			<!-- <action name="SetUserValue" triggerID="900001" key="Reset" value="0" /> -->
+			<!-- <transition state="리셋대기"/>  -->
+		<!-- </condition> -->
+	<!-- </state> -->
+	
+	<!-- <state name="장외실패">  -->
+		<!-- <onEnter> -->
+			<!-- <action name="SetUserValue" triggerID="900001" key="Fail" value="0" /> -->
+			<!-- <action name="SetUserValue" triggerID="900002" key="Timer" value="0" /> -->
+			<!-- <action name="SetUserValue" triggerID="900001" key="Reset" value="0" /> -->
+			<!-- <action name="몬스터소멸시킨다" arg1="101,102,103,104,105,106,107,108,109,110"/>		 -->
+		<!-- </onEnter> -->
+
+		<!-- <condition name="UserValue" key="Reset" value="0"> -->
+			<!-- <transition state="리셋대기"/> -->
+		<!-- </condition> -->
+	<!-- </state> -->
+	
+	<!-- <state name="리셋대기"> -->
+		<!-- <condition name="WaitTick" waitTick="3000" > -->
+			<!-- <transition state="안내"/> -->
+		<!-- </condition> -->
+	<!-- </state>	 -->
+	
+	<!-- <state name="안내"> -->
+		<!-- <onEnter> -->
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="재전투를 위한 의지를 보여주세요!!" arg3="3000" /> -->
+			<!-- <action name="오브젝트반응설정한다" arg1="10002132" arg2="1" /> -->
+		<!-- </onEnter> -->
+		<!-- <condition name="WaitTick" waitTick="4000" > -->
+			<!-- <transition state="대기"/> -->
+		<!-- </condition> -->
+	<!-- </state> -->
+
+</ms2>
+

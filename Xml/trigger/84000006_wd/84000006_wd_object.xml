@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 반응오브젝트 -->
+<ms2>
+	<!--반응 오브젝트 올리기-->
+	<state name="Staging">                      
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="800-847" arg2="1"/>										<!--경기 대기. 상호작용 off 메쉬 on-->   
+			<action name="오브젝트반응설정한다" arg1="10001442" arg2="2"/>									<!--난이도 조절용 1-->   
+			<action name="오브젝트반응설정한다" arg1="10001443" arg2="2"/>									<!--난이도 조절용 2-->   
+			<action name="오브젝트반응설정한다" arg1="10001444" arg2="2"/>									<!--난이도 조절용 3-->   
+			<action name="오브젝트반응설정한다" arg1="10001445" arg2="2"/>									<!--테스트용 1개-->
+		</onEnter>
+		<condition name="UserValue" key="Interaction" value="1">									<!--경기 준비되면 작동 시작-->   
+			<transition state="UserCount"/>
+		</condition>
+	</state>   
+
+	<!--경기 준비 : 유저카운트-->
+	<state name="UserCount">                  																
+		<onEnter>
+		</onEnter>
+		<condition name="CountUsers" arg1="9001" arg2="50" arg3="GreaterEqual">   					<!--50인이상-->   
+			<transition state="Over50"/>		
+		</condition>
+		<condition name="CountUsers" arg1="9001" arg2="30" arg3="GreaterEqual">   					<!--30인이상-->   
+			<transition state="Over30"/>		
+		</condition>
+		<condition name="CountUsers" arg1="9001" arg2="30" arg3="Less">   							<!--30인미만-->   
+			<transition state="Under30"/>	
+		</condition>
+	</state>
+
+	<!--경기 준비 : 50명 이상 유저 수에 따라 난이도 3단계 구분-->	
+	<state name="Over50"> 
+		<onEnter>
+			<action name="타이머를설정한다" arg1="2" arg2="60" arg4="0"/>   								<!--테스트 수정 가능 지점-->		
+			<action name="오브젝트반응설정한다" arg1="10001442" arg2="1"/>									<!--상호작용 on 메쉬 off-->   
+			<action name="오브젝트반응설정한다" arg1="10001443" arg2="1"/>
+			<action name="오브젝트반응설정한다" arg1="10001444" arg2="1"/>
+			<action name="오브젝트반응설정한다" arg1="10001445" arg2="1"/>
+			<action name="메쉬를설정한다" arg1="800-847" arg2="0"/>
+		</onEnter>
+		<condition name="AllOf">																	<!--종료조건: 시간경과 or 전부훔쳐먹음-->   
+			<group>
+				<condition name="오브젝트가반응했으면" arg1="10001442" ar2="2" />							
+				<condition name="오브젝트가반응했으면" arg1="10001443" ar2="2" />
+				<condition name="오브젝트가반응했으면" arg1="10001444" ar2="2" />
+				<condition name="오브젝트가반응했으면" arg1="10001445" ar2="2" />
+			</group>
+				<action name="버프를걸어준다" arg1="9002" arg2="99940046" arg3="1" arg4="0" arg5="1"/>	<!--달팽이 스킬셋 50인용 제공-->
+				<action name="SetUserValue" triggerID="1001" key="Steal" value="1"/>				<!--전투 페이즈2 이동 UV발사-->
+				<transition state="Standby"/>	
+		</condition>
+		<condition name="시간이경과했으면" arg1="2">
+				<action name="버프를걸어준다" arg1="9002" arg2="99940046" arg3="1" arg4="0" arg5="1"/>	<!--달팽이 스킬셋 50인용 제공-->
+				<action name="SetUserValue" triggerID="1001" key="Steal" value="1"/>				<!--전투 페이즈2 이동 UV발사-->
+				<transition state="Standby"/>
+		</condition>
+		<onExit>   
+		</onExit> 
+	</state>
+
+	<!--경기 준비: 30명 이상-->	
+	<state name="Over30">
+		<onEnter>
+			<action name="타이머를설정한다" arg1="2" arg2="60" arg4="0"/>  										<!--테스트 수정 가능 지점-->		
+			<action name="오브젝트반응설정한다" arg1="10001442" arg2="1"/>
+			<action name="오브젝트반응설정한다" arg1="10001443" arg2="1"/>											
+			<!--action name="오브젝트반응설정한다" arg1="10001444" arg2="1"/-->										<!--난이도 조절로 꺼둠-->
+			<action name="오브젝트반응설정한다" arg1="10001445" arg2="1"/>											<!--테스트용 1개-->
+			<action name="메쉬를설정한다" arg1="800-847" arg2="0"/>
+		</onEnter>
+		<condition name="AllOf">
+			<group>
+				<condition name="오브젝트가반응했으면" arg1="10001442" ar2="2" />
+				<condition name="오브젝트가반응했으면" arg1="10001443" ar2="2" />									
+				<!--condition name="오브젝트가반응했으면" arg1="10001444" ar2="2" /-->								<!--난이도 조절로 꺼둠-->
+				<condition name="오브젝트가반응했으면" arg1="10001445" ar2="2" />									<!--테스트용 1개-->
+			</group>
+				<action name="버프를걸어준다" arg1="9002" arg2="99940045" arg3="1" arg4="0" arg5="1"/>			<!--달팽이 스킬셋 30Up 제공-->
+				<action name="SetUserValue" triggerID="1001" key="Steal" value="1"/>						<!--전투 페이즈2 이동 UV발사-->
+				<transition state="Standby"/>	
+		</condition>
+		<condition name="시간이경과했으면" arg1="2">
+				<action name="버프를걸어준다" arg1="9002" arg2="99940045" arg3="1" arg4="0" arg5="1"/>			<!--달팽이 스킬셋 30Up 제공-->
+				<action name="SetUserValue" triggerID="1001" key="Steal" value="1"/>						<!--전투 페이즈2 이동 UV발사-->
+				<transition state="Standby"/>
+		</condition>
+		<onExit>   
+		</onExit> 
+	</state>
+
+	<!--경기 준비: 30명 미만-->
+	<state name="Under30">  <!--30명미만일때 오브젝트 개수 37개-->   
+		<onEnter>
+			<action name="타이머를설정한다" arg1="2" arg2="60" arg4="0"/>   <!--  테스트 수정 가능 지점-->		
+			<action name="오브젝트반응설정한다" arg1="10001442" arg2="1"/>
+			<!--action name="오브젝트반응설정한다" arg1="10001443" arg2="1"/-->										<!--난이도 조절로 꺼둠-->	
+			<!--action name="오브젝트반응설정한다" arg1="10001444" arg2="1"/-->										<!--난이도 조절로 꺼둠-->
+			<action name="오브젝트반응설정한다" arg1="10001445" arg2="1"/>											<!--테스트용 꼬다리 1개-->
+			<action name="메쉬를설정한다" arg1="800-847" arg2="0"/>
+		</onEnter>
+		<condition name="AllOf">
+			<group>
+				<condition name="오브젝트가반응했으면" arg1="10001442" ar2="2" />
+				<!--condition name="오브젝트가반응했으면" arg1="10001443" ar2="2" /-->								<!--난이도 조절로 꺼둠-->
+				<!--condition name="오브젝트가반응했으면" arg1="10001444" ar2="2" /-->								<!--난이도 조절로 꺼둠-->
+				<condition name="오브젝트가반응했으면" arg1="10001445" ar2="2" />									<!--테스트용 꼬다리 1개-->
+			</group>
+				<action name="버프를걸어준다" arg1="9002" arg2="99940043" arg3="1" arg4="0" arg5="1"/>			<!--달팽이 스킬셋 30Under 제공-->
+				<action name="SetUserValue" triggerID="1001" key="Steal" value="1"/>						<!--전투 페이즈2 이동 UV발사-->
+				<transition state="Standby"/>	
+		</condition>
+		<condition name="시간이경과했으면" arg1="2">
+				<action name="버프를걸어준다" arg1="9002" arg2="99940043" arg3="1" arg4="0" arg5="1"/>			<!--달팽이 스킬셋 제공-->
+				<action name="SetUserValue" triggerID="1001" key="Steal" value="1"/>						<!--전투 페이즈2 이동 UV발사-->
+				<transition state="Standby"/>
+		</condition>
+		<onExit>   
+		</onExit> 
+	</state>
+
+	<!--경기 종료 준비-->	
+	<state name="Standby">                  																<!--게임 종료 전 잠시 대기-->
+		<onEnter>
+		</onEnter>		
+		<condition name="UserValue" key="Interaction" value="2"> 											<!--OFF 신호 수신-->
+			<transition state="Interaction_Off"/>
+		</condition>		
+	</state>
+
+	<!--경기 종료 후 상호작용 오브젝트 off-->
+	<state name="Interaction_Off">                  														
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="812-847" arg2="1"/>												<!--IntObj off 처리-->
+			<action name="오브젝트반응설정한다" arg1="10001442" arg2="2"/>											<!--웨딩댄스스탑과 보상 수령 밸런스 유지-->
+			<action name="오브젝트반응설정한다" arg1="10001443" arg2="2"/>											
+			<action name="오브젝트반응설정한다" arg1="10001444" arg2="2"/>
+			<action name="오브젝트반응설정한다" arg1="10001445" arg2="2"/>
+		</onEnter>
+	</state>
+	
+</ms2>

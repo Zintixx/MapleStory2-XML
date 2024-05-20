@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 듀나린 도서관 -->
+<ms2>
+	<state name="준비">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="몬스터를생성한다" arg1="101" arg2="1" />
+			<action name="몬스터를생성한다" arg1="102" arg2="1" />
+			<action name="몬스터를생성한다" arg1="103" arg2="1" />
+			<action name="몬스터를생성한다" arg1="104" arg2="1" />
+			<action name="몬스터를생성한다" arg1="105" arg2="1" />
+			<action name="몬스터를생성한다" arg1="106" arg2="1" />
+			<action name="몬스터를생성한다" arg1="107" arg2="1" />
+			<action name="몬스터를생성한다" arg1="108" arg2="1" />
+			<action name="몬스터를생성한다" arg1="109" arg2="1" />
+			<action name="몬스터를생성한다" arg1="110" arg2="1" />
+			<action name="몬스터를생성한다" arg1="111" arg2="1" />
+			<action name="몬스터를생성한다" arg1="112" arg2="1" />
+			<action name="몬스터를생성한다" arg1="113" arg2="1" />
+			<action name="몬스터를생성한다" arg1="114" arg2="1" />
+			<action name="몬스터를생성한다" arg1="115" arg2="1" />
+			<action name="몬스터를생성한다" arg1="116" arg2="1" />
+			<action name="몬스터를생성한다" arg1="117" arg2="1" />	
+			<action name="사다리를설정한다" arg1="6001" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="6002" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="6003" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="6004" arg2="0" arg3="0" />
+			<action name="메쉬를설정한다" arg1="4001" arg2="1" />
+			<action name="메쉬를설정한다" arg1="4002" arg2="0" />
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000372" arg3="3">
+			<transition state="전투만"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000372" arg3="2">
+			<transition state="퀘완료가능재입장"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000372" arg3="1">
+			<transition state="잠시대기_01"/> 
+		</condition>		
+		<condition name="유저를감지했으면" arg1="701">
+			<transition state="전투만"/> 
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="전투만" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="115">
+			<transition state="종료"/> 
+		</condition>					
+		<onExit>
+			<action name="사다리를설정한다" arg1="6001" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6002" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6003" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6004" arg2="1" arg3="1" />
+		</onExit>
+    </state>
+	
+	<state name="잠시대기_01">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="몬스터를생성한다" arg1="121" arg2="0" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="잠시대기_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="잠시대기_02">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스퇴장_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스퇴장_01" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>	
+			<action name="SetSceneSkip" arg1="보보스퇴장_03" arg2="nextState"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스퇴장_02"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스퇴장_02" >
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="121" arg2="MS2PatrolData_2001" />
+			<action name="AddBalloonTalk" spawnPointID="121" msg="$63000073_CS__63000073_MAIN__0$" duration="2500" delayTick="1000"/>		<!-- 책 틈에서 지내게 해줬으니, 소원 들어준 거야… -->
+			<!-- <action name="AddCinematicTalk" npcID="11004371" msg="책 틈에서 지내게 했으니, 소원 들어준 거야…" duration="2000" align="right" />				 -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="보보스퇴장_03"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스퇴장_03">
+		<onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스퇴장_04"/>
+		</condition>
+		<onExit>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="몬스터소멸시킨다" arg1="121" />
+		</onExit>
+    </state>
+	
+	<state name="보보스퇴장_04" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="ShowGuideSummary" entityID="26300731" textID="26300731"/>
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="115">
+			<transition state="사다리등장_01"/> 
+		</condition>					
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="사다리등장_01" >
+        <onEnter>
+			<action name="HideGuideSummary" entityID="26300731"/>
+			<action name="사다리를설정한다" arg1="6001" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6002" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6003" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6004" arg2="1" arg3="1" />
+			<action name="ShowGuideSummary" entityID="26300733" textID="26300733"/>
+		</onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10001385" arg2="0">
+			<transition state="트렁크오픈_01"/> 
+		</condition>					
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="트렁크오픈_01">
+		<onEnter>
+			<action name="HideGuideSummary" entityID="26300733"/>
+			<action name="몬스터를생성한다" arg1="122" arg2="0" />
+			<action name="메쉬를설정한다" arg1="4001" arg2="0" />
+			<action name="메쉬를설정한다" arg1="4002" arg2="1" />
+			<action name="ShowGuideSummary" entityID="26300732" textID="26300732"/>
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="702" arg2="30000372" arg3="2">
+			<transition state="트렁크오픈_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="퀘완료가능재입장">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="몬스터를생성한다" arg1="122" arg2="0" />
+			<action name="메쉬를설정한다" arg1="4001" arg2="0" />
+			<action name="메쉬를설정한다" arg1="4002" arg2="1" />
+			<action name="사다리를설정한다" arg1="6001" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6002" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6003" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="6004" arg2="1" arg3="1" />
+			<action name="유저를이동시킨다" arg1="63000073" arg2="3"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="트렁크오픈_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="트렁크오픈_02">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="HideGuideSummary" entityID="26300732"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="트렁크오픈_03"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="트렁크오픈_03">
+		<onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_2002" />
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/>			
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="트렁크오픈_04"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="트렁크오픈_04">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>			
+			<action name="SetSceneSkip" arg1="에이든퇴장_01" arg2="nextState"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="에이든대화_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="에이든대화_01">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>
+			<action name="SetNpcEmotionSequence" arg1="122" arg2="Idle_A" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="에이든대화_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에이든대화_02">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004359" msg="$63000073_CS__63000073_MAIN__1$" duration="2500" align="right" illustID="0"/>	<!-- 아… 머리야.\n이게 어떻게 된 일이지 -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="에이든대화_03"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에이든대화_03">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8004" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="에이든대화_04"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에이든대화_04">
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="2500"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$63000073_CS__63000073_MAIN__2$" duration="2500" align="right" />	<!-- $npcName:11004359$이지? -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="에이든대화_05"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에이든대화_05">
+		<onEnter>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="2500"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$63000073_CS__63000073_MAIN__3$" duration="4500" align="right" /> <!-- 네 동생, $npcName:11004354$$pp:가,이$ 마을에서 널 기다리고 있어.\n마을에서 같이 부모님을 찾아보자고 하는데. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="에이든대화_06"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에이든대화_06">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="에이든대화_07"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에이든대화_07">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="122" arg2="Talk_A" arg3="3500"/>
+			<action name="AddCinematicTalk" npcID="11004359" msg="$63000073_CS__63000073_MAIN__4$" duration="3500" align="right" illustID="0"/>	<!-- …뭐라고?\n그럼… 나만 당한 게 아닌 건가? -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="에이든대화_08"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에이든대화_08">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="122" arg2="Talk_A" arg3="4500"/>
+			<action name="AddCinematicTalk" npcID="11004359" msg="$63000073_CS__63000073_MAIN__5$" duration="4500" align="right" illustID="0"/> <!-- 어서 $npcName:11004354$$pp:를,을$ 만나봐야겠군.\n먼저 출발할게, 마을에서 보자. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="에이든퇴장_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="에이든퇴장_01" >
+        <onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>			
+			<action name="카메라리셋" interpolationTime="0.0"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>	
+			<action name="몬스터소멸시킨다" arg1="122" />
+		</onEnter>					
+		<condition name="무조건">
+            <transition state="종료" />
+        </condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="종료" > 
+        <onEnter>
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" />
+		</onEnter>
+		<onExit>
+		</onExit>
+    </state>
+	
+</ms2>

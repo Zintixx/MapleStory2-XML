@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="입장">
+	        <onEnter>
+				<action name="유저를이동시킨다" arg1="51000004" arg2="10" />			
+				<action name="몬스터를생성한다" arg1="101" arg2="0"/>		<!-- 101: 게임상대 - 11004557 핑크핑크 핑크빈-->									
+			</onEnter>
+        <condition name="유저를감지했으면" arg1="9000">
+            <transition state="인트로" />
+        </condition>
+        <onExit>
+        </onExit>		
+	</state>		  
+
+   <state name="인트로" >
+        <onEnter>
+			<action name="SetSceneSkip" arg1="셋둘하나_스킵완료" arg2="nextState"/> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set -->		
+		    <action name="카메라경로를선택한다" arg1="8000" arg2="0"/>			
+			<action name="연출UI를설정한다" arg1="1" />
+			<action name="연출UI를설정한다" arg1="3" /> 
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Walk_A" arg3="5000" />			
+        </onEnter>
+				<condition name="WaitTick" waitTick="500" >  
+					<transition state="인트로00"/>
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+
+   <state name="인트로00" >
+        <onEnter>
+		    <action name="카메라경로를선택한다" arg1="8002" arg2="0"/>
+			<action name="연출UI를설정한다" arg1="1" />
+			<action name="연출UI를설정한다" arg1="3" arg2="$51000004_DG__51000004_MAIN__0$" /> 	<!-- 안녕? 난 게임을 좋아하는 핑크빈!\n지금부터 나랑 재밌게 놀자! -->			       
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" >  
+					<transition state="인트로01"/>
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+	
+   <state name="인트로01" >
+        <onEnter>
+		    <action name="카메라경로를선택한다" arg1="8001" arg2="0"/>		
+			<action name="연출UI를설정한다" arg1="1" />
+			<action name="연출UI를설정한다" arg1="3" arg2="$51000004_DG__51000004_MAIN__1$" /> 	<!-- 나와 다른 방향을 선택하면 네가 이기고, \n같은 방향을 선택하면 지는 거야~! -->			       
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" >  
+					<transition state="인트로02"/>
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+   <state name="인트로02" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1" />
+			<action name="연출UI를설정한다" arg1="3" arg2="$51000004_DG__51000004_MAIN__2$" /> 	<!-- 네가 다섯 번 지면 게임은 끝!\n지지 않고 오래 버티면 높은 점수를 받지! -->			
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Attack_01_I_Bore" arg3="3000" />        
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" >  
+					<transition state="인트로03"/>
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>
+	
+   <state name="인트로03" >
+        <onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close -->				
+		    <action name="카메라경로를선택한다" arg1="8003,8004" arg2="0"/>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3" arg2="$51000004_DG__51000004_MAIN__3$" /> <!-- 높은 순위를 기록하면 선물도 있으니까,\n자~ 지금 바로 도전하라고! -->	
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="게임시작_대기"/>
+				</condition>
+        <onExit>	
+			<action name="연출UI를설정한다" arg1="0"/> 
+			<action name="연출UI를설정한다" arg1="2" />		
+		</onExit>
+    </state>	
+
+	<state name="셋둘하나_스킵완료"> <!-- setsceneskip fin --> <!-- setsceneskip fin --> <!-- setsceneskip fin -->  
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="1.5"/>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2" />					
+		</onEnter>
+        <condition name="유저를감지했으면" arg1="9000">
+				<transition state="게임시작_대기"/>
+		</condition>
+        <condition name="!유저를감지했으면" arg1="9000">
+				<transition state="연출종료"/>
+		</condition>		
+		<onExit> 
+		</onExit> 
+	</state>			
+	
+	<state name="게임시작_대기">
+		<onEnter>
+			<!-- <action name="카메라리셋" interpolationTime="1.0"/>	 -->	  	
+ 		    <action name="카메라경로를선택한다" arg1="8000" arg2="0"/>  
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="PinkBeanThreeTwoOne_start"/> 
+			<action name="로그를남긴다" arg1="PinkBeanThreeTwoOne_log" arg2="9000" arg3="char_event" arg5="gamestart" />			
+			<!--lifeCount : 최대 사망 횟수-->
+			<action name="ArcadeThreeTwoOne" type="StartGame" lifeCount="5" initScore="10000" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="1,1" arg4="120"/> --> <!-- 셋둘하나는 1라운드 내에서 무한루핑이므로 라운드 ui를 표시하지 않아 이 행을 넣지 않음 -->
+			<action name="SetUserValue" triggerID="4001" key="Fail" value="1" />  <!-- Fail Event on -->			
+			<action name="AddBalloonTalk" spawnPointID ="0" msg="$51000004_DG__51000004_MAIN__4$" duration="3000" />				<!-- 좋아, 붙어 보자! -->
+			<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_GetReadyGo_01"/> 		<!-- 시작 효과음 / 레디-고! 음성 포함 02100323 -->	
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="라운드준비"/>
+				</condition>
+        <onExit>		
+	    </onExit>				
+	</state>
+
+	<state name="라운드준비">
+		<onEnter>								
+		</onEnter>				
+			<condition name="!유저를감지했으면" arg1="9000">
+				<transition state="완전끝" />
+			</condition>		
+				<condition name="WaitTick" waitTick="500" > 
+					<transition state="라운드시작"/>
+				</condition>
+	</state>	
+	
+	<state name="라운드시작">
+		<onEnter>									
+			<action name="ShowGuideSummary" entityID="1" textID="26300736" durationTime="3000" />		<!-- 26300736 가이드 텍스트 ON : [[icon:click]] 방향을 선택하세요. -->				
+			<action name="ArcadeThreeTwoOne" type="StartRound" uiDuration="4" round="1" />						<!--uiDuration : 게임 UI (화살표) 노출 시간-->	
+			<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_ArrowPopup_01"/> <!-- 화살표 Ui 팝업 효과음 02100325 -->
+		</onEnter>				
+			<condition name="!유저를감지했으면" arg1="9000">
+				<transition state="완전끝" />
+			</condition>		
+				<condition name="WaitTick" waitTick="4000" > 
+					<transition state="라운드진행"/>
+				</condition>
+	</state>
+
+	<state name="라운드진행">
+		<onEnter>				
+			<action name="AddBalloonTalk" spawnPointID ="101" msg="$51000004_DG__51000004_MAIN__5$" duration="1800" />	<!-- 핑크빈 대사 -->  	
+		</onEnter>		
+			<condition name="랜덤조건" arg1="1">
+			<transition state="01_좌로돌아" />
+			</condition>
+			<condition name="랜덤조건" arg1="1">
+			<transition state="02_뒤로돌아" />
+			</condition>
+			<condition name="랜덤조건" arg1="1">
+			<transition state="03_우로돌아" />
+			</condition>		
+	</state>	
+
+	<state name="01_좌로돌아">
+		<onEnter>				
+			<action name="ArcadeThreeTwoOne" type="ResultRound" resultDirection="1" />
+			<action name="SetNpcRotation" arg1="101" arg2="270" />			<!-- 핑크빈 왼쪽으로 돔 : 270도 = resultDirection 1 -->  
+			<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_Turning_01"/>  <!-- 핑크빈 도는 효과음 2500밀리초 02100326 -->						
+		</onEnter>		
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="결과연출"/>
+				</condition>
+	</state>		
+	
+	<state name="02_뒤로돌아">
+		<onEnter>				
+			<action name="ArcadeThreeTwoOne" type="ResultRound" resultDirection="2" />
+			<action name="SetNpcRotation" arg1="101" arg2="180" />			<!-- 핑크빈 뒤쪽으로 돔 : 180도 = resultDirection 2 -->  
+			<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_Turning_01"/>  <!-- 핑크빈 도는 효과음 2500밀리초 02100326   -->				
+		</onEnter>		
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="결과연출"/>
+				</condition>
+	</state>		
+
+	<state name="03_우로돌아"> 
+		<onEnter>				
+			<action name="ArcadeThreeTwoOne" type="ResultRound" resultDirection="3" />
+			<action name="SetNpcRotation" arg1="101" arg2="90" />			<!-- 핑크빈 오른쪽으로 돔 : 90도 = resultDirection 3 -->  
+			<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_Turning_01"/>  <!-- 핑크빈 도는 효과음 2500밀리초 02100326  -->				
+		</onEnter>		
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="결과연출"/>
+				</condition>
+	</state>		
+
+	<state name="결과연출" >		
+		<onEnter>		
+			<action name="InitNpcRotation" arg1="101" />	
+			<action name="SetPcRotation" rotation="0,0,0" />		
+		</onEnter>				       	
+		<condition name="UserValue" key="ThreeTwoOneResult" value="1">	<!-- ThreeTwoOneResult 1 = 유저승리 = 다른방향 -->
+			<!-- <action name="ShowGuideSummary" entityID="2" textID="26300737" durationTime="3000" /> -->		<!-- 26300737 가이드 텍스트 ON : 승리 -->			
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Failure_A" arg3="2700" /> <!-- 핑크빈 패배 1400 -->
+			<action name="SetPCEmotionLoop" arg1="Emotion_Dance_V" arg2="2450" />						<!-- PC 신남-->	
+			<action name="AddBalloonTalk" spawnPointID ="101" msg="$51000004_DG__51000004_MAIN__6$" duration="3000" />	<!-- …핑크빈 : 이런 꼬맹이 녀석한테 지다니! -->  				
+			<action name="AddBalloonTalk" msg="$51000004_DG__51000004_MAIN__7$" duration="3000" />	<!-- …PC : 이겼다! -->  				
+			<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_Correct_01"/>  <!-- 성공 효과음 02100327  -->		
+					<transition state="결과정산"/>
+		</condition>
+		<condition name="UserValue" key="ThreeTwoOneResult" value="0">	<!-- ThreeTwoOneResult 0 = 유저패배 = 같은방향 -->
+			<!-- <action name="ShowGuideSummary" entityID="3" textID="26300738" durationTime="3000" /> -->		<!-- 26300738 가이드 텍스트 ON : 패배 -->			
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Dance_A" arg3="2700" />		<!-- 핑크빈 신난다 3067 -->
+			<action name="SetPCEmotionSequence" arg1="Emotion_Fuss_A" />						<!-- PC 아파 -->	
+			<action name="AddBalloonTalk" spawnPointID ="101" msg="$51000004_DG__51000004_MAIN__8$" duration="3000" />	<!-- …핑크빈 : 오예~ 이겼다! -->  					
+			<action name="AddBalloonTalk" msg="$51000004_DG__51000004_MAIN__9$" duration="2700" />	<!-- …PC : 내가 지다니 -->  						
+			<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_Wrong_01"/>  <!-- 패배 효과음 02100328 -->		
+					<transition state="결과정산"/>
+		</condition>			
+	</state>	
+
+	<state name="결과정산">
+		<onEnter>
+			<action name="ArcadeThreeTwoOne" type="ResultRound2" round="1" />			
+		</onEnter>
+				<condition name="WaitTick" waitTick="2300" > 
+					<transition state="라운드결과"/>
+				</condition>
+        <onExit>		        
+		</onExit>				
+	</state>	
+	
+	<state name="라운드결과">
+		<onEnter>
+			<action name="ArcadeThreeTwoOne" type="ClearRound" round="1" />				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="라운드준비"/>
+				</condition>
+        <onExit>		        
+		</onExit>				
+	</state>
+
+	<state name="셋둘하나_스킵완료"> <!-- setsceneskip fin --> <!-- setsceneskip fin --> <!-- setsceneskip fin -->  
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="101"/>
+			<action name="유저를이동시킨다" arg1="51000004" arg2="44" />			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="연출종료"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="연출종료">
+			<onEnter>
+				<action name="ArcadeThreeTwoOne" type="EndGame"/>
+				<action name="유저를이동시킨다" arg1="51000004" arg2="44" />
+			</onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="진짜끝"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="진짜끝">
+			<onEnter>	  
+				<action name="카메라를선택한다" arg1="8010" arg2="1"/>		
+				<action name="연출UI를설정한다" arg1="0"/>
+				<action name="연출UI를설정한다" arg1="2" />						
+				<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_Result_01"/>	  <!--끝나는 효과음 02100329 핑크빈 셋둘하나 전용-->
+			</onEnter>				
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="완전끝"/>
+				</condition>			
+		<onExit> 
+		</onExit> 	  
+	</state>
+	  
+	<state name="완전끝"> 
+	</state>
+	
+</ms2>

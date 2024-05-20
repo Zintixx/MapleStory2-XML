@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	  <state name="Wait">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- mask_black-->		
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9001">
+					<transition state="Guide"/>	
+			</condition>	
+	  </state>
+	  
+	  <state name="Guide">	
+		<onEnter>
+			<action name="DebugString" string="1번 영역에 들어가면 화면 페이드인 트리거가 시작됩니다." /> 
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9000">	
+					<transition state="fadein"/>
+			</condition>	
+	  </state>
+	  
+	<state name="fadein">
+		<onEnter>
+			<action name="DebugString" string="fadein" /> 		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- mask_black-->
+		</onEnter>
+				<condition name="WaitTick" waitTick="12000" > 
+					<transition state="fadeout"/>
+				</condition>
+	</state>
+
+	  <state name="fadeout">
+		<onEnter>	
+			<action name="DebugString" string="fadeout" /> 				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- mask_black-->		
+		</onEnter>
+				<condition name="WaitTick" waitTick="6000" > 
+					<transition state="Quit"/>
+			</condition>
+	  </state>
+
+	  <state name="Quit">
+		<onEnter>	
+					<action name="DebugString" string="3초 후에 트리거가 리셋됩니다. 1번 영역 밖으로 나가세요." /> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="Wait"/>
+			</condition>
+	  </state>
+</ms2>

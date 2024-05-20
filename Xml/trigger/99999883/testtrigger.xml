@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="시작대기중">
+		<onEnter>
+			<action name="ShowGuideSummary" entityID="20000661" textID="20000661" durationTime='3000'/> 
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="100" itemID="0">
+			<transition state="07_보상테스트" desc="!!원하는 테스트 스테이트 입력!!"/> 
+		</condition>
+		<condition name="UserValue" key="TimeEvent" value="1">
+			<transition state="01경험치구슬" /> 
+		</condition>
+    <onExit />
+	</state>
+ 
+	<!-- Test State -->
+	<state name="01경험치구슬">
+		<onEnter>
+		  <action name="아이템을생성한다" arg1="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16" />
+		  <action name="DebugString" string="변수를 설정한다" />
+		  <action name="SetUserValue" key="TimeEvent" value="0" />
+		  <action name="SetUserValue" triggerID="2" key="test" value="1" />
+		  <action name="GiveExp" arg1="100" arg2="36"/>
+		</onEnter>
+		<condition name="WaitSecondsUserValue" key="TimeEventLifeTime" desc="타임이벤트로 유지시간을 받아 끝나면 다시 돌아갑니다.">
+			<transition state="컷씬종료"/>
+		</condition>
+		<onExit />
+	</state>
+	
+	<state name="02업적이벤트">
+		<onEnter>
+		  <action name="업적이벤트를발생시킨다" arg3="oxquiz_win"/>
+		  <action name="DebugString" string="업적이벤트테스트" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="컷씬종료"/>
+		</condition>
+	</state>
+	
+	<state name="03컷씬">
+		<onEnter>
+		  <action name="SetCinematicIntro" text="텍스트 안녕하세요 한줄 \n두줄 테스트 입니다."/> 
+		  <action name="DebugString" string="컷씬테스트" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="컷씬종료"/> 
+		</condition>
+	</state>
+	
+	<state name="04그림자원정대게이지">
+		<onEnter>
+		  <action name="ShadowExpedition" type="OpenBossGauge" title="$02000401_BF__MADRICANSIEGE_Gauge$" maxGaugePoint="1000" />
+		  <action name="DebugString" string="그림자원정대게이지테스트" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="컷씬종료"/>
+		</condition>
+	</state>
+	
+	<state name="05PC이동테스트">
+		<onEnter>
+		  <action name="MoveUserToPos" pos="907,758,151" rot="0,0,315" />
+		  <action name="MoveNpcToPos" spawnPointID="101" pos="702,767,151" rot="0,0,45" />
+		  <action name="DebugString" string="05PC NPC이동테스트" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="컷씬종료"/>
+		</condition>
+	</state>
+	
+	<state name="06_요일테스트">
+		<onEnter>
+		  <action name="DebugString" string="06_요일테스트" />
+		</onEnter>
+		<condition name="DayOfWeek" dayOfWeeks="5" desc="1(일)-7(토)">
+			<transition state="03컷씬"/>
+		</condition>
+	</state>
+	
+	<state name="07_보상테스트">
+		<onEnter>
+		  <action name="DebugString" string="07_보상테스트" />
+		  <action name="GiveRewardContent" rewardID="31000003" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="시작대기중"/>
+		</condition>
+	</state>
+	
+	<!-- End State --> 
+	<state name="컷씬종료">
+		<onEnter>
+		  <action name="CloseCinematic" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="시작대기중"/>
+		</condition>
+		<onExit />
+	</state>
+	
+	
+</ms2>

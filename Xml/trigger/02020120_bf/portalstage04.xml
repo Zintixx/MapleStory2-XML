@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  904  -->
+<ms2>  
+ <state name="Ready">
+    <onEnter>
+		 <action name="SetUserValue" key="DungeonReset" value="0" /> <!-- 스킬브레이크 실패하여 보스의 신호를 받아서 던전 리셋할때 사용하는 변수-->			 
+		 <action name="SetUserValue" key="Stage04" value="0" /> <!-- 어느지점 포탈을 활성화 시킬지 결정하는데 사용하는 변수-->			 
+
+    </onEnter>
+
+		<condition name="유저를감지했으면" arg1="199">
+				<transition state="스테이지4_시작"/>
+		</condition>
+  </state>
+  
+  
+  
+ <state name="스테이지4_시작">
+    <onEnter>
+
+    </onEnter>
+		<!-- 졸구간 스테이지3 완료하면  보스에게 Stage04 = ?  신호 받을 때까지 여기서 대기하기-->
+		<condition name="UserValue" key="Stage04" value="11">  
+			<transition state="스테이지4_왼쪽_왼쪽진행" />
+		</condition>		
+		<condition name="UserValue" key="Stage04" value="12">  
+			<transition state="스테이지4_왼쪽_왼쪽가운데진행" />
+		</condition>	
+
+		
+		
+		<condition name="UserValue" key="Stage04" value="21">  
+			<transition state="스테이지4_가운데_왼쪽가운데진행" />
+		</condition>		
+		<condition name="UserValue" key="Stage04" value="22">  
+			<transition state="스테이지4_가운데_오른쪽가운데진행" />
+		</condition>				
+
+		
+		
+		<condition name="UserValue" key="Stage04" value="31">  
+			<transition state="스테이지4_오른쪽_오른쪽가운데진행" />
+		</condition>				
+		<condition name="UserValue" key="Stage04" value="32">  
+			<transition state="스테이지4_오른쪽_오른쪽진행" />
+		</condition>		
+  </state>    
+  
+  
+  
+  
+   <state name="스테이지4_왼쪽_왼쪽진행">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="4101" arg2="1" arg3="1" arg4="1"/>   <!--	4스테이지로 가는 포탈 생성 -->	
+    </onEnter>
+		
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="혹시모를_던전리셋신호_대기" />
+		</condition>
+	
+    <onExit>
+    </onExit>  
+  </state>    
+  
+   <state name="스테이지4_왼쪽_왼쪽가운데진행">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="4102" arg2="1" arg3="1" arg4="1"/>   
+    </onEnter>
+		
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="혹시모를_던전리셋신호_대기" />
+		</condition>
+	
+    <onExit>
+    </onExit>  
+  </state>      
+  
+  
+  
+  
+  
+   <state name="스테이지4_가운데_왼쪽가운데진행">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="4201" arg2="1" arg3="1" arg4="1"/>   <!--	4스테이지로 가는 포탈 생성 -->	
+    </onEnter>
+		
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="혹시모를_던전리셋신호_대기" />
+		</condition>
+	
+    <onExit>
+    </onExit>  
+  </state>    
+  
+   <state name="스테이지4_가운데_오른쪽가운데진행">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="4202" arg2="1" arg3="1" arg4="1"/>   
+    </onEnter>
+		
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="혹시모를_던전리셋신호_대기" />
+		</condition>
+	
+    <onExit>
+    </onExit>  
+  </state>     
+    
+  
+  
+  
+  
+  
+  
+   <state name="스테이지4_오른쪽_오른쪽가운데진행">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="4301" arg2="1" arg3="1" arg4="1"/>   
+    </onEnter>
+		
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="혹시모를_던전리셋신호_대기" />
+		</condition>
+	
+    <onExit>
+    </onExit>  
+  </state>    
+  
+   <state name="스테이지4_오른쪽_오른쪽진행">
+    <onEnter>
+		<action name="포탈을설정한다" arg1="4302" arg2="1" arg3="1" arg4="1"/>   
+    </onEnter>
+		
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="혹시모를_던전리셋신호_대기" />
+		</condition>
+	
+    <onExit>
+    </onExit>  
+  </state>       
+  
+  
+  
+  
+	<state name="혹시모를_던전리셋신호_대기">
+		 <onEnter>	
+		</onEnter>
+			<!-- 스킬 브레이크 막기 실패하면 이슈라AI에서  각 트리거에 DungeonReset = 1 신호를 보내서 던전 초기화 시킴 -->
+			<condition name="UserValue" key="DungeonReset" value="1">  
+				<transition state="Ready" />
+			</condition>	
+	</state>
+	
+</ms2>

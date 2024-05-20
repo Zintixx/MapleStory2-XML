@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2> 
+	    <state name="퀘스트체크">	
+		<onEnter>
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="50100280" arg3="1"> <!--  50100280 퀘스트 진행 중 상태!-->
+				<transition state="대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="50100280" arg3="2"> <!--  50100280 퀘스트 완료 가능 상태!-->
+				<transition state="던전종료"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="50100280" arg3="3"> <!--  50100280 퀘스트 완료 상태!-->
+				<transition state="던전종료"/>
+			</condition>				
+		<onExit>
+		</onExit>
+	</state>
+	
+  <state name="대기">
+    <onEnter> 
+		<action name="이펙트를설정한다" arg1="601" arg2="0" />	
+		<action name="이펙트를설정한다" arg1="602" arg2="0" />	
+		<action name="이펙트를설정한다" arg1="603" arg2="0" />			
+		<action name="메쉬를설정한다" arg1="3000,3001" arg2="1" arg3="0" arg4="0" arg5="0" />						
+		<action name="몬스터를생성한다" arg1="1001,1002,1003" arg2="0" />		
+		<action name="포탈을설정한다" arg1="91" arg2="0" arg3="0" arg4="0"/> 
+		<action name="버프를삭제한다" arg1="199" arg2="70000115" />				
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="199">
+			<transition state="연출시작"/>
+		</condition>	 
+  </state>
+ 
+   <state name="연출시작" >	
+	<onEnter>
+		<action name="SetLocalCamera" cameraId="2000" enable="0"/>		
+		<action name="SetNpcEmotionLoop" arg1="1001" arg2="Attack_Idle_A" arg3="999999999999" />		
+		<action name="SetPcEmotionLoop" arg1="Attack_Idle_A" arg2="999999999999" />			
+		<action name="스킵을설정한다" arg1="연출종료" />		
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>  			
+		<action name="카메라를선택한다" arg1="300" arg2="1"/>			
+	</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="트루카대사01" />	
+		</condition>	
+    </state>
+
+    <state name="트루카대사01">
+	<onEnter>				
+		<action name="SetNpcEmotionSequence" arg1="1003" arg2="Talk_A" />
+		<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__0$" align="left" duration="4000"/>		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="트루카대사02"/>
+		</condition>					
+    </state>	
+
+    <state name="트루카대사02">
+	<onEnter>				
+		<action name="카메라를선택한다" arg1="301" arg2="1"/>
+		<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__1$" align="left" duration="6000"/>			
+	</onEnter>						
+		<condition name="WaitTick" waitTick="6000">
+			<transition state="에르다대사01"/>
+		</condition>					
+    </state>		
+ 
+    <state name="에르다대사01">
+	<onEnter>				
+		<action name="카메라를선택한다" arg1="302" arg2="1"/>		
+		<action name="NPC를이동시킨다" arg1="1002" arg2="MS2PatrolData_1002A" />	
+		<action name="AddCinematicTalk" npcID="11003069" illustID="SnowQueen_normal" msg="$52000085_QD__50001538__2$" align="right" duration="4000"/>		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="에르다대사02"/>
+		</condition>					
+    </state>
+  
+    <state name="에르다대사02">
+	<onEnter>				
+        <action name="NPC를이동시킨다" arg1="1003" arg2="MS2PatrolData_1003A" />	
+		<action name="AddCinematicTalk" npcID="11003069" illustID="SnowQueen_normal" msg="$52000085_QD__50001538__3$" align="right" duration="4000"/>			
+
+	</onEnter>						
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="트루카대사03"/>
+		</condition>					
+    </state>	
+
+    <state name="트루카대사03">
+	<onEnter>				
+		<action name="카메라를선택한다" arg1="303" arg2="1"/>		
+		<action name="SetNpcEmotionSequence" arg1="1003" arg2="Talk_A" />	
+		<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__4$" align="left" duration="4000"/>		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="트루카대사04"/>
+		</condition>					
+    </state>		
+
+    <state name="트루카대사04">
+	<onEnter>				
+		<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__5$" align="left" duration="4000"/>		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="에르다대사03"/>
+		</condition>					
+    </state>	
+ 
+    <state name="에르다대사03">
+	<onEnter>						
+		<action name="카메라를선택한다" arg1="302" arg2="1"/>
+		<action name="AddCinematicTalk" npcID="11003069" illustID="SnowQueen_normal" msg="$52000085_QD__50001538__6$" align="right" duration="3000"/>			
+	</onEnter>						
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="트루카대사05"/>
+		</condition>					
+    </state>	
+
+	<state name="트루카대사05">
+		<onEnter>
+		<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__7$" align="left" duration="4000"/>		
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="트루카대사06"/>
+			</condition>					
+	</state>		
+
+	<state name="트루카대사06">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__8$" align="left" duration="4000"/>		
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="트루카대사07"/>
+			</condition>					
+	</state>		
+
+	<state name="트루카대사07">
+		<onEnter>					
+			<action name="카메라를선택한다" arg1="303" arg2="1"/>
+			<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__9$" align="left" duration="4000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="에르다대사04"/>
+			</condition>					
+	</state>			
+
+    <state name="에르다대사04">
+	<onEnter>						
+		<action name="AddCinematicTalk" npcID="11003069" illustID="SnowQueen_normal" msg="$52000085_QD__50001538__10$" align="right" duration="3000"/>			
+	</onEnter>						
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="설눈이이동01"/>
+		</condition>					
+    </state>	
+
+    <state name="설눈이이동01">
+	<onEnter>						
+		<action name="카메라를선택한다" arg1="304" arg2="1"/>				
+		<action name="NPC를이동시킨다" arg1="1001" arg2="MS2PatrolData_1001A" />				
+	</onEnter>						
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="설눈이대사01"/>
+		</condition>					
+    </state>	
+
+	<state name="설눈이대사01">
+		<onEnter>					
+			<action name="SetNpcEmotionLoop" arg1="1001" arg2="Attack_Idle_A" arg3="999999999999" />
+		<action name="AddCinematicTalk" npcID="11003068" illustID="Seolnunyi_normal" msg="$52000085_QD__50001538__11$" align="right" duration="6000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="트루카대사08"/>
+			</condition>					
+	</state>	
+ 
+	<state name="트루카대사08">
+		<onEnter>					
+			<action name="카메라를선택한다" arg1="305" arg2="1"/>		
+			<action name="NPC를이동시킨다" arg1="1003" arg2="MS2PatrolData_1003B" />	
+			<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__12$" align="left" duration="3000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="트루카대사09"/>
+			</condition>					
+	</state>		
+ 
+	<state name="트루카대사09">
+		<onEnter>			
+			<action name="몬스터를생성한다" arg1="1004" arg2="0" />
+			<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__13$" align="left" duration="5000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="홀슈타트등장"/>
+			</condition>					
+	</state>		
+
+	<state name="홀슈타트등장">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="306" arg2="1"/>				
+			<action name="NPC를이동시킨다" arg1="1004" arg2="MS2PatrolData_1004A" />				
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="홀슈타트대사01"/>
+			</condition>			
+	</state>
+
+	<state name="홀슈타트대사01">
+		<onEnter>					
+			<action name="카메라를선택한다" arg1="307" arg2="1"/>
+			<action name="AddCinematicTalk" npcID="11004022" illustID="11004022" msg="$52000085_QD__50001538__14$" align="left" duration="4000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="트루카대사10"/>
+			</condition>					
+	</state>		
+
+	<state name="트루카대사10">
+		<onEnter>			
+			<action name="카메라를선택한다" arg1="308" arg2="1"/>
+			<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__15$" align="right" duration="5000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="홀슈타트대사02"/>
+			</condition>					
+	</state>		
+
+	<state name="홀슈타트대사02">
+		<onEnter>			
+			<action name="카메라를선택한다" arg1="310" arg2="1"/>
+			<action name="AddCinematicTalk" npcID="11004022" illustID="11004022" msg="$52000085_QD__50001538__16$" align="left" duration="4000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="트루카대사11"/>
+			</condition>					
+	</state>		
+
+	<state name="트루카대사11">
+		<onEnter>			
+			<action name="카메라를선택한다" arg1="308" arg2="1"/>	
+			<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__17$" align="right" duration="4000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="트루카대사12"/>
+			</condition>					
+	</state>	
+
+	<state name="트루카대사12">
+		<onEnter>				
+			<action name="카메라를선택한다" arg1="309" arg2="1"/>					
+			<action name="AddCinematicTalk" npcID="11003071" illustID="11003762" msg="$52000085_QD__50001538__18$" align="right" duration="5000"/>						
+		</onEnter>						
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="포털이펙트"/>
+			</condition>					
+	</state>		
+
+	<state name="포털이펙트">
+		<onEnter>			
+			<action name="SetNpcEmotionSequence" arg1="1003" arg2="Bore_A" />				
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />	
+			<action name="AddCinematicTalk" npcID="11004022" illustID="11004022" msg="$52000085_QD__50001538__19$" align="left" duration="2000"/>					
+		</onEnter>						
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="NPC합체"/>
+			</condition>					
+	</state>		
+
+	<state name="NPC합체">
+		<onEnter>			
+			<action name="NPC를이동시킨다" arg1="1003" arg2="MS2PatrolData_1099" />						
+			<action name="NPC를이동시킨다" arg1="1004" arg2="MS2PatrolData_1099" />					
+		</onEnter>						
+			<condition name="WaitTick" waitTick="600">
+				<transition state="NPC소멸"/>
+			</condition>					
+	</state>		
+
+	<state name="NPC소멸">
+		<onEnter>							
+			<action name="몬스터소멸시킨다" arg1="1003,1004" />					
+		</onEnter>						
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="포털삭제"/>
+			</condition>					
+	</state>	
+
+	<state name="포털삭제">
+		<onEnter>					
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />			
+		</onEnter>						
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="설눈이이동02"/>
+			</condition>					
+	</state>		
+
+    <state name="설눈이이동02">
+	<onEnter>						
+		<action name="카메라를선택한다" arg1="311" arg2="1"/>			
+		<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC" />		
+		<action name="NPC를이동시킨다" arg1="1001" arg2="MS2PatrolData_1001B" />				
+	</onEnter>						
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="설눈이대사02"/>
+		</condition>					
+    </state>	
+
+	<state name="설눈이대사02">
+		<onEnter>
+		<action name="AddCinematicTalk" npcID="11003068" illustID="Seolnunyi_normal" msg="$52000085_QD__50001538__20$" align="right" duration="6000"/>			
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="에르다방향전환"/>
+			</condition>					
+	</state>			
+
+    <state name="에르다방향전환">
+	<onEnter>						
+		<action name="NPC를이동시킨다" arg1="1002" arg2="MS2PatrolData_1002B" />				
+	</onEnter>						
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="에르다대사05"/>
+		</condition>					
+    </state>		
+	
+    <state name="에르다대사05">
+	<onEnter>			
+		<action name="카메라를선택한다" arg1="312" arg2="1"/>
+		<action name="AddCinematicTalk" npcID="11003069" illustID="SnowQueen_normal" msg="$52000085_QD__50001538__21$" align="left" duration="3000"/>			
+	</onEnter>						
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="설눈이대사03"/>
+		</condition>					
+    </state>		
+
+	<state name="설눈이대사03">
+		<onEnter>			
+		<action name="AddCinematicTalk" npcID="11003068" illustID="Seolnunyi_normal" msg="$52000085_QD__50001538__22$" align="right" duration="2000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="에르다대사06"/>
+			</condition>					
+	</state>		
+    
+    <state name="에르다대사06">
+	<onEnter>			
+		<action name="SetNpcEmotionLoop" arg1="1002" arg2="Attack_Idle_A" arg3="999999999999" />			
+		<action name="카메라를선택한다" arg1="313" arg2="1"/>			
+		<action name="AddCinematicTalk" npcID="11003069" illustID="SnowQueen_normal" msg="$52000085_QD__50001538__23$" align="left" duration="4000"/>			
+	</onEnter>						
+		<condition name="WaitTick" waitTick="6000">
+			<transition state="연출종료"/>
+		</condition>					
+    </state>		
+
+   <state name="연출종료" >	
+	<onEnter>
+		<action name="스킵을설정한다" arg1="" />			
+		<action name="몬스터소멸시킨다" arg1="1001,1002,1003,1004" />			
+		<action name="몬스터를생성한다" arg1="2001,2002" arg2="1" />				
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>  			
+		<action name="카메라리셋" interpolationTime="0.0"/>	 	
+		<action name="유저를이동시킨다" arg1="52000085" arg2="99"/> 			
+		<action name="버프를걸어준다" arg1="199" arg2="70000115" arg3="1" arg4="0" arg5="0" />		
+	</onEnter>
+		<condition name="WaitTick" waitTick="7500">
+			<action name="몬스터를생성한다" arg1="2003,2004,2005" arg2="0" />			
+			<transition state="에르다사망대기" />	
+		</condition>	
+    </state>
+
+	<state name="에르다사망대기">
+			<condition name="몬스터가죽어있으면" arg1="2002">			
+				<transition state="에르다사망딜레이" />
+			</condition>
+	</state>
+
+	<state name="에르다사망딜레이">
+	<onEnter>
+		<action name="몬스터소멸시킨다" arg1="2003,2004,2005" />	
+	</onEnter>	
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="암전"/>
+			</condition>	
+	</state>		
+
+	<state name="암전">
+		<onEnter>	
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 							
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="유저를이동시킨다" arg1="52000085" arg2="98"/> 			
+			<action name="몬스터소멸시킨다" arg1="2001,2002" />						
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1500">		
+				<transition state="종료연출시작"/> 
+			</condition> 
+	</state>  	
+	
+	<state name="종료연출시작">
+		<onEnter>			
+			<action name="스킵을설정한다" arg1="종료연출종료" />				
+			<action name="몬스터를생성한다" arg1="1005,1006" arg2="0" />					
+			<action name="카메라를선택한다" arg1="314" arg2="1"/>						
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 								
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="에르다대사07"/>  
+			</condition>		
+	</state>	
+ 
+    <state name="에르다대사07">
+	<onEnter>
+		<action name="AddCinematicTalk" npcID="11003069" illustID="SnowQueen_normal" msg="$52000085_QD__50001538__24$" align="left" duration="3000"/>	
+	</onEnter>						
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="설눈이대사04"/>
+		</condition>					
+    </state>		
+
+	<state name="설눈이대사04">
+		<onEnter>
+		<action name="AddCinematicTalk" npcID="11003068" illustID="Seolnunyi_normal" msg="$52000085_QD__50001538__25$" align="right" duration="6000"/>			
+		</onEnter>						
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="에르다공중부양준비"/>
+			</condition>					
+	</state>		
+
+    <state name="에르다공중부양준비">
+	<onEnter>				
+		<action name="카메라를선택한다" arg1="315" arg2="1"/>						
+		<action name="SetNpcEmotionLoop" arg1="1006" arg2="Attack_Idle_A" arg3="999999999999" />
+		<action name="AddCinematicTalk" npcID="11003069" illustID="SnowQueen_normal" msg="$52000085_QD__50001538__26$" align="left" duration="3000"/>			
+	</onEnter>						
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="에르다공중부양"/>
+		</condition>					
+    </state>	
+ 
+    <state name="에르다공중부양">
+	<onEnter>			
+		<action name="스킵을설정한다" arg1="" />			
+		<action name="NPC를이동시킨다" arg1="1006" arg2="MS2PatrolData_1006" />	
+		<action name="AddCinematicTalk" npcID="11003068" illustID="Seolnunyi_normal" msg="$52000085_QD__50001538__27$" align="right" duration="3000"/>		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="1500">
+			<transition state="얼림"/>
+		</condition>					
+    </state>		
+ 
+    <state name="얼림">
+	<onEnter>				
+		<action name="SetNpcEmotionLoop" arg1="1005" arg2="Stun_A" arg3="999999999999" />		
+		<action name="SetPcEmotionLoop" arg1="StunFrozen_A" arg2="25000" />			
+		<action name="이펙트를설정한다" arg1="602" arg2="1" />	
+		<action name="이펙트를설정한다" arg1="603" arg2="1" />			
+	</onEnter>						
+		<condition name="WaitTick" waitTick="2500">
+			<transition state="에르다공중부양중"/>
+		</condition>					
+    </state>	
+
+    <state name="에르다공중부양중">
+	<onEnter>			
+		<action name="카메라를선택한다" arg1="316" arg2="1"/>			
+	</onEnter>						
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="PC말풍선대사01"/>
+		</condition>					
+    </state>		
+
+    <state name="PC말풍선대사01">
+	<onEnter>				
+		<action name="몬스터소멸시킨다" arg1="1006" />			
+		<action name="카메라를선택한다" arg1="317" arg2="1"/>			
+		<action name="대화를설정한다" arg1="1" arg2="0" arg3="$52000085_QD__50001538__28$" arg4="3" /> 		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="설눈이말풍선대사01"/>
+		</condition>					
+    </state>	
+
+    <state name="설눈이말풍선대사01">
+	<onEnter>					
+		<action name="몬스터를생성한다" arg1="1007" arg2="0" />
+		<action name="대화를설정한다" arg1="1" arg2="1005" arg3="$52000085_QD__50001538__29$" arg4="4" /> 		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="PC말풍선대사02"/>
+		</condition>					
+    </state>		
+
+    <state name="PC말풍선대사02">
+	<onEnter>					
+		<action name="카메라를선택한다" arg1="318" arg2="1"/>			
+		<action name="대화를설정한다" arg1="1" arg2="0" arg3="$52000085_QD__50001538__30$" arg4="3" /> 		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="설만이이동01"/>
+		</condition>					
+    </state>		
+
+	<state name="설만이이동01">
+		<onEnter>						
+			<action name="대화를설정한다" arg1="1" arg2="1007" arg3="$52000085_QD__50001538__31$" arg4="5" /> 				
+			<action name="NPC를이동시킨다" arg1="1007" arg2="MS2PatrolData_1007A" />								
+		</onEnter>						
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="설눈이인사"/>
+			</condition>					
+	</state>		
+
+	<state name="설눈이인사">
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="603" arg2="0" />	
+			<action name="SetNpcEmotionLoop" arg1="1005" arg2="Idle_A" arg3="999999999999" />		
+			<action name="대화를설정한다" arg1="1" arg2="1005" arg3="$52000085_QD__50001538__32$" arg4="2" /> 									
+		</onEnter>						
+			<condition name="WaitTick" waitTick="2500">
+				<transition state="설만이이동02"/>
+			</condition>					
+	</state>		
+ 
+	<state name="설만이이동02">				
+		<onEnter>			
+			<action name="NPC를이동시킨다" arg1="1005" arg2="MS2PatrolData_1005A" />					
+			<action name="NPC를이동시킨다" arg1="1007" arg2="MS2PatrolData_1007B" />		
+		</onEnter>			
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="PC말풍선대사03"/>
+			</condition>					
+	</state>				
+
+    <state name="PC말풍선대사03">
+	<onEnter>						
+		<action name="이펙트를설정한다" arg1="602" arg2="0" />	
+		<action name="SetPcEmotionLoop" arg1="Idle_A" arg2="1000" />						
+		<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC2" />			
+		<action name="NPC를이동시킨다" arg1="1007" arg2="MS2PatrolData_1007C" />						
+		<action name="대화를설정한다" arg1="1" arg2="0" arg3="$52000085_QD__50001538__33$" arg4="3" /> 		
+	</onEnter>						
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="설만이대사01"/>
+		</condition>					
+    </state>		
+
+	<state name="설만이대사01">
+		<onEnter>			
+			<action name="스킵을설정한다" arg1="종료연출종료" />				
+			<action name="카메라를선택한다" arg1="319" arg2="1"/>
+			<action name="AddCinematicTalk" npcID="11003073" illustID="11000404" msg="$52000085_QD__50001538__34$" align="right" duration="6000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="설눈이대사05"/>
+			</condition>					
+	</state>		
+
+	<state name="설눈이대사05">
+		<onEnter>
+		<action name="AddCinematicTalk" npcID="11003068" illustID="Seolnunyi_normal" msg="$52000085_QD__50001538__35$" align="left" duration="5000"/>			
+		</onEnter>						
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="설만이대사02"/>
+			</condition>					
+	</state>	
+
+	<state name="설만이대사02">
+		<onEnter>	
+			<action name="AddCinematicTalk" npcID="11003073" illustID="11000404" msg="$52000085_QD__50001538__36$" align="right" duration="4000"/>			
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="설눈이대사06"/>
+			</condition>					
+	</state>	
+
+	<state name="설눈이대사06">
+		<onEnter>
+		<action name="AddCinematicTalk" npcID="11003068" illustID="Seolnunyi_normal" msg="$52000085_QD__50001538__37$" align="left" duration="4000"/>				
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="설눈이대사07"/>
+			</condition>					
+	</state>		
+
+	<state name="설눈이대사07">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11003068" illustID="Seolnunyi_normal" msg="$52000085_QD__50001538__38$" align="left" duration="4000"/>		
+		</onEnter>						
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="종료연출종료"/>
+			</condition>					
+	</state>		
+
+	
+   <state name="종료연출종료" >	
+	<onEnter>
+		<action name="스킵을설정한다" arg1="" />			
+		<action name="SetNpcEmotionLoop" arg1="1005" arg2="Idle_A" arg3="999999999999" />		
+		<action name="SetPcEmotionLoop" arg1="Idle_A" arg2="1000" />
+		
+		<action name="몬스터소멸시킨다" arg1="1005,1006,1007" />	
+		<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="snowqueenerda"/>				
+	</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="던전종료" />	
+		</condition>		
+    </state>
+
+   <state name="던전종료" >	
+   	<onEnter>
+		<action name="몬스터를생성한다" arg1="1008,1009" arg2="0" />				
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/> 
+		<action name="이펙트를설정한다" arg1="601" arg2="0" />			
+		<action name="이펙트를설정한다" arg1="602" arg2="0" />	
+		<action name="이펙트를설정한다" arg1="603" arg2="0" />			
+		<action name="포탈을설정한다" arg1="91" arg2="1" arg3="1" arg4="1"/>		
+		<action name="카메라리셋" interpolationTime="0.0"/>	 	
+	</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="종료" />	
+		</condition>		
+    </state>
+	
+	<state name="종료">
+	</state>  
+
+</ms2>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 헤네시스 요새 외곽 -->
+
+<ms2>
+	<state name="Wait">	
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10001168" arg2="2" />	
+			<action name="몬스터소멸시킨다" arg1="232" /> 	<!-- NPC -->		
+			<action name="SetUserValue" key="NpcDown" value="0" />		
+			<action name="SetUserValue" key="BattleEnd" value="0" />				
+        </onEnter>	
+			<condition name="UserValue" key="NpcDown" value="1">	
+			<transition state="Delay"/>
+		</condition> 
+    <onExit> 
+    </onExit>		
+	</state>	
+		
+	<state name="Delay" >
+		<onEnter>	
+			<action name="SetUserValue" key="NpcDown" value="0" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="15000">		<!-- NPC 마다 다름 -->
+			<transition state="NpcDown"/>	
+		</condition>
+	</state>	
+	
+	<state name="NpcDown" >
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="222" /> 
+			<action name="오브젝트반응설정한다" arg1="10001168" arg2="1" />				
+		</onEnter>
+			<condition name="UserValue" key="BattleEnd" value="1">	
+			<transition state="Quit"/>
+		</condition> 			
+				<condition name="오브젝트가반응했으면" arg1="10001168" arg2="0" >	
+			<transition state="NpcWakeUp"/>	
+		</condition>
+	</state>		
+		
+	<state name="NpcWakeUp" >
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001168" arg2="2" />				
+			<action name="몬스터를생성한다" arg1="232" arg2="0" /> 				
+		</onEnter>
+			<condition name="UserValue" key="BattleEnd" value="1">	
+			<transition state="Quit"/>
+		</condition> 				
+				<condition name="NPC를감지했으면" arg1="9900" arg2="222"> 		
+			<transition state="Delay02"/>	
+		</condition>	
+	</state>		
+		
+	<state name="Delay02" >	
+		<onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10001168" arg2="2" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="32000">		<!-- NPC 마다 다름 -->
+			<transition state="NpcDown02"/>	
+		</condition>
+	</state>	
+	
+	<state name="NpcDown02" >
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="222" /> 
+			<action name="오브젝트반응설정한다" arg1="10001168" arg2="1" />				
+		</onEnter>
+			<condition name="UserValue" key="BattleEnd" value="1">	
+			<transition state="Quit"/>
+		</condition> 					
+				<condition name="오브젝트가반응했으면" arg1="10001168" arg2="0" >	
+			<transition state="NpcWakeUp"/>	
+		</condition>
+	</state>		
+	
+    <state name="Quit" >
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="222,232"/> 				
+			<action name="오브젝트반응설정한다" arg1="10001168" arg2="0" />			
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+	
+</ms2>
+

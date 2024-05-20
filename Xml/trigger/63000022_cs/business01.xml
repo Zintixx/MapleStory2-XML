@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 90000439 새로운 교훈 퀘스트 완료 / 90000440 선택권이 없는 비즈니스 퀘스트 시작-->
+<ms2>
+	<state name="Wait">   
+        <onEnter> 
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" /> 			
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- 가이드 서머리 사운드 이펙트-->	
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- 화살표 안내 사운드 이펙트-->		
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- 미션 완료 사운드 이펙트-->							
+			<action name="이펙트를설정한다" arg1="5200" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5201" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5202" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5203" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5204" arg2="0"/> <!-- 경로 안내-->			
+			<action name="이펙트를설정한다" arg1="5205" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="8000" arg2="0"/> <!-- Voice 00001397 -->	
+			<action name="이펙트를설정한다" arg1="8001" arg2="0"/> <!-- Voice 00001398 -->	
+			<action name="이펙트를설정한다" arg1="8002" arg2="0"/> <!-- Voice 00001399 -->				
+			<action name="몬스터를생성한다" arg1="101,201,301,401" arg2="0" /> 					
+				</onEnter>						
+				<condition name="유저를감지했으면" arg1="9000">
+			<transition state="LodingDelay01"/>
+		</condition> 
+    <onExit> 
+    </onExit>
+    </state>
+
+    <state name="LodingDelay01" posX="300" posY="199">
+        <onEnter>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="연출UI를설정한다" arg1="4"/>
+			<action name="카메라를선택한다" arg1="500" arg2="1"/>		
+				</onEnter>		
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000439" arg3="3" > <!--  이전 퀘스트 완료 상태-->
+					<transition state="QuestOngoing01"/>
+				</condition>						
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000440" arg3="1" > <!--  새로운퀘스트 진행중 상태 -->
+					<transition state="QuestOngoing11"/>
+				</condition>					
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="TalkWeiHong01"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 이전  퀘스트 이미 완료한 상태 -->		
+    <state name="QuestOngoing01">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="101"  />			
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> 					
+			<action name="카메라를선택한다" arg1="500" arg2="0"/>							
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="QuestOngoing02"/>
+				</condition>
+		<onExit>
+		</onExit>	
+    </state>	
+    <state name="QuestOngoing02">
+		<onEnter>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="NextQuestStart01"/>
+				</condition>
+		<onExit>
+		</onExit>	
+    </state>	
+	
+<!-- 새로운  퀘스트 이미 수락한 상태 -->		
+    <state name="QuestOngoing11">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="101"  />			
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> 					
+			<action name="카메라를선택한다" arg1="500" arg2="0"/>							
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="QuestOngoing12"/>
+				</condition>
+		<onExit>
+		</onExit>	
+    </state>	
+    <state name="QuestOngoing12">
+		<onEnter>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="MoveToNextMap01"/>
+				</condition>
+		<onExit>
+		</onExit>	
+    </state>	
+	
+<!-- 최초 입장 -->		
+    <state name="TalkWeiHong01">
+        <onEnter>
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Bore_A" />		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="TalkWeiHong02"/>
+		</condition> 
+    <onExit>  
+    </onExit>
+    </state>			
+
+    <state name="TalkWeiHong02" posX="300" posY="199">
+        <onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  							
+				</onEnter>				
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="TalkWeiHong03"/>
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+
+    <state name="TalkWeiHong03">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="카메라를선택한다" arg1="501" arg2="1"/>				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="TalkWeiHong04"/>
+		</condition> 
+    <onExit>  
+    </onExit>
+    </state>		
+
+    <state name="TalkWeiHong04">
+		<onEnter>	
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Talk_A" />					
+			<action name="대화를설정한다" arg1="2" arg2="11000251" arg3="$63000022_CS__BUSINESS01__0$" arg4="6" />    	<!-- Voice 00001397 -->   
+			<action name="이펙트를설정한다" arg1="8000" arg2="1"/> <!-- Voice 00001397 -->				
+			<action name="스킵을설정한다" arg1="TalkWeiHong05"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="TalkWeiHong05"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="TalkWeiHong05">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>		
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Idle_A" />					
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1000" />					
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="TalkWeiHong06"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="TalkWeiHong06">
+		<onEnter>
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Talk_A" />			
+			<action name="대화를설정한다" arg1="2" arg2="11000251" arg3="$63000022_CS__BUSINESS01__1$" arg4="6" />    	<!-- Voice 00001398 -->  
+			<action name="이펙트를설정한다" arg1="8001" arg2="1"/> <!-- Voice 00001398 -->				
+			<action name="스킵을설정한다" arg1="TalkWeiHong07"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="TalkWeiHong07"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="TalkWeiHong07">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>	
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Idle_A" />				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="TalkWeiHong08"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="TalkWeiHong08">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001547" arg3="$63000022_CS__BUSINESS01__3$" arg4="3" />  
+			<action name="스킵을설정한다" arg1="TalkWeiHong09"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="TalkWeiHong09"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="TalkWeiHong09">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>	
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="TalkWeiHong10"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="TalkWeiHong10">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11000251" arg3="$63000022_CS__BUSINESS01__2$" arg4="6" />     	<!-- Voice 00001399 -->   
+			<action name="이펙트를설정한다" arg1="8002" arg2="1"/> <!-- Voice 00001399 -->				
+			<action name="스킵을설정한다" arg1="TalkWeiHong11"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="TalkWeiHong11"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="TalkWeiHong11">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+			<action name="카메라를선택한다" arg1="501" arg2="0"/>				
+			<action name="몬스터소멸시킨다" arg1="101"  />			
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> 			
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="QuestComplete01"/>
+				</condition>
+		<onExit>
+		</onExit>	
+    </state>		
+
+    <state name="QuestComplete01" posX="300" posY="199">
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="10024020" textID="10024020"/>  <!-- 가이드 : 웨이 홍과 대화하기-->			
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->	
+				</onEnter>		
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000439" arg3="3" > <!--  이전 퀘스트 완료 상태-->
+					<transition state="NextQuestStart01"/>
+				</condition>		
+    <onExit>  
+			<action name="HideGuideSummary" entityID="10024020"/>			
+    </onExit>
+    </state>			
+	 
+    <state name="NextQuestStart01" posX="300" posY="199">
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="10024030" textID="10024030"/>  <!-- 가이드 : 웨이 홍과 대화하기-->			
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->	
+				</onEnter>		
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000440" arg3="1" > <!-- 다음 퀘스트 진행중 상태 -->
+					<transition state="MoveToNextMap01"/>	
+				</condition>		
+    <onExit>  
+			<action name="HideGuideSummary" entityID="10024030"/>		
+    </onExit>
+    </state>			
+	
+    <state name="MoveToNextMap01" posX="300" posY="199">
+        <onEnter>		
+			<action name="ShowGuideSummary" entityID="10027010" textID="10027010"/>  <!-- 가이드 : 포털을 타고 흑성회 고물 처리장으로 이동하기 -->		
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->				
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- 화살표 안내 사운드 이펙트-->						
+			<action name="이펙트를설정한다" arg1="5200" arg2="1"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5201" arg2="1"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5202" arg2="1"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5203" arg2="1"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5204" arg2="1"/> <!-- 경로 안내-->		
+			<action name="이펙트를설정한다" arg1="5205" arg2="1"/> <!-- 경로 안내-->				
+				</onEnter>	
+		<condition name="유저를감지했으면" arg1="9001">	
+			<transition state="MoveToNextMap02"/>	
+		</condition> 					
+    <onExit> 		
+    </onExit>
+    </state>	
+	
+    <state name="MoveToNextMap02" posX="300" posY="199">
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> <!-- 미션 완료 사운드 이펙트-->	
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" /> 				
+				</onEnter>	
+		<condition name="!유저를감지했으면" arg1="9900">
+			<transition state="Quit"/>	
+		</condition> 					
+    <onExit> 		
+    </onExit>
+    </state>		 
+	 
+    <state name="Quit"> 
+        <onEnter>
+			<action name="HideGuideSummary" entityID="10027010"/>			
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- 미션 완료 사운드 이펙트-->					
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- 가이드 서머리 사운드 이펙트-->				
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- 화살표 안내 사운드 이펙트-->						
+			<action name="이펙트를설정한다" arg1="5200" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5201" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5202" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5203" arg2="0"/> <!-- 경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5204" arg2="0"/> <!-- 경로 안내-->		
+			<action name="이펙트를설정한다" arg1="5205" arg2="0"/> <!-- 경로 안내-->				
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+ 
+</ms2>
+

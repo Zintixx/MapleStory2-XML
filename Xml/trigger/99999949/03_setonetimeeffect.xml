@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	  <state name="Wait">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="UGC_Test/Eff_Tutorial_Sound_target.xml"/> 		
+			<action name="SetOnetimeEffect" id="2" enable="0" path="UGC_Test/Eff_Tutorial_Sound_target.xml"/> 				
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/Eff_co_targetBox_test_99999949_01.xml"/> 		<!-- 툴벤치 상 좌표 : 	-600, -600, 1200	-->		
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9021">
+					<transition state="Guide"/>	
+			</condition>	
+	  </state>
+	  
+	  <state name="Guide">	
+		<onEnter>
+			<action name="DebugString" string="3번 영역에 들어가면 SetOnetime트리거가 발동됩니다.Effect targetBox 이펙트 테스트." /> 
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9020">	
+					<transition state="SetOnetimeEffectReady01"/>
+			</condition>	
+	  </state>
+	  
+	<state name="SetOnetimeEffectReady01">
+		<onEnter>
+			<action name="DebugString" string="SetOnetimeEffect 1초 후에 시작됩니다." /> 		
+			<action name="SetOnetimeEffect" id="1" enable="1" path="UGC_Test/Eff_Tutorial_Sound_target.xml"/> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="SetOnetimeEffect01"/>
+				</condition>
+	</state>
+	
+	  <state name="SetOnetimeEffect01">
+		<onEnter>	
+			<action name="DebugString" string="SetOnetimeEffect 재생" /> 		
+			<action name="SetOnetimeEffect" id="2" enable="1" path="UGC_Test/Eff_Tutorial_Sound_target.xml"/> 					
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/Eff_co_targetBox_test_99999949_01.xml"/>		
+			<action name="SetTimeScale" enable="1" startScale="1" endScale="0.2" duration="2" interpolator="2" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000" > 	
+					<transition state="Quit"/>
+			</condition>
+	  </state>
+
+	  <state name="Quit">
+		<onEnter>	
+			<action name="SetTimeScale" enable="1" startScale="0.2" endScale="1" duration="2" interpolator="2" />
+			
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/Eff_co_targetBox_test_99999949_01.xml"/>
+					<!--action name="SetTimeScale" enable="1" endScale="1" duration="8" interpolator="2" /-->
+					<action name="DebugString" string="5초 후에 트리거가 리셋됩니다. 3번 영역 밖으로 나가세요." /> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000" > 	
+					<transition state="Wait"/>	
+			</condition>
+        <onExit>				
+        </onExit>			
+	  </state>
+</ms2>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--<Trigger Model:99990004>-->
+
+<ms2>
+
+  <state name="대기">
+    <onEnter>
+      <action name="SetUserValue" triggerID="99990001" key="Battle_3_Clear" value="0" />
+      <action name="StartCombineSpawn" groupId="10000603" isStart="false"/>
+      <action name="StartCombineSpawn" groupId="10000605" isStart="false"/>
+      <action name="SetUserValue" triggerID="99990011" key="Battle3_TurretSpawn_1" value="0" />
+      <action name="SetUserValue" triggerID="99990012" key="Battle3_TurretSpawn_2" value="0" />
+      <action name="SetUserValue" triggerID="99990013" key="Battle3_TurretSpawn_3" value="0" />
+      <action name="SetUserValue" triggerID="99990014" key="Battle3_TurretSpawn_4" value="0" />    
+    </onEnter>
+    <condition name="UserValue" key="Battle_3_Start" value="1" >
+		  <transition state="보스_추가대사"/>
+    </condition>
+  </state>
+
+  <state name="보스_추가대사">
+    <condition name="WaitTick" waitTick="5000">
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02020065_BF__BATTLE_3__0$" arg3="5000" />
+      <transition state="보스소환" />
+    </condition>
+  </state>
+
+  <state name="보스소환">
+    <onEnter>
+      <action name="몬스터를생성한다" arg1="921" arg2="0"/>
+    </onEnter>
+    <condition name="UserValue" key="Battle_3_Start" value="0" >
+      <transition state="대기"/>
+    </condition>
+    <condition name="몬스터가죽어있으면" arg1="921" >
+      <transition state="보스군단_클리어"/>
+    </condition>
+    <condition name="AllOf">
+      <group>
+        <condition name="UserValue" key="ObjectStart" value="2" />
+        <condition name="NPC를감지했으면" arg1="9099" arg2="921"/>
+      </group>
+        <transition state="보스_무적페이즈"/>
+    </condition>
+	</state>
+
+	<state name="보스_무적페이즈">
+    <onEnter>
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02020065_BF__BATTLE_3__1$" arg3="5000" />
+      <action name="SetUserValue" triggerID="99990011" key="Battle3_TurretSpawn_1" value="1" />
+      <action name="SetUserValue" triggerID="99990012" key="Battle3_TurretSpawn_2" value="1" />
+      <action name="SetUserValue" triggerID="99990013" key="Battle3_TurretSpawn_3" value="1" />
+      <action name="SetUserValue" triggerID="99990014" key="Battle3_TurretSpawn_4" value="1" /> 	  <!--<action name="SetUserValue" triggerID="99990006" key="Battle_3_SpawnStart" value="1" />-->
+      <action name="StartCombineSpawn" groupId="10000603" isStart="true"/>
+      <action name="StartCombineSpawn" groupId="10000605" isStart="true"/>
+      <action name="SetUserValue" triggerID="99990006" key="Battle_3_SpawnStart" value="1" />
+    </onEnter>
+    <condition name="UserValue" key="Battle_3_Start" value="0" >
+		  <transition state="대기"/>
+    </condition>
+    <condition name="몬스터가죽어있으면" arg1="921" >
+	  	<transition state="보스군단_클리어"/>
+    </condition>
+    <condition name="WaitTick" waitTick="5000">  
+      <transition state="보스_추가대사1" />
+    </condition>
+  </state>
+  
+  <state name="보스_추가대사1">
+    <onEnter>
+      <action name="SideNpcTalk" type="talk" npcID="11003536" illust="Neirin_surprise" duration="5000" script="$02020065_BF__BATTLE_3__2$" />
+    </onEnter>
+    <condition name="UserValue" key="Battle_3_Start" value="0" >
+      <transition state="대기"/>
+    </condition>
+    <condition name="몬스터가죽어있으면" arg1="921" >
+      <transition state="보스군단_클리어"/>
+    </condition>
+    <condition name="WaitTick" waitTick="5000">  
+      <transition state="보스_추가대사2" />
+    </condition>
+  </state>
+
+  <state name="보스_추가대사2">
+    <onEnter>
+      <action name="SideNpcTalk" type="talk" npcID="11003533" illust="Bliche_normal" duration="5000" script="$02020065_BF__BATTLE_3__3$" />
+    </onEnter>
+    <condition name="UserValue" key="Battle_3_Start" value="0" >
+      <transition state="대기"/>
+    </condition>
+    <condition name="몬스터가죽어있으면" arg1="921" >
+      <transition state="보스군단_클리어"/>
+    </condition>
+  </state>
+  
+  <state name="보스군단_클리어">
+    <onEnter>
+      <action name="SetUserValue" triggerID="99990001" key="Battle_3_Clear" value="1" />
+      <action name="SetUserValue" triggerID="99990006" key="Battle_3_SpawnStart" value="0" />
+      <action name="StartCombineSpawn" groupId="10000603" isStart="false"/>
+      <action name="StartCombineSpawn" groupId="10000605" isStart="false"/>
+	    <action name="SetUserValue" triggerID="99990011" key="Battle3_TurretSpawn_1" value="0" />
+      <action name="SetUserValue" triggerID="99990012" key="Battle3_TurretSpawn_2" value="0" />
+      <action name="SetUserValue" triggerID="99990013" key="Battle3_TurretSpawn_3" value="0" />
+      <action name="SetUserValue" triggerID="99990014" key="Battle3_TurretSpawn_4" value="0" />    
+	  </onEnter>
+  </state>
+  
+</ms2>

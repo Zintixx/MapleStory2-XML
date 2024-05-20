@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 미혹의 길 Round03 --> 
+  
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 	
+			<action name="포탈을설정한다" arg1="25" arg2="0" arg3="0" arg4="0" /> 			<!-- 20170223 업데이트 던전 개편 단축 -->					
+			<action name="메쉬를설정한다" arg1="4023" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- RoundBarrier -->				
+			<action name="메쉬를설정한다" arg1="3003" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOff -->		
+			<action name="메쉬를설정한다" arg1="3103" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOn -->		
+			<action name="메쉬애니를설정한다" arg1="3003" arg2="1" arg3="0" arg4="0" /> <!-- CrystalOff -->					
+			<action name="메쉬애니를설정한다" arg1="3103" arg2="0" arg3="0" arg4="0" /> <!-- CrystalOn -->						
+			<action name="이펙트를설정한다" arg1="5203" arg2="0" /> <!-- Sound_CrystalOn -->						
+			<action name="SetUserValue" key="FindWay" value="0" /> 				
+				</onEnter>	
+			<condition name="UserValue" key="FindWay" value="1">	
+			<transition state="ReadyToWalkIn01"/>	
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+
+    <state name="ReadyToWalkIn01" >	
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="4023" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- RoundBarrier -->				
+			<action name="몬스터를생성한다" arg1="904,905,906" arg2="0" /> 	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_103" />			
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_203" />	
+			<action name="대화를설정한다" arg1="1" arg2="201" arg3="$02000378_BF__03_FINDWAY__0$" arg4="2" arg5="0" />	    <!-- 준타 -->					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="3000">  
+					<transition state="ReadyToWalkIn02"/>  
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="ReadyToWalkIn02" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="1303" key="RouteSelected" value="1" /> 		
+			<action name="SetUserValue" triggerID="2303" key="RouteSelected" value="1" /> 				
+			<action name="대화를설정한다" arg1="1" arg2="201" arg3="$02000378_BF__03_FINDWAY__1$" arg4="2" arg5="1" />	    <!-- 준타 -->						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="3000">  
+					<transition state="ReadyToWalkIn03"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="ReadyToWalkIn03" > 	
+        <onEnter>			
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="$02000378_BF__03_FINDWAY__2$" arg4="2" arg5="2" />	    <!-- 틴차이 -->						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="4000">  
+					<transition state="Round03_Start"/>
+				</condition>		
+    <onExit> 
+			<action name="몬스터소멸시킨다" arg1="101,201" />		
+    </onExit>
+    </state>		
+	
+    <state name="Round03_Start" >	
+        <onEnter>				
+			<action name="몬스터를생성한다" arg1="1003" arg2="0" /> 		<!-- 수호대상 틴차이 -->		
+			<action name="몬스터를생성한다" arg1="2003" arg2="0" /> 		<!-- 전투용 준타 -->			
+			<action name="대화를설정한다" arg1="1" arg2="1003" arg3="$02000378_BF__03_FINDWAY__3$" arg4="3" arg5="2" />	    <!-- 틴차이 -->					
+			<action name="SetUserValue" triggerID="903" key="MobWaveStart" value="1" /> 		
+				</onEnter>		
+			<condition name="UserValue" key="03RoundSuccess" value="1">	
+			<transition state="Round03_Sucess02"/>	
+		</condition> 		
+    <onExit> 
+    </onExit>	
+    </state>	
+
+<!-- 20170223 업데이트 던전 개편 단축 			
+    <state name="Round03_Sucess01" >	
+        <onEnter>				
+				</onEnter>		
+			<condition name="NPC를감지했으면" arg1="9003" arg2="2203">	
+			<transition state="Round03_Sucess02"/>	
+		</condition> 		
+    <onExit> 
+    </onExit>	
+    </state>		-->
+	
+    <state name="Round03_Sucess02" >	
+        <onEnter>		
+			<!-- action name="NPC를이동시킨다" arg1="2203" arg2="MS2PatrolData_2003" / -->			
+			<action name="NPC를이동시킨다" arg1="2003" arg2="MS2PatrolData_2003" />				
+			<action name="몬스터소멸시킨다" arg1="1003" />	
+			<action name="몬스터를생성한다" arg1="103" arg2="0" /> 		<!-- 연출용 틴차이 -->		
+			<action name="메쉬를설정한다" arg1="3003" arg2="0" arg3="100" arg4="0" arg5="0" /> <!-- CrystalOff -->		
+			<!-- <action name="메쉬를설정한다" arg1="3103" arg2="1" arg3="0" arg4="0" arg5="0" />  CrystalOn -->	
+			<action name="메쉬애니를설정한다" arg1="3003" arg2="0" arg3="0" arg4="0" /> <!-- CrystalOff -->					
+			<!-- <action name="메쉬애니를설정한다" arg1="3103" arg2="1" arg3="0" arg4="0" />  CrystalOn -->					
+			<action name="이펙트를설정한다" arg1="5203" arg2="1" /> <!-- Sound_CrystalOn -->		
+			<action name="포탈을설정한다" arg1="25" arg2="1" arg3="1" arg4="0" /> 						
+			<action name="대화를설정한다" arg1="1" arg2="103" arg3="$02000378_BF__03_FINDWAY__4$" arg4="2" arg5="1" />	    <!-- 틴차이 -->					
+				</onEnter>		
+				<condition name="WaitTick" waitTick="3000">  
+					<transition state="Round03_RouteSelect"/>
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+	<state name="Round03_RouteSelect">
+		<onEnter>
+			<!-- action name="몬스터소멸시킨다" arg1="2203" / -->	
+			<action name="몬스터소멸시킨다" arg1="2003" />			
+			<action name="몬스터를생성한다" arg1="203" arg2="0" /> 		<!-- 연출용 준타 -->	
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_103New" />					
+		</onEnter>	
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="GoToRound12"/>
+				</condition>					
+<!--				<condition name="랜덤조건" arg1="50">		
+					<transition state="Round03_PickRoute_Left"/>	
+				</condition> 
+				<condition name="랜덤조건" arg1="50"> 
+					<transition state="Round03_PickRoute_Right" />
+				</condition>	-->
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+
+	<state name="GoToRound12">
+		<onEnter>	
+			<action name="몬스터소멸시킨다" arg1="103" />			
+			<action name="NPC를이동시킨다" arg1="203" arg2="MS2PatrolData_203New" />			
+			<action name="SetUserValue" triggerID="12" key="FindWay" value="1" />		 	
+		</onEnter>	
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="Quit02"/>	
+				</condition> 			
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="Quit02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="203" />		
+			<action name="몬스터소멸시킨다" arg1="904,905,906" />							
+		</onEnter>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+<!-- 20170223 업데이트 던전 개편 단축 			
+	<state name="Round03_PickRoute_Left">
+		<onEnter>
+			<action name="SetUserValue" triggerID="1303" key="MakeTrue" value="1" /> 	
+			<action name="SetUserValue" triggerID="2303" key="MakeFalse" value="1" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="GoToRound04"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+	<state name="GoToRound04">
+		<onEnter>
+			<action name="SetUserValue" triggerID="4" key="FindWayRight" value="1" /> 	
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="Quit"/>	
+				</condition> 			
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="Round03_PickRoute_Right">
+		<onEnter>
+			<action name="SetUserValue" triggerID="1303" key="MakeFalse" value="1" /> 	
+			<action name="SetUserValue" triggerID="2303" key="MakeTrue" value="1" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="GoToRound08"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+	<state name="GoToRound08">
+		<onEnter>
+			<action name="SetUserValue" triggerID="8" key="FindWay" value="1" />  		
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="Quit"/>	
+				</condition> 			
+		<onExit> 
+		</onExit> 	
+	</state>	
+	
+	<state name="Quit">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="904,905,906" />						
+		</onEnter>
+		<onExit> 
+		</onExit> 
+	</state>		-->
+</ms2>
+

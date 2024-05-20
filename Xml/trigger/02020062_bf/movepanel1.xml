@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="발판초기화">
+        <onEnter>
+			<action name="움직이는발판을설정한다" arg1="2000,2001,2002,2003,2004,2005,2006,2007,2008" arg2="0" />
+			<action name="SetVisibleBreakableObject" arg1="2000,2001,2002,2003,2004,2005,2006,2007,2008" arg2="0" />
+			<action name="SetUserValue" triggerID="99990024" key="MovePanel01" value="0" />
+            <action name="오브젝트반응설정한다" arg1="12000115" arg2="2" /> <!--이동발판트리거-->
+		</onEnter>
+		<condition name="UserValue" key="MovePanel01" value="1" > <!-- 이동발판 삭제 후 대기-->
+			<transition state="레버생성" />
+		</condition>
+    </state>
+
+    <state name="레버생성">		
+        <onEnter>
+            <action name="오브젝트반응설정한다" arg1="12000115" arg2="1" /> <!--이동발판트리거-->
+        </onEnter>
+        <condition name="오브젝트가반응했으면" arg1="12000115" arg2="0">
+            <transition state="발판이동" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="발판이동">		
+        <onEnter>
+			<action name="SetVisibleBreakableObject" arg1="2000,2001,2002,2003,2004,2005,2006,2007,2008" arg2="1" />
+            <action name="오브젝트반응설정한다" arg1="12000115" arg2="2" /> <!--이동발판트리거-->
+        </onEnter>
+			<condition name="유저를감지했으면" arg1="9200">
+				<action name="움직이는발판을설정한다" arg1="2000,2001,2002,2003,2004,2005,2006,2007,2008" arg2="1" />
+				<transition state="대기" />
+			</condition>
+			<condition name="유저를감지했으면" arg1="9204">
+				<action name="움직이는발판을설정한다" arg1="2000,2001,2002,2003,2004,2005,2006,2007,2008" arg2="1" />
+				<transition state="대기" />
+			</condition>
+        <onExit>
+        </onExit>
+	</state>
+	<state name= "대기">
+		<condition name="!유저를감지했으면" arg1="9204">
+			<action name="움직이는발판을설정한다" arg1="2000,2001,2002,2003,2004,2005,2006,2007,2008" arg2="0" />
+			<transition state="발판이동" />
+		</condition>
+	</state>
+</ms2>

@@ -1,0 +1,1239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="입장">
+			    <condition name="유저를감지했으면" arg1="100">
+					<transition state="대기" />
+				</condition>
+    </state>
+
+    <state name="대기">
+        <onEnter>
+			<action name="CreateWidget" arg1="OxQuiz"/><!--OX 퀴즈 선언-->
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/>
+			<!--action name="포탈을설정한다" arg1="99" arg2="0" arg3="0" arg4="0"/-->
+			<!--action name="포탈을설정한다" arg1="10002" arg2="0" arg3="0" arg4="0"/-->
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />
+			<action name="이펙트를설정한다" arg1="602" arg2="0" />
+			<action name="이펙트를설정한다" arg1="603" arg2="0" />
+			<action name="이펙트를설정한다" arg1="604" arg2="0" />
+			<action name="이펙트를설정한다" arg1="605" arg2="0" />
+			<action name="이펙트를설정한다" arg1="606" arg2="0" />
+			<action name="이펙트를설정한다" arg1="607" arg2="0" />
+			<action name="이펙트를설정한다" arg1="608" arg2="0" />
+			<action name="이펙트를설정한다" arg1="609" arg2="0" />
+			<action name="이펙트를설정한다" arg1="610" arg2="0" />
+			<action name="이펙트를설정한다" arg1="611" arg2="0" />
+			<action name="이펙트를설정한다" arg1="612" arg2="0" />
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" /><!--O-->
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" /><!--X-->
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" /><!--주변-->
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" /><!--벽-->
+        </onEnter>
+				<condition name="여러명의유저를감지했으면" arg1="100" arg2="50">
+					<transition state="시작준비" />
+				</condition>
+				<condition name="WaitTick" waitTick="60000" > 
+						<transition state="시작준비"/>
+				 </condition>
+        <onExit />
+    </state>
+ 
+	<state name="시작준비">
+		<onEnter>
+			<action name="SetMiniGameAreaForHack" boxID="105" /><!--해킹 보안용 시작 box 설정-->
+			<action name="WidgetAction" arg1="OxQuiz" arg2="DevMode" arg3="0"/><!--개발자 모드 On (문제에 정답이 보인다)-->
+			<!--action name="WidgetAction" arg1="OxQuiz" arg2="ReserveQuiz" arg3="1916"/--><!--특정 문제만 먼저 뽑을 때 사용-->
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="안내01"/>
+				</condition>
+	</state>
+
+	<state name="안내01">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__0$" arg3="5000" arg4="0" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="6000" > 
+					<transition state="안내02"/>
+				</condition>
+	</state>
+
+	<state name="안내02">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="602" arg2="1" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__1$" arg3="4000" arg4="0" />
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="안내03"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="안내03">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="603" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__2$" arg3="4000" arg4="0" />
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제1"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제1">
+		<onEnter>
+			<action name="StartMiniGame" boxId="105" round="10" gameName="oxquiz"/>
+			<action name="StartMiniGameRound" boxId="105" round="1" />
+			<action name="업적이벤트를발생시킨다" arg1="100" arg2="trigger" arg3="oxquiz_start"/> 
+			<action name="업적이벤트를발생시킨다" arg1="100" arg2="trigger" arg3="dailyquest_start"/>
+			<!--길드 경험치 지급 / boxID="타겟박스id", 0이면 맵전체, type="GuildGainExp의 id" 2가 매시브이벤트-->
+			<action name="GiveGuildExp" boxID="0" type="2"/>
+			<!--action name="이펙트를설정한다" arg1="612" arg2="1" /-->
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+           <action name="이벤트UI를설정한다" arg1="0" arg2="1,10" />
+			<!--OX 퀴즈 문제 뽑기, arg3=난이도(1~5)-->
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="1"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제1벽생성"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제1벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제1정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제1정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="1"/>
+		</onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제1정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제1정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+
+	<state name="문제1정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제2준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="1"/>
+		</onExit>
+	</state>
+
+	<state name="문제1정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제2준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="1"/>
+		</onExit>
+	</state>
+
+	<state name="문제2준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__3$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제2"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제2">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="2" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="2,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="1"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제2벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제2벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제2정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제2정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="2"/>
+        </onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제2정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제2정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제2정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제3준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="2"/>
+		</onExit>
+	</state>
+
+	<state name="문제2정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제3준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="2"/>
+		</onExit>
+	</state>
+
+	<state name="문제3준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__4$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제3"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제3">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="3" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="3,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="2"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제3벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제3벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제3정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제3정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="3"/>
+		</onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제3정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제3정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제3정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제4준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="3"/>
+		</onExit>
+	</state>
+
+	<state name="문제3정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제4준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="3"/>
+		</onExit>
+	</state>
+
+	<state name="문제4준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__5$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제4"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제4">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="4" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="4,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="2"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제4벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제4벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제4정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제4정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="4"/>
+		</onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제4정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제4정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제4정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제5준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="4"/>
+		</onExit>
+
+	</state>
+
+	<state name="문제4정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제5준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="4"/>
+		</onExit>
+	</state>
+
+	<state name="문제5준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__6$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제5"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제5">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="5" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="5,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="3"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제5벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제5벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제5정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제5정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="5"/>
+		</onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제5정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제5정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제5정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제6준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="5"/>
+		</onExit>
+	</state>
+
+	<state name="문제5정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제6준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="5"/>
+		</onExit>
+	</state>
+
+	<state name="문제6준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__7$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제6"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제6">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="6" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="6,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="3"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제6벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제6벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제6정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제6정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="6"/>
+		</onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제6정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제6정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제6정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제7준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="6"/>
+		</onExit>
+	</state>
+
+	<state name="문제6정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제7준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="6"/>
+		</onExit>
+	</state>
+
+	<state name="문제7준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__8$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제7"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제7">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="7" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="7,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="4"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제7벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제7벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제7정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제7정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="7"/>
+		</onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제7정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제7정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제7정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제8준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="7"/>
+		</onExit>
+	</state>
+
+	<state name="문제7정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제8준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="7"/>
+		</onExit>
+	</state>
+
+	<state name="문제8준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__9$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제8"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제8">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="8" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="8,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="4"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제8벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제8벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제8정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제8정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="8"/>
+		</onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제8정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제8정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제8정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제9준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="8"/>
+		</onExit>
+	</state>
+
+	<state name="문제8정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제9준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="8"/>
+		</onExit>
+	</state>
+
+	<state name="문제9준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__10$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제9"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제9">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="9" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="9,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="5"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제9벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제9벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제9정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제9정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="9"/>
+		</onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제9정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제9정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제9정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제10준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="9"/>
+		</onExit>
+	</state>
+
+	<state name="문제9정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="문제10준비"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="9"/>
+		</onExit>
+	</state>
+
+	<state name="문제10준비">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="605" arg2="1" />
+			<!--action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Ready_01"/-->
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__11$" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제10"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제10">
+		<onEnter>
+			<action name="StartMiniGameRound" boxId="105" round="10" />
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Start_01"/>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="10,10" />
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PickQuiz" arg3="5"/>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowQuiz" arg3="15"/>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<action name="타이머를설정한다" arg1="15" arg2="15"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="15">
+					<transition state="문제10벽생성"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="문제10벽생성">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg1="105" arg2="System_Quiz_Popup_Off_01"/>
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="문제10정답체크"/>
+				</condition>
+		<onExit />
+	</state>
+
+    <state name="문제10정답체크" posX="362" posY="145">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="PreJudge" arg3="10"/>
+        </onEnter>
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Correct">
+					<transition state="문제10정답O" />
+				</condition>	
+				<condition name="WidgetCondition" arg1="OxQuiz" arg2="Incorrect">
+					<transition state="문제10정답X" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="문제10정답O">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="101" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3201-3249" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9001,9002,9003,9004,9005,9006,9007,9008,9009,9010,9011,9012,9013,9014,9015,9016,9017,9018,9019,9020,9021,9022,9023,9024,9025,9026,9027,9028,9029,9030,9031,9032,9033,9034,9035,9036,9037,9038,9039,9040,9041,9042,9043,9044,9045,9046,9047,9048,9049"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+			
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="완료체크"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="10"/>
+		</onExit>
+	</state>
+
+	<state name="문제10정답X">
+		<onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="102" expRate ="0.1" meso=""/>
+			<action name="PlaySystemSoundInBox" arg1="102" arg2="System_Quiz_Answer_Correct_01"/>
+			<action name="PlaySystemSoundInBox" arg1="101" arg2="System_Quiz_Answer_Wrong_01"/>
+			<action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="oxquiz_correct"/> 
+			<action name="WidgetAction" arg1="OxQuiz" arg2="ShowAnswer" arg3="5"/>
+			<action name="랜덤메쉬를설정한다" arg1="3101-3149" arg2="0" arg3="49" arg4="0" arg5="10" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3502-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <!--action name="아이템을생성한다" arg1="9101,9102,9103,9104,9105,9106,9107,9108,9109,9110,9111,9112,9113,9114,9115,9116,9117,9118,9119,9120,9121,9122,9123,9124,9125,9126,9127,9128,9129,9130,9131,9132,9133,9134,9135,9136,9137,9138,9139,9140,9141,9142,9143,9144,9145,9146,9147,9148,9149"/-->
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="완료체크"/>
+				</condition>
+		<onExit>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Judge" arg3="10"/>
+		</onExit>
+	</state>
+
+	<state name="완료체크">
+		<onEnter>
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="2">
+					<transition state="성공"/>
+				</condition>
+				<condition name="!유저를감지했으면" arg1="105">
+					<transition state="종료" />
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>
+
+    <state name="성공" posX="300" posY="199">
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="3101-3149" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3249" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3355" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3500-3521" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="유저를이동시킨다" arg1="61000003" arg2="99" arg3="104" />
+			<!--action name="이펙트를설정한다" arg1="606" arg2="1" /-->
+        </onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="우승자카메라연출" />
+				</condition>				
+        <onExit />
+    </state>
+
+    <state name="우승자카메라연출">
+        <onEnter>
+            <action name="이벤트UI를설정한다" arg1="3" arg2="$61000003_ME_003__MAIN__12$" arg3="5000" arg4="105" />
+            <action name="이벤트UI를설정한다" arg1="4" arg2="$61000003_ME_003__MAIN__13$" arg3="5000" arg4="!105" />
+			<action name="MiniGameCameraDirection" boxId="105" cameraId="301" />
+        </onEnter>	
+				<condition name="WaitTick" waitTick="6000">
+					<action name="SetLocalCamera" cameraId="301" enable="0"/>	
+					<transition state="완료보상" />	
+				</condition>				
+    </state>
+
+    <state name="완료보상">
+        <onEnter>
+			<action name="WidgetAction" arg1="OxQuiz" arg2="Winner"/>
+			<action name="버프를걸어준다" arg1="105" arg2="70000019" arg3="1"/>
+			<action name="MiniGameGiveReward" winnerBoxId="105" contentType="miniGame" />
+		    <action name="EndMiniGame" winnerBoxId="105" gameName="oxquiz" />
+			<action name="업적이벤트를발생시킨다" arg1="105" arg2="trigger" arg3="oxquiz_win"/> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="종료2" />
+				</condition>				
+        <onExit />
+    </state>
+
+    <state name="종료" posX="300" posY="199">
+        <onEnter>
+            <action name="EndMiniGameRound" winnerBoxId ="105" expRate ="" meso=""/>
+		    <action name="EndMiniGame" winnerBoxId="105" gameName="oxquiz"/>
+			<action name="이펙트를설정한다" arg1="608" arg2="1" />
+            <action name="이벤트UI를설정한다" arg1="0" arg2="0,0" />
+            <action name="이벤트UI를설정한다" arg1="5" arg2="$61000003_ME_003__MAIN__14$" arg3="3000" arg4="0" />
+			<action name="타이머를설정한다" arg1="3" arg2="3" />
+        </onEnter>
+			<condition name="시간이경과했으면" arg1="3">
+				<transition state="종료2" />
+			</condition>				
+        <onExit />
+    </state>
+
+    <state name="종료2" posX="300" posY="199">
+        <onEnter>
+			<action name="UnSetMiniGameAreaForHack" /><!--해킹 보안 종료-->
+			<action name="이펙트를설정한다" arg1="609" arg2="1" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000003_ME_003__MAIN__15$" arg3="3000" arg4="0" />
+			<action name="타이머를설정한다" arg1="6" arg2="6" />
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="6">
+					  <action name="유저를이동시킨다" arg1="0" arg2="0"/>
+						<transition state="대기" />
+				</condition>				
+        <onExit />
+    </state>
+
+</ms2>

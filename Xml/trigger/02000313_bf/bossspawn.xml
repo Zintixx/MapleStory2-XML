@@ -1,0 +1,769 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="시작대기중">
+        <onEnter>
+            <action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0"/>
+            <action name="포탈을설정한다" arg1="12" arg2="0" arg3="0" arg4="0"/>
+            <action name="포탈을설정한다" arg1="13" arg2="0" arg3="0" arg4="0"/>
+			<action name="이펙트를설정한다" arg1 ="5001" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5002" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5003" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5004" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5005" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5006" arg2="0"/>					
+			<action name="사다리를설정한다" arg1="4001" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4002" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4003" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4004" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4005" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4006" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4007" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4008" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4101" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4102" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4103" arg2="0" arg3="0" />
+			<action name="사다리를설정한다" arg1="4104" arg2="0" arg3="0" />
+            <action name="메쉬를설정한다" arg1="3000-3015" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <action name="메쉬를설정한다" arg1="3100-3158" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <action name="메쉬를설정한다" arg1="3200-3235" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <action name="메쉬를설정한다" arg1="3300-3325" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터를생성한다" arg1="1099" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1101,1102,1103,1104,1105,1106,1107,1108" arg2="0" />
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="15">
+					<transition state="CheckUserCount" />
+				</condition>	
+    </state>
+
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+
+	 <state name="DungeonStart">
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="시작" />
+				</condition>
+    </state>
+	
+	
+	 <state name="시작">
+        <onEnter>
+            <action name="메쉬를설정한다" arg1="3000-3015" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터를생성한다" arg1="1001" arg2="0" />
+			<action name="몬스터를생성한다" arg1="2001" arg2="0" />
+		    <action name="카메라를선택한다" arg1="30000" arg2="1"/>
+			<action name="이펙트를설정한다" arg1 ="5002" arg2="1"/>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="스킵을설정한다" arg1="1차전투시작" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" >
+					<transition state="1차전투시작" />
+				</condition>
+        <onExit>
+		    <action name="카메라를선택한다" arg1="30000" arg2="0"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	
+	 <state name="1차전투시작">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			<action name="ShowGuideSummary" entityID="20031300" textID="20031300" durationTime="4000"/> 
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="1차전투시작2" />
+				</condition>
+	</state>  
+
+	 <state name="1차전투시작2">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			<action name="ShowGuideSummary" entityID="20031301" textID="20031301" durationTime="4000"/> 
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2001">
+					<transition state="1차NPC이동" />
+				</condition>
+	</state>  
+
+	<state name="1차NPC이동">
+		<onEnter>
+            <action name="NPC를이동시킨다" arg1="1001" arg2="MS2PatrolData_1001A" />
+		</onEnter>
+				<condition name="NPC를감지했으면" arg1="10101" arg2="1001" >
+					<action name="몬스터소멸시킨다" arg1="1001" />		
+					<action name="몬스터를생성한다" arg1="1002" arg2="0" />
+					<transition state="2차전투대기" />
+				</condition>
+	</state>  
+
+	 <state name="2차전투대기">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			<action name="ShowGuideSummary" entityID="20031302" textID="20031302" durationTime="4000"/> 
+			<action name="몬스터를생성한다" arg1="2002" arg2="0" />
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="10102">
+					<transition state="2차전투딜레이" />
+				</condition>
+				<condition name="몬스터가전투상태면" arg1="2002">
+					<transition state="2차전투딜레이" />
+				</condition>
+	</state>  
+
+	 <state name="2차전투딜레이">
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="2차전투시작" />
+				</condition>
+    </state>
+
+	 <state name="2차전투시작">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="1002" />		
+			<action name="몬스터를생성한다" arg1="1003" arg2="0" />
+			<action name="사다리를설정한다" arg1="4001" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4002" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4003" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4004" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4005" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4006" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4007" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4008" arg2="1" arg3="1" />
+            <action name="메쉬를설정한다" arg1="3100-3158" arg2="1" arg3="0" arg4="0" arg5="0" />
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2002">
+					<transition state="2차NPC이동" />
+				</condition>
+	</state>  
+
+	<state name="2차NPC이동">
+		<onEnter>
+            <action name="NPC를이동시킨다" arg1="1003" arg2="MS2PatrolData_1003B" />
+		</onEnter>
+				<condition name="NPC를감지했으면" arg1="10104" arg2="1003" >
+					<action name="몬스터소멸시킨다" arg1="1003" />		
+					<action name="몬스터를생성한다" arg1="1004" arg2="0" />
+					<transition state="3차전투대기" />
+				</condition>
+	</state>  
+
+
+	 <state name="3차전투대기">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2003" arg2="0" />
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			<action name="ShowGuideSummary" entityID="20031302" textID="20031302" durationTime="4000"/> 
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="10103">
+					<transition state="3차전투딜레이" />
+				</condition>
+				<condition name="몬스터가전투상태면" arg1="2003">
+					<transition state="3차전투딜레이" />
+				</condition>
+	</state>  
+
+	 <state name="3차전투딜레이">
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="3차전투시작" />
+				</condition>
+    </state>
+
+	 <state name="3차전투시작">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="1004" />		
+			<action name="몬스터를생성한다" arg1="1005" arg2="0" />
+			<action name="사다리를설정한다" arg1="4101" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4102" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4103" arg2="1" arg3="1" />
+			<action name="사다리를설정한다" arg1="4104" arg2="1" arg3="1" />
+            <action name="메쉬를설정한다" arg1="3200-3235" arg2="1" arg3="0" arg4="0" arg5="0" />
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2003">
+					<transition state="보스등장연출" />
+				</condition>
+	</state>  
+
+	 <state name="보스등장연출">
+        <onEnter>
+		    <action name="카메라를선택한다" arg1="30001" arg2="1"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="500" > 
+					<transition state="보스등장연출2" />
+				</condition>
+    </state>
+
+	 <state name="보스등장연출2">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="1099" />		
+			<action name="몬스터소멸시킨다" arg1="1005" />		
+			<action name="몬스터를생성한다" arg1="2099" arg2="0" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="보스등장연출3" />
+				</condition>
+	</state>  
+
+	 <state name="보스등장연출3">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="1101" arg2="Dead_A" arg3="9000"/>	
+			<action name="SetNpcEmotionLoop" arg1="1102" arg2="Dead_A" arg3="9000"/>	
+			<action name="SetNpcEmotionLoop" arg1="1103" arg2="Dead_A" arg3="9000"/>	
+			<action name="SetNpcEmotionLoop" arg1="1104" arg2="Dead_A" arg3="9000"/>	
+			<action name="SetNpcEmotionLoop" arg1="1105" arg2="Dead_A" arg3="9000"/>	
+			<action name="SetNpcEmotionLoop" arg1="1106" arg2="Dead_A" arg3="9000"/>	
+			<action name="SetNpcEmotionLoop" arg1="1107" arg2="Dead_A" arg3="9000"/>	
+			<action name="SetNpcEmotionLoop" arg1="1108" arg2="Dead_A" arg3="9000"/>	
+            <action name="메쉬를설정한다" arg1="3300-3325" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="스킵을설정한다" arg1="보스전투시작" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="보스전투시작" />
+				</condition>
+        <onExit>
+		    <action name="카메라를선택한다" arg1="30001" arg2="0"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="몬스터소멸시킨다" arg1="1101,1102,1103,1104,1105,1106,1107,1108" />		
+			<action name="SetNpcEmotionLoop" arg1="1005" arg2="Dead_Idle_A" arg3="9999999999999999"/>	
+			<action name="이펙트를설정한다" arg1 ="5002" arg2="0"/>					
+        </onExit>
+	</state>  
+
+	 <state name="보스전투시작">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			<action name="ShowGuideSummary" entityID="20031303" textID="20031303" durationTime="4000"/> 
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000" > 
+					<transition state="보스전투시작2" />
+				</condition>
+	</state>  
+
+	 <state name="보스전투시작2">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			<action name="ShowGuideSummary" entityID="20031304" textID="20031304" durationTime="6000"/> 
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2099">
+					<transition state="퀘스트체크" />
+				</condition>	
+	</state> 
+
+	<state name="퀘스트체크"> 
+		<onEnter>
+		</onEnter>
+			<condition name="IsDungeonRoom" > 
+				<transition state="종료" />  
+			</condition>    
+			<condition name="!IsDungeonRoom" > 
+				<transition state="퀘스트코드확인" />  
+			</condition>  
+		<onExit>
+		</onExit>
+  </state>
+
+	<state name="종료">
+		<onEnter>
+			<action name="DungeonClear" /> 
+			<action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="12" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="13" arg2="1" arg3="1" arg4="1"/>
+		</onEnter>
+	</state>
+
+	<state name="퀘스트코드확인">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+			<action name="이펙트를설정한다" arg1 ="5001" arg2="1"/>			
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="9997" arg2="10003105" arg3="2">
+				<transition state="퀘스트연출_시작"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9998" arg2="10003105" arg3="2">
+				<transition state="퀘스트연출_시작"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9999" arg2="10003105" arg3="2">
+				<transition state="퀘스트연출_시작"/>
+			</condition>			
+	</state>
+	
+	<state name="퀘스트연출_시작">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="연출UI를설정한다" arg1="9" arg2="$02000313_BF__BOSSSPAWN__43$" arg3="0" />			
+			<action name="몬스터를생성한다" arg1="205" arg2="1" /> <!--바야르-->
+			<action name="몬스터를생성한다" arg1="202" arg2="1" /> <!--무파사-->			
+			<action name="몬스터를생성한다" arg1="203" arg2="1" /> <!--구르는천둥-->				
+			<action name="몬스터를생성한다" arg1="204" arg2="1" /> <!-- 시끄러운 주먹-->							
+			<action name="유저를이동시킨다" arg1="02000313" arg2="6001"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="7000">	
+				<transition state="퀘스트연출_상황보여주기_01"/>
+			</condition> 					
+		<onExit>
+		</onExit>
+    </state>	
+	
+		<state name="퀘스트연출_상황보여주기_01"> 
+		<onEnter>
+		    <action name="SetSceneSkip" arg1="퀘스트연출끝_이동" arg2="exit"/>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="30000" arg2="1"/>					
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+			<action name="AddCinematicTalk" npcID="0" msg="$02000313_BF__BOSSSPAWN__44$" duration="3000" />
+			<action name="AddCinematicTalk" npcID="11003392" msg="$02000313_BF__BOSSSPAWN__45$" duration="3000" />				
+			<action name="SetNpcEmotionLoop" arg1="205" arg2="Stun_A" arg3="160000000"/>	
+			<action name="SetNpcEmotionLoop" arg1="203" arg2="Attack_Idle_A" arg3="160000000" />						
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="퀘스트연출_상황보여주기_02"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+
+	<state name="퀘스트연출_상황보여주기_02"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4012" arg2="0"/> 
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Bore_A"/>	
+			<action name="FaceEmotion" spawnPointID="203" emotionName="Trigger_Sad"/>					
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__46$" duration="3000" />							
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__47$" duration="3000" />										
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="퀘스트연출_상황보여주기_03"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+	<state name="퀘스트연출_상황보여주기_03"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4014" arg2="0"/> 		
+			<action name="SetNpcEmotionLoop" arg1="203" arg2="Attack_Idle_A" arg3="999999999" />
+			<action name="SetNpcEmotionSequence" arg1="204" arg2="Talk_A,Bore_B"/>
+			<action name="이펙트를설정한다" arg1 ="5001" arg2="0"/>				
+			<action name="AddCinematicTalk" npcID="11003454" msg="$02000313_BF__BOSSSPAWN__48$" duration="3000" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="퀘스트연출_상황보여주기_04_1"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>	
+
+	<state name="퀘스트연출_상황보여주기_04_1"> 
+		<onEnter>
+			<action name="FaceEmotion" spawnPointID="203" emotionName="Trigger_Danger"/>
+			<action name="AddCinematicTalk" npcID="11003387" msg="$02000313_BF__BOSSSPAWN__49$" duration="3000" />										
+			<action name="AddCinematicTalk" npcID="11003387" msg="$02000313_BF__BOSSSPAWN__50$" duration="3000" />
+			<action name="AddCinematicTalk" npcID="11003454" msg="$02000313_BF__BOSSSPAWN__51$" duration="3000" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="9000">	
+				<transition state="퀘스트연출_상황보여주기_04_2"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>	
+	
+	
+	<state name="퀘스트연출_상황보여주기_04_2"> 
+		<onEnter>	
+			<action name="카메라경로를선택한다" arg1="4011" arg2="0"/>
+			<action name="SetPcEmotionSequence" arg1="Talk_A"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$02000313_BF__BOSSSPAWN__52$" duration="3000" />
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__53$" duration="3000" />				
+			<action name="몬스터를생성한다" arg1="201" arg2="1" /> <!--붉은늑대심장-->
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$02000313_BF__BOSSSPAWN__54$" duration="2000" delayTick="5000"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="퀘스트연출_상황보여주기_04"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+	
+	<state name="퀘스트연출_상황보여주기_04"> 
+		<onEnter>
+			<action name="FaceEmotion" spawnPointID="201" emotionName="Talk"/>			
+			<action name="SetNpcEmotionLoop" arg1="201" arg2="Idle_A" arg3="999999999" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">	
+				<transition state="퀘스트연출_상황보여주기_05"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+	<state name="퀘스트연출_상황보여주기_05"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4013" arg2="0"/> 
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_9991" />			
+			<action name="AddCinematicTalk" npcID="11003387" msg="$02000313_BF__BOSSSPAWN__55$" duration="3000" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="퀘스트연출_상황보여주기_06"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>	
+	
+	<state name="퀘스트연출_상황보여주기_06"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4013" arg2="0"/>
+			<action name="SetNpcEmotionLoop" arg1="201" arg2="Idle_A" arg3="999999999" />	 			
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__56$" duration="3000" />		
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__57$" duration="3000" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="퀘스트연출_상황보여주기_07"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+	<state name="퀘스트연출_상황보여주기_07"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4014" arg2="0"/> 		
+			<action name="AddCinematicTalk" npcID="11003387" msg="$02000313_BF__BOSSSPAWN__58$" duration="3000" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="퀘스트연출_상황보여주기_08"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+		<state name="퀘스트연출_상황보여주기_08"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4018" arg2="0"/> 		
+			<action name="SetNpcEmotionLoop" arg1="201" arg2="Idle_A" arg3="999999999" />
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Bore_A" />
+			<action name="NPC를이동시킨다" arg1="202" arg2="MS2PatrolData_9994" />			
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__15$" duration="3000" />							
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="퀘스트연출_상황보여주기_09"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+	<state name="퀘스트연출_상황보여주기_09"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4013" arg2="0"/>
+			<action name="SetNpcEmotionLoop" arg1="201" arg2="Attack_Idle_A" arg3="999999999" />			
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__59$" duration="3000" />
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__60$" duration="3000" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="퀘스트연출_상황보여주기_10"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+	</state>
+	
+	
+	<state name="퀘스트연출_상황보여주기_10"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4014" arg2="0"/> 
+			<action name="NPC를이동시킨다" arg1="202" arg2="MS2PatrolData_9995" />					
+			<action name="AddCinematicTalk" npcID="11003387" msg="$02000313_BF__BOSSSPAWN__61$" duration="3000" />					
+			<action name="AddCinematicTalk" npcID="0" msg="$02000313_BF__BOSSSPAWN__62$" duration="3000" />
+			<action name="SetNpcEmotionSequence" arg1="204" arg2="Talk_A"/>
+			<action name="SetNpcEmotionSequence" arg1="203" arg2="Attack_01_C"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="퀘스트연출_상황보여주기_10_1"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+	</state>			
+
+	<state name="퀘스트연출_상황보여주기_10_1"> 
+		<onEnter>	
+			<action name="카메라경로를선택한다" arg1="4013" arg2="0"/> 
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__63$" duration="3000" />		
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__64$" duration="3000" />
+			<action name="SetNpcEmotionLoop" arg1="201" arg2="Attack_Idle_A" arg3="999999999" />	
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__65$" duration="3000" />						
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__66$" duration="3000" />
+			<action name="AddCinematicTalk" npcID="0" msg="$02000313_BF__BOSSSPAWN__67$" duration="3000" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="15000">	
+				<transition state="퀘스트연출_상황보여주기_11"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>	
+	
+	<state name="퀘스트연출_상황보여주기_11"> 
+		<onEnter>
+			<action name="SetNpcEmotionSequence" arg1="201" arg2="ChatUp_A" />
+			<action name="FaceEmotion" spawnPointID="201" emotionName="Trigger_Proud"/>
+			<action name="NPC를이동시킨다" arg1="202" arg2="MS2PatrolData_9996" /> 				
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__68$" duration="4000" />					
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__69$" duration="4000" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="8000">	
+				<transition state="퀘스트연출_상황보여주기_11_1"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>					
+			
+	<state name="퀘스트연출_상황보여주기_11_1"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4014" arg2="0"/> 
+			<action name="AddCinematicTalk" npcID="11003387" msg="$02000313_BF__BOSSSPAWN__70$" duration="3000" />
+			<action name="SetNpcEmotionLoop" arg1="203" arg2="Sit_Down_A" arg3="10000" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="퀘스트연출_상황보여주기_11_2"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>	
+
+	<state name="퀘스트연출_상황보여주기_11_2"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4018" arg2="0"/> 			
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__71$" duration="3000" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="퀘스트연출_상황보여주기_11_3"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>			
+
+	<state name="퀘스트연출_상황보여주기_11_3"> 
+		<onEnter>	
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Bore_A" />
+			<action name="FaceEmotion" spawnPointID="201" emotionName="Trigger_Sad"/>			
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__72$" duration="3000" />
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__73$" duration="3000" />				
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__74$" duration="3000" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="10000">	
+				<transition state="퀘스트연출_상황보여주기_11_4_1"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+	<state name="퀘스트연출_상황보여주기_11_4_1"> 
+		<onEnter>			
+			<action name="FaceEmotion" spawnPointID="201" emotionName="Trigger_Proud"/>	
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__75$" duration="6060" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="6060">	
+				<transition state="퀘스트연출_상황보여주기_11_4"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>		
+
+	<state name="퀘스트연출_상황보여주기_11_4"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4019" arg2="0"/> 					
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Attack_01_A"/>				
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__76$" duration="4000" />			
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__77$" duration="4000" />						
+			<action name="스킵을설정한다" arg1="퀘스트연출_마지막전투_04" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="8000">	
+				<transition state="퀘스트연출_상황보여주기_12"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+
+	
+	<state name="퀘스트연출_상황보여주기_12"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4014" arg2="0"/> 		
+			<action name="AddCinematicTalk" npcID="11003387" msg="$02000313_BF__BOSSSPAWN__78$" duration="3000" />
+			<action name="FaceEmotion" spawnPointID="203" emotionName="Trigger_Embarrassed"/>								
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="퀘스트연출_상황보여주기_13"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+		<state name="퀘스트연출_상황보여주기_13"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4018" arg2="0"/> 			
+			<action name="VisibleMyPC" isVisible="0" />
+			<action name="SetNpcEmotionSequence" arg1="201" arg2="Bore_A" />
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Attack_01_C" />				
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__79$" duration="3000" />	
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__80$" duration="3000" />					
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__81$" duration="3000" />
+			<action name="SetOnetimeEffect" id="101" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>	
+			<action name="몬스터소멸시킨다" arg1="203" /> <!--구르는천둥-->				
+			<action name="몬스터소멸시킨다" arg1="204" /> <!-- 시끄러운 주먹-->					
+		</onEnter>
+			<condition name="WaitTick" waitTick="9000">	
+				<transition state="퀘스트연출_마지막전투_01"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+
+	<state name="퀘스트연출_마지막전투_01"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4020" arg2="0"/> 	
+			<action name="SetOnetimeEffect" id="101" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>	
+			<action name="SetNpcEmotionSequence" arg1="205" arg2="Attack_04_G"/>
+			<action name="AddCinematicTalk" npcID="11003392" msg="$02000313_BF__BOSSSPAWN__82$" duration="1500" />				
+			<action name="이펙트를설정한다" arg1 ="5004" arg2="1"/>						
+		</onEnter>
+			<condition name="WaitTick" waitTick="1500">	
+				<transition state="퀘스트연출_마지막전투_02"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+			<state name="퀘스트연출_마지막전투_02"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4017" arg2="0"/> 			
+			<action name="VisibleMyPC" isVisible="0" />						
+			<action name="AddCinematicTalk" npcID="11003393" msg="$02000313_BF__BOSSSPAWN__83$" duration="3000" />	
+			<action name="AddCinematicTalk" npcID="11003407" msg="$02000313_BF__BOSSSPAWN__84$" duration="3000" />
+			<action name="SetOnetimeEffect" id="102" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+			<action name="SetNpcEmotionSequence" arg1="205" arg2="Attack_02_H"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="6500">	
+				<transition state="퀘스트연출_마지막전투_03"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>	
+	
+		<state name="퀘스트연출_마지막전투_03"> 
+		<onEnter>
+			<action name="VisibleMyPC" isVisible="0" />			
+			<action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_9993" />		
+			<action name="NPC를이동시킨다" arg1="202" arg2="MS2PatrolData_9992" />
+			<action name="SetNpcEmotionSequence" arg1="205" arg2="Attack_04_G"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">	
+				<transition state="퀘스트연출_마지막전투_03_1"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>			
+	
+	<state name="퀘스트연출_마지막전투_03_1"> 
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4017" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5001" arg2="1" />	
+			<action name="SetOnetimeEffect" id="102" enable="1" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>				
+			<action name="SetNpcEmotionSequence" arg1="205" arg2="Dead_A"/> 			
+			<action name="SetNpcEmotionSequence" arg1="201" arg2="Attack_01_B"/>						
+			<action name="이펙트를설정한다" arg1 ="5003" arg2="1"/>
+			<action name="이펙트를설정한다" arg1 ="5005" arg2="1"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="1500">	
+				<transition state="퀘스트연출_마지막전투_04"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+
+		<state name="퀘스트연출_마지막전투_04"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+			<action name="몬스터소멸시킨다" arg1="201" />
+			<action name="몬스터소멸시킨다" arg1="202" />
+			<action name="몬스터소멸시킨다" arg1="205" />
+			<action name="몬스터를생성한다" arg1="206" arg2="1" />
+			<action name="몬스터를생성한다" arg1="207" arg2="1" />
+			<action name="이펙트를설정한다" arg1 ="5001" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5003" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5004" arg2="0"/>			
+			<action name="SetNpcEmotionLoop" arg1="206" arg2="Dead_A" arg3="1000000" />	
+			<action name="SetNpcEmotionLoop" arg1="207" arg2="Dead_B" arg3="1000000" />				
+			<action name="FaceEmotion" spawnPointID="206" emotionName="Trigger_Dead"/>
+			<action name="FaceEmotion" spawnPointID="207" emotionName="Trigger_Dead"/>
+			<action name="이펙트를설정한다" arg1 ="5006" arg2="1"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">	
+				<transition state="퀘스트연출_마지막전투_05"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+	<state name="퀘스트연출_마지막전투_05"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG\weather\Eff_monochrome_03.xml"/>
+			<action name="카메라경로를선택한다" arg1="4021,4022" arg2="0"/> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="퀘스트연출_마지막전투_06"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+
+    <state name="퀘스트연출_마지막전투_06"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/>
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG\weather\Eff_monochrome_03.xml"/> 
+			<action name="연출UI를설정한다" arg1="9" arg2="$02000313_BF__BOSSSPAWN__85$" arg3="0" />			
+			<action name="이펙트를설정한다" arg1 ="5005" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="5006" arg2="0"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">	
+				<transition state="퀘스트연출_마지막전투_07"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>
+	
+    <state name="퀘스트연출_마지막전투_07"> 
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$02000313_BF__BOSSSPAWN__86$" arg3="0" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">	
+				<transition state="퀘스트연출_마지막전투_08"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>	
+	
+    <state name="퀘스트연출_마지막전투_08"> 
+		<onEnter>
+		    <action name="SetSceneSkip" arg1="" arg2=""/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">	
+				<transition state="퀘스트연출끝_이동"/>
+			</condition> 					
+		<onExit>
+		</onExit>	
+    </state>	
+	
+    <state name="퀘스트연출끝_이동"> 
+		<onEnter>
+			<action name="VisibleMyPC" isVisible="1" />			
+ 			<action name="유저를이동시킨다" arg1="52010032" arg2="3"/>	
+		</onEnter>						
+		<onExit>
+		</onExit>
+    </state>	
+	
+</ms2>

@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+
+<state name="Ready">
+    <onEnter>
+		<action name="액터를설정한다" arg1="4002" arg2="0" arg3="Closed_A" />
+	    <action name="이벤트UI를설정한다" arg1="0" arg2="0,3" />
+		<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>
+		<action name="메쉬를설정한다" arg1="6001" arg2="0" />
+		<action name="메쉬를설정한다" arg1="6002" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "7999" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "7001" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "7002" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "7003" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "7999" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "7998" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "7801" arg2="0" />	
+		<action name="이펙트를설정한다" arg1 = "7802" arg2="0" />	
+		<action name="이펙트를설정한다" arg1 = "7803" arg2="0" />	
+		<action name="몬스터를생성한다" arg1="101" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->		
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="700" arg2="1">
+			<transition state="Ready_Idle"/>
+		</condition>				
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+   <state name="Ready_Idle">
+    <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />		
+    </onEnter>
+			<condition name="시간이경과했으면" arg1="1">
+				<transition state="Ready_Idle_02"/> 
+			</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+    <state name="Ready_Idle_02">
+    <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="타이머를설정한다" arg1="30" arg2="30" arg4="0" />		
+    </onEnter>
+			<condition name="시간이경과했으면" arg1="30">
+				<transition state="start_02"/> 
+			</condition>		
+			<condition name="여러명의유저를감지했으면" arg1="700" arg2="10">
+				<transition state="start_02"/>
+			</condition>
+    <onExit>
+			<action name="HideGuideSummary" entityID="100"/>
+    </onExit>
+  </state>
+  
+ <!-- 매시브 이벤트에서는 해당 스테이트를 이동하지 않음 -->
+      <state name="start_01">
+    <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/> 	
+			<action name="PlaySystemSoundInBox" arg2="System_Dark_Intro_Chord_01"/>
+			<action name="연출UI를설정한다" arg1="3" arg2="$02000374_BF__MAIN__25$" /> <!-- 오브젝티브 -->
+			<action name="타이머를설정한다" arg1="5" arg2="5" arg4="0" />
+    </onEnter>
+	        <condition name="시간이경과했으면" arg1="5">
+				<transition state="start_02"/>
+			</condition>		
+    <onExit>
+			<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+  </state>
+  
+  <state name="start_02">
+    <onEnter>
+		<action name="업적이벤트를발생시킨다" arg1="700" arg2="trigger" arg3="dailyquest_start"/>
+		<action name="SetUserValue" triggerID="2037406" key="timer" value="1" /> <!-- 타이머 시작 장치 -->
+        <action name="이벤트UI를설정한다" arg1="0" arg2="1,3" />
+		<action name="이펙트를설정한다" arg1 = "7998" arg2="1" />
+		<action name="메쉬를설정한다" arg1="6002" arg2="0" />
+		<action name="액터를설정한다" arg1="4001" arg2="1" arg3="Opened_A" />
+		<action name="포탈을설정한다" arg1="1" arg2="0" arg3="1" arg4="0"/>
+    </onEnter>
+	    <condition name="몬스터가죽어있으면" arg1="101">
+			<transition state="2Round" />
+        </condition>
+		<condition name="유저를감지했으면" arg1="701">
+			<transition state="1Round_Talk"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+   <state name="1Round_Talk">
+    <onEnter>		
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__0$" arg3="5000" />
+    </onEnter>
+	    <condition name="몬스터가죽어있으면" arg1="101">
+			<transition state="2Round" />
+        </condition>
+		<condition name="WaitTick" waitTick="6000" > 
+				<transition state="1Round_Talk_01" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+
+  
+     <state name="1Round_Talk_01">
+    <onEnter>		
+		<action name="몬스터를생성한다" arg1="110" arg2="0" /> <!-- 닥터 피피 -->	
+    </onEnter>
+	    <condition name="몬스터가죽어있으면" arg1="101">
+			<transition state="2Round" />
+        </condition>
+		<condition name="WaitTick" waitTick="6000" > 
+				<transition state="1Round_Talk_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+     <state name="1Round_Talk_02">
+    <onEnter>		
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__1$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__1$" arg4="3" arg5="0"/>
+		<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_2001" />
+    </onEnter>
+	    <condition name="몬스터가죽어있으면" arg1="101">
+			<transition state="2Round" />
+        </condition>
+		<condition name="WaitTick" waitTick="4000" > 
+				<transition state="1Round_Talk_03" />
+		</condition>
+    <onExit>
+
+    </onExit>
+  </state>
+  
+  
+       <state name="1Round_Talk_03">
+    <onEnter>		
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__2$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__2$" arg4="3" arg5="0"/>
+    </onEnter>
+	    <condition name="WaitTick" waitTick="4000" > 
+				<transition state="1Round_Talk_04" />
+		</condition>
+		<condition name="몬스터가죽어있으면" arg1="101">
+			<transition state="2Round" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+         <state name="1Round_Talk_04">
+    <onEnter>		
+
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="101">
+			<transition state="2Round" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+ 
+   <state name="2Round">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__3$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__3$" arg4="3" arg5="0"/>
+    </onEnter>
+	    <condition name="WaitTick" waitTick="4000" > 
+				<transition state="2Round_Talk_00" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+     <state name="2Round_Talk_00">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__26$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__27$" arg4="3" arg5="0"/>
+
+		<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_2002" />
+    </onEnter>
+	    <condition name="WaitTick" waitTick="4000" > 
+				<transition state="2Round_Talk_01" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="2Round_Talk_01">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="0" arg2="2,3" />
+		<action name="카메라를선택한다" arg1="8001" arg2="1"/>
+		<action name="이펙트를설정한다" arg1 = "7801" arg2="1" />	
+		<action name="이펙트를설정한다" arg1 = "7802" arg2="1" />	
+<!-- 		<action name="이펙트를설정한다" arg1 = "7803" arg2="1" />	 -->
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__28$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__29$" arg4="3" arg5="0"/>
+<!-- 		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__4$" arg4="3" arg5="1"/> -->
+    </onEnter>
+		   <condition name="WaitTick" waitTick="6000" > 
+
+		   		<action name="스킬을설정한다" arg1="5001" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5002" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5003" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5004" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5005" arg2="1"/>				
+				<action name="스킬을설정한다" arg1="5006" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5007" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5008" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5009" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5010" arg2="1"/>	
+				<action name="스킬을설정한다" arg1="5011" arg2="1"/>
+				<action name="스킬을설정한다" arg1="5012" arg2="1"/>			
+				<action name="스킬을설정한다" arg1="5013" arg2="1"/>					
+				<transition state="2Round_Talk_02" />
+				
+		</condition>
+    <onExit>
+		<action name="카메라를선택한다" arg1="8001" arg2="0"/>
+		<action name="이펙트를설정한다" arg1 = "7001" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "7002" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "7003" arg2="1" />
+    </onExit>
+  </state>  
+  
+  
+     <state name="2Round_Talk_02">
+    <onEnter>
+		<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_2003" />
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__5$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__5$" arg4="3" arg5="1"/>
+    </onEnter>
+		   <condition name="WaitTick" waitTick="6000" > 
+				<transition state="2Round_Talk_03" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="2Round_Talk_03">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__6$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__6$" arg4="3" arg5="0"/>
+    </onEnter>
+		   <condition name="WaitTick" waitTick="4000" > 
+				<transition state="2Round_Spawn_Random" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+     <state name="2Round_Spawn_Random">
+    <onEnter>
+    </onEnter>
+ 		<condition name="랜덤조건" arg1="33">
+			<transition state="2Round_Spawn_A" />
+		</condition> 
+ 		<condition name="랜덤조건" arg1="33">
+				<transition state="2Round_Spawn_B" />
+		</condition>
+		<condition name="랜덤조건" arg1="33">
+				<transition state="2Round_Spawn_C" />
+		</condition> 
+    <onExit>
+    </onExit>
+  </state>
+ 
+    <state name="2Round_Spawn_A">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__7$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__7$" arg4="3" arg5="0"/> <!-- 카모칸 -->
+		<action name="SetUserValue" triggerID="2037402" key="2Round_A" value="1" /> <!-- 파모칸 소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="85000" > <!-- 2라운드 1차 스폰 타이머 -->
+			<transition state="2Round_Spawn_A_02_Ready" />
+		</condition>
+		<condition name="UserValue" key="2Round_A" value="1">
+			<transition state="2Round_Spawn_A_02_Ready" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+    
+    <state name="2Round_Spawn_B">
+    <onEnter>
+		<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_2004" />
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__8$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__8$" arg4="3" arg5="0"/>
+		<action name="SetUserValue" triggerID="2037403" key="2Round_B" value="1" /> <!-- 캡틴 아구스 소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="85000" >  <!-- 2라운드 1차 스폰 타이머 -->
+			<transition state="2Round_Spawn_B_02_Ready" />
+		</condition>
+		<condition name="UserValue" key="2Round_B" value="1">
+			<transition state="2Round_Spawn_B_02_Ready" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+      <state name="2Round_Spawn_C">
+    <onEnter>
+		<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_2005" />
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__9$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__9$" arg4="3" arg5="0"/>
+		<action name="SetUserValue" triggerID="2037404" key="2Round_C" value="1" /> <!-- 데블린 치프  소환 장치 -->
+    </onEnter>
+ 		<condition name="WaitTick" waitTick="85000" > <!-- 2라운드 1차 스폰 타이머 -->
+			<transition state="2Round_Spawn_C_02_Ready" />
+		</condition>
+		<condition name="UserValue" key="2Round_C" value="1">
+			<transition state="2Round_Spawn_C_02_Ready" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+    
+       <state name="2Round_Spawn_A_02_Ready">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__10$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__10$" arg4="3" arg5="1"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="2Round_Spawn_A_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+      <state name="2Round_Spawn_B_02_Ready">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__13$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__13$" arg4="3" arg5="1"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="2Round_Spawn_B_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+      <state name="2Round_Spawn_C_02_Ready">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__16$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__16$" arg4="3" arg5="1"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="2Round_Spawn_C_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+     <state name="2Round_Spawn_A_02">
+    <onEnter>
+    </onEnter>
+		<condition name="랜덤조건" arg1="50">
+				<transition state="2Round_Spawn_A_B_02" />
+		</condition>
+		<condition name="랜덤조건" arg1="50">
+				<transition state="2Round_Spawn_A_C_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+       <state name="2Round_Spawn_A_B_02">
+    <onEnter>
+	
+		<action name="SetUserValue" triggerID="2037403" key="2Round_B" value="1" /> <!-- 캡틴 모크  소환 장치 -->
+    </onEnter>
+ 		<condition name="WaitTick" waitTick="135000" > <!-- 2라운드 2차 스폰 타이머 -->
+			<transition state="2Round_Spawn_A_B_C" />
+		</condition>
+		<condition name="UserValue" key="2Round_B" value="1">
+			<transition state="2Round_Spawn_A_B_C" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+      
+       <state name="2Round_Spawn_A_C_02">
+    <onEnter>
+		<action name="SetUserValue" triggerID="2037404" key="2Round_C" value="1" /> <!-- 데블린 치프  소환 장치 -->
+    </onEnter>
+ 		<condition name="WaitTick" waitTick="135000" > <!-- 2라운드 2차 스폰 타이머 -->
+			<transition state="2Round_Spawn_A_C_B" />
+		</condition>
+		<condition name="UserValue" key="2Round_C" value="1">
+			<transition state="2Round_Spawn_A_C_B" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+        <state name="2Round_Spawn_A_B_C">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__11$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__11$" arg4="3" arg5="1"/>
+		<action name="SetUserValue" triggerID="2037404" key="2Round_C" value="1" /> <!-- 데블린 치프  소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="15000" > 
+			<transition state="2Round_End_Condition" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>  
+  
+  
+         <state name="2Round_Spawn_A_C_B">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__12$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__12$" arg4="3" arg5="1"/>
+		<action name="SetUserValue" triggerID="2037403" key="2Round_B" value="1" /> <!-- 캡틴 모크  소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="15000" > 
+			<transition state="2Round_End_Condition" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+     
+  
+     <state name="2Round_Spawn_B_02">
+    <onEnter>
+    </onEnter>
+		<condition name="랜덤조건" arg1="50">
+				<transition state="2Round_Spawn_B_A_02" />
+		</condition>
+		<condition name="랜덤조건" arg1="50">
+				<transition state="2Round_Spawn_B_C_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+       <state name="2Round_Spawn_B_A_02">
+    <onEnter>
+		<action name="SetUserValue" triggerID="2037402" key="2Round_A" value="1" /> <!-- 파모칸 소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="135000" > <!-- 2라운드 2차 스폰 타이머 -->
+			<transition state="2Round_Spawn_B_A_C" />
+		</condition>
+		<condition name="UserValue" key="2Round_A" value="1">
+			<transition state="2Round_Spawn_B_A_C" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+      
+       <state name="2Round_Spawn_B_C_02">
+    <onEnter>
+		<action name="SetUserValue" triggerID="2037404" key="2Round_C" value="1" /> <!-- 데블린 치프  소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="135000" > <!-- 2라운드 2차 스폰 타이머 -->
+			<transition state="2Round_Spawn_B_C_A" />
+		</condition>
+		<condition name="UserValue" key="2Round_C" value="1">
+			<transition state="2Round_Spawn_B_C_A" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+        <state name="2Round_Spawn_B_A_C">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__14$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__14$" arg4="3" arg5="1"/>
+		<action name="SetUserValue" triggerID="2037404" key="2Round_C" value="1" /> <!-- 데블린 치프  소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="15000" > 
+			<transition state="2Round_End_Condition" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>  
+  
+  
+         <state name="2Round_Spawn_B_C_A">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__15$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__15$" arg4="3" arg5="1"/>
+		<action name="SetUserValue" triggerID="2037402" key="2Round_A" value="1" /> <!-- 파모칸 소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="15000" > 
+			<transition state="2Round_End_Condition" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>   
+  
+
+  
+     <state name="2Round_Spawn_C_02">
+    <onEnter>
+    </onEnter>
+		<condition name="랜덤조건" arg1="50">
+				<transition state="2Round_Spawn_C_A_02" />
+		</condition>
+		<condition name="랜덤조건" arg1="50">
+				<transition state="2Round_Spawn_C_B_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+     
+  
+       <state name="2Round_Spawn_C_A_02">
+    <onEnter>
+		<action name="SetUserValue" triggerID="2037402" key="2Round_A" value="1" /> <!-- 파모칸 소환 장치 -->
+    </onEnter>
+ 		<condition name="WaitTick" waitTick="135000" > <!-- 2라운드 2차 스폰 타이머 -->
+			<transition state="2Round_Spawn_C_A_B" />
+		</condition>
+		<condition name="UserValue" key="2Round_A" value="1">
+			<transition state="2Round_Spawn_C_A_B" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+         <state name="2Round_Spawn_C_B_02">
+    <onEnter>
+		<action name="SetUserValue" triggerID="2037403" key="2Round_B" value="1" /> <!-- 캡틴 모크  소환 장치 -->
+    </onEnter>
+ 		<condition name="WaitTick" waitTick="135000" >	<!-- 2라운드 2차 스폰 타이머 -->
+			<transition state="2Round_Spawn_C_B_A" />
+		</condition>
+		<condition name="UserValue" key="2Round_B" value="1">
+			<transition state="2Round_Spawn_C_B_A" />
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+           <state name="2Round_Spawn_C_A_B">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__18$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__18$" arg4="3" arg5="1"/>
+		<action name="SetUserValue" triggerID="2037403" key="2Round_B" value="1" /> <!-- 캡틴 모크  소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="15000" > 
+			<transition state="2Round_End_Condition" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>   
+      
+
+        <state name="2Round_Spawn_C_B_A">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__17$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__17$" arg4="3" arg5="1"/>
+		<action name="SetUserValue" triggerID="2037402" key="2Round_A" value="1" /> <!-- 파모칸 소환 장치 -->
+    </onEnter>
+		<condition name="WaitTick" waitTick="15000" > 
+			<transition state="2Round_End_Condition" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>  
+  
+  
+
+  
+        <state name="2Round_End_Condition">
+    <onEnter>		
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="102,103,104">
+			<transition state="3Round_Ready" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="3Round_Ready">
+    <onEnter>		
+    </onEnter>
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="3Round_Talk01" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="3Round_Talk01">
+    <onEnter>		
+	<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__19$" arg3="3000" />
+	<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__19$" arg4="2" arg5="0"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="3Round_Talk02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="3Round_Talk02">
+    <onEnter>		
+		<action name="이벤트UI를설정한다" arg1="0" arg2="3,3" />
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__20$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__20$" arg4="2" arg5="0"/>
+	<action name="SetUserValue" triggerID="2037405" key="3Round_Effect" value="1" /> <!-- 3라운드 연출 장치 -->
+	    </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="3Round_Talk03" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="3Round_Talk03">
+    <onEnter>		
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__21$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__21$" arg4="2" arg5="0"/>
+		<action name="이펙트를설정한다" arg1 = "7206" arg2="1" />
+    </onEnter>
+		<condition name="WaitTick" waitTick="2300" > 
+			<transition state="3Round_Talk04" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="3Round_Talk04">
+    <onEnter>		
+		<action name="몬스터를생성한다" arg1="199" arg2="0" /> <!-- 붉은 두꺼비 -->
+		<action name="대화를설정한다" arg1="1" arg2="199" arg3="$02000374_BF__MAIN__30$" arg4="2" arg5="2"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="3Round_Talk05" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+  
+   <state name="3Round_Talk05">
+    <onEnter>		
+		<action name="몬스터소멸시킨다" arg1="199"/>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__31$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__32$" arg4="2" arg5="1"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="3Round_Talk06" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="3Round_Talk06">
+    <onEnter>		
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__22$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__22$" arg4="2" arg5="0"/>
+		<action name="이펙트를설정한다" arg1 = "7205" arg2="1" />
+    </onEnter>
+		<condition name="WaitTick" waitTick="2300" > <!--  둔둔 스폰 타이밍 -->
+			<transition state="3Round_Talk07" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="3Round_Talk07">
+    <onEnter>		
+<!-- 		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__23$" arg3="3000" /> -->
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__23$" arg4="2" arg5="0"/>
+		<action name="몬스터를생성한다" arg1="105" arg2="0" /> <!-- 둔둔 -->	
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="105">
+			<transition state="Clear" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="Clear">
+    <onEnter>	
+	     <action name="유저를이동시킨다" arg1="61000009" arg2="6"/>
+		<action name="액터를설정한다" arg1="4002" arg2="1" arg3="Opened_A" />	
+		<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_2999" />
+		<action name="이벤트UI를설정한다" arg1="7" arg2="$02000374_BF__MAIN__33$" arg3="3000" arg4="0" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__24$" arg4="2" arg5="1"/>
+    </onEnter>
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="End" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="End">
+    <onEnter>
+		<action name="액터를설정한다" arg1="4002" arg2="1" arg3="Closed_A" />	
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000374_BF__MAIN__34$" arg3="3000" />
+		<action name="대화를설정한다" arg1="1" arg2="110" arg3="$02000374_BF__MAIN__35$" arg4="2" arg5="0"/>
+		<action name="이펙트를설정한다" arg1 = "4102" arg2="1" />	
+    </onEnter>
+		<condition name="WaitTick" waitTick="4000" > 
+			<transition state="End_02" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+      <state name="End_02">
+    <onEnter>
+		<action name="액터를설정한다" arg1="4002" arg2="0" arg3="Closed_A" />	
+		<action name="몬스터소멸시킨다" arg1="110"/>
+		<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/>
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state>
+</ms2>

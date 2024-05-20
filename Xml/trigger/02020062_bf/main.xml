@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="대기">
+    <onEnter>
+      <action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0" />
+      <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />
+      <action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0" />
+      <action name="EnableSpawnPointPC" spawnPointID="0" isEnable="1" />    <!-- <시작 위치 세팅> -->
+      <action name="EnableSpawnPointPC" spawnPointID="1" isEnable="1" />    
+      <action name="EnableSpawnPointPC" spawnPointID="2" isEnable="0" />
+      <action name="EnableSpawnPointPC" spawnPointID="3" isEnable="0" />
+      <action name="타이머를초기화한다" arg1="1" />
+      <action name="타이머를초기화한다" arg1="2" />
+      <action name="타이머를초기화한다" arg1="3" />
+      <action name="이펙트를설정한다" arg1="2001-2016" arg2="1" />
+      <action name="메쉬를설정한다" arg1="1001-1048" arg2="1" />    <!-- <가두기 트리거 메쉬_spawnpoin0> -->
+      <action name="이펙트를설정한다" arg1="2101-2116" arg2="1" />
+      <action name="메쉬를설정한다" arg1="1101-1148" arg2="1" />    <!-- <가두기 트리거 메쉬_spawnpoin1> -->
+      <action name="액터를설정한다" arg1="1901" arg2="1" arg3="Idle_A" />   <!-- <연출용 액터> -->
+      <action name="ShadowExpedition" type="CloseBossGauge" />
+      <action name="SetUserValue" triggerID="99990002" key="SpawnStart" value="0" />
+      <action name="SetUserValue" triggerID="99990003" key="ObjectPhase" value="0" />
+      <action name="SetUserValue" triggerID="99990008" key="BossPhase" value="0" />
+	  <action name="SetUserValue" triggerID="99990024" key="MovePanel01" value="0" />
+	  <action name="SetUserValue" triggerID="99990025" key="MovePanel02" value="0" />
+	  <action name="SetUserValue" triggerID="99990026" key="MovePanel03" value="0" />
+	  <action name="SetUserValue" triggerID="99990027" key="MovePanel04" value="0" />
+	  <action name="메쉬를설정한다" arg1="40000-40021" arg2="0" /> <!-- 허공에 배치된 몬스터용 발판-->      
+    </onEnter>
+    
+	<condition name="AnyOne">
+      <group>
+            <condition name="유저를감지했으면" arg1="9001"/>
+			<condition name="유저를감지했으면" arg1="9003"/>
+      </group>
+      <transition state="유저카운트"/> 
+	</condition>
+	
+  </state> 
+
+  <state name="유저카운트">
+    <onEnter>
+    </onEnter>
+    <condition name="UserValue" key="FieldGameStart" value="1" >    <!-- <게임 시작 결정> -->
+	  <transition state="딜레이"/>
+    </condition>
+    <condition name="UserValue" key="FieldGameStart" value="2" >    <!-- <방폭 결정> -->
+      <transition state="방폭"/>
+    </condition>
+  </state>
+
+  <state name="딜레이"> 
+    <onEnter>
+      <action name="업적이벤트를발생시킨다" arg1="9002" arg2="trigger" arg3="corps_battle"/>
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02020062_BF__MAIN__0$" arg3="5000" />
+      <action name="카메라를선택한다" arg1="999" arg2="1" />
+    </onEnter>
+    <condition name="WaitTick" waitTick="5000">
+      <transition state="시작" />
+    </condition>
+  </state>
+
+  <state name="방폭">
+    <onEnter>
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02020062_BF__MAIN__1$" arg3="10000" />
+    </onEnter>
+    <condition name="WaitTick" waitTick="10000">
+      <transition state="내보내기" />
+    </condition>
+  </state>
+
+  <state name="내보내기">
+    <onEnter>
+      <action name="유저를이동시킨다" arg1="0" arg2="0" arg3="" />
+    </onEnter>
+    <condition name="무조건" >
+      <transition state="종료" />
+    </condition>
+  </state>
+
+  <state name="시작">   <!-- <시작> -->
+    <onEnter>
+      <action name="이펙트를설정한다" arg1="2001-2016" arg2="0" />
+      <action name="메쉬를설정한다" arg1="1001-1048" arg2="0" />
+      <action name="이펙트를설정한다" arg1="2101-2116" arg2="0" />
+      <action name="메쉬를설정한다" arg1="1101-1148" arg2="0" />    <!-- <가두기 트리거 메쉬 제거> -->
+      <action name="카메라리셋" interpolationTime="1" />
+      <action name="이벤트UI를설정한다" arg1="0" arg2="1,3" />
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02020062_BF__MAIN__2$" arg3="5000" />
+      <action name="타이머를설정한다" arg1="1" arg2="180" arg3="1" arg4="1" arg5="60" />     <!--군단전 제한시간-->
+      <action name="ShadowExpedition" type="OpenBossGauge" maxGaugePoint="750" />
+      <action name="SetUserValue" triggerID="99990002" key="SpawnStart" value="1" />
+      <action name="액터를설정한다" arg1="1901" arg2="0" arg3="Idle_A" />
+      <action name="몬스터를생성한다" arg1="701" arg2="0"/>   <!-- <무적 오브젝트 생성> -->
+	</onEnter>
+    <condition name="UserValue" key="GaugeClear" value="1" >    <!-- <게이지를 다 채울 경우 다음 라운드> -->
+      <transition state="오브젝트페이즈"/>
+    </condition>
+    <condition name="시간이경과했으면" arg1="1">    <!-- <시간 내에 클리어하지 못할 경우 실패> -->
+      <transition state="실패_세팅"/>
+    </condition>
+  </state>
+
+  <state name="오브젝트페이즈">
+    <onEnter>
+	  <action name="GiveRewardContent" rewardID="31000001" />
+	  <action name="이벤트UI를설정한다" arg1="1" arg2="$02020062_BF__MAIN__3$" arg3="5000" />
+      <action name="ShadowExpedition" type="CloseBossGauge" />
+      <action name="이벤트UI를설정한다" arg1="0" arg2="2,3" />
+      <action name="타이머를초기화한다" arg1="1" />
+      <action name="SetUserValue" triggerID="99990003" key="ObjectPhase" value="1" />
+      <action name="타이머를설정한다" arg1="2" arg2="180" arg3="1" arg4="1" arg5="60" />    <!-- <2라운드 게임 플레이 타임 설정> -->
+      <action name="EnableSpawnPointPC" spawnPointID="0" isEnable="0" />    <!-- <부활 지점 세팅> -->
+      <action name="EnableSpawnPointPC" spawnPointID="1" isEnable="0" />    
+      <action name="EnableSpawnPointPC" spawnPointID="2" isEnable="1" />
+      <action name="EnableSpawnPointPC" spawnPointID="3" isEnable="1" />
+    </onEnter>
+    <condition name="UserValue" key="ObjectClear" value="1" >    <!-- <오브젝트를 파괴했을 경우 다음 라운드> -->
+      <transition state="보스페이즈"/>
+    </condition>
+    <condition name="시간이경과했으면" arg1="2">    <!-- <시간 내에 클리어하지 못할 경우 실패> -->
+      <transition state="실패_세팅"/>
+    </condition>
+	<onExit>
+    </onExit>
+  </state>
+
+  <state name="보스페이즈">
+    <onEnter>
+	  <action name="GiveRewardContent" rewardID="31000002" />
+	  <action name="몬스터소멸시킨다" arg1="all" />
+      <action name="이벤트UI를설정한다" arg1="1" arg2="$02020062_BF__MAIN__4$" arg3="5000" />
+      <action name="타이머를초기화한다" arg1="2" />
+      <action name="이벤트UI를설정한다" arg1="0" arg2="3,3" />
+      <action name="SetUserValue" triggerID="99990008" key="BossPhase" value="1" />
+      <action name="타이머를설정한다" arg1="3" arg2="180" arg3="1" arg4="1" arg5="60" />    <!-- <3라운드 게임 플레이 타임 설정> -->
+    </onEnter>
+    <condition name="UserValue" key="BossClear" value="1" >    <!-- <보스를 처치했을 경우 성공> -->
+      <transition state="성공_세팅"/>
+    </condition>
+    <condition name="시간이경과했으면" arg1="3">    <!-- <시간 내에 클리어하지 못할 경우 실패> -->
+      <transition state="실패_세팅"/>
+    </condition>
+  </state>
+
+  <state name="성공_세팅">
+    <onEnter>
+      <action name="SideNpcTalk" type="talk" npcID="11001813" illust="Turka_normal" duration="5000" 
+	  script="$02020062_BF__MAIN__5$" />
+      <action name="타이머를초기화한다" arg1="1" />
+      <action name="타이머를초기화한다" arg1="2" />
+      <action name="타이머를초기화한다" arg1="3" />
+      <action name="SetUserValue" triggerID="99990002" key="SpawnStart" value="2" />
+      <action name="SetUserValue" triggerID="99990003" key="ObjectPhase" value="2" />
+      <action name="SetUserValue" triggerID="99990004" key="BossPhase" value="2" />
+    </onEnter>
+    <condition name="WaitTick" waitTick="5000">
+        <transition state="성공_추가대사" />
+    </condition>
+  </state>
+
+  <state name="성공_추가대사">
+	<onEnter>
+      <action name="SideNpcTalk" type="talk" npcID="11003533" illust="Bliche_smile" duration="5000" 
+	  script="$02020062_BF__MAIN__6$" />
+	</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="성공"/>
+		</condition>
+  </state>
+  
+  <state name="실패_세팅">
+    <onEnter>
+      <action name="몬스터소멸시킨다" arg1="all" />
+      <action name="SideNpcTalk" type="talk" npcID="11001813" illust="Turka_normal" duration="5000" 
+	  script="$02020062_BF__MAIN__7$" />
+    <action name="타이머를초기화한다" arg1="1" />
+      <action name="타이머를초기화한다" arg1="2" />
+      <action name="타이머를초기화한다" arg1="3" />
+      <action name="SetUserValue" triggerID="99990002" key="SpawnStart" value="2" />
+      <action name="SetUserValue" triggerID="99990003" key="ObjectPhase" value="2" />
+      <action name="SetUserValue" triggerID="99990004" key="BossPhase" value="2" />
+    </onEnter>
+    <condition name="WaitTick" waitTick="5000">
+        <transition state="실패_추가대사" />
+    </condition>
+  </state>
+
+  <state name="실패_추가대사">
+	<onEnter>
+      <action name="SideNpcTalk" type="talk" npcID="11003533" illust="Bliche_normal" duration="5000" 
+	  script="$02020062_BF__MAIN__8$" />
+	</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="실패"/>
+		</condition>
+  </state>
+
+  <state name="성공">
+    <onEnter>
+      <action name="몬스터소멸시킨다" arg1="all" />
+	  
+	  <action name="FieldWarEnd" isClear="1"/>
+	  <action name="업적이벤트를발생시킨다" arg2="trigger" arg3="FieldwarAchieve_2"/>
+	</onEnter>
+    <condition name="무조건" >
+      <transition state="종료"/>
+    </condition>
+  </state>
+
+  <state name="실패">
+    <onEnter>
+      <action name="몬스터소멸시킨다" arg1="all" />
+      <action name="FieldWarEnd" isClear="0"/>
+	</onEnter>
+    <condition name="무조건" >
+      <transition state="종료"/>
+    </condition>
+  </state>
+
+  <state name="종료">
+    <onEnter>
+	  <action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1" />
+	  <action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" />
+	  <action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1" />
+    </onEnter>
+  </state>
+  
+</ms2>

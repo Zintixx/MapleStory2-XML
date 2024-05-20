@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 무지개 슬라임 공장 -->
+<ms2>
+	<state name="Wait">    
+		<onEnter> 
+			<!-- 메인 트리거에서 받는 신호 -->
+			<action name="SetUserValue" key="ActivateHolder" value="0" />		
+			<!-- 메인 트리거에서 받는 신호 -->
+			<action name="SetUserValue" key="DungeonQuit" value="0" />					
+			<!-- ON-->				
+			<action name="오브젝트반응설정한다" arg1="10001250" arg2="2" />
+			<!-- OFF-->				
+			<action name="오브젝트반응설정한다" arg1="10001251" arg2="0" />				
+		</onEnter>	
+		<condition name="UserValue" key="ActivateHolder" value="1">	
+			<transition state="LoadingDelay"/>	
+		</condition>		
+		<onExit> 
+		</onExit>
+	</state>	
+
+	<state name="LoadingDelay" >
+		<onEnter>	
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="SpawnStart"/>				
+		</condition>			
+		<onExit> 	
+		</onExit>
+	</state>	 
+		
+	<state name="SpawnStart">   
+		<onEnter> 	
+			<!-- OFF-->				
+			<action name="오브젝트반응설정한다" arg1="10001251" arg2="1" />		
+			<!-- ON-->				
+			<action name="오브젝트반응설정한다" arg1="10001250" arg2="2" />			
+		</onEnter>	
+		<condition name="오브젝트가반응했으면" arg1="10001251" arg2="0" >	
+			<transition state="StopDelay"/>	
+		</condition>			
+		<condition name="UserValue" key="DungeonQuit" value="1">	
+			<transition state="Quit"/>	
+		</condition>				
+		<onExit> 	
+		</onExit>	
+	</state>		
+		
+	<state name="StopDelay" >
+		<onEnter>	
+			<!-- 홀드 값이 1이면 스폰 중지 -->
+			<action name="SetUserValue" triggerID="102" key="SpawnHold" value="1" /> 			
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="SpawnStop"/>				
+		</condition>			
+		<condition name="UserValue" key="DungeonQuit" value="1">	
+			<transition state="Quit"/>	
+		</condition>				
+		<onExit> 	
+		</onExit>
+	</state>	 
+	
+	<state name="SpawnStop">   
+		<onEnter> 	
+			<!-- OFF-->				
+			<action name="오브젝트반응설정한다" arg1="10001251" arg2="2" />		
+			<!-- ON-->				
+			<action name="오브젝트반응설정한다" arg1="10001250" arg2="1" />			
+		</onEnter>	
+		<condition name="오브젝트가반응했으면" arg1="10001250" arg2="0" >	
+			<transition state="StartDelay"/>	
+		</condition>			
+		<condition name="UserValue" key="DungeonQuit" value="1">	
+			<transition state="Quit"/>	
+		</condition>				
+		<onExit> 	
+		</onExit>	
+	</state>		
+		
+	<state name="StartDelay" >
+		<onEnter>	
+			<!-- 홀드 값이 0이면 개시 -->
+			<action name="SetUserValue" triggerID="102" key="SpawnHold" value="0" /> 					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="SpawnStart"/>				
+		</condition>			
+		<condition name="UserValue" key="DungeonQuit" value="1">	
+			<transition state="Quit"/>	
+		</condition>				
+		<onExit> 	
+		</onExit>
+	</state>	 
+
+	<state name="Quit">   
+		<onEnter> 
+			<!-- ON-->				
+			<action name="오브젝트반응설정한다" arg1="10001250" arg2="2" />
+			<!-- OFF-->				
+			<action name="오브젝트반응설정한다" arg1="10001251" arg2="0" />						
+		</onEnter>			
+		<onExit> 	
+		</onExit>
+	</state>	
+</ms2>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 모노레일 지하선로 히든맵 트리거-->
+
+<ms2>
+    <state name="idle"> 
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000866" arg2="0" /> <!-- 컨테이너를 반응 가능한 상태로 변경 -->
+			<action name="오브젝트반응설정한다" arg1="10000880" arg2="0" /> <!-- 컨테이너를 반응 가능한 상태로 변경 -->
+			<action name="오브젝트반응설정한다" arg1="10000915" arg2="0" /> <!-- 컨테이너를 반응 가능한 상태로 변경 -->
+		</onEnter>		
+			<condition name="퀘스트유저를감지하면" arg1="701" arg2="20002091" arg3="1"> 
+				<transition state="Event_01_Idle"/>
+			</condition> 
+		<onExit>
+		</onExit>
+    </state> 
+	
+	    <state name="Event_01_Idle"> 
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="1" />
+        </onEnter>
+		    <condition name="시간이경과했으면" arg1="1">
+            <transition state="Event_01" />
+			</condition>
+		<onExit>
+		</onExit>		
+    </state> 		
+	
+    <state name="Event_01"> 
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> 
+        </onEnter>
+ 			<condition name="몬스터가죽어있으면" arg1="101"> <!-- 맵 내 몬스터 한 무리를 죽이면 -->
+				<transition state="Event_02" />
+			</condition>
+		<onExit>
+			<action name="HideGuideSummary" entityID="110"/>
+		    <action name="오브젝트반응설정한다" arg1="10000866" arg2="1" /> <!-- 컨테이너를 반응 가능한 상태로 변경 -->
+		</onExit>		
+    </state> 		
+	
+
+    <state name="Event_02">
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="111" textID="25201901"/> <!-- 수리공이 숨어있는 컨테이너를 찾으세요. -->
+        </onEnter>
+		    <condition name="오브젝트가반응했으면" arg1="10000866" arg2="0"> <!-- 컨테이너를 반응 시키면 -->
+            <transition state="Event_03" />
+			</condition>
+		<onExit>
+			<action name="HideGuideSummary" entityID="111"/>
+			<action name="몬스터를생성한다" arg1="111" arg2="0" /> <!-- 그 안에 숨어있던 수리공 NPC들이 리젠 -->
+			<action name="대화를설정한다" arg1="1" arg2="111" arg3="$52010009_QD__MAIN__0$" arg4="3" arg5="1"/>
+			<action name="NPC를이동시킨다" arg1="111" arg2="MS2PatrolData0_1001" />
+		</onExit>
+	</state> 
+	
+	<state name="Event_03">  <!-- 업적 완료 -->
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> 
+        </onEnter>
+		 	<condition name="몬스터가죽어있으면" arg1="102"> <!-- 맵 내 몬스터 한 무리를 죽이면 -->
+			<transition state="Event_04" />
+			</condition>
+		<onExit>
+			<action name="HideGuideSummary" entityID="110"/>
+			<action name="오브젝트반응설정한다" arg1="10000880" arg2="1" /> <!-- 컨테이너를 반응 가능한 상태로 변경 -->
+		</onExit>
+	</state> 
+	
+	    <state name="Event_04">
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="111" textID="25201901"/> <!-- 수리공이 숨어있는 컨테이너를 찾으세요. -->
+        </onEnter>
+		    <condition name="오브젝트가반응했으면" arg1="10000880" arg2="0"> <!-- 컨테이너를 반응 시키면 -->
+            <transition state="Event_05" />
+			</condition>
+		<onExit>
+			<action name="HideGuideSummary" entityID="111"/>
+			<action name="몬스터를생성한다" arg1="112" arg2="0" /> <!-- 그 안에 숨어있던 수리공 NPC들이 리젠 -->
+			<action name="대화를설정한다" arg1="1" arg2="112" arg3="$52010009_QD__MAIN__1$" arg4="3" arg5="1"/>
+			<action name="NPC를이동시킨다" arg1="112" arg2="MS2PatrolData0_1001" />
+		</onExit>
+	</state> 
+	
+		<state name="Event_05">  <!-- 업적 완료 -->
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+			<action name="몬스터를생성한다" arg1="103" arg2="0" /> 
+        </onEnter>
+		 	<condition name="몬스터가죽어있으면" arg1="103"> <!-- 맵 내 몬스터 한 무리를 죽이면 -->
+			<transition state="Event_06" />
+			</condition>
+		<onExit>
+			<action name="HideGuideSummary" entityID="110"/>
+			<action name="오브젝트반응설정한다" arg1="10000915" arg2="1" /> <!-- 컨테이너를 반응 가능한 상태로 변경 -->
+		</onExit>
+	</state> 
+	
+	    <state name="Event_06">
+        <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="111" textID="25201901"/> <!-- 수리공이 숨어있는 컨테이너를 찾으세요. -->
+        </onEnter>
+		    <condition name="오브젝트가반응했으면" arg1="10000915" arg2="0"> <!-- 컨테이너를 반응 시키면 -->
+            <transition state="End" /> <!-- 3번 반복하면 끝 -->
+			</condition>
+		<onExit>
+			<action name="HideGuideSummary" entityID="111"/>
+			<action name="몬스터를생성한다" arg1="113" arg2="0" /> <!-- 그 안에 숨어있던 수리공 NPC들이 리젠 -->
+			<action name="대화를설정한다" arg1="1" arg2="113" arg3="$52010009_QD__MAIN__2$" arg4="3" arg5="1"/>
+			<action name="NPC를이동시킨다" arg1="113" arg2="MS2PatrolData0_1001" />
+		</onExit>
+	</state> 
+
+	<state name="End"> 
+        <onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="findrepairman"/>   <!-- findrepairman --> 	
+        </onEnter>	
+		<onExit>
+		</onExit>		
+    </state> 	
+	
+</ms2>

@@ -1,0 +1,832 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 겨울빛 정원 -->
+<ms2>
+	<state name="준비">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="101" arg2="0" />
+			<action name="몬스터를생성한다" arg1="102" arg2="0" />
+			<action name="액터를설정한다" arg1="3001" arg2="0" arg3="0" arg4="0" arg5="0" />			<!-- 아빠끄기 -->			
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000379" arg3="3">		<!-- 크리스마스 스토리 퀘스트 모두 함께 파티를까지 10종 전체 완료시 일퀘 수행 상태로 만들기 -->
+			<transition state="일반사냥"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000378" arg3="2">
+			<transition state="일반사냥"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000378" arg3="1">
+			<transition state="30000378수락_01"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000377" arg3="3">
+			<transition state="30000377완료_01"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000377" arg3="2">
+			<transition state="화난보보스_01"/> 
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000377" arg3="1">
+			<transition state="잠시대기_01"/> 
+		</condition>		
+		<condition name="유저를감지했으면" arg1="701">
+			<transition state="일반사냥"/> 
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="30000378수락_01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="5" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="30000378수락_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="30000378수락_02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="몬스터를생성한다" arg1="106,108" arg2="0" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="에블린일기_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="30000377완료_01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="30000377완료_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="30000377완료_02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="몬스터를생성한다" arg1="106,108" arg2="0" />
+			<action name="카메라리셋" interpolationTime="0.0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="클라우스대화_05"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="잠시대기_01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="액터를설정한다" arg1="3001" arg2="1" arg3="Talk_A" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="잠시대기_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="잠시대기_02">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="8001" arg2="1"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="보보스의오해_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_01" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>	
+			<action name="SetSceneSkip" arg1="화난보보스_01" arg2="nextState"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스의오해_02"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_02" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2500">
+			<transition state="보보스의오해_03"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_03" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__0$" duration="3500" illustID="" align="right" /> 	<!-- 미안해… 소원… 들어줘야 하니까.\n내가 루돌프 되면 꼭 내려줄게. -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="보보스의오해_04"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_04" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="보보스의오해_05"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_05" >
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$63000077_CS__63000077_MAIN__1$" duration="2000" delayTick=""/>	<!-- 으아…오…옷…어…오우 -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="보보스의오해_06"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>	
+
+	<state name="보보스의오해_06" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="8004" arg2="1"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="500">
+			<transition state="보보스의오해_07"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_07" >
+        <onEnter>
+			<action name="SetPcEmotionSequence" arg1="Emotion_Angry_A" />
+			<action name="AddCinematicTalk" npcID="0" msg="$63000077_CS__63000077_MAIN__2$" duration="2800" align="right" />	<!-- 이봐, 무슨 짓이야! 당장 그만둬! -->
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_2001" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="보보스의오해_08"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_08" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="8005" arg2="1"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스의오해_09"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="보보스의오해_09" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__3$" duration="3500" illustID="" align="right" /> <!-- 응…? 나…는 소원 들어주고 있어.\n$npcName:11004356$의 크리스마스 소원. -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="보보스의오해_10"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_10" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="8006" arg2="1"/>
+			<action name="FaceEmotion" spawnPointID="0" emotionName="Angry"/>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_2002" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스의오해_11"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_11" >
+        <onEnter>			
+			<action name="AddCinematicTalk" npcID="0" msg="$63000077_CS__63000077_MAIN__4$" duration="4000" align="right" /> <!-- $npcName:11004356$의 소원은 그런 게 아냐!\n$npcName:11004368$$pp:는,은$ $npcName:11004356$의 소중한 가족이라고! 당장 내려줘! -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="4500">
+			<transition state="보보스의오해_12"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_12" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="8005" arg2="1"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스의오해_13"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="보보스의오해_13" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__5$" duration="2500" illustID="" align="right" />
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="보보스의오해_14"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_14" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__6$" duration="3500" illustID="" align="right" /> <!-- $npcName:11004356$ 아빠, 여기 있어야 된다.\n$npcName:11004373$$pp:는,은$ 착한 일을 하는 거다. -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="보보스의오해_15"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_15" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="8006" arg2="1"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스의오해_16"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_16" >
+        <onEnter>
+			<action name="FaceEmotion" spawnPointID="0" emotionName="Trigger_disappoint"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$63000077_CS__63000077_MAIN__7$" duration="2500" align="right" />	<!-- 정말 말이 안 통하는 녀석이잖아. -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="보보스의오해_17"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_17" >
+        <onEnter>
+			<action name="FaceEmotion" spawnPointID="0" emotionName="Trigger_panic"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$63000077_CS__63000077_MAIN__8$" duration="2500" align="right" /> <!-- 도대체 무슨 소릴 하는 거야? -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="보보스의오해_18"/>
+		</condition>				
+		<onExit>
+			<action name="FaceEmotion" spawnPointID="0" emotionName=""/>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_18" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="8005" arg2="1"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스의오해_19"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="보보스의오해_19" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__9$" duration="2500" illustID="" align="right" />	<!-- $npcName:11004373$, 착한 일 하고 산타 할아버지한테 인정 받을 거다. -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="보보스의오해_20"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_20" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__10$" duration="3000" illustID="" align="right" />	<!-- 루돌프 돼서, 행복해지고…\n$npcName:11004356$이랑도 같이 놀 거야. -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="보보스의오해_21"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_21" >
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="8007" arg2="0"/>
+		</onEnter>					
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="보보스의오해_22"/>
+		</condition>				
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_22" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__11$" duration="2000" illustID="" align="right" />	<!-- 날 방해하면… -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2500">
+			<transition state="보보스의오해_23"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="보보스의오해_23" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__12$" duration="2000" illustID="" align="right" />	<!-- &lt;font size='40'&gt;때릴 거다!&lt;/font&gt; -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="2500">
+			<transition state="화난보보스_01"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="화난보보스_01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="화난보보스_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="화난보보스_02">
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="몬스터소멸시킨다" arg1="101,102" />
+			<action name="몬스터를생성한다" arg1="220" arg2="0" />
+			<action name="몬스터를생성한다" arg1="201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216" arg2="0" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="화난보보스_03"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="화난보보스_03">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000377" arg3="2">
+			<transition state="패배한보보스_01"/> 
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="일반사냥">
+		<onEnter>
+			<action name="액터를설정한다" arg1="3001" arg2="0" arg3="0" arg4="0" arg5="0" />			<!-- 아빠액터끄기 -->					
+			<action name="몬스터소멸시킨다" arg1="101,102" />
+			<action name="몬스터를생성한다" arg1="201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216" arg2="0" />	<!-- 보보스제외, 일반몹만 소환 -->				
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="종료"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="패배한보보스_01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="패배한보보스_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="패배한보보스_02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,220" />
+			<action name="몬스터를생성한다" arg1="106" arg2="0" />
+			<action name="몬스터를생성한다" arg1="107" arg2="0" />
+			<action name="SetNpcEmotionLoop" arg1="106" arg2="Cry_A" arg3="35000" />
+			<action name="액터를설정한다" arg1="3001" arg2="0" arg3="Talk_A" />
+			<action name="유저를이동시킨다" arg1="63000077" arg2="4"/>
+			<action name="카메라를선택한다" arg1="8008" arg2="1"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="패배한보보스_03"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="패배한보보스_03">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="SetSceneSkip" arg1="클라우스대화_03" arg2="nextState"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="클라우스대화_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="클라우스대화_01" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004368" msg="$63000077_CS__63000077_MAIN__13$" duration="2500" illustID="" align="left" />	<!-- 도와주셔서 감사합니다! -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="클라우스대화_02"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="클라우스대화_02" >
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11004368" msg="$63000077_CS__63000077_MAIN__14$" duration="2500" illustID="" align="left" />	<!-- 그런데 누구……? -->
+		</onEnter>					
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="클라우스대화_03"/>
+		</condition>					
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="클라우스대화_03">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="클라우스대화_04"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="클라우스대화_04">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="107" />
+			<action name="몬스터를생성한다" arg1="108" arg2="0" />
+			<action name="카메라리셋" interpolationTime="0.0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="클라우스대화_05"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="클라우스대화_05">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="4" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="연출UI를설정한다" arg1="0"/>	
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="30000378" arg3="1">
+			<transition state="에블린일기_01"/> 
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에블린일기_01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="5" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>	
+			<action name="연출UI를설정한다" arg1="3"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="에블린일기_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="에블린일기_02">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$63000077_CS__63000077_MAIN__15$"/>  <!-- &lt;FONT color='#ffd200'&gt;누군가의 일기장 52페이지&lt;/FONT&gt;\n아빠 미워. 그깟 꽃이 뭐라고 나를 그렇게 혼낸 거야? \n화단 하나 관리 못 했다고 세상이 뒤집히는 것도 아닌데.\n꽃이 나보다 소중하면, 내 눈에 띄지 말고 쭉 정원에서 살아! $npcName:11004368$씨! -->
+			<action name="유저를이동시킨다" arg1="63000077" arg2="4"/>
+			<action name="카메라를선택한다" arg1="8008" arg2="1"/>
+			<action name="SetSceneSkip" arg1="업적_01" arg2="exit"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="8000">
+			<transition state="에블린일기_03"/>
+		</condition>
+		<onExit>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onExit>
+    </state>
+	
+	<state name="에블린일기_03">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>	
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetOnetimeEffect" id="5" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="다시만난가족_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_01">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004368" msg="$63000077_CS__63000077_MAIN__16$" duration="3500" illustID="June_normal" align="left" /> 	<!-- 제가 $npcName:11004356$의 마음을 아프게 한 것도 사실이고,\n제 딸 $npcName:11004356$의 마음을 달래주려는 순진한 $npcName:11004373$의 부탁이니… -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="다시만난가족_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_02">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004368" msg="$63000077_CS__63000077_MAIN__17$" duration="3000" illustID="June_normal" align="left" /> 	<!-- 잠깐 나무 위에 올라가 있는 것도 나쁘지 않겠다 싶었답니다 -->
+			<action name="몬스터를생성한다" arg1="103,104,105" arg2="0" />
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_2003" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="다시만난가족_03"/>
+		</condition>
+		<onExit>
+			<action name="NPC를이동시킨다" arg1="108" arg2="MS2PatrolData_2006" />
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_03">
+		<onEnter>			
+			<action name="AddCinematicTalk" npcID="11004356" msg="$63000077_CS__63000077_MAIN__18$" duration="2000" illustID="" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="다시만난가족_04"/>
+		</condition>
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_04">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8009" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="다시만난가족_05"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="다시만난가족_05">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004356" msg="$63000077_CS__63000077_MAIN__19$" duration="3500" illustID="" align="right" /> <!-- 그건 그냥 투정이었어.\n내 소원은 그런 게 아니란 말이에요! -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="다시만난가족_06"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_06">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="8012" arg2="1"/>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__20$" duration="2000" illustID="" align="left" />	<!-- 으응??? -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="2500">
+			<transition state="다시만난가족_07"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_07">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="106" arg2="MS2PatrolData_2007" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1500">
+			<transition state="다시만난가족_08"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_08">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__21$" duration="3500" illustID="" align="left" /> <!--  $npcName:11004356$…소원 아니야?\n내가 잘못한거야…? -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="2500">
+			<transition state="다시만난가족_09"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_09">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="8011" arg2="1"/>
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_2008" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1500">
+			<transition state="다시만난가족_10"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_10">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004356" msg="$63000077_CS__63000077_MAIN__22$" duration="3500" illustID="Evelyn_glad" align="right" />	<!-- 보…?\n그날 밤 내 얘길 듣고 간 게 역시 너였구나. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="다시만난가족_11"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_11">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_2004" />
+			<action name="NPC를이동시킨다" arg1="105" arg2="MS2PatrolData_2005" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="다시만난가족_12"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_12">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__23$" duration="4000" illustID="" align="left" />		 <!-- 미안…미안해…!\n소원을 들어주고… 행복하게 해주고 싶었는데…!	 -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4500">
+			<transition state="다시만난가족_13"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_13">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004373" msg="$63000077_CS__63000077_MAIN__24$" duration="3000" illustID="" align="left" />	<!-- $npcName:11004373$$pp:가,이$… 너무 미안해…! -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="다시만난가족_14"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_14">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="8011" arg2="1"/>						
+			<action name="AddCinematicTalk" npcID="11004361" msg="$63000077_CS__63000077_MAIN__25$" duration="4000" illustID="Aiden_smile" align="right" />	<!-- 아니야, 털북숭이. 미안해 할 필요 없어.\n$npcName:11004356$의 소원은 따로 있으니까 -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4500">
+			<transition state="다시만난가족_15"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_15">
+		<onEnter>		
+			<action name="AddCinematicTalk" npcID="11004365" msg="$63000077_CS__63000077_MAIN__26$" duration="3500" illustID="Mia_happy" align="right" />	<!-- 그래. 진짜 소원을 말하면, 그걸 들어주렴. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="다시만난가족_16"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_16">
+		<onEnter>		
+			<action name="AddCinematicTalk" npcID="11004356" msg="$63000077_CS__63000077_MAIN__27$" duration="2000" illustID="Evelyn_normal" align="right" />	<!-- …… -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="다시만난가족_17"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_17">
+		<onEnter>		
+			<action name="AddCinematicTalk" npcID="11004356" msg="$63000077_CS__63000077_MAIN__28$" duration="3500" illustID="Evelyn_sad" align="right" />	<!-- 미안해요, 모두.\n내가 부린 투정 때문에… 모두 너무 고생했어요. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="다시만난가족_18"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_18">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11004368" msg="$63000077_CS__63000077_MAIN__29$" duration="3000" illustID="June_smile" align="right" />	<!-- 그래서, 우리 $npcName:11004356$의 진짜 크리스마스 소원은 뭐지? -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="다시만난가족_19"/>
+		</condition>
+		<onExit>			
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_19">
+		<onEnter>		
+			<action name="AddCinematicTalk" npcID="11004356" msg="$63000077_CS__63000077_MAIN__30$" duration="3500" illustID="Evelyn_glad" align="right" /> 	<!-- 우리 가족 모두 함께 모여서…\n행복한 크리스마스 파티를 하는 거예요 -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="다시만난가족_20"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="다시만난가족_20">
+		<onEnter>		
+			<action name="카메라경로를선택한다" arg1="8013" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="업적_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="업적_01">
+		<onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="SetOnetimeEffect" id="6" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="업적_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="업적_02">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="ChristmasWish"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="강제이동"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="강제이동">
+		<onEnter>		
+			<action name="유저를이동시킨다" arg1="63000075" arg2="10"/>
+		</onEnter>		
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="종료" >
+        <onEnter>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="연출UI를설정한다" arg1="0"/>	
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+		<onExit>
+		</onExit>
+    </state>
+	
+</ms2>

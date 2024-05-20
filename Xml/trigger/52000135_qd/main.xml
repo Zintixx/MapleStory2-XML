@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 아노스의 연구실 : 50001581 퀘스트 진행 중인 상태-->
+<ms2>
+    <state name="start">	
+        <onEnter>			
+			<action name="몬스터를생성한다" arg1="101,102"/>
+			<action name="메쉬를설정한다" arg1="3000,3001" arg2="0" />		<!--아이노 크리스탈 on/off 컨트롤-->
+			<action name="메쉬애니를설정한다" arg1="3000" arg2="0" />		<!--아이노 크리스탈 on/off 컨트롤-->
+			<!-- <action name="메쉬를설정한다" arg1="10001175" arg2="1" /> -->
+			<action name="오브젝트반응설정한다" arg1="10001175" arg2="1"/>		<!--아이노 크리스탈-->
+			<action name="이펙트를설정한다" arg1="3010,3011,3012" arg2="0" />
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		</onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001582" arg3="1"> 
+				<transition state="연출이후"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001581" arg3="3"> 
+				<transition state="연출이후"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001581" arg3="2"> 
+				<transition state="연출이후"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001581" arg3="1"> 
+				<transition state="연출대기"/>
+			</condition>	
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="연출이후">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="종료" />
+			</condition>
+		<onExit> 
+		</onExit>
+    </state>		
+	
+	<state name="연출대기">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="유저를이동시킨다" arg1="52000135" arg2="10"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="연출시작" />
+			</condition>
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="연출시작">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8000" arg2="0"/> 		
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="아노스대사01" />
+			</condition>
+		<onExit> 
+		</onExit>
+    </state>	
+
+   <state name="아노스대사01">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/> 
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_01" />
+			<action name="AddCinematicTalk" npcID="11003251" illustID="Anos_normal" msg="$52000135_QD__MAIN__0$" duration="4000" align="right" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="8500"/>	
+			<action name="SetSceneSkip" arg1="오브젝트조사전_스킵완료" arg2="nextState"/> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="아노스대사02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+<!--     <state name="아노스대사01_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아노스대사02"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 -->
+
+   <state name="아노스대사02">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003251" illustID="Anos_normal" msg="$52000135_QD__MAIN__1$" duration="4000" align="right" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="6800"/>	
+			<action name="스킵을설정한다" arg1="아노스대사02_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="아노스대사03" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+    <state name="아노스대사02_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아노스대사03"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 
+
+   <state name="아노스대사03">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8002" arg2="11000032"/> 
+			<action name="AddCinematicTalk" npcID="11003251" illustID="0" msg="$52000135_QD__MAIN__2$" duration="3000" align="right" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="ChatUp_A" arg3="5400"/>	
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_03"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close -->			
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="오브젝트조사" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="오브젝트조사전_스킵완료"> <!-- 오브젝트 조사 직전 상태까지 스킵하는 상태 --> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin -->
+		<onEnter>	
+ 			<action name="연출UI를설정한다" arg1="1"/>   
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="유저를이동시킨다" arg1="52000135" arg2="10"/> <!-- 퀘스트 시작 위치로 pc 이동 -->
+			<!-- <action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_01" /> -->
+		</onEnter>
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="오브젝트조사" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+   <state name="오브젝트조사">
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="3.0"/>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001175" arg2="0">
+					<transition state="오브젝트반응이후"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+   <state name="오브젝트반응이후">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8003,8004" arg2="0"/> 
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="메쉬를설정한다" arg1="3000" arg2="1" />		<!--아이노 크리스탈 on -->
+			<action name="메쉬애니를설정한다" arg1="3000" arg2="1" />		<!--아이노 크리스탈 on -->
+			<action name="이펙트를설정한다" arg1="3011" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="10001175" arg2="2"/>		
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_0301"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="아노스대사04" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+   <state name="아노스대사04">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003251" illustID="Anos_normal" msg="$52000135_QD__MAIN__3$" duration="3000" align="left"/>
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="7000"/>	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_0201" />
+			<action name="SetSceneSkip" arg1="오브젝트조사후_스킵완료" arg2="nextState"/> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="아노스대사05" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+<!--     <state name="아노스대사04_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아노스대사05"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 -->
+
+   <state name="아노스대사05">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003251" illustID="Anos_normal" msg="$52000135_QD__MAIN__4$" duration="3000" align="left"/>
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="8300"/>	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_0202" />
+			<action name="스킵을설정한다" arg1="아노스대사05_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="아노스대사06" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+     <state name="아노스대사05_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아노스대사06"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 	
+
+   <state name="아노스대사06">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003251" illustID="Anos_normal" msg="$52000135_QD__MAIN__5$" duration="3000" align="left" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="6500"/>	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_0203" />
+			<action name="스킵을설정한다" arg1="아노스대사06_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="아노스대사07" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+     <state name="아노스대사06_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아노스대사07"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 
+
+   <state name="아노스대사07">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003251" illustID="Anos_normal" msg="$52000135_QD__MAIN__6$" duration="3000" align="left" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Chatup_A" arg3="7900"/>	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_0204" />
+			<action name="스킵을설정한다" arg1="아노스대사07_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="크리스탈끄기" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+     <state name="아노스대사07_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="크리스탈끄기"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state> -->		
+
+	<state name="크리스탈끄기">
+        <onEnter>	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_0205" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="크리스탈꺼짐" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+   <state name="크리스탈꺼짐">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8005" arg2="0"/>  
+			<action name="메쉬를설정한다" arg1="3000" arg2="0" />		<!--아이노 크리스탈 on-off -->
+			<!-- <action name="메쉬애니를설정한다" arg1="3000" arg2="0" />		 -->
+			<action name="메쉬를설정한다" arg1="3001" arg2="1" />		<!--아이노 크리스탈 on-off -->
+			<action name="메쉬애니를설정한다" arg1="3001" arg2="1" />		<!--아이노 크리스탈 on-off -->
+			<action name="이펙트를설정한다" arg1="3011" arg2="0" />
+			<action name="이펙트를설정한다" arg1="3012" arg2="1" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="아노스대사08" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+   <state name="아노스대사08">
+        <onEnter>	
+<!-- 			<action name="카메라경로를선택한다" arg1="8005" arg2="0"/>  -->
+			<action name="AddCinematicTalk" npcID="11003251" illustID="0" msg="$52000135_QD__MAIN__7$" duration="3000" align="right" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="11000"/>	
+			<action name="이펙트를설정한다" arg1="3012" arg2="0" />
+			<action name="스킵을설정한다" arg1="아노스대사08_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="아시모프대사01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+     <state name="아노스대사08_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아시모프대사01"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 
+
+   <state name="아시모프대사01">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8010" arg2="0"/>  
+			<action name="AddCinematicTalk" npcID="11003250" illustID="0" msg="$52000135_QD__MAIN__8$" duration="3000" align="right" />
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Talk_A" arg3="5100"/>	
+			<action name="스킵을설정한다" arg1="아시모프대사01_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="아노스대사09" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+     <state name="아시모프대사01_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아노스대사09"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 
+	
+	<state name="아노스대사09">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003251" illustID="0" msg="$52000135_QD__MAIN__9$" duration="3000" align="right" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="3800"/>	
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_0302"/>
+			<action name="스킵을설정한다" arg1="아노스대사09_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="PC크리스탈접근" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+     <state name="아노스대사09_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="PC크리스탈접근"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	 
+
+   <state name="PC크리스탈접근">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="0" illustID="0" msg="$52000135_QD__MAIN__10$" duration="2000" align="right"/>
+			<action name="SetPcEmotionLoop" arg1="Object_React_H" arg2="1500" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="2000"/>	
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Talk_A" arg3="2000"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="크리스탈켜짐" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+   <state name="크리스탈켜짐">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8011" arg2="0"/>  
+			<action name="메쉬를설정한다" arg1="3001" arg2="0" />		<!--아이노 크리스탈 off-on -->
+			<action name="메쉬애니를설정한다" arg1="3001" arg2="0" />		<!--아이노 크리스탈 off-on -->
+			<action name="메쉬를설정한다" arg1="3000" arg2="1" />		<!--아이노 크리스탈 off-on -->
+			<action name="메쉬애니를설정한다" arg1="3000" arg2="1" />		<!--아이노 크리스탈 off-on -->
+			<action name="이펙트를설정한다" arg1="3010" arg2="1" />
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$52000135_QD__MAIN__11$" duration="3000" delayTick="1000"/>
+			<action name="SetPcEmotionSequence" arg1="Emotion_Surprise_A" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="마법사들접근" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+   <state name="마법사들접근">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8012" arg2="0"/>  
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_Asimov_05" />
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_04" />
+			<action name="이펙트를설정한다" arg1="3011" arg2="1" />
+			<action name="SetPcEmotionSequence" arg1="Emotion_Think_A" />
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$52000135_QD__MAIN__12$" duration="2000" delayTick="100"/>
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$52000135_QD__MAIN__13$" duration="2000" delayTick="500"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="아노스대사10" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="아노스대사10">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003251" illustID="0" msg="$52000135_QD__MAIN__14$" duration="3000"/>
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="3400"/>	
+			<action name="스킵을설정한다" arg1="아노스대사10_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="PC대사" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+     <state name="아노스대사10_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="PC대사"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="PC대사">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="0" illustID="0" msg="$52000135_QD__MAIN__15$" duration="3000"/>
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_06" />
+			<action name="SetPcEmotionSequence" arg1="Talk_A" />
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Talk_A" arg3="3000"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="크리스탈다시꺼짐" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+   <state name="크리스탈다시꺼짐">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>  
+			<action name="메쉬를설정한다" arg1="3000" arg2="0" />		<!--아이노 크리스탈 on-off -->
+			<action name="메쉬애니를설정한다" arg1="3000" arg2="0" />		<!--아이노 크리스탈 on-off -->
+			<action name="메쉬를설정한다" arg1="3001" arg2="1" />		<!--아이노 크리스탈 on-off -->
+			<action name="메쉬애니를설정한다" arg1="3001" arg2="1" />		<!--아이노 크리스탈 on-off -->
+			<action name="이펙트를설정한다" arg1="3010,3011" arg2="0" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="아노스대사11" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<state name="아노스대사11">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003251" illustID="0" msg="$52000135_QD__MAIN__16$" duration="5000" align="right" />
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_07" />
+			<action name="스킵을설정한다" arg1="아노스대사11_skip"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="5000" > 
+				<transition state="아시모프대사02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+     <state name="아노스대사11_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="아시모프대사02"/>
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>		
+
+   <state name="아시모프대사02">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8010" arg2="0"/>   
+			<action name="AddCinematicTalk" npcID="11003250" illustID="Asimov_normal" msg="$52000135_QD__MAIN__17$" duration="3000" align="left"/>
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Talk_A" arg3="8600"/>	
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="연출종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="오브젝트조사후_스킵완료"> <!-- setsceneskip 2 fin --> <!-- setsceneskip 2 fin --> <!-- setsceneskip 2 fin -->
+		<onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>  
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_Asimov_05" />  <!--아시모프 이동. 굳이 안 해도 될 것 같음 -->
+ 			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_Anos_07" />  <!--아노스 이동. 굳이 안 해도 될 것 같음 -->
+			<action name="메쉬를설정한다" arg1="3000" arg2="0" />		<!--아이노 크리스탈 on-off -->
+			<action name="메쉬애니를설정한다" arg1="3000" arg2="0" />		<!--아이노 크리스탈 on-off -->
+			<action name="메쉬를설정한다" arg1="3001" arg2="1" />		<!--아이노 크리스탈 on-off -->
+			<action name="메쉬애니를설정한다" arg1="3001" arg2="1" />		<!--아이노 크리스탈 on-off -->
+			<action name="이펙트를설정한다" arg1="3010,3011" arg2="0" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="연출종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+    <state name="연출종료" > 
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="3.0"/>	
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="Studyindarkness"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="종료"/>
+				</condition>
+    </state>		
+
+	<state name="종료">
+    </state>	
+	
+</ms2>

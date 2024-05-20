@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+
+	    <state name="퀘스트체크">	
+		<onEnter>
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="50100060" arg3="1"> <!--  50100060 퀘스트 진행 중 상태!-->
+				<transition state="대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="50100060" arg3="2"> <!--  50100060 퀘스트 완료 가능 상태!-->
+				<transition state="퀘스트완료가능이거나완료1"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="50100060" arg3="3"> <!--  50100060 퀘스트 완료 상태!-->
+				<transition state="퀘스트완료가능이거나완료1"/>
+			</condition>				
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="대기">
+		<onEnter>	
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>				
+			<action name="오브젝트반응설정한다" arg1="10001108" arg2="2" />		
+			<action name="메쉬를설정한다" arg1="3000" arg2="0" arg3="0" arg4="0" arg5="0" />	
+			<action name="메쉬를설정한다" arg1="3001-3201" arg2="1" arg3="0" arg4="0" arg5="0" />	
+			<action name="메쉬를설정한다" arg1="3901-3904" arg2="1" arg3="0" arg4="0" arg5="0" />							
+			<action name="몬스터를생성한다" arg1="1099,2094,2095,2096,2097,2098,2099" arg2="0" />		
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+			<action name="이펙트를설정한다" arg1="601" arg2="0"/>
+			<action name="이펙트를설정한다" arg1="602" arg2="0"/>			
+			<action name="이펙트를설정한다" arg1="603" arg2="0"/>	
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="199"> 
+				<transition state="CheckUserCount" />
+			</condition>	
+	</state>
+  
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+
+	<state name="DungeonStart">
+		<onEnter>	
+			<action name="스킵을설정한다" arg1="연출종료" />		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  		
+			<action name="카메라를선택한다" arg1="300" arg2="1"/>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="부선장대사01"/>  
+			</condition>
+	</state>	
+ 
+	<state name="부선장대사01" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="24003011" arg3="$02000391_BF__MAIN__0$" arg4="3" arg5="0"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="해적이동01"/>
+				</condition>
+	</state> 
+
+	<state name="해적이동01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="2099" arg3="$02000391_BF__MAIN__1$" arg4="3" arg5="0"/>		
+			<action name="SetNpcEmotionSequence" arg1="1099" arg2="Attack_01_C" />										
+			<action name="카메라를선택한다" arg1="301" arg2="1"/>	
+			<action name="NPC를이동시킨다" arg1="2094" arg2="MS2PatrolData_2094A" />					
+			<action name="NPC를이동시킨다" arg1="2095" arg2="MS2PatrolData_2095A" />					
+			<action name="NPC를이동시킨다" arg1="2096" arg2="MS2PatrolData_2096A" />					
+			<action name="NPC를이동시킨다" arg1="2097" arg2="MS2PatrolData_2097A" />						
+			<action name="NPC를이동시킨다" arg1="2098" arg2="MS2PatrolData_2098A" />				
+			<action name="NPC를이동시킨다" arg1="2099" arg2="MS2PatrolData_2099A" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="카메라302"/> 
+			</condition>
+	</state>
+ 
+	<state name="카메라302">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="302" arg2="1"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="부선장대사03"/> 
+			</condition>
+	</state> 
+
+	<state name="부선장대사03" >
+		<onEnter>
+			<action name="카메라를선택한다" arg1="303" arg2="1"/>		
+			<action name="대화를설정한다" arg1="2" arg2="24003011" arg3="$02000391_BF__MAIN__2$" arg4="4" align="left"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4858">
+					<transition state="세이렌대사01"/>
+				</condition>
+	</state>		
+
+	<state name="세이렌대사01" >
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="309" arg2="1"/>				
+			<action name="AddCinematicTalk" npcID="11003888" illustID="Celine_normal" msg="$02000391_BF__MAIN__3$" align="left" duration="4000"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4179">
+					<transition state="카메라310"/>
+				</condition>
+	</state>	
+
+	<state name="카메라310" >
+		<onEnter>	
+			<action name="PlaySystemSoundInBox" arg2="Dungeon_Siren_Harp01"/>  		
+			<action name="SetNpcEmotionSequence" arg1="1098" arg2="Attack_01_D" />					
+			<action name="AddCinematicTalk" npcID="11003888" illustID="Celine_normal" msg="$02000391_BF__MAIN__4$" align="left" duration="3000"/>			
+			<action name="SetNpcEmotionSequence" arg1="1099" arg2="Attack_01_D" />						
+			<action name="카메라를선택한다" arg1="310" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="603" arg2="1"/>						
+			<action name="버프를걸어준다" arg1="2094" arg2="70000055" arg3="1" arg4="1"/>		
+			<action name="버프를걸어준다" arg1="2095" arg2="70000055" arg3="1" arg4="1"/>		
+			<action name="버프를걸어준다" arg1="2096" arg2="70000055" arg3="1" arg4="1"/>		
+			<action name="버프를걸어준다" arg1="2097" arg2="70000055" arg3="1" arg4="1"/>		
+			<action name="버프를걸어준다" arg1="2098" arg2="70000055" arg3="1" arg4="1"/>		
+			<action name="버프를걸어준다" arg1="2099" arg2="70000055" arg3="1" arg4="1"/>					
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="카메라304"/>
+				</condition>
+	</state>			
+ 	
+	<state name="카메라304">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="2099" arg3="$02000391_BF__MAIN__5$" arg4="3" arg5="0"/>					
+			<action name="SetNpcEmotionSequence" arg1="1099" arg2="Attack_01_I" />					
+			<action name="카메라를선택한다" arg1="304" arg2="1"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="1300">
+				<action name="몬스터소멸시킨다" arg1="1099" />					
+				<transition state="딜레이01"/> 
+			</condition>
+	</state> 	
+
+	<state name="딜레이01">
+			<condition name="WaitTick" waitTick="1000">		
+				<transition state="카메라305"/> 
+			</condition>
+	</state> 
+	
+	<state name="카메라305" >
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="603" arg2="0"/>			
+			<action name="몬스터소멸시킨다" arg1="2094,2095,2096,2097,2098,2099" />		
+			<action name="몬스터를생성한다" arg1="2100" arg2="0" />						
+			<action name="몬스터를생성한다" arg1="1098" arg2="0" />			
+			<action name="카메라를선택한다" arg1="305" arg2="1"/>					
+		</onEnter>
+				<condition name="WaitTick" waitTick="1500">
+					<transition state="세이렌연주02"/>
+				</condition>
+	</state>		
+	
+	<state name="세이렌연주02">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11003888" illustID="Celine_normal" msg="$02000391_BF__MAIN__6$" align="left" duration="5000" />				
+			<action name="PlaySystemSoundInBox" arg2="Dungeon_Siren_Harp01"/>  		
+			<action name="SetNpcEmotionSequence" arg1="1098" arg2="Attack_01_D" />						
+		</onEnter>
+			<condition name="WaitTick" waitTick="2500">
+				<transition state="물큐브제거"/> 
+			</condition>
+	</state> 		
+	
+	<state name="물큐브제거">
+		<onEnter>		
+			<action name="메쉬를설정한다" arg1="3001-3201" arg2="0" arg3="0" arg4="0" arg5="0" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="2500">
+				<transition state="세이렌이동"/> 
+			</condition>
+	</state> 		
+ 
+	<state name="세이렌이동">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="11003888" illustID="Celine_normal" msg="$02000391_BF__MAIN__7$" align="left" duration="3500" />											
+			<action name="카메라를선택한다" arg1="306" arg2="1"/>		
+			<action name="NPC를이동시킨다" arg1="1098" arg2="MS2PatrolData_1098A" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="3500">
+				<transition state="카메라307"/> 
+			</condition>
+	</state>
+
+	<state name="카메라307">
+		<onEnter>								
+			<action name="몬스터소멸시킨다" arg1="1098" />				
+			<action name="카메라를선택한다" arg1="307" arg2="1"/>		
+			<action name="대화를설정한다" arg1="2" arg2="24003011" arg3="$02000391_BF__MAIN__8$" arg4="3" arg5="0"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="카메라308"/> 
+			</condition>
+	</state>	
+
+	<state name="카메라308">
+		<onEnter>				
+			<action name="SpawnNpcRange" rangeID="2001-2011" isAutoTargeting="0"/>		
+			<action name="카메라를선택한다" arg1="308" arg2="1"/>		
+			<action name="SetNpcEmotionSequence" arg1="2100" arg2="Attack_01_A" />							
+			<action name="대화를설정한다" arg1="1" arg2="2100" arg3="$02000391_BF__MAIN__9$" arg4="3" arg5="0"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="암전"/> 
+			</condition>
+	</state>	
+
+	<state name="암전">
+		<onEnter>		
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 										
+		</onEnter>
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="연출종료"/> 
+			</condition>
+	</state> 		
+ 
+	<state name="연출종료">
+		<onEnter>	
+			<action name="스킵을설정한다" arg1="" />				
+			<action name="이펙트를설정한다" arg1="603" arg2="0"/>				
+			<action name="메쉬를설정한다" arg1="3001-3201" arg2="1" arg3="0" arg4="0" arg5="0" />	
+			<action name="메쉬를설정한다" arg1="3901-3904" arg2="0" arg3="0" arg4="0" arg5="0" />						
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			<!--action name="카메라를선택한다" arg1="306" arg2="0"/-->
+			<action name="카메라리셋" interpolationTime="0.0"/>	 				
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<action name="몬스터소멸시킨다" arg1="2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011" />	
+				<action name="몬스터소멸시킨다" arg1="1098,1099,2094,2095,2096,2097,2098,2099,2100" />								
+				<transition state="룸체크"/> 
+			</condition> 
+	</state>  
+
+	<state name="룸체크"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="던전시작" />	
+				</condition>		
+				<condition name="!IsDungeonRoom" > 
+					<transition state="퀘스트던전시작" />	
+				</condition>		
+	</state>  		
+	
+	<state name="던전시작">
+		<onEnter>				 
+			<action name="몬스터를생성한다" arg1="2199" arg2="0" />				
+			<action name="SpawnNpcRange" rangeID="2001-2011" isAutoTargeting="0"/>		
+			<action name="SpawnNpcRange" rangeID="1001-1016" isAutoTargeting="0"/>	
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    				
+			<action name="ShowGuideSummary" entityID="20039101" textID="20039101" durationTime="3000" /> 			
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="2199">
+				<transition state="사망딜레이" />
+			</condition>
+	</state>	
+
+			<state name="퀘스트던전시작">
+				<onEnter>				 
+					<action name="몬스터를생성한다" arg1="2299" arg2="0" />				
+					<action name="SpawnNpcRange" rangeID="2001-2011" isAutoTargeting="0"/>		
+					<action name="SpawnNpcRange" rangeID="1001-1016" isAutoTargeting="0"/>		
+					<action name="ShowGuideSummary" entityID="20039101" textID="20039101" durationTime="3000" /> 			
+				</onEnter>
+					<condition name="몬스터가죽어있으면" arg1="2299">
+						<transition state="사망딜레이" />
+					</condition>
+			</state>		
+
+	<state name="사망딜레이">
+			<condition name="WaitTick" waitTick="4000">
+				<action name="몬스터소멸시킨다" arg1="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011" />	
+				<transition state="오브젝트카메라" />				
+			</condition> 
+	</state>		
+
+	<state name="오브젝트카메라">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>		
+			<action name="스킵을설정한다" arg1="하프반응대기" />				
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  		
+			<action name="이펙트를설정한다" arg1="601" arg2="1"/>			
+			<action name="카메라를선택한다" arg1="307" arg2="1"/>
+			<action name="오브젝트반응설정한다" arg1="10001108" arg2="1" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="하프반응대기"/>  
+			</condition>
+	</state>		
+ 
+	<state name="하프반응대기">
+		<onEnter>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			<action name="스킵을설정한다" arg1="" />				
+			<action name="카메라리셋" interpolationTime="0.0"/>	 			
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    			
+			<action name="ShowGuideSummary" entityID="20039102" textID="20039102" durationTime="3000" /> 					
+			<!--action name="카메라를선택한다" arg1="307" arg2="0"/-->	
+		</onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10001108" arg2="0">
+				<action name="PlaySystemSoundInBox" arg2="Dungeon_Siren_Harp01"/>  					
+				<action name="이펙트를설정한다" arg1="601" arg2="0"/>				
+				<transition state="연주딜레이" />
+			</condition>
+	</state>
+  
+	<state name="연주딜레이">
+			<condition name="WaitTick" waitTick="3500">
+				<transition state="물큐브제거2" />				
+			</condition> 
+	</state>
+
+	<state name="물큐브제거2">
+		<onEnter> 
+			<action name="스킵을설정한다" arg1="종료" />		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  					
+			<action name="이펙트를설정한다" arg1="602" arg2="1"/>			
+			<action name="카메라를선택한다" arg1="305" arg2="1"/>			
+			<action name="메쉬를설정한다" arg1="3001-3201" arg2="0" arg3="0" arg4="0" arg5="0" />		
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="1" arg4="1"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">			
+				<!--action name="카메라를선택한다" arg1="305" arg2="0"/-->				
+				<transition state="종료"/> 
+			</condition>
+	</state> 		
+
+	<state name="퀘스트완료가능이거나완료1">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>				
+			<action name="오브젝트반응설정한다" arg1="10001108" arg2="2" />		
+			<action name="메쉬를설정한다" arg1="3000" arg2="0" arg3="0" arg4="0" arg5="0" />	
+			<action name="메쉬를설정한다" arg1="3001-3201" arg2="1" arg3="0" arg4="0" arg5="0" />	
+			<action name="메쉬를설정한다" arg1="3901-3904" arg2="1" arg3="0" arg4="0" arg5="0" />								
+			<action name="이펙트를설정한다" arg1="602" arg2="0"/>			
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1000">			
+				<transition state="퀘스트완료가능이거나완료2"/> 
+			</condition>
+	</state>
+	
+	<state name="퀘스트완료가능이거나완료2">
+		<onEnter>
+			<action name="스킵을설정한다" arg1="종료" />		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="메쉬를설정한다" arg1="3001-3201" arg2="0" arg3="0" arg4="0" arg5="0" />		
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="1" arg4="1"/>
+			<action name="이펙트를설정한다" arg1="602" arg2="1"/>				
+ 		</onEnter>	
+			<condition name="WaitTick" waitTick="1000">			
+				<transition state="종료"/> 
+			</condition>
+	</state>
+
+	<state name="종료">
+		<onEnter> 
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    				
+			<action name="ShowGuideSummary" entityID="20039103" textID="20039103" /> 					
+			<action name="스킵을설정한다" arg1="" />		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  					
+			<action name="카메라리셋" interpolationTime="0.0"/>	 				
+		</onEnter>	
+
+	</state> 	
+	
+</ms2>
+

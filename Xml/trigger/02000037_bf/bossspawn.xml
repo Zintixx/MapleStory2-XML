@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="시작대기중">
+    <onEnter>
+            <action name="오브젝트반응설정한다" arg1="10000931" arg2="2"/>  
+            <action name="메쉬를설정한다" arg1="4000-4009" arg2="0" arg3="0" arg4="0" arg5="0" />   <!-- Stairs 10-->	
+            <action name="메쉬를설정한다" arg1="4020-4034" arg2="0" arg3="0" arg4="0" arg5="0" />  <!-- Bridge 15-->	
+            <action name="메쉬를설정한다" arg1="4040-4046" arg2="0" arg3="0" arg4="0" arg5="0" />  <!-- Slab 7 -->	
+            <action name="메쉬를설정한다" arg1="4050" arg2="1" arg3="0" arg4="0" arg5="0" />  <!-- invisible barrier -->	
+            <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>
+            <action name="이펙트를설정한다" arg1="5000" arg2="0" /> <!-- StairsAppear -->	
+            <action name="이펙트를설정한다" arg1="5001" arg2="0" /> <!-- Vibrate -->	
+    </onEnter>
+			<condition name="유저를감지했으면" arg1="101">
+					<transition state="난이도체크"/>
+			</condition>
+  </state>
+
+  <state name="난이도체크"> 
+				<condition name="DungeonLevel" level="2">
+					<transition state="레이드" />	
+				</condition>
+				<condition name="DungeonLevel" level="3">
+					<transition state="카오스레이드" />	
+				</condition>
+  </state>
+ 
+	<state name="레이드">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2000" arg2="0"/>
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2000">
+					<transition state="연출딜레이"/>
+				</condition>
+	</state>  
+
+	<state name="카오스레이드">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2001" arg2="0"/>
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2001">
+					<transition state="연출딜레이"/>
+				</condition>
+	</state>  
+
+	<state name="연출딜레이">
+				<condition name="WaitTick" waitTick="2000"> 
+					<transition state="연출종료"/>
+				</condition>
+	</state>
+
+	<!-- <state name="연출시작"> -->
+		<!-- <onEnter> -->
+			<!-- <action name="연출UI를설정한다" arg1="1"/> -->
+			<!-- <action name="연출UI를설정한다" arg1="3"/> -->
+			<!-- <action name="대화를설정한다" arg1="2" arg2="11000144" arg3="$02000037_BF__BOSSSPAWN__0$" arg4="5"/> -->
+		<!-- </onEnter> -->
+				<!-- <condition name="WaitTick" waitTick="5000">  -->
+					<!-- <transition state="연출종료"/> -->
+				<!-- </condition> -->
+	<!-- </state> -->
+
+	<state name="연출종료">
+		<onEnter>
+			<!-- <action name="연출UI를설정한다" arg1="0"/> -->
+			<!-- <action name="연출UI를설정한다" arg1="2"/>		 -->
+			<action name="오브젝트반응설정한다" arg1="10000931" arg2="1"/>  
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+			<action name="DungeonClear" /> 
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000931">
+					<transition state="사념등장01"/>
+				</condition>
+	</state>
+
+	<state name="사념등장01">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="4050" arg2="0" arg3="0" arg4="0" arg5="0" />  <!-- invisible barrier -->	
+			<action name="이펙트를설정한다" arg1="5000" arg2="1" /> <!-- StairsAppear -->	
+			<action name="이펙트를설정한다" arg1="5001" arg2="1" /> <!-- Vibrate -->	
+			<action name="랜덤메쉬를설정한다" arg1="4000-4009" arg2="1" arg3="10" arg4="0" arg5="50" /> 
+			<action name="랜덤메쉬를설정한다" arg1="4040-4046" arg2="1" arg3="7" arg4="400" arg5="50" /> 
+			<action name="랜덤메쉬를설정한다" arg1="4020-4034" arg2="1" arg3="15" arg4="800" arg5="50" /> 
+		</onEnter>
+	</state>
+	
+</ms2>

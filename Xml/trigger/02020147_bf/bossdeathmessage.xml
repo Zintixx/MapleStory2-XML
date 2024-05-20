@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  992  , 이슈라 렌듀비앙 유페리아가 죽었을 때 메시지 알림 기능-->
+<ms2>  
+  <state name="Ready">
+    <onEnter> 
+	</onEnter>	
+
+		<condition name="여러명의유저를감지했으면" arg1="601" arg2="1"> <!--   MS2TriggerBox  ID = 601, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면   601은 스타팅 지점과 1셋트 전투판 전체  포함하는 넓은 범위-->
+				<transition state="변수초기화"/>
+		</condition>		
+		
+    <onExit>			
+    </onExit> 
+  </state>	
+ 
+    <state name="변수초기화">	
+        <onEnter>
+			<action name="SetUserValue" key="DeathIshuraRbladerDark" value="0" />		
+			<action name="SetUserValue" key="DeathRenduebianRbladerDark" value="0" />		
+			<action name="SetUserValue" key="DeathYuperiaRbladerDark" value="0" />		
+		
+        </onEnter>			
+			
+			<condition name="WaitTick" waitTick="1500" > 
+				<transition state="신호받기대기중" /> 
+			</condition>				
+				
+    </state>	 
+	
+ 
+    <state name="신호받기대기중">	
+        <onEnter>
+		
+        </onEnter>			
+			
+			<condition name="UserValue" key="DeathIshuraRbladerDark" value="1">  <!--  이슈라 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="이슈라죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathRenduebianRbladerDark" value="1">   <!--  렌듀비앙 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="렌듀비앙죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathYuperiaRbladerDark" value="1"> <!--  유페리아 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="유페리아죽음알림" />
+			</condition>					
+				
+		<onExit> 
+		</onExit>
+    </state>	 
+	
+  
+ 
+
+	
+   <state name="이슈라죽음알림">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="20051002" textID="20051002"/> <!-- 이슈라의 죽음을 이 UI 메시지로 알려주기-->
+			<action name="SetUserValue" key="DeathIshuraRbladerDark" value="0" />		<!--변수 0으로 초기화 하기, 이거 안하면 무한루프에 걸림 -->			 
+		
+        </onEnter>
+		 
+			<condition name="WaitTick" waitTick="3200" > 
+				<transition state="신호받기대기중" /> 
+			</condition>
+
+			
+			
+			<!--  이슈라 죽음 메시지 출력 도중에 다른 보스가 죽었을 경우에 대한 처리-->			
+			<condition name="UserValue" key="DeathRenduebianRbladerDark" value="1">   <!--  렌듀비앙 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="렌듀비앙죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathYuperiaRbladerDark" value="1"> <!--  유페리아 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="유페리아죽음알림" />
+			</condition>			
+			
+			
+		<onExit>
+			<action name="HideGuideSummary" entityID="20051002"/>
+		</onExit>
+    </state>	   
+
+   <state name="렌듀비앙죽음알림">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="20051003" textID="20051003"/> <!-- 렌듀비앙의 죽음을 이 UI 메시지로 알려주기-->
+			<action name="SetUserValue" key="DeathRenduebianRbladerDark" value="0" />		<!--변수 0으로 초기화 하기, 이거 안하면 무한루프에 걸림 -->			 
+			
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="3200" > 
+				<transition state="신호받기대기중" /> 
+			</condition>
+
+
+			
+			
+			<!--  렌듀비앙 죽음 메시지 출력 도중에 다른 보스가 죽었을 경우에 대한 처리-->			
+			<condition name="UserValue" key="DeathIshuraRbladerDark" value="1">  <!--  이슈라 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="이슈라죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathYuperiaRbladerDark" value="1"> <!--  유페리아 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="유페리아죽음알림" />
+			</condition>					
+				
+		<onExit>
+			<action name="HideGuideSummary" entityID="20051003"/>
+		</onExit>
+    </state>	   
+	
+   <state name="유페리아죽음알림">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="20051004" textID="20051004"/> <!--유페리아의 죽음을 이 UI 메시지로 알려주기-->
+			<action name="SetUserValue" key="DeathYuperiaRbladerDark" value="0" />		<!--변수 0으로 초기화 하기, 이거 안하면 무한루프에 걸림 -->			 
+			
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="3200" > 
+				<transition state="신호받기대기중" /> 
+			</condition>
+				
+				
+			<!--  유페리아 죽음 메시지 출력 도중에 다른 보스가 죽었을 경우에 대한 처리-->			
+			<condition name="UserValue" key="DeathIshuraRbladerDark" value="1">  <!--  이슈라 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="이슈라죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathRenduebianRbladerDark" value="1">   <!--  렌듀비앙 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="렌듀비앙죽음알림" />
+			</condition>		
+			
+		<onExit>
+			<action name="HideGuideSummary" entityID="20051004"/>
+		</onExit>
+    </state>	   	
+	
+	
+	
+	
+</ms2>

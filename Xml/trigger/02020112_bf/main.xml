@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+
+	<state name="대기">
+		<onEnter>
+			<action name="SetGravity" gravity="0" />
+			<action name="SetUserValue" triggerID="99990002" key="JumpFloor" value="0" />
+			<action name="SetUserValue" triggerID="99990017" key="JumpFloor" value="0" />
+			<action name="액터를설정한다" arg1="9901" arg2="1" arg3="Interaction_Lapentafoothold_A01_Off" />
+			<action name="액터를설정한다" arg1="9902" arg2="0" arg3="Interaction_Lapentafoothold_A01_Off" />
+			<action name="액터를설정한다" arg1="9903" arg2="0" arg3="Interaction_Lapentafoothold_A01_Off" />
+			<action name="액터를설정한다" arg1="9904" arg2="0" arg3="Interaction_Lapentafoothold_A01_Off" />
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="4" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="5" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="6" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="7" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="8" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="9" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="13" arg2="0" arg3="0" arg4="0" />
+			<action name="포탈을설정한다" arg1="14" arg2="0" arg3="0" arg4="0" />
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="901" arg2="">
+			<transition state="중력방_대기"/>	
+		</condition>
+	</state>
+
+	<state name="중력방_대기">
+		<condition name="유저를감지했으면" arg1="915" arg2="">
+			<transition state="중력방_발판"/>
+		</condition>
+	</state>
+
+	<state name="중력방_발판">
+		<onEnter>
+			<action name="SetUserValue" triggerID="99990020" key="GravityRoom" value="1" />
+		</onEnter>
+		<condition name="UserValue" key="GravityRoom" value="2" >
+			<transition state="중력방_전투"/>	
+		</condition>
+	</state>
+
+	<state name="중력방_전투">
+		<condition name="몬스터가죽어있으면" arg1="141,142,143,144">
+			<transition state="카메라_발판점프대"/>
+		</condition>
+	</state>
+
+	<state name="카메라_발판점프대">
+		<onEnter>
+			<action name="SetSceneSkip" arg1="카메라_종료" arg2="exit"/>
+			<action name="SetUserValue" triggerID="99990020" key="GravityRoom" value="1" />
+			<action name="SetUserValue" triggerID="99990002" key="JumpFloor" value="1" />	<!-- <점프 발판 활성화, Floor.xml 참조> -->
+			<action name="SetUserValue" triggerID="99990017" key="JumpFloor" value="1" />
+			<action name="연출UI를설정한다" arg1="1" />
+			<action name="연출UI를설정한다" arg1="3" />
+			<action name="카메라경로를선택한다" arg1="611,612" arg2="0" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="10000">
+			<transition state="카메라_종료"/>
+		</condition>
+	</state>
+
+	<state name="카메라_종료">
+		<onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="카메라리셋" interpolationTime="1" />
+			<action name="연출UI를설정한다" arg1="0" />
+			<action name="연출UI를설정한다" arg1="2" />
+			<action name="몬스터를생성한다" arg1="120,121,122,123,124,125,126,127,128,129,130" arg2="0" />
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="120,121,122,123,124,125,126,127,128,129,130">
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" />
+			<action name="포탈을설정한다" arg1="13" arg2="1" arg3="1" arg4="0" />
+			<transition state="격리방_지하"/>	
+		</condition>
+	</state>
+
+	<state name="격리방_지하">	<!-- <JumpRoom.xml 참조> -->
+		<condition name="UserValue" key="MonsterDead" value="1" >
+			<transition state="격리방_대기"/>
+		</condition>
+	</state>
+
+	<state name="격리방_대기">	<!-- <SeperateRoom.xml 참조> -->
+		<onEnter>
+			<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1" arg4="1" />
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="932" arg2="">
+			<transition state="격리방_전투"/>
+		</condition>
+	</state>
+
+	<state name="격리방_전투">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="191" arg2="0" />
+			<action name="SetUserValue" triggerID="99990008" key="Start" value="1" />
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="191">
+			<action name="포탈을설정한다" arg1="7" arg2="1" arg3="1" arg4="1" />
+			<action name="SetUserValue" triggerID="99990008" key="Start" value="2" />
+			<action name="SetUserValue" triggerID="99990013" key="EliteDead" value="1" />
+			<action name="SetUserValue" triggerID="99990014" key="EliteDead" value="1" />
+			<action name="SetUserValue" triggerID="99990015" key="EliteDead" value="1" />
+		</condition>
+	</state>
+
+</ms2>
+

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 슬라임 공장 주황색 물감 탱크 상태 -->
+<!-- 게이지 줄어드는 시간 15초 : 변경 가능 -->
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 	
+			<action name="SetUserValue" key="ActivateTank" value="0" />		<!-- 메인 트리거에서 받는 신호 -->					
+			<action name="SetUserValue" key="DungeonQuit" value="0" />		<!-- 메인 트리거에서 받는 신호 -->			
+			<action name="액터를설정한다" arg1="4003" arg2="1" arg3="Interaction_tankorange_A01_100" /> <!-- Up -->					
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="Interaction_tankorange_A01_100" /> <!-- Down -->		
+			<action name="이펙트를설정한다" arg1="5303" arg2="0"/> <!-- Paint_Add_Sound -->	
+			<action name="이펙트를설정한다" arg1="5403" arg2="0"/> <!-- Tank_Fill_Under_Sound -->		
+			<action name="이펙트를설정한다" arg1="5503" arg2="0"/> <!-- Tank_Fill_Above_Sound -->							
+				</onEnter>	
+				<condition name="UserValue" key="ActivateTank" value="1">
+					<transition state="Gauge100"/>
+				</condition> 	
+    <onExit> 		
+    </onExit>
+    </state>
+
+	<state name="Gauge100">   
+        <onEnter> 
+			<action name="SetUserValue" triggerID="103" key="Gauge" value="100" /> 		
+			<action name="타이머를설정한다" arg1="100100" arg2="15" arg3="1"/>  		
+			<action name="액터를설정한다" arg1="4003" arg2="1" arg3="Interaction_tankorange_A01_100" /> <!-- Up -->					
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="Interaction_tankorange_A01_100" /> <!-- Down -->		
+			</onEnter>	
+				<condition name="시간이경과했으면" arg1="100100">  
+					<transition state="Gauge75"/>	
+				</condition>		
+				<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000884">  <!-- 같은색 물감통이면 -->
+					<transition state="Gauge100_Refil"/>
+				</condition>		
+				<condition name="UserValue" key="DungeonQuit" value="1">
+					<transition state="Quit"/>
+				</condition> 					
+    <onExit> 	
+    </onExit>
+    </state>	
+
+	<state name="Gauge100_Refil">   
+        <onEnter> 
+			<action name="이펙트를설정한다" arg1="5303" arg2="1"/> <!-- Paint_Add_Sound -->	
+			<action name="이펙트를설정한다" arg1="5403" arg2="1"/> <!-- Tank_Fill_Under_Sound -->		
+			<action name="이펙트를설정한다" arg1="5503" arg2="1"/> <!-- Tank_Fill_Above_Sound -->			
+			<action name="타이머를초기화한다" arg1="100100"/>  
+			</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Gauge100"/>
+				</condition>									
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+	<state name="Gauge75">   
+        <onEnter> 
+			<action name="SetUserValue" triggerID="103" key="Gauge" value="75" /> 			
+			<action name="타이머를초기화한다" arg1="100100"/>  					
+			<action name="타이머를설정한다" arg1="10075" arg2="15" arg3="1"/>  			
+			<action name="액터를설정한다" arg1="4003" arg2="1" arg3="Interaction_tankorange_A01_75" /> <!-- Up -->					
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="Interaction_tankorange_A01_75" /> <!-- Down -->	
+			</onEnter>	
+				<condition name="시간이경과했으면" arg1="10075">  
+					<transition state="Gauge50"/>	
+				</condition>	
+				<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000884">  <!-- 같은색 물감통이면 -->
+					<transition state="Gauge75_Refil"/>
+				</condition>		
+				<condition name="UserValue" key="DungeonQuit" value="1">
+					<transition state="Quit"/>
+				</condition> 					
+    <onExit> 		
+    </onExit>
+    </state>		
+
+	<state name="Gauge75_Refil">   
+        <onEnter> 
+			<action name="이펙트를설정한다" arg1="5303" arg2="1"/> <!-- Paint_Add_Sound -->	
+			<action name="이펙트를설정한다" arg1="5403" arg2="1"/> <!-- Tank_Fill_Under_Sound -->		
+			<action name="이펙트를설정한다" arg1="5503" arg2="1"/> <!-- Tank_Fill_Above_Sound -->				
+			<action name="타이머를초기화한다" arg1="10075"/>  			
+			</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Gauge100"/>
+				</condition>									
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+	<state name="Gauge50">   
+        <onEnter> 
+			<action name="SetUserValue" triggerID="103" key="Gauge" value="50" /> 				
+			<action name="타이머를초기화한다" arg1="10075"/>  		
+			<action name="타이머를설정한다" arg1="10050" arg2="15" arg3="1"/>  			
+			<action name="액터를설정한다" arg1="4003" arg2="1" arg3="Interaction_tankorange_A01_50" /> <!-- Up -->					
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="Interaction_tankorange_A01_50" /> <!-- Down -->	
+			</onEnter>	
+				<condition name="시간이경과했으면" arg1="10050">  
+					<transition state="Gauge25"/>	
+				</condition>		
+				<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000884">  <!-- 같은색 물감통이면 -->
+					<transition state="Gauge50_Refil"/>
+				</condition>	
+				<condition name="UserValue" key="DungeonQuit" value="1">
+					<transition state="Quit"/>
+				</condition> 					
+    <onExit> 	
+    </onExit>
+    </state>		
+
+	<state name="Gauge50_Refil">   
+        <onEnter> 
+			<action name="이펙트를설정한다" arg1="5303" arg2="1"/> <!-- Paint_Add_Sound -->	
+			<action name="이펙트를설정한다" arg1="5403" arg2="1"/> <!-- Tank_Fill_Under_Sound -->		
+			<action name="이펙트를설정한다" arg1="5503" arg2="1"/> <!-- Tank_Fill_Above_Sound -->				
+			<action name="타이머를초기화한다" arg1="10050"/>  			
+			</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Gauge75"/>
+				</condition>									
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+	<state name="Gauge25">   
+        <onEnter> 
+			<action name="SetUserValue" triggerID="103" key="Gauge" value="25" /> 				
+			<action name="타이머를초기화한다" arg1="10050"/>  			
+			<action name="타이머를설정한다" arg1="10025" arg2="15" arg3="1"/>  			
+			<action name="액터를설정한다" arg1="4003" arg2="1" arg3="Interaction_tankorange_A01_25" /> <!-- Up -->					
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="Interaction_tankorange_A01_25" /> <!-- Down -->	
+			</onEnter>	
+				<condition name="시간이경과했으면" arg1="10025">  
+					<transition state="Gauge1"/>	
+				</condition>		
+				<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000884">  <!-- 같은색 물감통이면 -->
+					<transition state="Gauge25_Refil"/>
+				</condition>		
+				<condition name="UserValue" key="DungeonQuit" value="1">
+					<transition state="Quit"/>
+				</condition> 					
+    <onExit> 	
+    </onExit>
+    </state>		
+
+	<state name="Gauge25_Refil">   
+        <onEnter> 
+			<action name="이펙트를설정한다" arg1="5303" arg2="1"/> <!-- Paint_Add_Sound -->	
+			<action name="이펙트를설정한다" arg1="5403" arg2="1"/> <!-- Tank_Fill_Under_Sound -->		
+			<action name="이펙트를설정한다" arg1="5503" arg2="1"/> <!-- Tank_Fill_Above_Sound -->				
+			<action name="타이머를초기화한다" arg1="10025"/>  			
+			</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Gauge50"/>
+				</condition>									
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+	<state name="Gauge1">   
+        <onEnter> 
+			<action name="타이머를초기화한다" arg1="10025"/>  			
+			<action name="SetUserValue" triggerID="103" key="Gauge" value="1" /> 								
+			<action name="액터를설정한다" arg1="4003" arg2="1" arg3="Interaction_tankorange_A01_1" /> <!-- Up -->					
+			<action name="액터를설정한다" arg1="4103" arg2="1" arg3="Interaction_tankorange_A01_1" /> <!-- Down -->		
+			</onEnter>	
+				<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000884">  <!-- 같은색 물감통이면 -->
+					<transition state="Gauge1_Refil"/>
+				</condition>		
+				<condition name="UserValue" key="DungeonQuit" value="1">
+					<transition state="Quit"/>
+				</condition> 					
+    <onExit> 
+    </onExit>
+    </state>		
+
+	<state name="Gauge1_Refil">   
+        <onEnter> 	
+			<action name="이펙트를설정한다" arg1="5303" arg2="1"/> <!-- Paint_Add_Sound -->	
+			<action name="이펙트를설정한다" arg1="5403" arg2="1"/> <!-- Tank_Fill_Under_Sound -->		
+			<action name="이펙트를설정한다" arg1="5503" arg2="1"/> <!-- Tank_Fill_Above_Sound -->				
+			</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Gauge25"/>
+				</condition>									
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="Quit"> 
+        <onEnter>	
+			<action name="SetUserValue" triggerID="103" key="StopSpawn" value="1" /> 		
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 	
+</ms2>
+

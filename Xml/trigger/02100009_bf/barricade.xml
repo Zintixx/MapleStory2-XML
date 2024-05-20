@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="Wait">   
+		<onEnter> 	
+     	<action name="메쉬를설정한다" arg1="80000" arg2="1" arg3="0" arg4="0" arg5="0"/>							
+		</onEnter>	
+		<condition name="CheckUser">
+		<transition state="CheckUser10_GuildRaid"/>
+		</condition>		
+		<onExit> 
+		</onExit>
+	</state>	
+
+    <state name="CheckUser10_GuildRaid">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="30" arg3="1" arg4="0" arg5="0"/>  		<!-- 최대 30초 대기 -->				
+        </onEnter>
+				<!-- 10명이면 바로 시작 -->		
+				<condition name="CountUsers" arg1="102" arg2="10" arg3="GreaterEqual">
+					<transition state="MaxCount10_Start"/>	
+				</condition>	
+				<condition name="CountUsers" arg1="102" arg2="10" arg3="Less"> 
+					<transition state="MaxCount10_Wait"/>	
+				</condition>			
+    </state>
+
+    <state name="MaxCount10_Wait">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="40012" textID="40012" durationTime="3000"/> 		
+        </onEnter>		
+				<condition name="CountUsers" arg1="102" arg2="10" arg3="GreaterEqual">		<!-- 10명이면 바로 시작 -->
+					<transition state="MaxCount10_Start"/>	
+				</condition>	
+				<condition name="시간이경과했으면" arg1="1"> 
+					<transition state="MaxCount10_Start"/>
+				</condition>					
+				<condition name="WaitTick" waitTick="6000" > 
+					<transition state="MaxCount10_Wait"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="MaxCount10_Start">	
+        <onEnter>
+			<!-- 최대 30초 대기 타이머 초기화-->		
+			<action name="타이머를초기화한다" arg1="1"/>  		
+        </onEnter>		
+				<condition name="무조건" > 
+					<transition state="DungeonStart"/>	
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="DungeonStart">   
+		<onEnter> 
+			<action name="카메라를선택한다" arg1="904" arg2="1"/>				
+		</onEnter>	
+		<condition name="WaitTick" waitTick="2500">  
+			<transition state="ShowCaption01"/>	
+		</condition>		
+		<onExit> 		
+		</onExit>	
+	</state>	
+
+	<!-- 설명문 출력 -->
+	<state name="ShowCaption01" >	 
+		<onEnter>			
+			<action name="SetCinematicIntro" text="$02100009_BF__BARRICADE__0$"/>	
+			<action name="스킵을설정한다" arg1="ShowCaption01Skip"/>					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="15000">  
+			<transition state="ShowCaption01Skip"/>  
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>		
+	<state name="ShowCaption01Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="RemoveCinematicTalk"/>						
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="ShowCaption02"/>
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+
+	<state name="ShowCaption02" >
+		<onEnter>			
+			<action name="SetCinematicIntro" text="$02100009_BF__BARRICADE__1$"/>	
+			<action name="스킵을설정한다" arg1="ShowCaption02Skip"/>	 				
+		</onEnter>	
+		<condition name="WaitTick" waitTick="15000">  
+			<transition state="ShowCaption02Skip"/>  
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>	
+	<state name="ShowCaption02Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>	
+			<action name="RemoveCinematicTalk"/>					
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="CloseCaptionSetting"/> 
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+
+	<state name="CloseCaptionSetting">   
+		<onEnter> 		
+			<action name="CloseCinematic" />	
+			<action name="카메라를선택한다" arg1="904" arg2="0"/>				
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="대기"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>		
+	
+	<state name="대기">   
+        <onEnter> 
+		
+			<action name="이펙트를설정한다" arg1="7001" arg2="0" />
+			<action name="이펙트를설정한다" arg1="7002" arg2="0" />
+			<action name="이펙트를설정한다" arg1="7003" arg2="0" />
+			<action name="이펙트를설정한다" arg1="7004" arg2="0" />
+			<action name="메쉬를설정한다" arg1="8000" arg2="0" arg3="0" arg4="0" arg5="0"/>		   
+			
+			</onEnter>	
+      <condition name="AnyOne">
+      <group>
+				<condition name="몬스터가전투상태면" arg1="100000001" />
+				<condition name="몬스터가전투상태면" arg1="100000002" />
+				</group>
+			<transition state="유저감지" />
+      </condition>
+    <onExit> 
+    </onExit>
+    </state>	
+
+ <state name="유저감지">   
+         <onEnter>
+			
+			</onEnter>	
+		<condition name="유저를감지했으면" arg1="101" >
+            <transition state="카운트" />
+				</condition> 
+    <onExit> 
+    </onExit>
+ </state>		
+	
+	<state name="카운트">
+        <onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02100009_BF__BARRICADE__2$" arg3="3000" />
+        </onEnter>	
+			<condition name="WaitTick" waitTick="30000">
+				<transition state="차단"/> 
+			</condition>
+	</state>
+
+    <state name="차단">
+        <onEnter>
+        <action name="메쉬를설정한다" arg1="8000" arg2="1" arg3="0" arg4="0" arg5="0"/>	 
+ 			<action name="이펙트를설정한다" arg1="7001" arg2="1" />
+			<action name="이펙트를설정한다" arg1="7002" arg2="1" />
+			<action name="이펙트를설정한다" arg1="7003" arg2="1" />
+			<action name="이펙트를설정한다" arg1="7004" arg2="1" />
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="100000001,100000002">
+				<transition state="차단해제" />
+			</condition>
+    </state>
+
+    <state name="차단해제">
+        <onEnter>
+           <action name="메쉬를설정한다" arg1="8000" arg2="0" arg3="0" arg4="0" arg5="0"/>	
+	    	<action name="이펙트를설정한다" arg1="7001" arg2="0" />
+			<action name="이펙트를설정한다" arg1="7002" arg2="0" />
+			<action name="이펙트를설정한다" arg1="7003" arg2="0" />
+			<action name="이펙트를설정한다" arg1="7004" arg2="0" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="100">
+				<transition state="종료"/> 
+			</condition>
+    </state>
+
+    <state name="종료">
+    </state>
+
+</ms2>

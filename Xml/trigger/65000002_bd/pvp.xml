@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="시간표확인" posX="281" posY="48">
+        <onEnter>
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>
+            <action name="타이머를설정한다" arg1="60" arg2="60" arg3="0" arg4="1"/>
+			<action name="이펙트를설정한다" arg1="601" arg2="0" /><!--공지 효과음-->
+			<action name="이펙트를설정한다" arg1="602" arg2="0" /><!--종료 효과음-->
+        </onEnter>
+				<!--최대 인원 설정-->
+				<condition name="여러명의유저를감지했으면" arg1="102" arg2="10">
+					<transition state="어나운스0" />
+				</condition>
+				 <condition name="시간이경과했으면" arg1="60">
+					<transition state="대기" />
+				</condition>
+		<onExit>
+			<action name="타이머를초기화한다" arg1="60"/>
+		</onExit>	
+    </state>
+
+	 <state name="대기" posX="245" posY="240">
+        <onEnter>
+        </onEnter>
+		<!--최소 인원 설정-->
+        <condition name="여러명의유저를감지했으면" arg1="102" arg2="2">
+            <transition state="어나운스0" />
+        </condition>
+        <condition name="!여러명의유저를감지했으면" arg1="102" arg2="2">
+            <transition state="비김" />
+        </condition>
+    </state>
+
+    <state name="어나운스0" posX="857" posY="303">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="6" arg2="6" arg3="0" />
+		 <action name="PlaySystemSoundInBox" arg2="BD_PVP_00"/>  					
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$65000002_BD__PVP__0$" arg3="6000" />
+        </onEnter>
+		 <condition name="시간이경과했으면" arg1="6">
+            <transition state="어나운스1" />
+        </condition>
+    </state>
+
+    <state name="어나운스1" posX="857" posY="303">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="6" arg2="6" arg3="0" />
+		 <action name="PlaySystemSoundInBox" arg2="BD_PVP_01"/>  					
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$65000002_BD__PVP__1$" arg3="6000" />
+        </onEnter>
+		 <condition name="시간이경과했으면" arg1="6">
+            <transition state="어나운스2" />
+        </condition>
+    </state>
+
+    <state name="어나운스2" posX="857" posY="303">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="6" arg2="6" arg3="0" />
+		 <action name="PlaySystemSoundInBox" arg2="BD_PVP_02"/>  					
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$65000002_BD__PVP__2$" arg3="6000" arg4="101" />
+        </onEnter>
+		 <condition name="시간이경과했으면" arg1="6">
+            <transition state="어나운스3" />
+        </condition>
+    </state>
+
+    <state name="어나운스3" posX="857" posY="303">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="3" arg2="3" arg3="0" />
+		 <action name="PlaySystemSoundInBox" arg2="BD_PVP_03"/>  					
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$65000002_BD__PVP__3$" arg3="3000" />
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />
+        </onEnter>
+		 <condition name="시간이경과했으면" arg1="3">
+            <transition state="PvP" />
+        </condition>
+    </state>
+
+    <state name="PvP" posX="238" posY="108">
+        <onEnter>
+				<action name="업적이벤트를발생시킨다" arg1="101" arg2="trigger" arg3="dailyquest_start"/>
+				<!--길드 경험치 지급 / boxID="타겟박스id", 0이면 맵전체, type="GuildGainExp의 id" 2가 매시브이벤트-->
+				<action name="GiveGuildExp" boxID="0" type="2"/>
+				<action name="버프를걸어준다" arg1="101" arg2="70000088" arg3="1" arg4="0" arg5="0" />
+				<action name="버프를걸어준다" arg1="101" arg2="70000089" arg3="1" arg4="0" arg5="0" />
+			  <action name="타이머를설정한다" arg1="1" arg2="1" arg3="0" />
+        </onEnter>
+			<condition name="시간이경과했으면" arg1="1" >
+				<action name="PVP존을설정한다" arg1="101" arg2="5" arg3="300" arg4="90001002" arg5="2" />	
+				<transition state="PvP종료" />
+			</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="PvP종료">
+		<onEnter>
+		</onEnter>
+        <condition name="PVP존이종료했으면" arg1="101" >
+            <transition state="경기종료" />
+        </condition>
+		<onExit>
+		</onExit>
+	</state>
+
+    <state name="경기종료" posX="857" posY="303">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="4" arg2="4" arg3="0" />
+		 <action name="PlaySystemSoundInBox" arg2="BD_PVP_04"/>  					
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$65000002_BD__PVP__4$" arg3="3000" arg4="101" />
+			<action name="이펙트를설정한다" arg1="602" arg2="1" />
+        </onEnter>
+		 <condition name="시간이경과했으면" arg1="4">
+            <transition state="완료" />
+        </condition>
+    </state>
+
+    <state name="비김" posX="857" posY="303">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="3" arg2="3" arg3="0" />
+        </onEnter>
+			 <condition name="시간이경과했으면" arg1="3"> 
+				<action name="이벤트UI를설정한다" arg1="5" arg2="$65000002_BD__PVP__5$" arg3="3000" arg4="0" />
+				<transition state="완료" />
+			</condition>
+    </state>
+
+  <state name="완료">
+    <onEnter>
+			 <action name="타이머를설정한다" arg1="5" arg2="5"/>
+			 <action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+    </onEnter>
+			<condition name="시간이경과했으면" arg1="5">
+				  <action name="유저를이동시킨다" arg1="0" arg2="0"/>
+				  <transition state="종료"/>
+			</condition>
+  </state>
+
+  <state name="종료">
+  </state>
+
+</ms2>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="대기">
+		<onEnter>
+			<!-- 1페이지 졸구간에 있는 나가기 포탈, 최초에는 감추기-->
+            <action name="포탈을설정한다" arg1="6" arg2="0" arg3="0" arg4="0"/> 
+            <action name="포탈을설정한다" arg1="7" arg2="0" arg3="0" arg4="0"/> 
+			
+			<!-- 2페이지에 있는 나가기 포탈, 최초에는 감추기-->
+            <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/> 
+			<!-- 3페이지에 있는 나가기 포탈, 최초에는 감추기-->
+            <action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0"/> 
+            <action name="포탈을설정한다" arg1="4" arg2="0" arg3="0" arg4="0"/> 
+            <action name="포탈을설정한다" arg1="5" arg2="0" arg3="0" arg4="0"/> 
+
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="199">
+					<transition state="난이도체크" />
+				</condition>
+	</state>
+
+	  <state name="난이도체크"> 
+	  
+			<condition name="DungeonLevel" level="2"> <!--  일반레이드 난이도로 던전입장을 했을 경우 -->
+				<transition state="레이드" />	
+			</condition>
+						
+			<condition name="DungeonLevel" level="3"> <!--  카오스 난이도로 던전입장을 했을 경우 -->
+				<transition state="카오스레이드" />	
+			</condition>
+						
+			<condition name="WaitTick" waitTick="2000" > <!-- 그냥 테스트용으로 맵코드로 바로 들어왔으면 카오스용 보스 등장-->			 
+				<transition state="카오스레이드" />	
+			</condition>					
+					
+	  </state>
+
+	<state name="레이드">
+		<onEnter>
+            <action name="몬스터를생성한다" arg1="2001" arg2="0" />  <!--  일반레이드 난이도용 칸두라 보스 호출 -->
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="클리어_체크대기" />
+			</condition>				
+		
+	</state>	
+
+	<state name="카오스레이드">
+		<onEnter>
+            <action name="몬스터를생성한다" arg1="2101" arg2="0" />  <!--  카오스 난이도용 칸두라 보스 호출 -->
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="클리어_체크대기" />
+			</condition>			
+			
+	</state>	
+	
+	
+	
+	<state name="클리어_체크대기">
+		<onEnter>
+
+		</onEnter>
+		
+			<condition name="UserValue" key="KanduraNormalDead" value="1">  <!--  1페이지 변신전 칸두라가 스펙높은 유저에게 극딜 당해서 죽은 경우  AI_KanduraNormal.xml, AI_KanduraNormal_Chaos.xml 로 부터 KanduraNormalDead = 1신호를 받음-->
+				<transition state="클리어처리01" />
+			</condition>				
+		
+			<condition name="UserValue" key="ThirdPhaseEnd" value="1"> <!--  칸두라가 변신 한 이후 죽은 경우  AI_KanduraBigBurster.xml, AI_KanduraBigBurster_Chaos.xml 로 부터 ThirdPhaseEnd = 1신호를 받음   -->
+				<transition state="클리어처리01" />
+			</condition>		
+		
+	</state>	
+	
+	
+	<state name="클리어처리01">
+		<onEnter>
+
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="6000" >  <!--  칸두라 죽은 애니가 나오는 시간 6초 정도 되니, 이 연출 다 나오고 클리어 처리함  -->	
+				<transition state="클리어처리02" />
+			</condition>		
+		
+	</state>		
+	
+
+	<state name="클리어처리02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="all" />					
+			<action name="DungeonClear"/> <!-- DungeonRoom.xlsx  의  clearType  trigger 로 설정한 경우 맵 트리거를 통해서 클리어 UI 띄우는 처리함 -->	
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="나가기포털생성" />
+			</condition>		
+		
+	</state>	
+	
+	
+	<state name="나가기포털생성">
+		<onEnter>
+			<action name="SetUserValue" triggerID="99999002" key="BattleEnd" value="1" /> 		<!--  move.xml  트리거에 BattleEnd = 1 신호 보내기   -->	
+			<action name="메쉬를설정한다" arg1="3200-3300" arg2="1" arg3="0" arg4="0" arg5="0" />
+			
+			<action name="포탈을설정한다" arg1="6" arg2="1" arg3="1" arg4="1"/>  <!--  1페이지 왼쪽 전투판에 등장하는 나가기 포탈 생성  -->
+			<action name="포탈을설정한다" arg1="7" arg2="1" arg3="1" arg4="1"/>  <!--  1페이지 오른쪽 전투판에 등장하는 나가기 포탈 생성  --> 
+			
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>  <!--  2페이지 전투판에 등장하는 나가기 포탈 생성 -->
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/>  <!--  3페이지 전투판에 등장하는 나가기 포탈 생성  -->		
+			<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="5" arg2="1" arg3="1" arg4="1"/>			
+		</onEnter>
+
+		
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="종료" />
+			</condition>		
+		
+	</state>
+	
+	
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>
+	
+</ms2>

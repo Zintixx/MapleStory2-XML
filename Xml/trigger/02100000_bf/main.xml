@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="Wait">   
+		<onEnter> 	
+     	<action name="메쉬를설정한다" arg1="80000" arg2="1" arg3="0" arg4="0" arg5="0"/>							
+		</onEnter>	
+		<condition name="CheckUser">
+		<transition state="CheckUser10_GuildRaid"/>
+		</condition>		
+		<onExit> 
+		</onExit>
+	</state>	
+
+    <state name="CheckUser10_GuildRaid">
+        <onEnter>
+		<action name="타이머를설정한다" arg1="1" arg2="30" arg3="1" arg4="0" arg5="0"/>  		<!-- 최대 30초 대기 -->				
+        </onEnter>
+				<!-- 10명이면 바로 시작 -->		
+				<condition name="CountUsers" arg1="101" arg2="10" arg3="GreaterEqual">
+					<transition state="MaxCount10_Start"/>	
+				</condition>	
+				<condition name="CountUsers" arg1="101" arg2="10" arg3="Less"> 
+					<transition state="MaxCount10_Wait"/>	
+				</condition>			
+    </state>
+
+    <state name="MaxCount10_Wait">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="40012" textID="40012" durationTime="3000"/> 		
+        </onEnter>		
+				<condition name="CountUsers" arg1="101" arg2="10" arg3="GreaterEqual">		<!-- 10명이면 바로 시작 -->
+					<transition state="MaxCount10_Start"/>	
+				</condition>	
+				<condition name="시간이경과했으면" arg1="1"> 
+					<transition state="MaxCount10_Start"/>
+				</condition>					
+				<condition name="WaitTick" waitTick="6000" > 
+					<transition state="MaxCount10_Wait"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="MaxCount10_Start">	
+        <onEnter>
+			<!-- 최대 30초 대기 타이머 초기화-->		
+			<action name="타이머를초기화한다" arg1="1"/>  		
+        </onEnter>		
+				<condition name="무조건" > 
+					<transition state="DungeonStart"/>	
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="DungeonStart">   
+		<onEnter> 
+       <action name="카메라를선택한다" arg1="904" arg2="1"/>
+		</onEnter>	
+		<condition name="WaitTick" waitTick="2500">  
+			<transition state="ShowCaption01"/>	
+		</condition>		
+		<onExit> 		
+		</onExit>	
+	</state>	
+
+	<!-- 설명문 출력 -->
+	<state name="ShowCaption01" >	 
+		<onEnter>			
+			<action name="SetCinematicIntro" text="$02100000_BF__MAIN__0$"/>	
+			<action name="스킵을설정한다" arg1="ShowCaption01Skip"/>					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="15000">  
+			<transition state="ShowCaption01Skip"/>  
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>		
+	<state name="ShowCaption01Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="RemoveCinematicTalk"/>						
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="ShowCaption02"/>
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+
+	<state name="ShowCaption02" >
+		<onEnter>			
+			<action name="SetCinematicIntro" text="$02100000_BF__MAIN__1$"/>	
+			<action name="스킵을설정한다" arg1="ShowCaption02Skip"/>	 				
+		</onEnter>	
+		<condition name="WaitTick" waitTick="15000">  
+			<transition state="ShowCaption02Skip"/>  
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>	
+	<state name="ShowCaption02Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>	
+			<action name="RemoveCinematicTalk"/>					
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="CloseCaptionSetting"/> 
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+
+	<state name="CloseCaptionSetting">   
+		<onEnter> 		
+			<action name="CloseCinematic" />	
+            <action name="카메라를선택한다" arg1="904" arg2="0"/>
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="대기"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+
+	<state name="대기">   
+         <onEnter>
+            <action name="버프를걸어준다" arg1="101" arg2="70000133" arg3="1" arg4="0" arg5="0" />
+            <action name="버프를걸어준다" arg1="101" arg2="70000133" arg3="1" arg4="0" arg5="1" />		 
+			<action name="이펙트를설정한다" arg1="8001" arg2="0" />
+			<action name="이펙트를설정한다" arg1="8002" arg2="0" />
+			<action name="이펙트를설정한다" arg1="8003" arg2="0" />
+ 
+     	    <action name="메쉬를설정한다" arg1="80000" arg2="0" arg3="0" arg4="0" arg5="0"/>
+
+	    	<action name="스킬을설정한다" arg1="910001" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910002" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910003" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910004" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910005" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910006" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910007" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910008" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910009" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910010" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910011" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910012" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910013" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910014" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910015" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910016" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910017" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910018" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910019" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="910020" arg2="1" /> 	
+	
+    		<action name="스킬을설정한다" arg1="920001" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="920002" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="920003" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="920004" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="920005" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="920006" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="920007" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="920008" arg2="1" /> 		
+            <action name="스킬을설정한다" arg1="920009" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="920010" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="920011" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="920012" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="920013" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="920014" arg2="1" /> 				
+            <action name="스킬을설정한다" arg1="920015" arg2="1" /> 	
+			
+            <action name="스킬을설정한다" arg1="930001" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="930002" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="930003" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="930004" arg2="1" /> 				
+            <action name="스킬을설정한다" arg1="930005" arg2="1" /> 
+            <action name="스킬을설정한다" arg1="930006" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="930007" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="930008" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="930009" arg2="1" /> 
+            <action name="스킬을설정한다" arg1="930010" arg2="1" /> 
+            <action name="스킬을설정한다" arg1="930011" arg2="1" /> 
+            <action name="스킬을설정한다" arg1="930012" arg2="1" /> 
+            <action name="스킬을설정한다" arg1="930013" arg2="1" /> 
+            <action name="스킬을설정한다" arg1="930014" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="930015" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="930016" arg2="1" /> 	
+			
+            <action name="스킬을설정한다" arg1="940001" arg2="1" /> 							
+            <action name="스킬을설정한다" arg1="940002" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940003" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940004" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940005" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940006" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940007" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940008" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940009" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940010" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940011" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940012" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940013" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940014" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940015" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940016" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940017" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940018" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940019" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940020" arg2="1" /> 			
+            <action name="스킬을설정한다" arg1="940021" arg2="1" /> 				
+            <action name="스킬을설정한다" arg1="940022" arg2="1" /> 	
+            <action name="스킬을설정한다" arg1="940023" arg2="1" /> 
+            <action name="스킬을설정한다" arg1="940024" arg2="1" /> 
+			
+			</onEnter>	
+				<condition name="WaitTick" waitTick="3000"> 
+				<transition state="버프_2" />
+		</condition> 
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="버프_2">
+        <onEnter>
+    		<action name="이벤트UI를설정한다" arg1="1" arg2="$02100000_BF__MAIN__2$" arg3="3000" />
+			 </onEnter>	
+				<condition name="유저를감지했으면" arg1="105" >
+					<transition state="바리케이트"/>
+				</condition>
+    </state>		
+
+	    <state name="바리케이트">
+        <onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02100000_BF__MAIN__3$" arg3="3000" />
+			 </onEnter>	
+				<condition name="WaitTick" waitTick="30000"> 
+					<transition state="닫기"/>
+				</condition>
+    </state>
+
+	
+    <state name="닫기">
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="80000" arg2="1" arg3="0" arg4="0" arg5="0"/>	
+			<action name="이펙트를설정한다" arg1="8001" arg2="1" />
+			<action name="이펙트를설정한다" arg1="8002" arg2="1" />
+			<action name="이펙트를설정한다" arg1="8003" arg2="1" />
+			</onEnter>	
+				<condition name="WaitTick" waitTick="1000"> 
+
+				</condition>
+    </state>		
+	
+</ms2>

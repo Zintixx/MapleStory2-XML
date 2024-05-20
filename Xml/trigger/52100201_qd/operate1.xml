@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+
+	<state name="대기">                      <!--기믹공간으로 보내는 레버가 작동 했을 때를 조건으로 해당 트리거로 넘어옴-->
+		<condition name="오브젝트가반응했으면" arg1="10002122" arg2="0" >
+			<transition state="기믹공간"/>
+		</condition>
+	</state>
+	
+	<state name="기믹공간">                   <!--기믹을 보여주는 오브젝트 활성화, 재활성화 시, 메쉬 지워줌-->
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10002123" arg2="1" />
+		</onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10002123" arg2="0" >
+			<action name="메쉬를설정한다" arg1="1030-1048" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="1100-1118" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="1201-1266" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<transition state="리젠대기"/>
+		</condition>
+	</state>
+	
+	<state name="리젠대기">                   
+		<condition name="WaitTick" waitTick="2000" >
+			<transition state="레버작동"/>
+		</condition>
+	</state>
+	
+	<state name="레버작동">                   <!--유저가 지나갈 수 있는 메쉬 보여줌-->
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="1030-1048" arg2="1" arg3="0" arg4="40" arg5="3" />
+			<action name="메쉬를설정한다" arg1="1100-1118" arg2="1" arg3="0" arg4="60" arg5="3" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="기믹시작"/>
+		</condition>
+	</state>
+	
+	<state name="기믹시작">                   <!--나머지 공간 메쉬들 모두 보여줌. 지나갈 수 있는 메쉬와 헷갈리게 하는 용도-->
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="1201-1266" arg2="1" arg3="0" arg4="20" arg5="3" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="기믹공간"/>
+		</condition>
+	</state>
+	
+		
+</ms2>
+

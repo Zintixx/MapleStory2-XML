@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Wait">
+        <onEnter>			
+			<action name="오브젝트반응설정한다" arg1="10001102" arg2="0"/>	 <!-- Greeting-->				
+			<action name="SetUserValue" key="CustomerEnter" value="0" />	
+			<action name="SetUserValue" key="ItemNumber" value="0" />				
+        </onEnter>	
+				<condition name="UserValue" key="CustomerEnter" value="1" >	
+			<transition state="CustomerEnterDelay"/>
+		</condition>
+	</state>
+	
+    <state name="CustomerEnterDelay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="CustomerEnter"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="CustomerEnter" >	
+        <onEnter>		
+			<action name="몬스터를생성한다" arg1="4112" arg2="0" /> 		
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9140" arg2="0">		<!-- 대기열에 아무도 없으면 -->
+					<transition state="Patrol03"/>	
+				</condition>		
+				<condition name="!NPC를감지했으면" arg1="9141" arg2="0">		<!-- 세 번째 대기 손님이 없으면 -->
+					<transition state="Patrol01"/>	
+				</condition>						
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="Patrol01">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="4112" arg2="MS2PatrolData_401" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9142" arg2="0">	<!-- 두 번째 대기 손님이 없으면 -->
+			<transition state="Patrol02Delay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Patrol02Delay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="Patrol02"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="Patrol02">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="4112" arg2="MS2PatrolData_402" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9143" arg2="0">	<!-- 첫 번째 대기 손님이 없으면 -->
+			<transition state="Patrol03Delay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Patrol03Delay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="Patrol03"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="Patrol03">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="4112" arg2="MS2PatrolData_403" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9143" arg2="0">	<!-- 첫 번째 대기 손님이 없으면 -->
+			<transition state="PatrolEndDelay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="PatrolEndDelay">	
+        <onEnter>			
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="PatrolEnd"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="PatrolEnd">		
+        <onEnter>						
+				</onEnter>	
+				<condition name="NPC를감지했으면" arg1="9143" arg2="4112">	<!-- 카운터 앞에 도착했으면 -->
+			<transition state="WaitGreeting"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="WaitGreeting">	
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001102" arg2="1"/>	 <!-- Greeting-->		
+			</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001102" arg2="0"> 	 
+					<transition state="OrderRandomPick"/>
+				</condition>
+		<onExit>	
+			<action name="오브젝트반응설정한다" arg1="10001102" arg2="2"/>	 <!-- Greeting-->					
+		</onExit> 
+    </state>			
+	
+
+
+<!-- 고객 주문 랜덤-->	
+	<state name="OrderRandomPick">
+		<onEnter>		
+		</onEnter>
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000649"/>	
+				</condition>		
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000657"/>	
+				</condition>		
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000697"/>	
+				</condition>		
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000698"/>	
+				</condition>		
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000701"/>	
+				</condition>		
+				<condition name="랜덤조건" arg1="1">	
+					<transition state="PickItem_30000716"/>	
+				</condition>						
+		<onExit>
+		</onExit>
+	</state>	
+
+
+<!-- 	30000649 -->
+	<state name="PickItem_30000649">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5104" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000649" />					
+			<action name="AddEffectNif" spawnPointID="4112" nifPath="Map/Tria/Indoor/tr_in_prop_mirror_A01.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="0">  	
+					<transition state="DetectItem_30000649"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000649">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="30000649">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9204" itemID="30000649">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 	30000657 -->
+	<state name="PickItem_30000657">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5104" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000657" />					
+			<action name="AddEffectNif" spawnPointID="4112" nifPath="Map/Iceland/Indoor/ic_in_prop_bed_B01.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="0">  	
+					<transition state="DetectItem_30000657"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000657">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="30000657">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9204" itemID="30000657">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 	30000697 -->
+	<state name="PickItem_30000697">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5104" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000697" />					
+			<action name="AddEffectNif" spawnPointID="4112" nifPath="Npc/Etc/UGC_Poclain/UGC_Poclain_01.nif" isOutline="1" scale="1.2"  rotateZ="315" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="0">  	
+					<transition state="DetectItem_30000697"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000697">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="30000697">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9204" itemID="30000697">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 	30000698 -->
+	<state name="PickItem_30000698">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5104" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000698" />					
+			<action name="AddEffectNif" spawnPointID="4112" nifPath="Npc/Etc/UGC_FlameBike_Npc/UGC_FlameBike_03.nif" isOutline="1" scale="1.2"  rotateZ="315" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="0">  	
+					<transition state="DetectItem_30000698"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000698">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="30000698">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9204" itemID="30000698">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 	30000701 -->
+	<state name="PickItem_30000701">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5104" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000701" />					
+			<action name="AddEffectNif" spawnPointID="4112" nifPath="Map/Common/Indoor/co_in_prop_security_A01.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="0">  	
+					<transition state="DetectItem_30000701"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000701">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="30000701">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9204" itemID="30000701">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+<!-- 	30000716 -->
+	<state name="PickItem_30000716">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5104" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000716" />					
+			<action name="AddEffectNif" spawnPointID="4112" nifPath="Map/Kerningcity/Field/ke_fi_prop_tire_A02.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="0">  	
+					<transition state="DetectItem_30000716"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000716">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9204" itemID="30000716">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9204" itemID="30000716">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+	
+<!-- 미션 성공 -->	
+	<state name="RightItem">
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="5104" arg2="0" />	<!-- DownArrow -->							
+			<action name="PlaySystemSoundInBox" arg1="9900" arg2="System_PartTimeJob_Right_01"/>				
+			<action name="RemoveEffectNif" spawnPointID="4112" />					
+			<action name="대화를설정한다" arg1="1" arg2="4112" arg3="$02000387_BF__4112_CUSTOMER__0$" arg4="3" arg5="0" />		
+			<action name="버프를걸어준다" arg1="9900" arg2="70000112" arg3="1" arg4="0" arg5="0" />					
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="CustomerLeave"/>
+				</condition>	
+		<onExit>	
+		</onExit>
+	</state>	
+	<state name="CustomerLeave">	
+		<onEnter>	
+			<action name="NPC를이동시킨다" arg1="4112" arg2="MS2PatrolData_444" />		
+		</onEnter>
+				<condition name="NPC를감지했으면" arg1="9304" arg2="4112">	
+					<transition state="Quit"/>
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+	 
+    <state name="Quit">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="4112"/>					
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="Wait"/>
+				</condition>			
+    <onExit>
+    </onExit>
+    </state> 		
+
+<!-- 잘못된 아이템을 내려놓으면 -->	
+	<state name="WrongItem">
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5104" arg2="0" />	<!-- DownArrow -->					
+			<action name="PlaySystemSoundInBox" arg1="9900" arg2="System_PartTimeJob_Wrong_01"/>	
+			<action name="RemoveEffectNif" spawnPointID="4112" />				
+			<action name="대화를설정한다" arg1="1" arg2="4112" arg3="$02000387_BF__4112_CUSTOMER__1$" arg4="3" arg5="0" />		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3500">	
+					<transition state="WrongItemReturn"/>		
+				</condition>	
+		<onExit>	
+		</onExit>
+	</state>	
+	<state name="WrongItemReturn">
+		<onEnter>		
+		</onEnter>	
+				<condition name="UserValue" key="ItemNumber" value="30000649" >	
+					<transition state="PickItem_30000649"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000657" >	
+					<transition state="PickItem_30000657"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000697" >	
+					<transition state="PickItem_30000697"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000698" >	
+					<transition state="PickItem_30000698"/>	
+				</condition>			
+				<condition name="UserValue" key="ItemNumber" value="30000701" >	
+					<transition state="PickItem_30000701"/>	
+				</condition>		
+				<condition name="UserValue" key="ItemNumber" value="30000716" >	
+					<transition state="PickItem_30000716"/>	
+				</condition>						
+		<onExit>	
+		</onExit>
+	</state>			
+</ms2>

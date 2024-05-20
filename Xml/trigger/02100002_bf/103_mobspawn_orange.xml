@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MobSpawn 트리거 : 슬라임 공장 주황색 슬라임 생성기 -->
+<!-- 탱크 상태에 따라 정상/불량 슬라임 스폰 비율이 다름 -->
+<!-- 몬스터 스폰 속도 : 1500 ms당 한 마리 -->
+<ms2>
+	<state name="Wait">   
+		<onEnter> 
+			<!-- 탱크 리필 트리거에서 받는 신호 -->					
+			<action name="SetUserValue" key="Gauge" value="0" />	
+			<!-- 탱크 리필 트리거에서 받는 신호 -->						
+			<action name="SetUserValue" key="StopSpawn" value="0" />
+			<!-- 홀더 트리거에서 받는 신호 0이면 스폰 진행 / 1이면 스폰 중지-->					
+			<action name="SetUserValue" key="SpawnHold" value="0" />			
+			<action name="몬스터소멸시킨다" arg1="30100,30075,30050,30025,30001,31001,31002,31003" />			
+			<action name="이펙트를설정한다" arg1="5103" arg2="0"/> <!-- Normal Slime Rebirth Sound -->	
+			<action name="이펙트를설정한다" arg1="5203" arg2="0"/> <!-- Abnormal Slime Rebirth Sound -->						
+		</onEnter>	
+		<condition name="UserValue" key="Gauge" value="100">
+			<transition state="Gauge100_Normal"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+	
+	<state name="Gauge100_Normal">   
+		<onEnter> 
+			<action name="이펙트를설정한다" arg1="5103" arg2="1"/> <!-- Normal Slime Rebirth Sound -->			
+			<action name="몬스터를생성한다" arg1="30100" arg2="0" />			
+			<!-- 100% -->	
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1500">  
+			<transition state="Gauge_SpawnRamdom"/>	
+		</condition>	
+		<condition name="UserValue" key="SpawnHold" value="1">	
+			<transition state="SpawnHold"/>
+		</condition> 				
+		<condition name="UserValue" key="Gauge" value="75">	
+			<transition state="Gauge75_Normal"/>	
+		</condition>			
+		<condition name="UserValue" key="StopSpawn" value="1">	
+			<transition state="Quit"/>
+		</condition> 					
+		<onExit> 
+		</onExit>
+	</state>	
+
+	<state name="Gauge75_Normal">   
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="5103" arg2="1"/> <!-- Normal Slime Rebirth Sound -->			
+			<action name="몬스터를생성한다" arg1="30075" arg2="0" />
+			<!-- 75% -->	
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1500">  
+			<transition state="Gauge_SpawnRamdom"/>	
+		</condition>		
+		<condition name="UserValue" key="SpawnHold" value="1">	
+			<transition state="SpawnHold"/>
+		</condition> 			
+		<condition name="UserValue" key="Gauge" value="100">	
+			<transition state="Gauge100_Normal"/>	
+		</condition>						
+		<condition name="UserValue" key="Gauge" value="50">	
+			<transition state="Gauge50_Normal"/>	
+		</condition>			
+		<condition name="UserValue" key="StopSpawn" value="1">	
+			<transition state="Quit"/>
+		</condition> 					
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="Gauge50_Normal">   
+		<onEnter> 	
+			<action name="이펙트를설정한다" arg1="5103" arg2="1"/> <!-- Normal Slime Rebirth Sound -->			
+			<action name="몬스터를생성한다" arg1="30050" arg2="0" />
+			<!-- 50% -->	
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1500">  
+			<transition state="Gauge_SpawnRamdom"/>	
+		</condition>		
+		<condition name="UserValue" key="SpawnHold" value="1">	
+			<transition state="SpawnHold"/>
+		</condition> 			
+		<condition name="UserValue" key="Gauge" value="75">	
+			<transition state="Gauge75_Normal"/>	
+		</condition>						
+		<condition name="UserValue" key="Gauge" value="25">	
+			<transition state="Gauge25_Normal"/>	
+		</condition>			
+		<condition name="UserValue" key="StopSpawn" value="1">	
+			<transition state="Quit"/>
+		</condition> 					
+		<onExit> 
+		</onExit>
+	</state>		
+
+	<state name="Gauge25_Normal">   
+		<onEnter> 	
+			<action name="이펙트를설정한다" arg1="5103" arg2="1"/> <!-- Normal Slime Rebirth Sound -->			
+			<action name="몬스터를생성한다" arg1="30025" arg2="0" />
+			<!-- 25% -->	
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1500">  
+			<transition state="Gauge_SpawnRamdom"/>	
+		</condition>	
+		<condition name="UserValue" key="SpawnHold" value="1">	
+			<transition state="SpawnHold"/>
+		</condition> 			
+		<condition name="UserValue" key="Gauge" value="50">	
+			<transition state="Gauge50_Normal"/>	
+		</condition>						
+		<condition name="UserValue" key="Gauge" value="1">	
+			<transition state="Gauge1_Normal"/>	
+		</condition>		
+		<condition name="UserValue" key="StopSpawn" value="1">	
+			<transition state="Quit"/>
+		</condition> 					
+		<onExit> 
+		</onExit>
+	</state>		
+
+	<state name="Gauge1_Normal">   
+		<onEnter> 	
+			<action name="이펙트를설정한다" arg1="5103" arg2="1"/> <!-- Normal Slime Rebirth Sound -->			
+			<action name="몬스터를생성한다" arg1="30001" arg2="0" />
+			<!-- 1% -->	
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1500">  
+			<transition state="Gauge_SpawnRamdom"/>	
+		</condition>	
+		<condition name="UserValue" key="SpawnHold" value="1">	
+			<transition state="SpawnHold"/>
+		</condition> 			
+		<condition name="UserValue" key="Gauge" value="25">	
+			<transition state="Gauge25_Normal"/>	
+		</condition>		
+		<condition name="UserValue" key="StopSpawn" value="1">	
+			<transition state="Quit"/>
+		</condition> 					
+		<onExit> 
+		</onExit>
+	</state>		
+
+	
+	<!-- 스폰 홀드 -->
+	<state name="SpawnHold">   
+		<onEnter> 
+			<!-- 홀더 트리거에서 받는 신호 0이면 스폰 진행 / 1이면 스폰 중지-->					
+		</onEnter>			
+		<condition name="UserValue" key="SpawnHold" value="0">	
+			<transition state="BackToGaugeState"/>	
+		</condition>		
+		<condition name="UserValue" key="StopSpawn" value="1">	
+			<transition state="Quit"/>
+		</condition> 			
+		<onExit> 
+		</onExit>
+	</state>			
+	
+	
+	<!-- 돌연변이 슬라임 랜덤 낮은 확률-->
+	<state name="Gauge_SpawnRamdom">   
+		<onEnter> 	
+		</onEnter>	
+		<condition name="랜덤조건" arg1="100" desc="Normal">
+			<transition state="Spawn_Normal"/>
+		</condition> 
+		<condition name="랜덤조건" arg1="5" desc="Eater"> 
+			<transition state="Spawn_Eater" />
+		</condition>	
+		<condition name="랜덤조건" arg1="10" desc="Runner">
+			<transition state="Spawn_Runner" />
+		</condition>	
+		<!--<condition name="랜덤조건" arg1="1" desc="BigMom">
+			<transition state="Spawn_BigMom" /> 
+		</condition>		-->
+		<onExit> 
+		</onExit>
+	</state>	
+
+	<!-- 랜덤 스폰 공용 -->
+	<state name="Spawn_Normal">   
+		<onEnter> 	
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="BackToGaugeState"/>	
+		</condition>						
+		<onExit> 
+		</onExit>
+	</state>			
+	<state name="Spawn_Eater">   
+		<onEnter> 	
+			<action name="이펙트를설정한다" arg1="5203" arg2="1"/> <!-- Abnormal Slime Rebirth Sound -->				
+			<action name="몬스터를생성한다" arg1="31001" arg2="0" />
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1500">  
+			<transition state="BackToGaugeState"/>	
+		</condition>				
+		<onExit> 
+		</onExit>
+	</state>		
+	<state name="Spawn_Runner">   
+		<onEnter> 	
+			<action name="이펙트를설정한다" arg1="5203" arg2="1"/> <!-- Abnormal Slime Rebirth Sound -->					
+			<action name="몬스터를생성한다" arg1="31002" arg2="0" />
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1500">  
+			<transition state="BackToGaugeState"/>	
+		</condition>				
+		<onExit> 
+		</onExit>
+	</state>		
+	<!--<state name="Spawn_BigMom">   
+		<onEnter> 	
+			<action name="몬스터를생성한다" arg1="31003" arg2="0" />
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1500">  
+			<transition state="BackToGaugeState"/>	
+		</condition>				
+		<onExit> 
+		</onExit>
+	</state>	-->		
+	
+	<!-- 게이지 상태 체크로 돌아가기 공용 -->
+	<state name="BackToGaugeState">   
+		<onEnter> 	
+		</onEnter>	
+		<condition name="UserValue" key="Gauge" value="100">	
+			<transition state="Gauge100_Normal"/>	
+		</condition>			
+		<condition name="UserValue" key="Gauge" value="75">	
+			<transition state="Gauge75_Normal"/>	
+		</condition>		
+		<condition name="UserValue" key="Gauge" value="50">	
+			<transition state="Gauge50_Normal"/>	
+		</condition>			
+		<condition name="UserValue" key="Gauge" value="25">	
+			<transition state="Gauge25_Normal"/>	
+		</condition>			
+		<condition name="UserValue" key="Gauge" value="1">	
+			<transition state="Gauge1_Normal"/>	
+		</condition>				
+		<onExit> 
+		</onExit>
+	</state>	
+	
+	<state name="Quit">   
+		<onEnter> 
+			<action name="몬스터소멸시킨다" arg1="30100,30075,30050,30025,30001,31001,31002,31003" />						
+		</onEnter>			
+		<onExit> 	
+		</onExit>
+	</state>		
+</ms2>

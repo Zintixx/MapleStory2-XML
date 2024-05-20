@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>  <!-- TriggerModelID =  553 -->
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="기본셋팅" /> 
+		</condition>		
+	</state>  
+
+
+	<state name="기본셋팅">
+		<onEnter>
+			<action name="SetUserValue" key="MonsterMany" value="0" />		<!-- MonsterMany변수 0으로 초기 셋팅, 소환몹이 한마리 나올때마다 1 더하고 한마리씩 죽으몬 1 빼기 함, 몬스터 등장 이전에 이 변수 0 초기화 하기-->		 	 
+		</onEnter>
+		
+		<condition name="WaitTick" waitTick="2000" >
+			<transition state="트리거작동시작" />
+		</condition>
+			
+	</state>
+	
+	<state name="트리거작동시작">
+		<onEnter>
+		</onEnter>
+		
+		<condition name="UserValue" key="MonsterMany" value="1" operator="GreaterEqual"> <!-- 졸몹이 등장해 이 변수가 1 이상의 숫자가 되면, 블랙빈에게 버프 부여하기 -->
+			<transition state="블랙빈에게버프부여" />
+		</condition>	
+
+	</state>	
+
+
+	
+	<state name="블랙빈에게버프부여">
+		<onEnter>  			<!--arg2은 몬스터 스폰ID 101는 어려운 난이도    102는 쉬운 난이도 -->
+			<!-- 50003307(레벨2)는 버프 시간 엄청 긴거-->
+			<action name="버프를걸어준다" arg1="101" arg2="50003307" arg3="2" arg4="1"/>   <!--공격반사 버프 부여하기 ,   arg1="101" 보스 스폰 ID ,  arg3="1" 은 애디셔널 레벨 -->	
+														<!--몬스터에게 애디셔널 거는 경우:  arg4 = "타겟이 몬스터로 하려면 1 인 경우  ->    arg1 = "몬스터스폰ID", arg2 = "애디셔널코드", arg3 = "애디셔널레벨", arg4 = "타겟이 몬스터로 하려면 1설정"  -->	
+
+			<!-- 50003307(레벨2)는 버프 시간 엄청 긴거-->
+			<action name="버프를걸어준다" arg1="102" arg2="50003307" arg3="2" arg4="1"/>   <!--공격반사 버프 부여하기 ,   arg1="102" 보스 스폰 ID ,  arg3="1" 은 애디셔널 레벨 -->	
+														<!--몬스터에게 애디셔널 거는 경우:  arg4 = "타겟이 몬스터로 하려면 1 인 경우  ->    arg1 = "몬스터스폰ID", arg2 = "애디셔널코드", arg3 = "애디셔널레벨", arg4 = "타겟이 몬스터로 하려면 1설정"  -->	
+
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="블랙빈에게버프삭제체크" />
+			</condition>
+
+	</state>	
+	
+	
+	<state name="블랙빈에게버프삭제체크">
+		<onEnter>
+		</onEnter>
+		
+		<condition name="UserValue" key="MonsterMany" value="0"> <!-- 졸몹이 전멸해 이 변수가 0이 되면 -->
+			<transition state="블랙빈에게버프삭제대기" />
+		</condition>	
+
+	</state>		
+	
+
+	<state name="블랙빈에게버프삭제대기">
+		<onEnter>
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="900" > 
+				<transition state="블랙빈에게버프삭제실시" />
+			</condition>
+
+	</state>	
+	
+	
+	<state name="블랙빈에게버프삭제실시">
+		<onEnter>  			<!--arg2은 몬스터 스폰ID 101는 어려운 난이도    102는 쉬운 난이도 -->
+			<!-- 50003309(레벨1)은 50003307 애디셔널 제거하는 기능이 있음 -->
+			<action name="버프를걸어준다" arg1="101" arg2="50003309" arg3="1" arg4="1"/>   <!--공격반사 버프 버프 제거 ,   arg1="101" 보스 스폰 ID ,  arg3="1" 은 애디셔널 레벨 -->	
+														<!--몬스터에게 애디셔널 거는 경우:  arg4 = "타겟이 몬스터로 하려면 1 인 경우  ->    arg1 = "몬스터스폰ID", arg2 = "애디셔널코드", arg3 = "애디셔널레벨", arg4 = "타겟이 몬스터로 하려면 1설정"  -->	
+
+			<!-- 50003309(레벨1)은 50003307 애디셔널 제거하는 기능이 있음 -->
+			<action name="버프를걸어준다" arg1="102" arg2="50003309" arg3="1" arg4="1"/>   <!--공격반사 버프 버프 제거 ,   arg1="102" 보스 스폰 ID ,  arg3="1" 은 애디셔널 레벨 -->	
+														<!--몬스터에게 애디셔널 거는 경우:  arg4 = "타겟이 몬스터로 하려면 1 인 경우  ->    arg1 = "몬스터스폰ID", arg2 = "애디셔널코드", arg3 = "애디셔널레벨", arg4 = "타겟이 몬스터로 하려면 1설정"  -->	
+
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="트리거작동시작" /> <!-- 다시 처음단계로 되돌아가기 -->
+			</condition>
+
+	</state>		
+
+</ms2>

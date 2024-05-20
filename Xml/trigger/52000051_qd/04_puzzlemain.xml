@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 순례자의 뜰 : 같은 그림 맞추기 --> 
+  
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 	
+			<action name="SetUserValue" key="CorrectFirstPiece" value="0" />		
+			<action name="SetUserValue" key="CorrectSecondPiece" value="0" />	
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="CorrectFouthPiece" value="0" />				
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- 가이드 서머리 사운드 이펙트-->		
+			<action name="이펙트를설정한다" arg1="5003" arg2="0"/> <!-- Pattern_LightOn-->					
+			<action name="오브젝트반응설정한다" arg1="10001023" arg2="0" />	<!-- Lever -->				
+			<action name="SetUserValue" key="PuzzleStart" value="0" />				
+			<action name="메쉬를설정한다" arg1="3100-3109" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Quiz -->		
+			<action name="메쉬를설정한다" arg1="3001-3004" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- BaseRock -->		
+			<action name="메쉬를설정한다" arg1="3020" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- LionStone -->					
+				</onEnter>	
+			<condition name="UserValue" key="PuzzleStart" value="1">
+			<transition state="StartPuzzle"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>
+
+    <state name="StartPuzzle" > 	
+        <onEnter>	 
+			<action name="SetUserValue" triggerID="5" key="PickFirstPiece" value="1" /> 		<!-- 두 번째 문양은 첫 번째 뽑힌 문양을 제외하고 6번 트리거에서 뽑음 , 중복 2개 제한 장치 -->
+			<action name="SetUserValue" triggerID="7" key="PickThirdPiece" value="1" /> 		<!-- 네 번째 문양은 세 번째 뽑힌 문양을 제외하고 8번 트리거에서 뽑음 , 중복 2개 제한 장치 --> 		
+			<action name="오브젝트반응설정한다" arg1="10001023" arg2="1" />	<!-- Lever -->		
+			<action name="메쉬를설정한다" arg1="3020" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- LionStone -->				
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->								
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10001023" arg2="0" >	
+					<transition state="CheckAnswer01"/>	
+				</condition>	
+    <onExit> 
+    </onExit>	
+    </state>	 
+
+    <state name="CheckAnswer01" > 
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3020" arg2="0" arg3="200" arg4="0" arg5="0" /> <!-- LionStone -->			
+			<action name="SetUserValue" triggerID="5" key="CheckFirstPiece" value="1" /> 		
+			<action name="SetUserValue" triggerID="6" key="CheckSecondPiece" value="1" /> 		
+			<action name="SetUserValue" triggerID="7" key="CheckThirdPiece" value="1" /> 		
+			<action name="SetUserValue" triggerID="8" key="CheckFourthPiece" value="1" /> 	
+				</onEnter>		
+				<condition name="WaitTick" waitTick="300">  
+			<transition state="CheckAnswer02"/>
+		</condition> 	
+    <onExit> 	
+    </onExit>
+    </state>		
+
+<!-- 순차적으로 체크 -->	
+    <state name="CheckAnswer02" > 
+        <onEnter>		
+				</onEnter>						
+			<condition name="UserValue" key="CorrectFirstPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectSecondPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectThirdPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectFouthPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 		
+			<condition name="UserValue" key="CorrectFirstPiece" value="1">	
+			<transition state="CheckAnswer03"/>
+		</condition> 			
+    <onExit> 	
+    </onExit>
+    </state>		
+	
+    <state name="CheckAnswer03" > 
+        <onEnter>		
+				</onEnter>		
+			<condition name="UserValue" key="CorrectFirstPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectSecondPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectThirdPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectFouthPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 						
+			<condition name="UserValue" key="CorrectSecondPiece" value="1">	
+			<transition state="CheckAnswer04"/>
+		</condition> 			
+    <onExit> 	
+    </onExit>
+    </state>		
+	
+    <state name="CheckAnswer04" > 
+        <onEnter>		
+				</onEnter>		
+			<condition name="UserValue" key="CorrectFirstPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectSecondPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectThirdPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectFourthPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 						
+			<condition name="UserValue" key="CorrectThirdPiece" value="1">		
+			<transition state="CheckAnswer05"/>
+		</condition> 			
+    <onExit> 	
+    </onExit>
+    </state>		
+	
+    <state name="CheckAnswer05" > 
+        <onEnter>		
+				</onEnter>		
+			<condition name="UserValue" key="CorrectFirstPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectSecondPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectThirdPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 	
+			<condition name="UserValue" key="CorrectFourthPiece" value="2">	
+			<transition state="Retry01"/>
+		</condition> 						
+			<condition name="UserValue" key="CorrectFourthPiece" value="1">	
+			<transition state="PuzzleSolved"/>
+		</condition> 			
+    <onExit> 	
+    </onExit>
+    </state>		
+
+	
+	
+<!-- 4개 중 하나라도 맞지 않으면 재시도 -->
+    <state name="Retry01" > 
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$52000051_QD__04_PUZZLEMAIN__0$" arg3="3000" arg4="0" />	
+			<action name="SetUserValue" key="CorrectFirstPiece" value="0" />	
+			<action name="SetUserValue" key="CorrectSecondPiece" value="0" />	
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />	
+			<action name="SetUserValue" key="CorrectFouthPiece" value="0" />		
+			<action name="SetUserValue" triggerID="5" key="ResetFirstPiece" value="1" />		
+			<action name="SetUserValue" triggerID="6" key="ResetSecondPiece" value="1" />		
+			<action name="SetUserValue" triggerID="7" key="ResetThirdPiece" value="1" />					
+			<action name="SetUserValue" triggerID="8" key="ResetFourthPiece" value="1" />		
+				</onEnter>		
+				<condition name="WaitTick" waitTick="3000">  
+					<transition state="Retry02"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="Retry02" > 
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10001023" arg2="1" />	<!-- Lever -->			
+			<action name="메쉬를설정한다" arg1="3020" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- LionStone -->					
+				</onEnter>		
+				<condition name="오브젝트가반응했으면" arg1="10001023" arg2="0" >
+					<transition state="CheckAnswer01"/>	
+				</condition>	
+    <onExit> 
+			<action name="HideGuideSummary" entityID="10036010"/>	 	
+    </onExit>
+    </state>			
+	
+    <state name="PuzzleSolved" > 
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="5003" arg2="1"/> <!-- Pattern_LightOn-->			
+			<action name="메쉬를설정한다" arg1="3001-3004" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- BaseRock -->					
+			<action name="SetUserValue" triggerID="1" key="PuzzleSolved" value="1" /> 	
+			<action name="SetUserValue" triggerID="5" key="LockFirstPiece" value="1" />		
+			<action name="SetUserValue" triggerID="6" key="LockSecondPiece" value="1" />		
+			<action name="SetUserValue" triggerID="7" key="LockThirdPiece" value="1" />					
+			<action name="SetUserValue" triggerID="8" key="LockFourthPiece" value="1" />		
+			<action name="업적이벤트를발생시킨다" arg1="9001" arg2="trigger" arg3="OrientPattern_Puzzle"/>			
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+			<transition state="Quit"/>
+		</condition> 					
+    <onExit> 
+    </onExit>	
+    </state>	
+
+    <state name="Quit"> 
+        <onEnter>	
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+ 
+</ms2>
+

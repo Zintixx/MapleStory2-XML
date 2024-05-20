@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--  MS2TriggerModel  TriggerModelID =  1001  -->
+
+<ms2>
+
+	<state name="대기">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="103" arg2="0" arg3="0" arg4="0" /> 
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="901">
+			<transition state="페이카등장"/>
+		</condition>
+		<onExit> 
+		</onExit>
+	</state>
+ 
+	<state name="페이카등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> <!-- 페이카 등장 -->
+			<action name="SideNpcTalk" type="talk" npcID="11001813" illust="Turka_normal" duration="5000" script="$02020201_BF__MAIN__0$" />
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="101"> <!-- 페이카 죽음-->
+			<transition state="제단파괴"/>
+		</condition>
+		<onExit>
+		</onExit>
+	</state>
+	
+	<state name="제단파괴"> <!-- 페이카 죽음으로 남은 제단 파괴 -->
+		<onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="11001813" illust="Turka_normal" duration="5000" script="$02020201_BF__MAIN__1$" />
+			<action name="AddBalloonTalk" spawnPointID="101" msg="$02020201_BF__MAIN__2$" duration="3000" delayTick="0"/>
+			<action name="몬스터소멸시킨다" arg1="201,202,203" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="종료"/>
+		</condition>
+		<onExit>
+		</onExit>
+	</state>
+	
+	<state name="종료"> 
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg2="trigger" arg3="PaikaKritiasClear"/>
+			<action name="DungeonClear" />
+			<action name="포탈을설정한다" arg1="103" arg2="1" arg3="1" arg4="1" />
+		</onEnter>
+		<onExit>
+		</onExit>
+	</state> 
+
+</ms2>

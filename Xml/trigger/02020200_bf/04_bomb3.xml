@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--  MS2TriggerModel  TriggerModelID =  99990004  -->
+
+<ms2>
+
+	<state name="대기">
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="BombOn" value="1" >
+			<transition state="시작"/>
+		</condition>
+	</state>
+ 
+	<state name="시작">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="113" arg2="0" />
+		</onEnter>
+		<condition name="UserValue" key="BombOn" value="2" >
+			<transition state="종료"/>
+		</condition>
+		<condition name="몬스터가죽어있으면" arg1="113" >
+			<transition state="폭탄_터짐"/>
+		</condition>
+	</state>
+
+	<state name="폭탄_터짐">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="2003" arg2="0" arg3="1500" arg5="3" />
+		</onEnter>
+		<condition name="UserValue" key="BombOn" value="2" >
+			<transition state="종료"/>
+		</condition>
+		<condition name="무조건" >
+			<transition state="대기시간"/>
+		</condition>
+	</state>
+ 
+	<state name="대기시간">
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="BombOn" value="2" >
+			<transition state="종료"/>
+		</condition>
+		<condition name="WaitTick" waitTick="40000">
+			<action name="메쉬를설정한다" arg1="2003" arg2="1" arg5="3" />
+			<transition state="시작"/>
+		</condition>
+	</state>
+
+	<state name="종료">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="113" />
+			<action name="메쉬를설정한다" arg1="2003" arg2="0" arg3="1500" arg5="3" />
+		</onEnter>	
+	</state>
+
+</ms2>

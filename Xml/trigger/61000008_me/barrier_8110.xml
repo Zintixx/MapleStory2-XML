@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="Wait">   
+        <onEnter> 	  		 
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 			
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="2"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10000954" arg2="2"/>  <!-- Off -->
+        </onEnter>	
+			<condition name="UserValue" key="Barrier11" value="1">
+					<transition state="Sensor7111"/>
+				</condition> 
+			<condition name="UserValue" key="Barrier11" value="2">
+					<transition state="Sensor7112"/>
+				</condition> 
+			<condition name="UserValue" key="Barrier11" value="3">
+					<transition state="Sensor7113"/>
+				</condition> 
+			<condition name="UserValue" key="Barrier11" value="4">
+					<transition state="Sensor7114"/>
+				</condition> 
+			<condition name="UserValue" key="Barrier11" value="5">
+					<transition state="Sensor7115"/>
+				</condition> 
+    <onExit> 	
+    </onExit> 
+    </state>
+
+<!-- 1명 방어 불가 -->	
+    <state name="Sensor7111">
+        <onEnter>			
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="1" />	<!-- yellow -->				
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="1" arg3="Equal" >
+					<transition state="Activate7111"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+		 
+    <state name="Activate7111"> 
+		<onEnter>
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="2" />	<!--green -->		
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="1" arg3="Equal" >
+					<transition state="Sensor7111" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+<!-- 2명 -->	
+    <state name="Sensor7112">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="1" />	<!-- yellow -->				
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="0"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10000954" arg2="0"/>  <!-- Off -->
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="2" arg3="Equal" >
+					<transition state="SafeGreen7112"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+	
+    <state name="SafeGreen7112">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="2" />	<!--green -->		
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="2" arg3="Equal" >
+					<transition state="Enable7112"/>
+				</condition> 
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="2" arg3="Equal" >
+					<transition state="Sensor7112" />
+				</condition>		
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+		
+     <state name="Enable7112">  
+		<onEnter>		
+			<action name="PlaySystemSoundInBox" arg1="9110" arg2="DDStop_Stage_Shiled_01"/>	
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="1"/>   <!-- On -->
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000938" arg2="0"> <!-- On -->
+					<transition state="Activate7112" />
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="2" arg3="Equal" >
+					<transition state="Sensor7112" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>	
+		 
+    <state name="Activate7112"> 
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="8110" arg2="1" />			  
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="1" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="2"/>  <!-- On -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="2" arg3="Equal" >
+					<transition state="Sensor7112" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Delay7112" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Delay7112"> 
+		<onEnter>
+		  <action name="오브젝트반응설정한다" arg1="10000954" arg2="1"/>  <!-- Off -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="2" arg3="Equal" >
+					<transition state="Sensor7112" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10000954" arg2="0"> <!-- Off -->
+					<transition state="DeActivate7112" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="DeActivate7112"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />			  
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Sensor7112"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+<!-- 3명 -->	
+    <state name="Sensor7113">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="1" />	<!-- yellow -->				
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="0"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10000954" arg2="0"/>  <!-- Off -->
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="3" arg3="Equal" >
+					<transition state="SafeGreen7113"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+	
+    <state name="SafeGreen7113">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="2" />	<!--green -->	
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="3" arg3="Equal" >
+					<transition state="Enable7113"/>
+				</condition> 
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="3" arg3="Equal" >
+					<transition state="Sensor7113" />
+				</condition>					
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+     <state name="Enable7113">  
+		<onEnter>		
+			<action name="PlaySystemSoundInBox" arg1="9110" arg2="DDStop_Stage_Shiled_01"/>		
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="1"/>   <!-- On -->
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000938" arg2="0"> <!-- On -->
+					<transition state="Activate7113" />
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="3" arg3="Equal" >
+					<transition state="Sensor7113" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>	
+		 
+    <state name="Activate7113"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="8110" arg2="1" />
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="1" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="2"/>  <!-- On -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="3" arg3="Equal" >
+					<transition state="Sensor7113" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Delay7113" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Delay7113"> 
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000954" arg2="1"/>  <!-- Off -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="3" arg3="Equal" >
+					<transition state="Sensor7113" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10000954" arg2="0"> <!-- Off -->
+					<transition state="DeActivate7113" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="DeActivate7113"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />			  
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Sensor7113"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+<!-- 4명 -->	
+    <state name="Sensor7114">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="1" />	<!-- yellow -->				
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 					
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="0"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10000954" arg2="0"/>  <!-- Off -->
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="4" arg3="Equal" >
+					<transition state="SafeGreen7114"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+	
+    <state name="SafeGreen7114">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="2" />	<!--green -->	
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="4" arg3="Equal" >
+					<transition state="Enable7114"/>
+				</condition> 
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="4" arg3="Equal" >
+					<transition state="Sensor7114" />
+				</condition>					
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+		
+     <state name="Enable7114">  
+		<onEnter>		
+			<action name="PlaySystemSoundInBox" arg1="9110" arg2="DDStop_Stage_Shiled_01"/>		
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="1"/>   <!-- On -->
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000938" arg2="0"> <!-- On -->
+					<transition state="Activate7114" />
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="4" arg3="Equal" >
+					<transition state="Sensor7114" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>	
+		 
+    <state name="Activate7114"> 
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="8110" arg2="1" />
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="1" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="2"/>  <!-- On -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="4" arg3="Equal" >
+					<transition state="Sensor7114" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Delay7114" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Delay7114"> 
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000954" arg2="1"/>  <!-- Off -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="4" arg3="Equal" >
+					<transition state="Sensor7114" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10000954" arg2="0"> <!-- Off -->
+					<transition state="DeActivate7114" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="DeActivate7114"> 
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />			  
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Sensor7114"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+<!-- 5명 -->	
+    <state name="Sensor7115">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="1" />	<!-- yellow -->				
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 			  
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="0"/>  <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10000954" arg2="0"/>  <!-- Off -->
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="5" arg3="Equal" >
+					<transition state="SafeGreen7115"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+
+    <state name="SafeGreen7115">
+        <onEnter>	
+			<action name="SetUserValue" triggerID="7110" key="Color11" value="2" />	<!--green -->	
+        </onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9110" arg2="5" arg3="Equal" >
+					<transition state="Enable7115"/>
+				</condition> 
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="5" arg3="Equal" >
+					<transition state="Sensor7115" />
+				</condition>					
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+    <onExit>   
+    </onExit>
+    </state>			
+		
+     <state name="Enable7115">  
+		<onEnter>		
+			<action name="PlaySystemSoundInBox" arg1="9110" arg2="DDStop_Stage_Shiled_01"/>		
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="1"/>   <!-- On -->
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000938" arg2="0"> <!-- On -->
+					<transition state="Activate7115" />
+				</condition>	
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="5" arg3="Equal" >
+					<transition state="Sensor7115" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>	
+		 
+    <state name="Activate7115"> 
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="8110" arg2="1" />
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="1" arg3="0" arg4="0" arg5="0" /> 				
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="2"/>  <!-- On -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="5" arg3="Equal" >
+					<transition state="Sensor7115" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Delay7115" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="Delay7115"> 
+		<onEnter>
+		  <action name="오브젝트반응설정한다" arg1="10000954" arg2="1"/>  <!-- Off -->
+		</onEnter>
+				<condition name="!여러명의유저를감지했으면" arg1="9110" arg2="5" arg3="Equal" >
+					<transition state="Sensor7115" />
+				</condition>	
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+				<condition name="오브젝트가반응했으면" arg1="10000954" arg2="0"> <!-- Off -->
+					<transition state="DeActivate7115" />
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="DeActivate7115"> 
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />			  
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 			  
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Sensor7115"/>
+				</condition> 
+				<condition name="UserValue" key="Barrier11" value="10">
+					<transition state="Reset"/>
+				</condition> 
+		<onExit>
+		</onExit>
+    </state>		
+	
+	<state name="Reset">   
+        <onEnter> 	
+			<action name="메쉬를설정한다" arg1="8111-8114" arg2="0" arg3="0" arg4="0" arg5="0" /> 			  
+			<action name="이펙트를설정한다" arg1="8110" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10000938" arg2="0"/>   <!-- On -->
+			<action name="오브젝트반응설정한다" arg1="10000954" arg2="0"/>  <!-- Off -->
+			<action name="SetUserValue" key="Barrier11" value="0" />					  
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Wait"/>
+				</condition> 
+    <onExit> 
+    </onExit>
+    </state>
+</ms2>
+

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  
+	<state name="대기">
+		<onEnter>  
+			<action name="오브젝트반응설정한다" arg1="10001337" arg2="1" />				
+			<action name="오브젝트반응설정한다" arg1="10001338" arg2="2" />		
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>				
+			<action name="메쉬를설정한다" arg1="3000,3001" arg2="1" arg3="0" arg4="0" arg5="0" />	
+			<action name="메쉬를설정한다" arg1="3002,3003,3004" arg2="0" arg3="0" arg4="0" arg5="0" />		
+			<action name="메쉬를설정한다" arg1="3101,3102,3201,3202,3301,3302,3401,3402,3601,3602,3603,3604" arg2="0" arg3="0" arg4="0" arg5="0" />				
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="199">
+				<!-- <action name="타이머를설정한다" arg1="30" arg2="600" arg3="1" arg4="1" arg5="80"/> -->
+				<transition state="랜덤A"/>
+			</condition> 					
+	</state>  
+	
+	<state name="랜덤A">	
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3101" arg2="1" arg3="0" arg4="0" arg5="0" />							
+					<transition state="랜덤B" />
+				</condition>
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3102" arg2="1" arg3="0" arg4="0" arg5="0" />						
+					<transition state="랜덤B" />
+				</condition>
+	</state>	
+
+	<state name="랜덤B">
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3201" arg2="1" arg3="0" arg4="0" arg5="0" />							
+					<transition state="랜덤C" />
+				</condition>
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3202" arg2="1" arg3="0" arg4="0" arg5="0" />						
+					<transition state="랜덤C" />
+				</condition>
+	</state>	
+ 
+	<state name="랜덤C"> 
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3301" arg2="1" arg3="0" arg4="0" arg5="0" />							
+					<transition state="랜덤D" />
+				</condition>
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3302" arg2="1" arg3="0" arg4="0" arg5="0" />						
+					<transition state="랜덤D" />
+				</condition>
+	</state>		
+  
+	<state name="랜덤D">
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3401" arg2="1" arg3="0" arg4="0" arg5="0" />							
+					<transition state="랜덤E" />
+				</condition>
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3402" arg2="1" arg3="0" arg4="0" arg5="0" />						
+					<transition state="랜덤E" />
+				</condition>
+	</state>		
+
+	<state name="랜덤E">
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3601,3602" arg2="1" arg3="0" arg4="0" arg5="0" />							
+					<transition state="시작" />
+				</condition>
+				<condition name="랜덤조건" arg1="50">
+					<action name="메쉬를설정한다" arg1="3603,3604" arg2="1" arg3="0" arg4="0" arg5="0" />						
+					<transition state="시작" />
+				</condition>
+	</state>		
+       
+	<state name="시작">
+		<onEnter>  
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$80000014_bonus__main__0$" arg3="5000" />					
+			<action name="ScoreBoardCreate" type="ScoreBoardTopCenter" title="" maxScore="0"/>
+			<action name="ScoreBoardSetScore" score="0" />
+			<action name="SpawnItemRange" rangeID="9001-9019" randomPickCount="10"/>			
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="102">		
+				<transition state="보스등장"/>
+			</condition>		
+	</state>  
+	  
+	<state name="보스등장">
+		<onEnter>       
+			<action name="SpawnNpcRange" rangeID="2001-2001" isAutoTargeting="0" score="1500"/>				
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="2001">
+				<transition state="딜레이"/>
+			</condition>				
+	</state>  	
+
+	<state name="딜레이"> 
+		<onEnter>   
+			<action name="몬스터소멸시킨다" arg1="0" />		
+		</onEnter>					
+			<condition name="WaitTick" waitTick="1500"> 
+				<action name="메쉬를설정한다" arg1="3000,3001" arg2="0" arg3="0" arg4="0" arg5="0" />	
+				<action name="메쉬를설정한다" arg1="3002,3003,3004" arg2="1" arg3="0" arg4="0" arg5="0" />										
+				<transition state="정산" />
+			</condition> 		
+	</state>		
+ 
+      <state name="정산">  
+			<condition name="ScoreBoardCompare" compareOp="GreaterEqual" score="18000">
+				<action name="DebugString" value="18000 이상" />		
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="HighScoreTreasureMap01"/> 
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="TimerunTreasureMap01"/> 					
+				<!-- <action name="이벤트UI를설정한다" arg1="7" arg2="미션 성공! 참 잘했어요!" arg3="2500" />		 -->
+				<transition state="반응대기" />
+			</condition>	  
+			<condition name="ScoreBoardCompare" compareOp="Less" score="18000">
+				<action name="DebugString" value="18000 미만" />						
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="TimerunTreasureMap01"/> 
+				<!-- <action name="이벤트UI를설정한다" arg1="7" arg2="미션 성공!" arg3="2500" />		 -->
+				<transition state="반응대기" />
+			</condition>		
+			<condition name="WaitTick" waitTick="500"> 								
+				<transition state="반응대기" />
+			</condition> 				
+    </state>	
+	
+
+	
+	<state name="반응대기"> 
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001338" arg2="1" />		
+		</onEnter>			
+			<condition name="오브젝트가반응했으면" arg1="10001338" arg2="0">
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="TreasureMap01"/> 			
+				<action name="DungeonClear" /> 					
+				<action name="ScoreBoardRemove" />
+				<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>					
+				<transition state="종료" />
+			</condition>				
+	</state>  		
+
+
+ 
+	<state name="종료">
+	</state> 
+	
+</ms2>

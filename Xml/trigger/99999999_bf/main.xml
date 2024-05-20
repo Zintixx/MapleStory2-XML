@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+<!-- 심연의 성채 -->
+<!-- 플레이어 감지 -->
+	<state name="idle">
+	<onEnter>
+		<action name="메쉬를설정한다" arg1="5000" arg2="1"/> 
+		<action name="메쉬를설정한다" arg1="8900" arg2="1"/> 
+		<action name="메쉬를설정한다" arg1="8901" arg2="1"/> 
+		<action name="메쉬를설정한다" arg1="8902" arg2="1"/> 
+		<action name="메쉬를설정한다" arg1="8903" arg2="1"/> 
+		<action name="메쉬를설정한다" arg1="8904" arg2="1"/> 	
+		<action name="메쉬를설정한다" arg1="8905" arg2="1"/> 
+		<action name="이펙트를설정한다" arg1="8000" arg2="0" />
+		<action name="이펙트를설정한다" arg1="8001" arg2="0" />
+		<action name="스킬을설정한다" arg1="9000" arg2="0" />				
+		<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="1" />			
+		<action name="EnableSpawnPointPC" spawnPointID="1" isEnable="0" />
+		<action name="EnableSpawnPointPC" spawnPointID="2" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="3" isEnable="0" />		
+		<action name="EnableSpawnPointPC" spawnPointID="4" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="5" isEnable="0" />		
+		<action name="EnableSpawnPointPC" spawnPointID="6" isEnable="0" />				
+		<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>		
+	</onEnter>		
+		<condition name="WaitTick" waitTick="100">
+				<transition state="카메라경로"/> 
+		</condition>	
+	</state>									
+						
+	<state name="카메라경로">
+		<onEnter>
+			<action name="VisibleMyPC" isVisible="0" />				
+		<action name="카메라경로를선택한다" arg1="7000,7001" arg2="1"/>		
+        </onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="카메라리셋"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 			
+
+	<state name="카메라리셋">
+		<onEnter>			
+		<action name="카메라리셋" interpolationTime="1"/>		
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="701" arg2="0">
+				<transition state="ready"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 			
+
+	<!-- 첫번째 발판-->
+	
+	<state name="ready">
+		<onEnter>
+		<action name="VisibleMyPC" isVisible="1" />				
+		<action name="이벤트UI를설정한다" arg1="1" arg2="까마득한 성채를 따라 내려가야 합니다.\n몰려오는 어둠을 조심하세요." arg3="3000" />				
+			<action name="몬스터를생성한다" arg1="101,1011,1012,1013,1014,1017,1018,1019" arg2="0" /> 	 	
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="101,1011,1012,1013,1014,1017,1018,1019">
+				<transition state="도마뱀스폰1"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+
+	<state name="도마뱀스폰1">
+		<onEnter>
+		<action name="메쉬를설정한다" arg1="8900" arg2="0"/> 		
+			<action name="몬스터를생성한다" arg1="1015,1016" arg2="1" /> 				
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="702" arg2="0">
+			<transition state="702시작"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+	
+	<state name="702시작">
+		<onEnter>
+		<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="1" isEnable="1" />	
+		<action name="몬스터를생성한다" arg1="102,1022,1023,1024,1025" arg2="1" /> 					
+		<action name="SideNpcTalk" npcID="22600006" illust="DesertDragonBigBlue_normal" duration="4000" script="인간? 이게 얼마 만에 맡아보는 인간 냄새인지... 아주 향긋하군. 천천히 어둠 속으로 내려오라고." />	
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="102,1022,1023,1024,1025">
+				<transition state="702마무리1"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 						
+	
+	<state name="702마무리1">
+		<onEnter>
+		<action name="메쉬를설정한다" arg1="8901" arg2="0"/> 				
+        </onEnter>
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="702마무리2"/> 
+			</condition>			
+		<onExit>
+        </onExit>
+    </state> 		
+	
+	<state name="702마무리2">
+		<onEnter>	
+		<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="4000" script="불쌍한 인간... 샘은 이미 너를 주시하고 있어. 어둠이 너를 쫓을거야." />	
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="703" arg2="0">
+			<transition state="703시작"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 			
+	
+	<state name="703시작">
+		<onEnter>
+		<action name="몬스터소멸시킨다" arg1="1026"/>				
+		<action name="EnableSpawnPointPC" spawnPointID="1" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="2" isEnable="1" />	
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="703진행"/> 
+			</condition>			
+		<onExit>
+        </onExit>
+    </state> 
+
+	<state name="703진행">
+		<onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="어둠의 샘이 당신의 존재를 눈치챘습니다.\n생명을 탐하는 검은 화살이 당신을 뒤쫓습니다." arg3="3000" />	
+		<action name="몬스터를생성한다" arg1="109" arg2="1" /> 							
+		<action name="몬스터를생성한다" arg1="103,1031,1032,1033,1034" arg2="1" /> 	 		
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="103,1031,1032,1033,1034">
+				<transition state="703마무리1"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+
+	<state name="703마무리1">
+		<onEnter>
+		<action name="메쉬를설정한다" arg1="8902" arg2="0"/> 			
+			<action name="몬스터를생성한다" arg1="1035" arg2="1" />		
+        </onEnter>
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="703마무리2"/> 
+			</condition>			
+		<onExit>
+        </onExit>
+    </state> 		
+		
+	<state name="703마무리2">
+		<onEnter>		
+ 			<action name="SideNpcTalk" npcID="11004644" illust="SlaveMan3_normal" duration="4000" script="수백년간 잠들어 있던 샘이 깨어났어. 샘은 영혼을 원해. 가까이 다가가지 않는게 좋아." />		
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="704" arg2="0">
+			<transition state="704시작"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+
+	<state name="704시작">
+		<onEnter>	
+		<action name="EnableSpawnPointPC" spawnPointID="2" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="3" isEnable="1" />		
+		<action name="몬스터를생성한다" arg1="104,1041,1042,1043,1044" arg2="0" /> 
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="704진행"/> 
+			</condition>			
+		<onExit>
+        </onExit>
+    </state> 		
+
+	<state name="704진행">
+		<onEnter>	
+				<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="4000" script="거미... 난 거미가 싫어... 거미는 영혼을 옭아매는 자..." /> 	
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="104,1041,1042,1043,1044">
+				<transition state="704마무리"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 			
+
+	<state name="704마무리">
+		<onEnter>
+		<action name="메쉬를설정한다" arg1="8903" arg2="0"/> 					
+			<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="4000" script="샘은 거미의 눈을 빌려 모든걸 감시하고 있어. 조심하는게 좋아." /> 			
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="705" arg2="0">
+			<transition state="705시작"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+
+	<state name="705시작">
+		<onEnter>
+		<action name="EnableSpawnPointPC" spawnPointID="3" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="4" isEnable="1" />	
+        </onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="705진행"/> 
+			</condition>			
+		<onExit>
+        </onExit>
+    </state> 				
+				
+	<state name="705진행">
+		<onEnter>	
+		<action name="몬스터를생성한다" arg1="105,1051,1052,1053,1054" arg2="1" /> 	 
+		<action name="SideNpcTalk" npcID="22600006" illust="DesertDragonBigBlue_normal" duration="4000" script="얼마 안남았어. 조금 더... 조금 더 내려와봐." />					
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="105,1051,1052,1053,1054">
+				<transition state="705마무리"/> 
+			</condition>			
+		<onExit>
+        </onExit>
+    </state> 
+
+	<state name="705마무리">
+		<onEnter>
+		<action name="메쉬를설정한다" arg1="8904" arg2="0"/> 				
+		<action name="몬스터를생성한다" arg1="1036" arg2="1" />		
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="708" arg2="0">
+			<transition state="버프걸어주기"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 	
+	
+		
+	<state name="버프걸어주기">
+		<onEnter>
+		<action name="SideNpcTalk" npcID="11004644" illust="SlaveMan3_normal" duration="4000" script="여기 들어온 순간..." />
+		<action name="스킬을설정한다" arg1="9000" arg2="1" />				
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="706" arg2="0">
+			<transition state="706시작"/>
+		</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+
+	<state name="706시작">
+		<onEnter>
+		<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="4000" script="어둠을 만나게 되면... 다신 올라올 수 없어." /> 					
+		<action name="EnableSpawnPointPC" spawnPointID="4" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="5" isEnable="1" />			
+		<action name="몬스터를생성한다" arg1="106,1061,1063,1064,1065" arg2="1" /> 
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="106,1061,1063,1064,1065">
+				<transition state="706마무리"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 			
+
+	<state name="706마무리">
+		<onEnter>
+		<action name="메쉬를설정한다" arg1="8905" arg2="0"/> 			
+		<action name="SideNpcTalk" npcID="11004644" illust="SlaveMan3_normal" duration="4000" script="그래 마치 우리처럼..." />					
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="707" arg2="0">
+			<transition state="707시작"/>
+		</condition>			
+		<onExit>
+        </onExit>
+    </state> 		
+	
+	<state name="707시작">
+		<onEnter>
+		<action name="EnableSpawnPointPC" spawnPointID="5" isEnable="0" />			
+		<action name="EnableSpawnPointPC" spawnPointID="6" isEnable="1" />			
+		<action name="몬스터를생성한다" arg1="108" arg2="1" /> 
+		<action name="SideNpcTalk" npcID="22600006" illust="DesertDragonBigBlue_normal" duration="4000" script="캬하하! 여기까지 오다니, 재미있겠는걸. 네 영혼도 여기에 묶어주마." />	 				
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="108">
+				<transition state="포털생성전"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 		
+
+	<state name="포털생성전">
+        <onEnter> 	
+		<action name="몬스터소멸시킨다" arg1="109"/>
+		<action name="몬스터를생성한다" arg1="1091" arg2="1" /> 		
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="포털생성전2"/> 
+			</condition>	
+		<onExit>
+        </onExit>
+    </state> 		
+
+  	<state name="포털생성전2">
+        <onEnter> 	
+		<action name="몬스터소멸시킨다" arg1="109"/>
+		<action name="몬스터를생성한다" arg1="1091" arg2="1" /> 		
+		<action name="SideNpcTalk" npcID="11004643" illust="SlaveWoman3_normal" duration="4000" script="잠깐, 더 내려 갈거야? 여기서 어디로 갈지 우린 알 수 없어. 여긴 뒤틀린 미지의 공간. 모든 것은 샘의 뜻대로..." /> 			
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="포털생성"/> 
+			</condition>	
+		<onExit>
+        </onExit>
+    </state> 		
+    
+	
+	<state name="포털생성">
+		<onEnter>	
+		<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+        </onEnter>
+		<onExit>
+        </onExit>
+    </state> 		
+	
+</ms2>
+

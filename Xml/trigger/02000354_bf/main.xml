@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+
+
+ <state name="idle">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1="7701" arg2="0" /> 
+		<action name="이펙트를설정한다" arg1="7702" arg2="0" /> 
+		<action name="이펙트를설정한다" arg1="7703" arg2="0" /> 
+		<action name="이펙트를설정한다" arg1="7704" arg2="0" /> 
+		<action name="이펙트를설정한다" arg1="7705" arg2="0" /> 
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="701" arg2="1">
+			<transition state="CheckUserCount" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+	
+  <state name="DungeonStart">
+    <onEnter>				
+	</onEnter>
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="시작_04"/>	
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+   
+ 
+	<state name="시작_04">
+    <onEnter>
+			<action name="이펙트를설정한다" arg1="7701" arg2="1" /> <!--벽 녹이는 사운드-->
+			<action name="메쉬를설정한다" arg1="6001-6012" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="702" arg2="1">
+			<transition state="시작_05"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+      <state name="시작_05">
+    <onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+		<action name="몬스터를생성한다" arg1="11,12,13,14,15,16,17" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="11,12,13,14,15,16,17">
+			<transition state="관문_01_개방"/>
+		</condition>
+    <onExit>
+			<action name="HideGuideSummary" entityID="110"/>
+    </onExit>
+  </state>
+    
+  
+   <state name="관문_01_개방">
+	<onEnter>
+		<action name="이펙트를설정한다" arg1="7702" arg2="1" /> <!--벽 녹이는 사운드-->
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="113" textID="40011"/> <!-- 다음 지역으로 이동하세요 -->
+		<action name="메쉬를설정한다" arg1="6021-6033" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="703" arg2="1">
+		<transition state="관문_02_시작"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="관문_02_시작">
+		<onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+			<action name="몬스터를생성한다" arg1="21,22,23,24,25,26,27" arg2="0"/>
+	
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="21,22,23,24,25,26,27">
+			<transition state="관문_02_개방"/>
+		</condition>		
+    <onExit>
+				<action name="HideGuideSummary" entityID="110"/>
+    </onExit>
+  </state>
+  
+      <state name="관문_02_개방">
+	<onEnter>
+		<action name="이펙트를설정한다" arg1="7703" arg2="1" /> <!--벽 녹이는 사운드-->
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="113" textID="40011"/> <!-- 다음 지역으로 이동하세요 -->
+		<action name="메쉬를설정한다" arg1="6051-6083" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+    </onEnter>	
+		<condition name="여러명의유저를감지했으면" arg1="704" arg2="1">
+		<transition state="관문_03_시작"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state> 
+  
+      <state name="관문_03_시작">
+		<onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+			<action name="몬스터를생성한다" arg1="31,32,33,34,35,36,37,38,39" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+		</onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="31,32,33,34,35,36,37,38,39">
+			<transition state="관문_03_개방"/>
+		</condition>
+    <onExit>
+				<action name="HideGuideSummary" entityID="110"/>
+    </onExit>
+  </state>
+
+       <state name="관문_03_개방">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="7704" arg2="1" /> <!--벽 녹이는 사운드-->
+			<action name="메쉬를설정한다" arg1="6111-6123" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="113" textID="40011"/> <!-- 다음 지역으로 이동하세요 -->
+		</onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+		<transition state="관문_04_시작"/>
+		</condition>		
+    <onExit>
+		<action name="HideGuideSummary" entityID="110"/>
+    </onExit>
+  </state>
+  
+ 
+       <state name="관문_04_시작">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+			<action name="몬스터를생성한다" arg1="41,42,43,44,45,46,47,48" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+		</onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="341,42,43,44,45,46,47,48">
+			<transition state="관문_04_개방"/>
+		</condition>
+    <onExit>
+					<action name="HideGuideSummary" entityID="110"/>
+    </onExit>
+  </state>
+  
+        <state name="관문_04_개방">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="7705" arg2="1" /> <!--벽 녹이는 사운드-->
+		  	<action name="메쉬를설정한다" arg1="6151-6166" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="113" textID="40011"/> <!-- 다음 지역으로 이동하세요 -->
+		</onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="706" arg2="1">
+		<transition state="관문_05_시작"/>
+		</condition>		
+    <onExit>
+						<action name="HideGuideSummary" entityID="113"/>
+	</onExit>
+   </state>
+  
+  
+    <state name="관문_05_시작">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="110" textID="40010"/> <!-- 적을 모두 처치하세요 -->
+			<action name="몬스터를생성한다" arg1="51" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+		</onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="51">
+			<transition state="관문_05_개방"/>
+		</condition>
+    <onExit>
+					<action name="HideGuideSummary" entityID="110"/>
+    </onExit>
+  </state>
+  
+  
+    <state name="관문_05_개방">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="112" textID="40009"/> <!--  포탈을 타세요 -->
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+		</onEnter>	
+    <onExit>
+		<action name="HideGuideSummary" entityID="112"/>
+    </onExit>
+  </state>
+ 
+</ms2>

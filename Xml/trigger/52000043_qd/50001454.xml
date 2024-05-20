@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="대기">	
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="606" arg2="0" />
+			<action name="이펙트를설정한다" arg1="607" arg2="0" />
+			<action name="이펙트를설정한다" arg1="608" arg2="0" />
+        </onEnter>
+				<condition name="퀘스트유저를감지하면" arg1="199" arg2="50001454" arg3="1" >   
+					<action name="몬스터소멸시킨다" arg1="1003,2003" />			
+					<transition state="시작조건"/>
+				</condition>
+				<condition name="퀘스트유저를감지하면" arg1="199" arg2="50001454" arg3="2" >   
+					<action name="몬스터소멸시킨다" arg1="1003,2003" />			
+					<transition state="종료"/>
+				</condition>
+				<condition name="퀘스트유저를감지하면" arg1="199" arg2="50001454" arg3="3" >   
+					<action name="몬스터소멸시킨다" arg1="1003,2003" />			
+					<transition state="종료"/>
+				</condition>
+	</state>
+
+	<state name="시작조건">	
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="1003,2003" arg2="0" />
+            <action name="메쉬를설정한다" arg1="3000-3017" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="오브젝트반응설정한다" arg1="10001020" arg2="2"/> 
+			<action name="오브젝트반응설정한다" arg1="10001021" arg2="2"/> 
+        </onEnter>
+				<condition name="WaitTick" waitTick="500" > 
+					<transition state="연출시작" />
+				</condition>
+	</state>
+
+	<state name="연출시작">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="카메라를선택한다" arg1="305" arg2="1"/>			
+        </onEnter>	
+				<condition name="WaitTick" waitTick="500" > 
+					<transition state="NPC이동" />
+				</condition>
+    </state>
+
+   <state name="NPC이동">
+        <onEnter>
+            <action name="NPC를이동시킨다" arg1="1003" arg2="MS2PatrolData_1003D" />
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PCD" />	
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="104">
+						<transition state="말퉁선대사01"/>
+				</condition>
+    </state>
+
+    <state name="말퉁선대사01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="1003" arg3="$52000043_QD__50001454__0$" arg4="3" arg5="0" />  			
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="NPC이동02"/>
+				</condition>
+    </state>
+
+   <state name="NPC이동02">
+        <onEnter>
+            <action name="NPC를이동시킨다" arg1="1003" arg2="MS2PatrolData_1003E" />
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PCE" />	
+			<action name="NPC를이동시킨다" arg1="2003" arg2="MS2PatrolData_2003D" />
+        </onEnter>
+				<condition name="NPC를감지했으면" arg1="105" arg2="2003" >
+					<transition state="준타대사01" />
+				</condition>
+    </state>
+
+    <state name="준타대사01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__1$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사01스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="틴차이대사01"/>
+				</condition>
+    </state>
+
+	<state name="준타대사01스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="틴차이대사01"/>
+				</condition>
+    </state>
+
+    <state name="틴차이대사01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000043_QD__50001454__2$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="틴차이대사01스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="준타대사02"/>
+				</condition>
+    </state>
+
+	<state name="틴차이대사01스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사02"/>
+				</condition>
+    </state>
+
+    <state name="준타대사02">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="606" arg2="1" />
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__3$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사02스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="준타대사03"/>
+				</condition>
+    </state>
+
+	<state name="준타대사02스킵">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="606" arg2="0" />
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사03"/>
+				</condition>
+    </state>
+
+    <state name="준타대사03">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__4$" arg4="5" /> 
+			<action name="스킵을설정한다" arg1="준타대사03스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="틴차이대사02"/>
+				</condition>
+    </state>
+
+	<state name="준타대사03스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="틴차이대사02"/>
+				</condition>
+    </state>
+
+    <state name="틴차이대사02">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="607" arg2="1" />
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000043_QD__50001454__5$" arg4="3" /> 
+			<action name="스킵을설정한다" arg1="틴차이대사02스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="준타대사04"/>
+				</condition>
+    </state>
+
+	<state name="틴차이대사02스킵">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="607" arg2="0" />
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사04"/>
+				</condition>
+    </state>
+
+    <state name="준타대사04">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__6$" arg4="3" /> 
+			<action name="스킵을설정한다" arg1="준타대사04스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="준타대사05"/>
+				</condition>
+    </state>
+
+	<state name="준타대사04스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사05"/>
+				</condition>
+    </state>
+
+    <state name="준타대사05">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__7$" arg4="5" /> 
+			<action name="스킵을설정한다" arg1="준타대사05스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="준타대사06"/>
+				</condition>
+    </state>
+
+	<state name="준타대사05스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사06"/>
+				</condition>
+    </state>
+
+    <state name="준타대사06">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__8$" arg4="5" /> 
+			<action name="스킵을설정한다" arg1="준타대사06스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="준타대사07"/>
+				</condition>
+    </state>
+
+	<state name="준타대사06스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사07"/>
+				</condition>
+    </state>
+
+    <state name="준타대사07">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__9$" arg4="6" /> 
+			<action name="스킵을설정한다" arg1="준타대사07스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="준타대사08"/>
+				</condition>
+    </state>
+
+	<state name="준타대사07스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사08"/>
+				</condition>
+    </state>
+
+    <state name="준타대사08">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__10$" arg4="3" /> 
+			<action name="스킵을설정한다" arg1="준타대사08스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="틴차이대사03"/>
+				</condition>
+    </state>
+
+	<state name="준타대사08스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="틴차이대사03"/>
+				</condition>
+    </state>
+
+    <state name="틴차이대사03">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000043_QD__50001454__26$" arg4="2" /> 
+			<action name="스킵을설정한다" arg1="틴차이대사03스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="준타대사09"/>
+				</condition>
+    </state>
+
+	<state name="틴차이대사03스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사09"/>
+				</condition>
+    </state>
+
+    <state name="준타대사09">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__11$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사09스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="준타대사10"/>
+				</condition>
+    </state>
+
+	<state name="준타대사09스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사10"/>
+				</condition>
+    </state>
+
+    <state name="준타대사10">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__12$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사10스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="준타대사11"/>
+				</condition>
+    </state>
+
+	<state name="준타대사10스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사11"/>
+				</condition>
+    </state>
+
+    <state name="준타대사11">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__13$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사11스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="틴차이대사04"/>
+				</condition>
+    </state>
+
+	<state name="준타대사11스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="틴차이대사04"/>
+				</condition>
+    </state>
+
+    <state name="틴차이대사04">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000043_QD__50001454__14$" arg4="2" /> 
+			<action name="스킵을설정한다" arg1="틴차이대사04스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="준타대사12"/>
+				</condition>
+    </state>
+
+	<state name="틴차이대사04스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사12"/>
+				</condition>
+    </state>
+
+    <state name="준타대사12">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__15$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사12스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="준타대사13"/>
+				</condition>
+    </state>
+
+	<state name="준타대사12스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사13"/>
+				</condition>
+    </state>
+
+    <state name="준타대사13">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="608" arg2="1" />
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__16$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사13스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="PC이동"/>
+				</condition>
+    </state>
+
+	<state name="준타대사13스킵">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="608" arg2="0" />
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+		</onEnter>
+				<condition name="무조건" >
+					<transition state="PC이동"/>
+				</condition>
+    </state>
+
+   <state name="PC이동">
+        <onEnter>
+			<action name="카메라를선택한다" arg1="306" arg2="1"/>		
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PCG" />	
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="106">
+						<transition state="준타대사14"/>
+				</condition>
+    </state>
+
+    <state name="준타대사14">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__17$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사14스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="틴차이대사05"/>
+				</condition>
+    </state>
+
+	<state name="준타대사14스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="틴차이대사05"/>
+				</condition>
+    </state>
+
+    <state name="틴차이대사05">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000043_QD__50001454__18$" arg4="2" /> 
+			<action name="스킵을설정한다" arg1="틴차이대사05스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="준타대사15"/>
+				</condition>
+    </state>
+
+	<state name="틴차이대사05스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사15"/>
+				</condition>
+    </state>
+
+    <state name="준타대사15">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__19$" arg4="6" /> 
+			<action name="스킵을설정한다" arg1="준타대사15스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="준타대사16"/>
+				</condition>
+    </state>
+
+	<state name="준타대사15스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사16"/>
+				</condition>
+    </state>
+
+    <state name="준타대사16">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__20$" arg4="3" /> 
+			<action name="스킵을설정한다" arg1="준타대사16스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="준타대사17"/>
+				</condition>
+    </state>
+
+	<state name="준타대사16스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사17"/>
+				</condition>
+    </state>
+
+    <state name="준타대사17">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__21$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="준타대사17스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="틴차이대사06"/>
+				</condition>
+    </state>
+
+	<state name="준타대사17스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="틴차이대사06"/>
+				</condition>
+    </state>
+
+    <state name="틴차이대사06">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000043_QD__50001454__22$" arg4="3" /> 
+			<action name="스킵을설정한다" arg1="틴차이대사06스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="준타대사18"/>
+				</condition>
+    </state>
+
+	<state name="틴차이대사06스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사18"/>
+				</condition>
+    </state>
+
+    <state name="준타대사18">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__23$" arg4="5" /> 
+			<action name="스킵을설정한다" arg1="준타대사18스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="준타대사19"/>
+				</condition>
+    </state>
+
+	<state name="준타대사18스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사19"/>
+				</condition>
+    </state>
+
+    <state name="준타대사19">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__24$" arg4="6" /> 
+			<action name="스킵을설정한다" arg1="준타대사19스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="준타대사20"/>
+				</condition>
+    </state>
+
+	<state name="준타대사19스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="준타대사20"/>
+				</condition>
+    </state>
+
+    <state name="준타대사20">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000043_QD__50001454__25$" arg4="3" /> 
+			<action name="스킵을설정한다" arg1="준타대사20스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="연출종료"/>
+				</condition>
+    </state>
+
+	<state name="준타대사20스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="연출종료"/>
+				</condition>
+    </state>
+
+	<state name="연출종료">
+        <onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="gdfight"/> 	
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000" > 
+					<action name="유저를이동시킨다" arg1="02000039" arg2="10" />		
+					<action name="연출UI를설정한다" arg1="0"/>
+					<action name="연출UI를설정한다" arg1="2"/>  		
+					<transition state="종료" />
+				</condition>
+    </state>
+
+	<state name="종료">
+    </state>	
+
+</ms2>
+
+

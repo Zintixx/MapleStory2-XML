@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2> 
+	<state name="대기">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="6204" arg2="0" />				
+		</onEnter>		
+			<condition name="UserValue" key="GaugeStart" value="1">
+				<transition state="npc체크" />
+			</condition>					
+	</state>  
+
+	<state name="npc체크">
+			<condition name="몬스터가전투상태면" arg1="1804">	
+				<transition state="이펙트"/>
+			</condition>	
+			<condition name="!몬스터가전투상태면" arg1="1804">	
+				<transition state="생성"/>
+			</condition>
+			<condition name="UserValue" key="GaugeClosed" value="1">
+				<transition state="종료" />
+			</condition>					
+	</state> 	
+
+	<state name="이펙트">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="6204" arg2="1" />				
+		</onEnter>	
+			<condition name="!몬스터가전투상태면" arg1="1804">
+				<transition state="생성"/>
+			</condition>		
+	</state>		
+	
+	<state name="생성">
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="6204" arg2="0" />				
+			<action name="InitNpcRotation" arg1="1804" />				
+			<action name="몬스터를생성한다" arg1="4000" arg2="0" />				
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1000">		
+				<transition state="npc체크"/> 
+			</condition> 
+			<condition name="UserValue" key="GaugeClosed" value="1">
+				<transition state="종료" />
+			</condition>					
+	</state> 
+	
+	<state name="종료">
+	</state>			
+	
+</ms2>
+

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  101  -->
+<ms2>
+
+  <state name="시작대기중">
+    <onEnter>
+        <action name="포탈을설정한다" arg1="4" arg2="0" arg3="0" arg4="0"/>	<!-- 첫번째 전투판에 있는 던전 나가기 포탈 최초에 감추기 -->			
+        <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>	<!-- 두번째 전투판에 있는 던전 나가기 포탈 최초에 감추기 -->			
+        <action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0"/>	<!-- 마지막 전투판에 있는 던전 나가기 포탈 최초에 감추기 -->						
+		<action name="포탈을설정한다" arg1="28" arg2="0" arg3="0" arg4="0"/> <!-- 스타팅 부활 지점에서 바로 3페이지 전투판 입구로 가는 순간이동 포탈 최초에는 감추기-->	
+		<action name="메쉬를설정한다" arg1="101-121" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--  몬스터는 밟고 플레이어는 밟지 못하는 트리거메쉬 설정하기-->
+		<action name="메쉬를설정한다" arg1="201-207" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--  계단 트리거메쉬 초기화 감추기-->
+		<action name="메쉬를설정한다" arg1="211-239" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--  계단 트리거메쉬 초기화 감추기-->
+
+		<!-- 	 <action name="SetUserValue" key="DungeonReset" value="0" /> 변수-->			 
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="10"> <!--   MS2TriggerBox   TriggerObjectID = 10, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        10은 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+				<transition state="보스등장"/>
+		</condition>
+  </state>
+
+   
+	<state name="보스등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="99" arg2="0" /> <!-- 	발록 보스 스폰시키기-->			 
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기상태" />
+			</condition>				
+		
+	</state>  
+	
+	<state name="대기상태">
+		<onEnter>
+			
+		</onEnter>
+			<!-- 1페이즈 전투 다 끝나고 , AI_Balrog_Kritias.xml 발록에게   StairsOk = 1 신호를 받으면 이 부분 실행-->
+			<condition name="UserValue" key="StairsOk" value="1">  
+				<transition state="계단생성시작중"/>
+			</condition>		
+			
+			<!-- 2페이즈 전투 다 끝나고 , AI_Balrog_Kritias.xml 발록에게   StairsOk2nd = 1 신호를 받으면 이 부분 실행-->
+			<condition name="UserValue" key="StairsOk2nd" value="1">  
+				<transition state="계단생성시작중2nd"/>
+			</condition>					
+		
+			<!-- 3페이지로 들어서면 보스는 하늘높이 날아가는데, 플레이어가 3페이지 전투판으로 들어서면 즉 이 트기러 영역 안으로 들어오면 보스에게 신호를 보내서 3페이지 전투판으로 -->	
+			<condition name="유저를감지했으면" arg1="11"> <!--  MS2TriggerBox   TriggerObjectID = 11, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        11은 마지막 3페이지 전투판을 커버하는 비교적 좁은 범위-->
+				<transition state="플레이어3페이지전투판으로오기"/>
+			</condition>
+
+		
+		<!-- 보스가 죽을 경우-->
+			<condition name="몬스터가죽어있으면" arg1="99">
+				<transition state="연출딜레이"/>
+			</condition>	
+		
+	</state>  	
+   
+   
+	<state name="계단생성시작중">
+		<onEnter>
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="2000" >  <!-- 발록이 2페이즈 점프 이동 전에 계단 생성되면 이상해 보여서 약간 2초 정도 딜레이 부여함-->
+				<transition state="계단생성" />
+			</condition>		
+			
+	</state>     
+   
+	<state name="계단생성">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="301" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--  1페이지 끝내고 2페이지 진입하는 투명벽 제거하기-->
+            <action name="메쉬를설정한다" arg1="201-207" arg2="1" arg3="1" arg4="120" arg5="0.5"  />   <!--  계단 트리거메쉬 생성-->			
+			<action name="SetUserValue" key="StairsOk" value="0" />  <!--  무한 루프 빠지는 것을 막기 위해 이 변수 0 초기화 하기, 이후 이 변수 다시 사용할 일 없음-->
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기상태" />
+			</condition>		
+			
+	</state>        
+	
+	
+	<state name="계단생성시작중2nd">
+		<onEnter>
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="2000" >  <!-- 발록이 3페이즈 점프 이동 전에 계단 생성되면 이상해 보여서 약간 2초 정도 딜레이 부여함-->
+				<transition state="계단생성2nd"/>
+			</condition>		
+			
+	</state>     
+   
+	<state name="계단생성2nd">
+		<onEnter>
+            <action name="메쉬를설정한다" arg1="211-239" arg2="1" arg3="1" arg4="50" arg5="0.5"/>   <!--  계단 트리거메쉬 생성-->			
+			<action name="SetUserValue" key="StairsOk2nd" value="0" />  <!--  무한 루프 빠지는 것을 막기 위해 이 변수 0 초기화 하기, 이후 이 변수 다시 사용할 일 없음-->
+		</onEnter> 
+
+			<condition name="WaitTick" waitTick="1500" > 
+				<transition state="칸막이제거2nd" />
+			</condition>		
+			
+	</state>        	
+	
+	<state name="칸막이제거2nd"> <!--  계단 생성 도중에 플레이어가 계단쪽으로 가면 큐브 사이에 껴서 갇힐 수 있어서 계단 다 생기면 투명벽 막아서 버그 생성 되지 않도록 함-->
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="302" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--  2페이지 끝내고 3페이지 진입하는 투명벽 제거하기-->
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기상태" />
+			</condition>		
+			
+	</state>        	
+		
+	
+   
+	<state name="플레이어3페이지전투판으로오기">
+		<onEnter>
+			<action name="SetAiExtraData" key="3PhaseSetOk" value="1" />		<!--  플레이어가 3페이지 전투판에 들어서면 발록AI에게 3PhaseSetOk=1 신호를 보내서 , 3페이지 전투판으로 점프 내려오도록 함  -->
+			<action name="포탈을설정한다" arg1="28" arg2="1" arg3="1" arg4="1"/> <!-- 스타팅 부활 지점에서 바로 3페이지 전투판 입구로 가는 순간이동 포탈 생성하도록 하기 -->	
+		</onEnter>
+		
+			<!-- 보스가 죽을 경우-->
+			<condition name="몬스터가죽어있으면" arg1="99">
+				<transition state="연출딜레이"/>
+			</condition>	
+			
+			<!-- 혹시 몰라서 이부분 다시 설정,          1페이즈 전투 다 끝나고 , AI_Balrog_Kritias.xml 발록에게   StairsOk = 1 신호를 받으면 이 부분 실행-->
+			<condition name="UserValue" key="StairsOk" value="1">  
+				<transition state="사다리생성"/>
+			</condition>					
+
+	</state>     
+
+	
+	<state name="연출딜레이">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg3="BalrogKritiasClear"/>
+			<!-- arg3="BalrogKritiasClear" 는 퀘스트와 트로피 업적 당설 완료 조건 처리 키값임, arg1="??" arg2="trigger" 은 해당 트리거 안에 만 있으면 클리어 처리 할때 사용하는 것인데, 이거 생략하면 맵 안에만 있으면 무조건 퀘스트와 트로피 업적을 완료 처리함  -->
+		</onEnter>	
+			
+		<condition name="WaitTick" waitTick="7000">  <!-- 보스 죽으면 보스 죽음 동작 충분히 본 다음에(7초 딜레이) 클리어 UI 나오도록 함 -->
+			<transition state="연출종료"/>
+		</condition>
+	</state>  
+  
+  
+	<state name="연출종료">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1" arg4="1"/> <!-- 보스 죽이면 나가기 포탈 생성하기, 첫번째 전투판에서 생성 -->	
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/> <!-- 보스 죽이면 나가기 포탈 생성하기, 두번째 전투판에서 생성 -->	
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/> <!-- 보스 죽이면 나가기 포탈 생성하기, 마지막 전투판에서 생성 -->				
+			<action name="DungeonClear" /> 
+		</onEnter>
+	</state>  
+
+</ms2>

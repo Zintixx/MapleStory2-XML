@@ -1,0 +1,1039 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Wait">
+        <onEnter>
+			<action name="스킬을설정한다" arg1="7000" arg2="0"/>
+			<action name="몬스터소멸시킨다" arg1="101,102,103,104,105,201,202,203,301,900,910,920" />
+			<action name="이펙트를설정한다" arg1="5100" arg2="0"/> <!-- AsimovShield-->
+			<action name="이펙트를설정한다" arg1="5101" arg2="0"/> <!-- RuneShieldThunder-->
+			<action name="이펙트를설정한다" arg1="5200" arg2="0"/> <!-- ShieldExplosion-->
+			<action name="이펙트를설정한다" arg1="5300" arg2="0"/> <!-- Vibrate-->
+			<action name="이펙트를설정한다" arg1="5400" arg2="0"/> <!-- DarkStrom01-->
+			<action name="이펙트를설정한다" arg1="5401" arg2="0"/> <!-- DarkStrom02-->
+			<action name="이펙트를설정한다" arg1="5500" arg2="0"/> <!-- DarkAura01-->
+			<action name="이펙트를설정한다" arg1="5501" arg2="0"/> <!-- DarkAura02-->
+			<action name="이펙트를설정한다" arg1="5600" arg2="1"/> <!-- DarkCloud-->
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="SetUserValue" key="PatosTired" value="0" />
+        </onEnter>
+		<!-- condition name="CheckUser" -->
+		<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001604" arg3="1">
+			<transition state="LodingDelay01"/>
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001604" arg3="2">   <!-- 맵 튕기고 완료가능 상태일 때 대비 위한 스테이트 -->
+			<transition state="Quit02"/>
+		</condition>
+	</state>
+
+    <state name="LodingDelay01" >
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="101,201,910,920" arg2="1" />
+			<action name="이펙트를설정한다" arg1="5100" arg2="1"/> <!-- AsimovShield-->
+			<action name="이펙트를설정한다" arg1="5101" arg2="1"/> <!-- RuneShieldThunder-->
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1500">
+					<transition state="SetMaskEffect01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="SetMaskEffect01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="4"/>
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="SetMaskEffect02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="SetMaskEffect02" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="ImprisonDarkAnos01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="ImprisonDarkAnos01" >
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1000" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="ImprisonDarkAnos02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="ImprisonDarkAnos02" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="601" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="AsimovTalk01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	<state name="AsimovTalk01">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003283" msg="$52000137_QD__ACT01__0$" duration="5000" align="center" illustID="0"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="SetSceneSkip" arg1="DarkAnosTalk01CSkip" arg2="nextState" />
+			<action name="스킵을설정한다" arg1="AsimovTalk01Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">
+			<transition state="AsimovTalk01Skip"/>
+		</condition>
+	</state>
+
+    <state name="AsimovTalk01Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="ZoominAnos01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="ZoominAnos01" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="602" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="AnosTruning01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	<state name="AnosTruning01">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5500" arg2="1"/> <!-- DarkAura01-->
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">
+			<transition state="AnosTruning02"/>
+		</condition>
+	</state>
+
+	<state name="AnosTruning02">
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="몬스터를생성한다" arg1="102" arg2="1" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="2000">
+			<transition state="AnosTalk01"/>
+		</condition>
+	</state>
+
+	<state name="AnosTalk01">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003289" msg="$52000137_QD__ACT01__1$" duration="4000" align="center" illustID="0"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="스킵을설정한다" arg1="AnosTalk01Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">
+			<transition state="AnosTalk01Skip"/>
+		</condition>
+	</state>
+
+    <state name="AnosTalk01Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="CameraChange00"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="CameraChange00" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="603" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="CameraChange01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="CameraChange01" >
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1001" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="PCTalk01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	<state name="PCTalk01">
+        <onEnter>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="4000" />
+			<action name="AddCinematicTalk" npcID="0" msg="$52000137_QD__ACT01__2$" duration="4000" align="center" illustID="0"/>
+			<action name="스킵을설정한다" arg1="PCTalk01Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">
+			<transition state="PCTalk01Skip"/>
+		</condition>
+	</state>
+
+    <state name="PCTalk01Skip">
+		<onEnter>
+			<action name="SetPcEmotionSequence" arg1="Idle_A"/>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="AsimovTalk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="AsimovTalk02">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003283" msg="$52000137_QD__ACT01__3$" duration="4000" align="center" illustID="Asimov_normal"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="몬스터소멸시킨다" arg1="102" />
+			<action name="몬스터를생성한다" arg1="103" arg2="0" />
+			<action name="스킵을설정한다" arg1="AsimovTalk02Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">
+			<transition state="AsimovTalk02Skip"/>
+		</condition>
+	</state>
+
+    <state name="AsimovTalk02Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="AsimovTalk03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="AsimovTalk03">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003283" msg="$52000137_QD__ACT01__4$" duration="5000" align="center" illustID="Asimov_normal"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="스킵을설정한다" arg1="AsimovTalk03Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">
+			<transition state="AsimovTalk03Skip"/>
+		</condition>
+	</state>
+
+    <state name="AsimovTalk03Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="CameraChange02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="CameraChange02" >
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1002" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="CameraChange03"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="CameraChange03" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="604" arg2="1"/>			<!-- PC 어깨에 걸고 -->
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="PCTalk02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	<state name="PCTalk02">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="0" msg="$52000137_QD__ACT01__5$" duration="5000" align="center" illustID="0"/>
+			<action name="스킵을설정한다" arg1="PCTalk02Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">
+			<transition state="PCTalk02Skip"/>
+		</condition>
+	</state>
+
+    <state name="PCTalk02Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="CameraChange04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="CameraChange04" >
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="103" />
+			<action name="몬스터를생성한다" arg1="104" arg2="0" />
+			<action name="카메라를선택한다" arg1="605" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="DarkAnosTalk01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	<state name="DarkAnosTalk01">
+        <onEnter>
+			<action name="SetNpcEmotionSequence" arg1="104" arg2="Attack_Idle_A,Attack_Idle_A"/>			<!-- 1533 -->
+			<action name="AddCinematicTalk" npcID="11003285" msg="$52000137_QD__ACT01__6$" duration="3000" align="center" illustID="Patos_normal"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="스킵을설정한다" arg1="DarkAnosTalk01Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="3100">
+			<transition state="DarkAnosTalk01Skip"/>
+		</condition>
+	</state>
+
+    <state name="DarkAnosTalk01Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="DarkAnosAttackAsimov01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="DarkAnosAttackAsimov01">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="610" arg2="1"/>
+			<action name="SetNpcEmotionSequence" arg1="104" arg2="Attack_01_A,Attack_Idle_A"/>			<!-- 3200 -->
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="DarkAnosAttackAsimov02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="DarkAnosAttackAsimov02">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5200" arg2="1"/> <!-- ShieldExplosion-->
+			<action name="몬스터소멸시킨다" arg1="201,910,920" />
+			<action name="몬스터를생성한다" arg1="202" arg2="0" />
+			<action name="이펙트를설정한다" arg1="5501" arg2="1"/> <!-- DarkAura02-->
+        </onEnter>
+				<condition name="WaitTick" waitTick="500">
+			<transition state="DarkAnosAttackAsimov03"/>
+		</condition>
+	</state>
+
+	<state name="DarkAnosAttackAsimov03">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5500" arg2="0"/> <!-- DarkAura01-->
+			<action name="이펙트를설정한다" arg1="5101" arg2="0"/> <!-- RuneShieldThunder-->
+			<action name="이펙트를설정한다" arg1="5100" arg2="0"/> <!-- AsimovShield-->
+        </onEnter>
+				<condition name="WaitTick" waitTick="500">
+			<transition state="CameraChange05"/>
+		</condition>
+	</state>
+
+    <state name="CameraChange05" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="611" arg2="1"/>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1003" />
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$52000137_QD__ACT01__7$" duration="2000" delayTick="1000"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="CameraChange06"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="CameraChange06" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="이펙트를설정한다" arg1="5501" arg2="0"/> <!-- DarkAura02-->
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="CameraChange07"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="CameraChange07" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="612" arg2="1"/>			<!-- PC 어깨에 걸고 -->
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="AsimovTalk04"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	<state name="AsimovTalk04">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003283" msg="$52000137_QD__ACT01__8$" duration="5000" align="center" illustID="Asimov_normal"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="스킵을설정한다" arg1="AsimovTalk04Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">
+			<transition state="AsimovTalk04Skip"/>
+		</condition>
+	</state>
+
+    <state name="AsimovTalk04Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Event_02_A,Down_Idle_A,Down_Idle_A,Down_Idle_A,Down_Idle_A"/>			<!-- 임시 - 기절하는 동작 제작되면 타이밍 맞추기-->
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="AsimovFaint01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="AsimovFaint01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="AsimovFaint02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="AsimovFaint02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="202" />
+			<action name="몬스터를생성한다" arg1="203" arg2="0" />
+			<action name="카메라를선택한다" arg1="613" arg2="1"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="AsimovFaint03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="AsimovFaint03">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="DarkAnosApproach01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="DarkAnosApproach01" >
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_104" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="DarkAnosApproach02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="DarkAnosApproach02" >
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1004" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="DarkAnosTalk02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	<state name="DarkAnosTalk02">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003285" msg="$52000137_QD__ACT01__9$" duration="5000" align="center" illustID="Patos_normal"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="스킵을설정한다" arg1="DarkAnosTalk02Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">
+			<transition state="DarkAnosTalk02Skip"/>
+		</condition>
+	</state>
+
+    <state name="DarkAnosTalk02Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="PCTalk03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="PCTalk03">
+        <onEnter>
+			<action name="SetPcEmotionLoop" arg1="Talk_A" arg2="4000" />
+			<action name="AddCinematicTalk" npcID="0" msg="$52000137_QD__ACT01__10$" duration="5000" align="center" illustID="0"/>
+			<action name="SetSceneSkip" arg1="" arg2="" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">
+			<transition state="PCTalk03Skip"/>
+		</condition>
+	</state>
+
+    <state name="PCTalk03Skip">
+		<onEnter>
+			<action name="SetPcEmotionSequence" arg1="Idle_A"/>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="DarkAnosTalk03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="DarkAnosTalk03">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003285" msg="$52000137_QD__ACT01__11$" duration="4000" align="center" illustID="Patos_normal"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">
+			<transition state="DarkAnosTalk03Skip"/>
+		</condition>
+	</state>
+    <state name="DarkAnosTalk01CSkip">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="몬스터소멸시킨다" arg1="102" />
+			<action name="몬스터소멸시킨다" arg1="103" />
+			<action name="몬스터소멸시킨다" arg1="201,910,920" />
+			<action name="몬스터를생성한다" arg1="202" arg2="0" />
+			<action name="몬스터소멸시킨다" arg1="202" />
+			<action name="몬스터를생성한다" arg1="203" arg2="0" />
+			<action name="이펙트를설정한다" arg1="5500" arg2="0"/> <!-- DarkAura01-->
+			<action name="이펙트를설정한다" arg1="5501" arg2="0"/> <!-- DarkAura02-->
+			<action name="이펙트를설정한다" arg1="5100" arg2="0"/> <!-- AsimovShield-->
+			<action name="이펙트를설정한다" arg1="5101" arg2="0"/> <!-- RuneShieldThunder-->
+			<action name="이펙트를설정한다" arg1="5200" arg2="0"/> <!-- ShieldExplosion-->
+			<action name="SetPcEmotionSequence" arg1="Attack_Idle_A"/>
+			<action name="RemoveCinematicTalk" />
+			</onEnter>
+				<condition name="무조건" >
+					<!--transition state="PCTalk03Skip"/-->
+					<transition state="DarkAnosTalk03Skip"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+    <state name="DarkAnosTalk03Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="DarkAnosBattle01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="DarkAnosBattle01">
+        <onEnter>
+
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="카메라리셋" interpolationTime="1.0"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="DarkAnosBattle02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="DarkAnosBattle02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="104" />
+			<action name="몬스터를생성한다" arg1="900" arg2="0" />
+			</onEnter>
+				<!-- 29000259 전투용 흑화된 아노스 체력 20퍼센트 신호 받기  <event eventName="TriggerEvent" target="SetUserValue" param1="1" param2="PatosTired" param3="1"/> -->
+				<condition name="UserValue" key="PatosTired" value="1" >
+					<transition state="DarkAnosDown01"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="900" >	<!-- 임시 -  파토스 체력 조건으로 연출 넘어가도록 수정하기 -->
+					<transition state="DarkAnosDown01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="DarkAnosDown01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="PositionArrange01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="PositionArrange01" >
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="900" />
+			<action name="몬스터를생성한다" arg1="105" arg2="0" />
+			<action name="유저를이동시킨다" arg1="52000137" arg2="10" arg3="9900" />
+			<action name="카메라를선택한다" arg1="620" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="PositionArrange02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="PositionArrange02" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="PCBalloonTalk01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="PCBalloonTalk01" >
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_2000" />
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$52000137_QD__ACT01__12$" duration="2000" delayTick="500"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="PCBalloonTalk02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="PCBalloonTalk02" >
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$52000137_QD__ACT01__13$" duration="3000" delayTick="0"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="PCBalloonTalk03"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="PCBalloonTalk03" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="621" arg2="1"/>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_2001" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="KanduraApp01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="KanduraApp01" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="622" arg2="1"/>
+			<action name="몬스터를생성한다" arg1="301" arg2="0" />
+			<action name="NPC를이동시킨다" arg1="301" arg2="MS2PatrolData_301" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="KanduraApp02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="KanduraApp02" >
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="0" msg="$52000137_QD__ACT01__14$" duration="2000" delayTick="0"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="KanduraApp03"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="KanduraApp03" >
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_2002" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="KanduraAttack01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="KanduraAttack01" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="623" arg2="1"/>
+			<action name="SetNpcEmotionSequence" arg1="301" arg2="Event_01_A" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="KanduraAttack02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="KanduraAttack02" >
+        <onEnter>
+			<action name="스킬을설정한다" arg1="7000" arg2="1"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="CameraChange10"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="CameraChange10" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="CameraChange11"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="CameraChange11" >
+        <onEnter>
+			<action name="카메라를선택한다" arg1="630" arg2="1"/>			<!-- PC 등뒤에서 -->
+			<action name="SetPcEmotionLoop" arg1="Push_A" arg2="30000" />
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="CameraChange12"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="CameraChange12" >
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="KanduraTalk01"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+	<state name="KanduraTalk01">
+        <onEnter>
+			<action name="NPC를이동시킨다" arg1="301" arg2="MS2PatrolData_302" />
+			<action name="AddCinematicTalk" npcID="11003287" msg="$52000137_QD__ACT01__15$" duration="4000" align="center" illustID="Kandura_normal"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="SetSceneSkip" arg1="ShowCaption04Skip" arg2="exit" />
+			<action name="스킵을설정한다" arg1="KanduraTalk01Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">
+			<transition state="KanduraTalk01Skip"/>
+		</condition>
+	</state>
+
+    <state name="KanduraTalk01Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건">
+					<transition state="PCTalk04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="PCTalk04">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="0" msg="$52000137_QD__ACT01__16$" duration="4000" align="center" illustID="0"/>
+			<action name="스킵을설정한다" arg1="PCTalk04Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">
+			<transition state="PCTalk04Skip"/>
+		</condition>
+	</state>
+
+    <state name="PCTalk04Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건">
+					<transition state="KanduraMoveToDarkAnos01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="KanduraMoveToDarkAnos01">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="631" arg2="1"/>
+			<action name="NPC를이동시킨다" arg1="301" arg2="MS2PatrolData_303" />
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="KanduraTalk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="KanduraTalk02">
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11003287" msg="$52000137_QD__ACT01__17$" duration="4000" align="center" illustID="Kandura_normal"/>
+			<!-- align = 일러스트 위치 : (left/ center/ right) 3가지 지원 (생략 시 center) -->
+			<!-- illustID = 표시할 일러스트의 npc id, 일러스트를 표시하기 싫으면 0으로 기입 -->
+			<action name="스킵을설정한다" arg1="KanduraTalk02Skip"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="4000">
+			<transition state="KanduraTalk02Skip"/>
+		</condition>
+	</state>
+
+    <state name="KanduraTalk02Skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건">
+					<transition state="KanduraReadyToDisapp01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+<!-- 칸두라가 흑화된 아노스를 데리고 함께 사라지는 연출 -->
+    <state name="KanduraReadyToDisapp01">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="632" arg2="1"/>
+			<action name="SetNpcEmotionSequence" arg1="301" arg2="Event_02_A" />
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="KanduraReadyToDisapp02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="KanduraReadyToDisapp02">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="5300" arg2="1"/> <!-- Vibrate-->
+			<action name="이펙트를설정한다" arg1="5400" arg2="1"/> <!-- DarkStrom01-->
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="KanduraReadyToDisapp03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="KanduraReadyToDisapp03">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="5400" arg2="0"/> <!-- DarkStrom01-->
+			<action name="이펙트를설정한다" arg1="5401" arg2="1"/> <!-- DarkStrom02-->
+			<action name="몬스터소멸시킨다" arg1="105,301" />
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="KanduraReadyToDisapp04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="KanduraReadyToDisapp04">
+		<onEnter>
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="ShowCaption01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+<!-- 설명문 출력 -->
+
+    <state name="ShowCaption01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="ShowCaption02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="ShowCaption02" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$52000137_QD__ACT01__18$"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="10000">
+					<transition state="ShowCaption02Skip"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="ShowCaption02Skip">
+		<onEnter>
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건">
+					<transition state="ShowCaption03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="ShowCaption03" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$52000137_QD__ACT01__19$"/>
+			<action name="스킵을설정한다" arg1="ShowCaption03Skip"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="10000">
+					<transition state="ShowCaption03Skip"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="ShowCaption03Skip">
+		<onEnter>
+			<action name="SetSceneSkip" arg1="" arg2="" />
+			</onEnter>
+				<condition name="무조건">
+					<transition state="ShowCaption04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="ShowCaption04" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$52000137_QD__ACT01__20$"/>
+				</onEnter>
+				<condition name="WaitTick" waitTick="10000">
+					<transition state="ShowCaption04Skip"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="ShowCaption04Skip">
+		<onEnter>
+			<action name="스킵을설정한다" arg1=""/>
+			</onEnter>
+				<condition name="무조건">
+					<transition state="Quit01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="Quit01">
+        <onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="AsimovRetire"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="연출UI를설정한다" arg1="4"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="Quit02"/>
+				</condition>
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="Quit02">
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/>
+			<action name="카메라리셋" interpolationTime="1.0"/>
+			<action name="유저를이동시킨다" arg1="02000035" arg2="1"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000">  	<!-- 맵 튕기고 이동 명령 못 받을 상태를 대비한 안전장치 -->
+			  <transition state="Quit02"/>
+			</condition>
+		<onExit>
+    </onExit>
+    </state>
+</ms2>
+

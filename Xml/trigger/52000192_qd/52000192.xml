@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="wait_01"> 
+        <onEnter>
+			<action name="SetOnetimeEffect" id="101" enable="0" path="BG/Common/Eff_Com_Vibrate_Short.xml"/>
+			<action name="이펙트를설정한다" arg1="6001" arg2="0"/>
+			<action name="이펙트를설정한다" arg1="6002" arg2="0"/>
+			<action name="이펙트를설정한다" arg1="6003" arg2="0"/>
+			<action name="이펙트를설정한다" arg1="6004" arg2="0"/>
+			<action name="오브젝트반응설정한다" arg1="10001453" arg2="2"/>
+			<action name="오브젝트반응설정한다" arg1="10001454" arg2="2"/>
+			<action name="오브젝트반응설정한다" arg1="10001455" arg2="2"/>
+			<action name="오브젝트반응설정한다" arg1="10001456" arg2="2"/>
+			<action name="포탈을설정한다" arg1="5003" arg2="0" arg3="0"/>	
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003423" arg3="1" > <!--비밀 통로를 따라 퀘스트 수락-->
+					<transition state="wait_01_02"/>
+			</condition>
+			<condition name="!퀘스트유저를감지하면" arg1="2001" arg2="10003423" arg3="1" > <!--비밀 통로를 따라 퀘스트 수락 유저가 아니면-->
+					<transition state="이동"/>
+			</condition>
+		<onExit>
+		</onExit>   
+    </state>
+	
+	<state name="wait_01_02"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000"> 
+			<transition state="wait_01_03"/>
+		</condition>
+		<onExit>
+		</onExit> 
+    </state> 
+	
+	<state name="wait_01_03"> 
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="유저를이동시킨다" arg1="52000192" arg2="5001"/>
+			<action name="카메라경로를선택한다" arg1="4001" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="101"/>	<!--바론-->
+			<action name="몬스터를생성한다" arg1="102"/>	<!--여제-->
+		</onEnter>
+		<condition name="WaitTick" waitTick="500"> 
+			<transition state="불난통로_01"/>
+		</condition>
+		<onExit>
+		</onExit> 
+    </state> 
+	 
+	<state name="불난통로_01">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="SetSceneSkip" arg1="Skip_1" arg2="nextState"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="불난통로_02"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state> 
+	 
+	<state name="불난통로_02">  
+		<onEnter> 
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="AddCinematicTalk" npcID="11004785" msg="$52000192_QD__52000192__0$" align="left" illustID="Ereb_surprise" duration="4000" />
+			<action name="카메라경로를선택한다" arg1="4002,4003" arg2="0"/>
+			<action name="SetPcEmotionLoop" arg1="Attack_Idle_A" arg2="5000"/>	
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="불난통로_03"/>
+				</condition>	
+		<onExit> 
+		</onExit>
+    </state>
+
+	<state name="불난통로_03">
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="AddCinematicTalk" npcID="0" msg="$52000192_QD__52000192__1$" duration="3000" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="불난통로_04"/>
+				</condition>	
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="불난통로_04">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="0" msg="$52000192_QD__52000192__2$" duration="5000" />
+			<action name="AddCinematicTalk" npcID="11004787" msg="$52000192_QD__52000192__3$" align="left" illustID="Baron_normal" duration="4000" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="9000">
+					<transition state="불끄기준비"/>
+				</condition>	
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="불끄기준비">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="불끄기준비_02"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state> 
+	
+	<state name="Skip_1" >
+        <onEnter>		
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 		
+			<action name="카메라리셋" interpolationTime="0.0"/>
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="불끄기준비_02"/>
+				</condition>		
+        <onExit />
+    </state>
+	
+	<state name="불끄기준비_02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="101" />
+			<action name="몬스터소멸시킨다" arg1="102" />
+			<action name="몬스터를생성한다" arg1="103"/>	<!--바론-->
+			<action name="몬스터를생성한다" arg1="104"/>	<!--여제-->
+			<action name="이펙트를설정한다" arg1="6001" arg2="1"/><!--여제 지킴-->
+			<action name="오브젝트반응설정한다" arg1="10001453" arg2="1"/>
+			<action name="유저를이동시킨다" arg1="52000192" arg2="5002" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="불꺼라불꺼"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state> 
+	
+	<state name="불꺼라불꺼">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="SideNpcTalk" type="talk" npcID="11004787" illust="Baron_normal" script="$52000192_QD__52000192__4$" duration="3000" />	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>	
+		</onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10001453" arg2="0">
+				<transition state="불꺼라불꺼_02"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_02">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$52000192_QD__52000192__5$" duration="4000" />
+			<action name="이펙트를설정한다" arg1="6021" arg2="0"/><!--불끄기-->
+			<action name="이펙트를설정한다" arg1="6005" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6006" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6007" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6008" arg2="1"/>
+			<action name="몬스터를생성한다" arg1="201"/>
+			<action name="몬스터를생성한다" arg1="202"/>
+			<action name="몬스터를생성한다" arg1="203"/>
+			<action name="몬스터를생성한다" arg1="204"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="불꺼라불꺼_02_02"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_02_02">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="AddCinematicTalk" npcID="11004787" msg="$52000192_QD__52000192__6$" illust="Baron_normal" align="left" duration="4000" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="불꺼라불꺼_02_01"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_02_01">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="201,202,203,204">
+				<transition state="불꺼라불꺼_03"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_03">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$52000192_QD__52000192__7$" duration="4000" />
+			<action name="이펙트를설정한다" arg1="6001" arg2="0"/>
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_3001" /> 
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_3002" /> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="불꺼라불꺼_04"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_04">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="6002" arg2="1"/><!--여제 지킴-->
+			<action name="오브젝트반응설정한다" arg1="10001454" arg2="1"/>
+		</onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10001454" arg2="0">
+				<transition state="불꺼라불꺼_05"/>
+			</condition>		
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_05">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$52000192_QD__52000192__8$" duration="4000" />
+			<action name="이펙트를설정한다" arg1="6022" arg2="0"/><!--불끄기-->
+			<action name="이펙트를설정한다" arg1="6009" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6010" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6011" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6012" arg2="1"/>
+			<action name="몬스터를생성한다" arg1="205"/>
+			<action name="몬스터를생성한다" arg1="206"/>
+			<action name="몬스터를생성한다" arg1="207"/>
+			<action name="몬스터를생성한다" arg1="208"/>	
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="205,206,207,208">
+				<transition state="불꺼라불꺼_06"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_06">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$52000192_QD__52000192__9$" duration="4000" />
+			<action name="이펙트를설정한다" arg1="6002" arg2="0"/>
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_3003" /> 
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_3004" /> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="불꺼라불꺼_07"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_07">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="6003" arg2="1"/><!--여제 지킴-->
+			<action name="오브젝트반응설정한다" arg1="10001455" arg2="1"/>
+		</onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10001455" arg2="0">
+				<transition state="불꺼라불꺼_08"/>
+			</condition>		
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_08">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$52000192_QD__52000192__10$" duration="4000" />
+			<action name="이펙트를설정한다" arg1="6023" arg2="0"/><!--불끄기-->
+			<action name="이펙트를설정한다" arg1="6013" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6014" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6015" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6016" arg2="1"/>
+			<action name="몬스터를생성한다" arg1="209"/>
+			<action name="몬스터를생성한다" arg1="210"/>
+			<action name="몬스터를생성한다" arg1="211"/>
+			<action name="몬스터를생성한다" arg1="212"/>	
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="209,210,211,212">
+				<transition state="불꺼라불꺼_09"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_09">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="6003" arg2="0"/>
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_3005" /> 
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_3006" /> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="불꺼라불꺼_10"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_10">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="6004" arg2="1"/><!--여제 지킴-->
+			<action name="오브젝트반응설정한다" arg1="10001456" arg2="1"/>
+		</onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10001456" arg2="0">
+				<transition state="불꺼라불꺼_11"/>
+			</condition>		
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_11">
+		<onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="11004787" illust="Baron_normal" script="$52000192_QD__52000192__11$" duration="3000" />	
+			<action name="이펙트를설정한다" arg1="6024" arg2="0"/><!--불끄기-->
+			<action name="이펙트를설정한다" arg1="6017" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6018" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6019" arg2="1"/>
+			<action name="이펙트를설정한다" arg1="6020" arg2="1"/>			
+			<action name="몬스터를생성한다" arg1="213"/>
+			<action name="몬스터를생성한다" arg1="214"/>
+			<action name="몬스터를생성한다" arg1="215"/>
+			<action name="몬스터를생성한다" arg1="216"/>	
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="213,214,215,216">
+				<transition state="불꺼라불꺼_12"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="불꺼라불꺼_12">
+		<onEnter>
+			<action name="AddBalloonTalk" spawnPointID="104" msg="$52000192_QD__52000192__12$" duration="3000" />
+			<action name="이펙트를설정한다" arg1="6004" arg2="0"/>
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_3007" /> 
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_3008" /> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="다왔다"/>
+			</condition>	
+		<onExit>  
+		</onExit>
+    </state>
+	
+	<state name="다왔다">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="101" enable="1" path="BG/Common/Eff_Com_Vibrate.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="SetPcEmotionLoop" arg1="Attack_Idle_A" arg2="6000"/>			
+			<action name="AddCinematicTalk" npcID="0" msg="$52000192_QD__52000192__13$" duration="3000" />
+			<action name="AddCinematicTalk" npcID="11004785" msg="$52000192_QD__52000192__14$" illustID="Ereb_surprise" duration="4000" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="7000">
+					<transition state="밖으로"/>
+				</condition>	
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="밖으로">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="2001" arg2="" arg3="EscapePrisonTower" /> 
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>	
+			<action name="포탈을설정한다" arg1="5003" arg2="1" arg3="1"/>	
+		</onEnter>
+
+    </state>
+	
+	<state name="이동" >
+		<onEnter>		
+		  <action name="유저를이동시킨다" arg1="02000119" arg2="20"/> 				
+		</onEnter>
+	</state>
+	
+</ms2>

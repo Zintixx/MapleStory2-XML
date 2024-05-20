@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID = 101, 보스 생성하고 그외 각종 트리거 메쉬 생성 투명벽 생성 등 게임의 전반적인 진행에 대한 부분을 처리하는 트리거임  -->
+<ms2>
+
+  <state name="시작대기중">
+    <onEnter>
+		<!-- 아래 2개 맵 조명 설정, 1페이지 전투판만 비추는 조명-->			 	 
+		 <action name="SetAmbientLight" arg1="45, 21, 28"/>	<!-- arg1 = AmbientColor RGB값 -->
+		 <action name="SetDirectionalLight" arg1="16, 30, 29" arg2="130, 130, 130"/>		<!-- arg1 = DiffuseColor RGB값,  arg2 = SpecularColor RGB값  -->	
+	
+		<action name="메쉬를설정한다" arg1="901-924" arg2="0" arg3="0" arg4="0" arg5="0" />	  	<!--	몬스터만 밟을 수 있는 투명벽 셋팅하기-->
+	
+		<action name="이펙트를설정한다" arg1="301" arg2="1" /> <!-- 1페이즈 전투판의 빛기둥 생성-->	
+
+		<action name="SetUserValue" key="1PhaseSpawnStart" value="0" /> <!-- 이 변수가 1이 되면, 1페이즈용 보스가 등장하면서 1페이즈 전투 시작을 알림 -->
+		<action name="SetUserValue" key="2PhaseSpawnStart" value="0" /> <!-- 이 변수가 1이 되면, 2페이즈용 보스가 등장하면서 2페이즈 전투 시작을 알림 -->
+		
+		<action name="포탈을설정한다" arg1="108" arg2="0" arg3="0" arg4="0"/> <!-- 최초 시작 지점에서 1페이즈 전투판으로 가는 포탈 최초에 감추기, 108: 스타팅 지점에서 1페이지 전투판 근처로 도착-->	
+
+		<action name="포탈을설정한다" arg1="118" arg2="0" arg3="0" arg4="0"/> <!-- 첫번째 왼쪽 졸구간 포탈 최초에 감추기-->	
+		<action name="포탈을설정한다" arg1="128" arg2="0" arg3="0" arg4="0"/> <!-- 첫번째 가운데 졸구간 포탈 최초에 감추기-->	
+		<action name="포탈을설정한다" arg1="138" arg2="0" arg3="0" arg4="0"/> <!-- 첫번째 오른쪽 졸구간 포탈 최초에 감추기-->	
+
+		<action name="포탈을설정한다" arg1="218" arg2="0" arg3="0" arg4="0"/> <!-- 두번째 왼쪽 졸구간 포탈 최초에 감추기-->	
+		<action name="포탈을설정한다" arg1="228" arg2="0" arg3="0" arg4="0"/> <!-- 두번째 가운데 졸구간 포탈 최초에 감추기-->	
+		<action name="포탈을설정한다" arg1="238" arg2="0" arg3="0" arg4="0"/> <!-- 두번째 오른쪽 졸구간 포탈 최초에 감추기-->	
+
+		<action name="포탈을설정한다" arg1="328" arg2="0" arg3="0" arg4="0"/> <!-- 세번번째 가운데 졸구간 포탈 최초에 감추기-->	
+
+		<action name="포탈을설정한다" arg1="318" arg2="0" arg3="0" arg4="0"/> <!-- 졸구간 끝내고 2페이지 전투판으로 가는 왼쪽 포탈 최초에 감추기-->	
+		<action name="포탈을설정한다" arg1="428" arg2="0" arg3="0" arg4="0"/> <!-- 졸구간 끝내고 2페이지 전투판으로 가는 가운데 포탈 최초에 감추기-->	
+		<action name="포탈을설정한다" arg1="338" arg2="0" arg3="0" arg4="0"/> <!-- 졸구간 끝내고 2페이지 전투판으로 가는 오른쪽 포탈 최초에 감추기-->	
+		<action name="포탈을설정한다" arg1="599" arg2="0" arg3="0" arg4="0"/> <!-- 세번째페이즈 진행하는 맵 이동 포탈 처음에 감추기, 2페이즈 전투판에 설치한 포탈-->			
+		<action name="포탈을설정한다" arg1="598" arg2="0" arg3="0" arg4="0"/> <!-- 최초 시작 지점에 바로 2페이지 메인 전투판으로 포내는 포탈 처음에는 감추기, 참고로 포탈 arg1="598" 과 arg1="108"은 스타팅 포인트 같은 좌표에 있음 -->						
+
+
+		<!-- 각 졸구간 전투판에서 되돌아가는 포탈 최초에는 감추기 -->
+		<action name="포탈을설정한다" arg1="9118" arg2="0" arg3="0" arg4="0"/>
+		<action name="포탈을설정한다" arg1="9128" arg2="0" arg3="0" arg4="0"/>
+		<action name="포탈을설정한다" arg1="9138" arg2="0" arg3="0" arg4="0"/>
+		<action name="포탈을설정한다" arg1="9218" arg2="0" arg3="0" arg4="0"/>
+		<action name="포탈을설정한다" arg1="9228" arg2="0" arg3="0" arg4="0"/>
+		<action name="포탈을설정한다" arg1="9238" arg2="0" arg3="0" arg4="0"/>
+		<action name="포탈을설정한다" arg1="9328" arg2="0" arg3="0" arg4="0"/>
+		
+
+		<action name="메쉬를설정한다" arg1="949-999" arg2="1" arg3="1" arg4="1" arg5="1" />	<!-- 플레이어만 막고 몬스터는 막지 않는 투명벽 설정-->
+
+		
+		<!-- 졸구간 지형 최초에는 감추기
+		<action name="메쉬를설정한다" arg1="10001-10349" arg2="0" arg3="0" arg4="0" arg5="0" />	
+		<action name="메쉬를설정한다" arg1="15001-15467" arg2="0" arg3="0" arg4="0" arg5="0" />	
+
+		<action name="메쉬를설정한다" arg1="20001-20215" arg2="0" arg3="0" arg4="0" arg5="0" />	 
+		<action name="메쉬를설정한다" arg1="23001-23215" arg2="0" arg3="0" arg4="0" arg5="0" />	
+		<action name="메쉬를설정한다" arg1="26001-26215" arg2="0" arg3="0" arg4="0" arg5="0" />	 
+
+		<action name="메쉬를설정한다" arg1="30001-30413" arg2="0" arg3="0" arg4="0" arg5="0" />	
+		<action name="메쉬를설정한다" arg1="35001-35402" arg2="0" arg3="0" arg4="0" arg5="0" />	 -->
+
+
+
+		<!--  <state name="졸구간진행체크중"> 에서 사용할 중요한 변수 설정하기  -->
+		<action name="SetUserValue" key="TriggerMesh11" value="99" /> <!-- 이 변수 99 하기, 이거 안하면   condition 에서  value="0" 체크되어 트리거 로직 꼬일 수 있음 -->		
+		<action name="SetUserValue" key="TriggerMesh21" value="99" /> <!-- 이 변수 99 하기, 이거 안하면   condition 에서  value="0" 체크되어 트리거 로직 꼬일 수 있음 -->		
+		<action name="SetUserValue" key="TriggerMesh12" value="99" /> <!-- 이 변수 99 하기, 이거 안하면   condition 에서  value="0" 체크되어 트리거 로직 꼬일 수 있음 -->		
+		<action name="SetUserValue" key="TriggerMesh22" value="99" /> <!-- 이 변수 99 하기, 이거 안하면   condition 에서  value="0" 체크되어 트리거 로직 꼬일 수 있음 -->		
+		<action name="SetUserValue" key="TriggerMesh32" value="99" /> <!-- 이 변수 99 하기, 이거 안하면   condition 에서  value="0" 체크되어 트리거 로직 꼬일 수 있음 -->		
+		<action name="SetUserValue" key="TriggerMesh13" value="99" /> <!-- 이 변수 99 하기, 이거 안하면   condition 에서  value="0" 체크되어 트리거 로직 꼬일 수 있음 -->		
+		<action name="SetUserValue" key="TriggerMesh23" value="99" /> <!-- 이 변수 99 하기, 이거 안하면   condition 에서  value="0" 체크되어 트리거 로직 꼬일 수 있음 -->		
+		<action name="SetUserValue" key="TurkaTwoPhaseEnd" value="99" /> <!-- 이 변수 99 하기, 이거 안하면   나중에 condition 에서  value="1" 체크함 -->		
+		
+		
+    </onEnter> 
+		<condition name="유저를감지했으면" arg1="99"> <!--   MS2TriggerBox   TriggerObjectID = 99, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        99는 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+			<transition state="연출용보스등장"/>
+		</condition>
+  </state>
+
+
+ 
+	<state name="연출용보스등장"> 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="100" arg2="0" /> 
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="2000">   <!-- WaitTick  시간 조절 연출 타이밍 맞춤 -->
+				<transition state="투르카대사연출" />
+			</condition>				
+		
+	</state>  
+	
+
+	<state name="투르카대사연출"> 
+		<onEnter>
+			<action name="SideNpcTalk" npcID="23000120" illust="Turka_normal" duration="9000" script="$02020140_BF__PopUpCinema__0$"/>	
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" >  <!-- 일러스트 대사 연출이 몇초간 나온 다음에 전투판 진입 포탈이 생성되도록 함-->	
+				<transition state="1페이즈보스등장대기" />
+			</condition>				
+		
+	</state>  
+	
+	<state name="1페이즈보스등장대기">
+		<onEnter> 
+			
+		</onEnter>
+		
+			
+			<condition name="UserValue" key="1PhaseSpawnStart" value="1" > <!--  시작 이벤트 연출용 NPC의 "AI_TurkaReaperCostume_EventStart.xml" 에서 이 변수 1 신호를 받아서 1페이즈 보스 등장시킴-->
+				<transition state="1페이즈보스등장"/>	
+			</condition>	  
+
+
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>		
+
+	</state>  
+	
+	
+	<state name="1페이즈보스등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> <!--  1페이즈용 투르카 보스 등장시키기 -->
+			
+		</onEnter>
+						
+			<condition name="WaitTick" waitTick="4500"> <!-- WaitTick  시간 조절 연출 타이밍 맞춤 -->
+				<transition state="1페이즈전투진행"/>	
+			</condition>	  
+			
+			
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>		
+	</state>  
+
+	
+	<state name="1페이즈전투진행">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="108" arg2="1" arg3="1" arg4="1"/> <!-- 최초 시작 지점에서 1페이즈 전투판으로 가는 포탈 등장시키기 -->	
+			
+		</onEnter>
+			
+			<!-- 1페이즈 전투 진행하고 있을때, 이 단계에 머물고 있음 -->
+			
+			<condition name="UserValue" key="2PhaseSpawnStart" value="1" > <!--  1페이즈 트루카 HP 1%가 되면 AI에서 이 변수 1 신호 보내고 스스로 사라짐 -->
+				<transition state="1페이즈전투완료_2페이즈투르카등장"/>	
+			</condition>	  
+			
+			
+			
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>					
+
+	</state>  
+	   
+
+	<state name="1페이즈전투완료_2페이즈투르카등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> <!--  2페이즈용 투르카 보스 등장시키기 -->
+			<action name="버프를삭제한다" arg1="98" arg2="50004418" />  <!-- 플레이어에게 걸려있는 타겟팅 저주 디버프 제거하기, arg1="98"는 1페이즈 전투판을 커버하고 있는 트리거영역 ID임 -->				
+		</onEnter>
+			
+			<condition name="WaitTick" waitTick="6000" > <!-- 보스 1페이즈 전투 끝나면, 맵 조명 변경하고 -> 투르카 특수 행동하고 -> 보스AI로 부터 신호 받아서 -> 졸구간 지형생성 등등 연출이 나오는데 적당한 시간 타이밍 조절 필요해 waitTick 수치 조절 해야함  -->	
+				<transition state="졸구간시작연출딜레이" />
+			</condition>		
+			
+			
+
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>					
+			
+	</state>  
+	   
+
+	<state name="졸구간시작연출딜레이">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="301" arg2="0" /> <!-- 1페이즈 전투판 빛기둥 제거-->	
+			<!-- 아래 2개 맵 조명 설정, 모든 전투판을 비추는 조명으로 변경하기-->					
+			 <action name="SetAmbientLight" arg1="255, 140, 172"/>	<!-- arg1 = AmbientColor RGB값 -->
+			 <action name="SetDirectionalLight" arg1="146, 221, 218" arg2="130, 130, 130"/>		<!-- arg1 = DiffuseColor RGB값,  arg2 = SpecularColor RGB값  -->	
+			 <action name="ChangeBackground" dds="BG_Turka_D.dds" />	<!-- 2페이즈 부터 맵이 밝아지면서, 백그라운드 이미지 교체함-->
+		 </onEnter>
+			
+			<condition name="UserValue" key="StageOpen" value="1" > <!-- 보스AI로 부터 신호 받아서 -> 졸구간 지형생성 등등 연출 시작  -->	
+				<transition state="최초졸구간몬스터등장" />
+			</condition>		
+			
+	</state>  
+
+
+	<state name="최초졸구간몬스터등장">
+		<onEnter>			 			
+			<!-- 	첫번째 구간의 왼쪽 가운데 오른쪽 졸구간, 클리어 유무 판단을 위한 졸몹 마리수 체크 변수 셋팅 시작하기-->
+			<action name="SetUserValue" key="TriggerMesh11" value="0" /> <!-- 첫번째 왼쪽 졸구간 졸몹 마리수 체크하기 위한 변수 0  셋팅하여 마리수 체크 시작하기, 이후 졸몹 등장하면 졸몹 AI에게 이 변수 +1씩 하여 마리수 체크하며, 죽으면 -1씩 하며, 결국 0이 되면 트리거 다음 단계로 넘어가도록 함 -->		
+			<action name="SetUserValue" key="TriggerMesh12" value="0" /> <!-- 첫번째 가운데 졸구간 졸몹 마리수 체크하기 위한 변수 0  셋팅하여 마리수 체크 시작하기, 이후 졸몹 등장하면 졸몹 AI에게 이 변수 +1씩 하여 마리수 체크하며, 죽으면 -1씩 하며, 결국 0이 되면 트리거 다음 단계로 넘어가도록 함 -->		
+			<action name="SetUserValue" key="TriggerMesh13" value="0" /> <!-- 첫번째 오른쪽 졸구간 졸몹 마리수 체크하기 위한 변수 0  셋팅하여 마리수 체크 시작하기, 이후 졸몹 등장하면 졸몹 AI에게 이 변수 +1씩 하여 마리수 체크하며, 죽으면 -1씩 하며, 결국 0이 되면 트리거 다음 단계로 넘어가도록 함 -->		
+
+		
+		<!--	<action name="메쉬를설정한다" arg1="10001-10349" arg2="1" arg3="1" arg4="1" arg5="0.5" />	  	첫번째 왼쪽 졸구간 지형 등장 & 졸몹 등장-->
+			<action name="몬스터를생성한다" arg1="1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115" arg2="0" /> 	<!-- 중요: 이 졸몹은 등장하자마자 AI에서 트리거 쪽으로 TriggerMesh?? 변수 +1 신호를 보내야 하기 때문에 꼭 등장하자마자 바로 전투 상태가 되어야 함  -->
+			
+		<!-- 		<action name="메쉬를설정한다" arg1="20001-20215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	 첫번째 가운데 졸구간 지형 등장 & 졸몹 등장-->
+			<action name="몬스터를생성한다" arg1="1201,1202,1203,1204,1205" arg2="0" /> 	<!-- 중요: 이 졸몹은 등장하자마자 AI에서 트리거 쪽으로 TriggerMesh?? 변수 +1 신호를 보내야 하기 때문에 꼭 등장하자마자 바로 전투 상태가 되어야 함  -->
+
+		 <!-- 	<action name="메쉬를설정한다" arg1="30001-30413" arg2="1" arg3="1" arg4="1" arg5="0.5" />		첫번째 오른쪽 졸구간 지형 등장 & 졸몹 등장-->
+			<action name="몬스터를생성한다" arg1="1301,1302,1303,1304,1305,1306,1307,1308,1309,1310,1311,1312,1313" arg2="0" /> 	<!-- 중요: 이 졸몹은 등장하자마자 AI에서 트리거 쪽으로 TriggerMesh?? 변수 +1 신호를 보내야 하기 때문에 꼭 등장하자마자 바로 전투 상태가 되어야 함  -->
+
+			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="7000" >  <!-- 중요!! 충분한 waitTick 시간 설정해야 함: 가운데 지형 졸몹 약점속성 버프 받을때까지 여기서 잠시 대기함, 그리고 졸몹이 등장하고 전투 상태가 되어서 TriggerMesh?? 변수에 +1 신호 받을때까지 잠시 대기 시간도 필요함-->				
+				<transition state="졸구간본격진행" />
+			</condition>		
+
+	</state>  
+	
+	
+	
+	<state name="졸구간본격진행">
+		<onEnter>
+			<!-- 전투판 지형 다 생성된 다음에 포탈 생성되도록 하기-->				
+			<action name="포탈을설정한다" arg1="118" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 왼쪽 졸구간 진입 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="128" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 가운데 졸구간 진입 포탈 생성-->		
+			<action name="포탈을설정한다" arg1="138" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 오른쪽 졸구간 진입 포탈 생성-->		
+			
+			
+			<!-- 각 졸구간 전투판에서 되돌아가는 포탈 생성되도록 하기 -->
+			<action name="포탈을설정한다" arg1="9118" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="9128" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="9138" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="9218" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="9228" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="9238" arg2="1" arg3="1" arg4="1"/>
+			<action name="포탈을설정한다" arg1="9328" arg2="1" arg3="1" arg4="1"/>
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="2000" >  
+				<transition state="졸구간진행체크중" />
+			</condition>		
+
+	</state>  
+	
+
+
+	<state name="졸구간진행체크중">
+		<onEnter>
+			
+		</onEnter>
+		
+			<condition name="UserValue" key="TriggerMesh11" value="0" > <!--  첫번째 왼쪽지형 졸몹이 다 죽으면 TriggerMesh11 변수 0이  되어, 두번째 왼쪽지형 졸몹 등장 단계로 넘어감-->
+				<transition state="두번째왼쪽진행01"/>	
+			</condition>	  
+			
+			<condition name="UserValue" key="TriggerMesh12" value="0" > <!--  첫번째 가운데지형 졸몹이 다 죽으면 TriggerMesh12 변수 0이  되어, 두번째 가운데지형 졸몹 등장  단계로 넘어감-->
+				<transition state="두번째가운데진행01"/>	
+			</condition>	  
+
+			<condition name="UserValue" key="TriggerMesh13" value="0" > <!--  첫번째 오른쪽지형 졸몹이 다 죽으면 TriggerMesh13 변수 0이  되어, 두번째 오른쪽지형 졸몹 등장  단계로 넘어감-->
+				<transition state="두번째오른쪽진행01"/>	
+			</condition>	  			
+			
+			
+			<condition name="UserValue" key="TriggerMesh22" value="0" > <!--  두번째 가운데지형 졸몹이 다 죽으면 TriggerMesh22 변수 0이  되어, 세번째 가운데지형 졸몹 등장  단계로 넘어감-->
+				<transition state="세번째가운데진행01"/>	
+			</condition>	  			
+			
+			
+			<condition name="UserValue" key="TriggerMesh21" value="0" >  <!-- 두번째 왼쪽지형 졸몹이 다 죽으면 TriggerMesh21 변수 0이  되어, 2페이즈 보스 전투판으로 가는 포탈 생성하기 -->
+				<transition state="왼쪽지점보스방가는포탈생성"/>	 <!-- 중요: 이 곳에서 실행되면 보스의 AI_TurkaHoodForce_Phase02.xml 에 설정된  TwoPhaseMainBattle 변수의 1 신호를 보냄-->
+			</condition>	  
+			
+			<condition name="UserValue" key="TriggerMesh32" value="0" > <!-- 세번째 가운데지형 졸몹이 다 죽으면 TriggerMesh32 변수 0이  되어, 2페이즈 보스 전투판으로 가는 포탈 생성하기 -->
+				<transition state="가운데지점보스방가는포탈생성"/>	 <!-- 중요: 이 곳에서 실행되면 보스의 AI_TurkaHoodForce_Phase02.xml 에 설정된  TwoPhaseMainBattle 변수의 1 신호를 보냄-->	
+			</condition>	  			
+
+			<condition name="UserValue" key="TriggerMesh23" value="0" > <!-- 두번째 오른쪽지형 졸몹이 다 죽으면 TriggerMesh23 변수 0이  되어, 2페이즈 보스 전투판으로 가는 포탈 생성하기 -->
+				<transition state="오른쪽지점보스방가는포탈생성"/>	 <!-- 중요: 이 곳에서 실행되면 보스의 AI_TurkaHoodForce_Phase02.xml 에 설정된  TwoPhaseMainBattle 변수의 1 신호를 보냄-->	
+			</condition>	  
+
+
+			<condition name="UserValue" key="2PhaseStartOk" value="1" > <!-- 두번째 페이즈에서의 투르카 보스의 AI_TurkaHoodForce_Phase02.xml AI에서 본격 2페이즈 전투 시작하면서 2PhaseStartOk 변수 1 신호를 보내는데, 이 변수 1이 되면 모든 졸구간에서의 포탈 생성시키고, 졸몹 제거함 -->
+				<transition state="모든졸구간지형과포탈생성"/>	
+			</condition>	  
+
+			<condition name="UserValue" key="TurkaTwoPhaseEnd" value="1" > <!-- 두번째 페이즈에서의 투르카 보스 전투 끝나면 이 보스 AI에서 TurkaTwoPhaseEnd 변수 1 신호를 받게 되어 이 맵에서의 진행 끝내기 -->
+				<transition state="이맵에서진행끝내고다음맵으로이동"/>	
+			</condition>	  
+			
+			
+
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>					
+			
+	</state>  
+	
+	
+	
+	
+	<state name="두번째왼쪽진행01">
+		<onEnter>
+			<action name="SetUserValue" key="TriggerMesh11" value="-1" /> <!-- 이 변수 -1 하여 무한루프에 빠지지 않게 함 -->
+			<action name="SetUserValue" key="TriggerMesh21" value="0" /> <!-- 두번째 왼쪽 졸구간 졸몹 마리수 체크하기 위한 변수 0 초기화 셋팅하여 마리수 체크 시작하기, 이후 졸몹 등장하면 졸몹 AI에게 이 변수 +1씩 하여 마리수 체크하며, 죽으면 -1씩 하며, 결국 0이 되면 트리거 다음 단계로 넘어가도록 함 -->		
+
+		<!-- 		<action name="메쉬를설정한다" arg1="15001-15467" arg2="1" arg3="1" arg4="1" arg5="0.5" />	 두번째 왼쪽 졸구간 지형 등장 & 졸몹등장-->		
+			<action name="몬스터를생성한다" arg1="2101,2102,2103,2104,2105,2106,2107,2108,2109,2110,2111,2112,2113,2114,2115,2116,2117,2118,2119,2120" arg2="0" /> 	<!-- 중요: 이 졸몹은 등장하자마자 AI에서 트리거 쪽으로 TriggerMesh?? 변수 +1 신호를 보내야 하기 때문에 꼭 등장하자마자 바로 전투 상태가 되어야 함  -->
+		</onEnter>
+		
+			<condition name="WaitTick"  waitTick="3199" >  <!--두번째 왼쪽 지형 졸몹 등장하여 이 졸몹 AI에게 TriggerMesh?? 변수 +1 신호 받을때까지 여기서 WaitTick 잠시 대기하기 -->	
+				<transition state="두번째왼쪽진행02" />
+			</condition>				
+
+	</state>  	
+	<state name="두번째왼쪽진행02">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="218" arg2="1" arg3="1" arg4="1"/> <!--두번째 왼쪽 졸구간 포탈 생성-->							
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="799" > 
+				<transition state="졸구간진행체크중" />
+			</condition>				
+
+	</state>  			
+
+	
+	
+	<state name="두번째가운데진행01">
+		<onEnter>
+			<action name="SetUserValue" key="TriggerMesh12"  value="-1" /> <!-- 이 변수 -1 하여 무한루프에 빠지지 않게 함 -->
+			<action name="SetUserValue" key="TriggerMesh22" value="0" /> <!-- 두번째 가운데 졸구간 졸몹 마리수 체크하기 위한 변수 0 초기화 셋팅하여 마리수 체크 시작하기, 이후 졸몹 등장하면 졸몹 AI에게 이 변수 +1씩 하여 마리수 체크하며, 죽으면 -1씩 하며, 결국 0이 되면 트리거 다음 단계로 넘어가도록 함 -->		
+
+		<!-- 		<action name="메쉬를설정한다" arg1="23001-23215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	두번째 가운데  졸구간 지형 등장 & 졸몹등장 -->			 
+			<action name="몬스터를생성한다" arg1="2201,2202,2203,2204,2205" arg2="0" /> 	<!-- 중요: 이 졸몹은 등장하자마자 AI에서 트리거 쪽으로 TriggerMesh?? 변수 +1 신호를 보내야 하기 때문에 꼭 등장하자마자 바로 전투 상태가 되어야 함  -->
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3199" >  <!-- 전투판 지형 생기는 도중에 바로 포탈 진입시 추락할 수 있어서, 적절한 시간 조절 필요함, 그리고 졸몹 등장하여 이 졸몹 AI에게  TriggerMesh?? 변수 +1 신호 받을때까지 여기서 WaitTick 잠시 대기하기 -->	
+				<transition state="두번째가운데진행02" />
+			</condition>				
+
+	</state>  		
+	<state name="두번째가운데진행02">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="228" arg2="1" arg3="1" arg4="1"/> <!--두번째 가운데 졸구간 포탈 생성-->				
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="799" > 
+				<transition state="졸구간진행체크중" />
+			</condition>				
+
+	</state>  			
+
+
+
+	<state name="세번째가운데진행01">
+		<onEnter>
+			<action name="SetUserValue" key="TriggerMesh22"  value="-1" /> <!-- 이 변수 -1 하여 무한루프에 빠지지 않게 함 -->
+			<action name="SetUserValue" key="TriggerMesh32" value="0" /> <!-- 세번째 가운데 졸구간 졸몹 마리수 체크하기 위한 변수 0 초기화 셋팅하여 마리수 체크 시작하기, 이후 졸몹 등장하면 졸몹 AI에게 이 변수 +1씩 하여 마리수 체크하며, 죽으면 -1씩 하며, 결국 0이 되면 트리거 다음 단계로 넘어가도록 함 -->		
+
+		<!-- 		<action name="메쉬를설정한다" arg1="26001-26215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	세번째 가운데  졸구간 지형 등장 & 졸몹등장 -->			 
+			<action name="몬스터를생성한다" arg1="3201,3202,3203,3204,3205" arg2="0" /> 	<!-- 중요: 이 졸몹은 등장하자마자 AI에서 트리거 쪽으로 TriggerMesh?? 변수 +1 신호를 보내야 하기 때문에 꼭 등장하자마자 바로 전투 상태가 되어야 함  -->
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3199" >  <!-- 전투판 지형 생기는 도중에 바로 포탈 진입시 추락할 수 있어서, 적절한 시간 조절 필요함, 그리고 졸몹 등장하여 이 졸몹 AI에게  TriggerMesh?? 변수 +1 신호 받을때까지 여기서 WaitTick 잠시 대기하기 -->	
+				<transition state="세번째가운데진행02" />
+			</condition>				
+
+	</state>  	
+	<state name="세번째가운데진행02">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="328" arg2="1" arg3="1" arg4="1"/> <!--세번째 왼쪽 졸구간 포탈 생성-->				
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="799" > 
+				<transition state="졸구간진행체크중" />
+			</condition>				
+
+	</state>  			
+	
+	
+
+	<state name="두번째오른쪽진행01">
+		<onEnter>
+			<action name="SetUserValue" key="TriggerMesh13" value="-1" /> <!-- 이 변수 -1 하여 무한루프에 빠지지 않게 함 -->
+			<action name="SetUserValue" key="TriggerMesh23" value="0" /> <!-- 두번째 오른쪽 졸구간 졸몹 마리수 체크하기 위한 변수 0 초기화 셋팅하여 마리수 체크 시작하기, 이후 졸몹 등장하면 졸몹 AI에게 이 변수 +1씩 하여 마리수 체크하며, 죽으면 -1씩 하며, 결국 0이 되면 트리거 다음 단계로 넘어가도록 함 -->		
+
+		<!-- 	<action name="메쉬를설정한다" arg1="35001-35402" arg2="1" arg3="1" arg4="1" arg5="0.5" />		두번째 오른쪽 졸구간 지형 등장 & 졸몹등장-->			
+			<action name="몬스터를생성한다" arg1="2301,2302,2303,2304,2305,2306,2307,2308,2309,2310,2311,2312,2313,2314,2315" arg2="0" /> 	<!-- 중요: 이 졸몹은 등장하자마자 AI에서 트리거 쪽으로 TriggerMesh?? 변수 +1 신호를 보내야 하기 때문에 꼭 등장하자마자 바로 전투 상태가 되어야 함  -->
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3199" >  <!-- 전투판 지형 생기는 도중에 바로 포탈 진입시 추락할 수 있어서, 적절한 시간 조절 필요함, 그리고 졸몹 등장하여 이 졸몹 AI에게  TriggerMesh?? 변수 +1 신호 받을때까지 여기서 WaitTick 잠시 대기하기 -->	
+				<transition state="두번째오른쪽진행02" />
+			</condition>				
+
+	</state>  	
+	<state name="두번째오른쪽진행02">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="238" arg2="1" arg3="1" arg4="1"/> <!--두번째 오른쪽 졸구간 포탈 생성-->				
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="799" > 
+				<transition state="졸구간진행체크중" />
+			</condition>				
+
+	</state>  			
+
+
+
+
+
+	<!-- 아래 3개는 졸구간 다 끝내고 2페이즈 보스 전투판으로 가는 포탈 생성하는 부분-->	
+	 
+	<state name="왼쪽지점보스방가는포탈생성"> <!-- 2페이즈 보스전투 본격 시작하는 포탈 생성-->	
+		<onEnter>
+			<action name="SetUserValue" key="TriggerMesh21"  value="-1" /> <!-- 이 변수 -1 하여 무한루프에 빠지지 않게 함 -->
+			<action name="포탈을설정한다" arg1="318" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 왼쪽 졸구간 포탈 생성-->	
+			<action name="SetAiExtraData" key="TwoPhaseMainBattle" value="1" />	<!-- AI_TurkaHoodForce_Phase02.xml 에 있는 TwoPhaseMainBattle 변수에 1 설정해서 보스가 본격 2페이지 전투 시작하도록 함-->			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="500" > 
+				<transition state="2페이즈복격진행_안내메시지출력" />  <!-- 안내 메시지 5~6초 정도 출력후 다시 "졸구간진행체크중" 으로 되돌아 가는 구조임-->	
+			</condition>				
+
+	</state>  		
+	
+
+	<state name="가운데지점보스방가는포탈생성"> <!-- 2페이즈 보스전투 본격 시작하는 포탈 생성-->	
+		<onEnter>
+			<action name="SetUserValue" key="TriggerMesh32"  value="-1" /> <!-- 이 변수 -1 하여 무한루프에 빠지지 않게 함 -->
+			<action name="포탈을설정한다" arg1="428" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 가운데 졸구간 포탈 생성-->				
+			<action name="SetAiExtraData" key="TwoPhaseMainBattle" value="1" />	<!-- AI_TurkaHoodForce_Phase02.xml 에 있는 TwoPhaseMainBattle 변수에 1 설정해서 보스가 본격 2페이지 전투 시작하도록 함-->			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="500" > 
+				<transition state="2페이즈복격진행_안내메시지출력" />  <!-- 안내 메시지 5~6초 정도 출력후 다시 "졸구간진행체크중" 으로 되돌아 가는 구조임-->	
+			</condition>				
+
+	</state>  	
+
+
+	<state name="오른쪽지점보스방가는포탈생성"> <!-- 2페이즈 보스전투 본격 시작하는 포탈 생성-->	
+		<onEnter>
+			<action name="SetUserValue" key="TriggerMesh23"  value="-1" /> <!-- 이 변수 -1 하여 무한루프에 빠지지 않게 함 -->
+			<action name="포탈을설정한다" arg1="338" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 오른쪽 졸구간 포탈 생성-->				
+			<action name="SetAiExtraData" key="TwoPhaseMainBattle" value="1" />	<!-- AI_TurkaHoodForce_Phase02.xml 에 있는 TwoPhaseMainBattle 변수에 1 설정해서 보스가 본격 2페이지 전투 시작하도록 함-->			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="500" >  
+				<transition state="2페이즈복격진행_안내메시지출력" />  <!-- 안내 메시지 5~6초 정도 출력후 다시 "졸구간진행체크중" 으로 되돌아 가는 구조임-->	
+			</condition>				
+
+	</state>  	
+
+
+
+   <state name="2페이즈복격진행_안내메시지출력">  <!--   졸구간 정상 클리어하고 출력되는 메시지,   참고로 이 안내메시지 출력은     main.xml    2PhasePlayerCheck.xml  두 트리거에 설정되어있음  -->	
+    <onEnter>
+		<action name="스킬을설정한다" arg1="91" arg2="1" /> <!-- CubeBreak ,  MS2TriggerSkill = 91 스킬코드 70000105(레벨1) 발동시켜 마법구슬 지점에 계단을 막고 있는 큐브 제거함 -->			
+		
+		<!-- 안내 메시지 호출하기, 메시지 글씨 작성 엑셀파일은 여기 stringGuide.xlsx   -->
+		<action name="ShowGuideSummary" entityID="29200003" textID="29200003"/> 
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="6500" >  <!-- 안내 메시지 5~6초 정도 출력후 다시 "졸구간진행체크중" 으로 되돌아가기-->	
+			<transition state="졸구간진행체크중"/>	
+		</condition>	
+	
+    <onExit>
+		<action name="HideGuideSummary" entityID="29200003"/>
+    </onExit>
+  </state>
+
+
+	<state name="모든졸구간지형과포탈생성">
+		<onEnter>
+			<action name="SetUserValue" key="2PhaseStartOk"  value="-1" /> <!-- 이 변수 -1 하여 무한루프에 빠지지 않게 함 -->
+
+			<!-- 보스가 본격 2페이즈 전투 시작하면 모든 지형 생성하기
+			<action name="메쉬를설정한다" arg1="10001-10349" arg2="1" arg3="1" arg4="1" arg5="0.5" />	
+			<action name="메쉬를설정한다" arg1="15001-15467" arg2="1" arg3="1" arg4="1" arg5="0.5" />	
+
+			<action name="메쉬를설정한다" arg1="20001-20215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	
+			<action name="메쉬를설정한다" arg1="23001-23215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	
+			<action name="메쉬를설정한다" arg1="26001-26215" arg2="1" arg3="1" arg4="1" arg5="0.5" />	
+
+			<action name="메쉬를설정한다" arg1="30001-30413" arg2="1" arg3="1" arg4="1" arg5="0.5" />	
+			<action name="메쉬를설정한다" arg1="35001-35402" arg2="1" arg3="1" arg4="1" arg5="0.5" />	 -->
+			
+			
+			<action name="포탈을설정한다" arg1="118" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 왼쪽 졸구간 진입 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="128" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 가운데 졸구간 진입 포탈 생성-->		
+			<action name="포탈을설정한다" arg1="138" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 오른쪽 졸구간 진입 포탈 생성-->		
+			<action name="포탈을설정한다" arg1="218" arg2="1" arg3="1" arg4="1"/> <!--두번째 왼쪽 졸구간 포탈 생성-->							
+			<action name="포탈을설정한다" arg1="228" arg2="1" arg3="1" arg4="1"/> <!--두번째 가운데 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="328" arg2="1" arg3="1" arg4="1"/> <!--세번째 왼쪽 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="238" arg2="1" arg3="1" arg4="1"/> <!--두번째 오른쪽 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="318" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 왼쪽 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="428" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 가운데 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="338" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 오른쪽 졸구간 포탈 생성-->		
+
+			<!-- 그리고 졸 몬스터 전부 제거하기,   <state name="이맵에서진행끝내고다음맵으로이동">  이 부분에도 같은 졸몹 제거 설정 하였음 -->
+			<action name="몬스터소멸시킨다" arg1="1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115,2101,2102,2103,2104,2105,2106,2107,2108,2109,2110,2111,2112,2113,2114,2115,2116,2117,2118,2119,2120"/>
+			<action name="몬스터소멸시킨다" arg1="1201,1202,1203,1204,1205,2201,2202,2203,2204,2205,3201,3202,3203,3204,3205"/>
+			<action name="몬스터소멸시킨다" arg1="1301,1302,1303,1304,1305,1306,1307,1308,1309,1310,1311,1312,1313,2301,2302,2303,2304,2305,2306,2307,2308,2309,2310,2311,2312,2313,2314,2315"/>
+			
+		</onEnter>
+		
+			<condition name="WaitTick"  waitTick="800" > 
+				<transition state="졸구간진행체크중" />
+			</condition>				
+
+	</state>  	
+
+	<state name="이맵에서진행끝내고다음맵으로이동">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="599" arg2="1" arg3="1" arg4="1"/> <!-- 세번째페이즈 진행하는 다음 맵으로 이동시키기, 2페이지 전투판에 위치한 포탈 -->			
+			<action name="포탈을설정한다" arg1="598" arg2="1" arg3="1" arg4="1"/> <!-- 최초 시작 지점에 바로 2페이지 메인 전투판으로 포내는 포탈 생성하기, 참고로 포탈 arg1="598" 과 arg1="108"은 스타팅 포인트 같은 좌표에 있음 -->			
+			
+			<action name="포탈을설정한다" arg1="108" arg2="0" arg3="0" arg4="0"/> <!-- 세번째페이즈 넘어가야 하는 상황이 되면, 최초 시작 지점에서 1페이즈 전투판으로 가는 포탈 다시 감추기, 108: 스타팅 지점에서 1페이지 전투판 근처로 도착-->	
+
+			<!-- 졸구간 진행 중 보스한테 잡힌 플레이어가 보스를 처치하는 경우도 있기 때문에 최종 마지막 단계에서 무조건 모든 포탈 생성 설정 다시한번 넣기-->
+			<action name="포탈을설정한다" arg1="118" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 왼쪽 졸구간 진입 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="128" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 가운데 졸구간 진입 포탈 생성-->		
+			<action name="포탈을설정한다" arg1="138" arg2="1" arg3="1" arg4="1"/> <!-- 첫번째 오른쪽 졸구간 진입 포탈 생성-->		
+			<action name="포탈을설정한다" arg1="218" arg2="1" arg3="1" arg4="1"/> <!--두번째 왼쪽 졸구간 포탈 생성-->							
+			<action name="포탈을설정한다" arg1="228" arg2="1" arg3="1" arg4="1"/> <!--두번째 가운데 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="328" arg2="1" arg3="1" arg4="1"/> <!--세번째 왼쪽 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="238" arg2="1" arg3="1" arg4="1"/> <!--두번째 오른쪽 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="318" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 왼쪽 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="428" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 가운데 졸구간 포탈 생성-->				
+			<action name="포탈을설정한다" arg1="338" arg2="1" arg3="1" arg4="1"/> <!-- 보스 전투판으로 가는 오른쪽 졸구간 포탈 생성-->		
+
+			<action name="사운드를설정한다" arg1="140140" arg2="1" /> <!-- 이 맵에서 전투 끝났으니, 보스BGM끄고 일반BGM이 나오게 하기,  TimeCheck.xml 트리거에서도 같은 BGM 교체 트리거 사용함 --> 		
+
+
+			<!-- 졸 몬스터 전부 제거하기, 졸구간 클리어 없이 바로 보스 HP 1% 이하로 만드는 경우도 있어서 부부분 다시 선언함,  <state name="모든졸구간지형과포탈생성"> 에도 같은 졸몹 제거 설정 하였음 -->
+			<action name="몬스터소멸시킨다" arg1="1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115,2101,2102,2103,2104,2105,2106,2107,2108,2109,2110,2111,2112,2113,2114,2115,2116,2117,2118,2119,2120"/>
+			<action name="몬스터소멸시킨다" arg1="1201,1202,1203,1204,1205,2201,2202,2203,2204,2205,3201,3202,3203,3204,3205"/>
+			<action name="몬스터소멸시킨다" arg1="1301,1302,1303,1304,1305,1306,1307,1308,1309,1310,1311,1312,1313,2301,2302,2303,2304,2305,2306,2307,2308,2309,2310,2311,2312,2313,2314,2315"/>
+			
+		</onEnter>
+		
+			<condition name="WaitTick"  waitTick="9000" >  <!-- 보스의 맵 파괴 연출 동작이 끝날때까지 여기서 9~10초 정도 waitTick 해야함 -->	
+				<transition state="종료안내메시지_대기" />
+			</condition>				
+
+
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>		
+			
+	</state>  	
+	
+	
+	<state name="종료안내메시지_대기">
+		<onEnter>
+		</onEnter>
+
+		<condition name="유저를감지했으면" arg1="97"> <!--   MS2TriggerBox   TriggerObjectID = 97, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        97는 2페이지 전투판만 커버하는 범위-->
+			<transition state="종료안내메시지"/>
+		</condition>	
+	</state>  	
+	
+	
+	<state name="종료안내메시지">		
+		<onEnter>
+
+			<action name="스킬을설정한다" arg1="92" arg2="1" /> <!-- 보스가 맵 파괴 스킬 사용하기는 하나, 혹시 몰라서 맵 스킬쪽에서도 한번 더 파괴 행동을 함  CubeBreak ,  MS2TriggerSkill = 92 스킬코드 70000105(레벨2) 발동시켜 바닥 파괴하여, 맵 02020142 으로 갈수 있도록 하기 -->			
+			
+			<action name="몬스터소멸시킨다" arg1="all" />		
+			<!-- 안내 메시지 호출하기, 메시지 글씨 작성 엑셀파일은 여기 stringGuide.xlsx   -->
+			<action name="ShowGuideSummary" entityID="29200004" textID="29200004"/> 			
+		</onEnter>	
+
+		<condition name="WaitTick" waitTick="15500" >  <!-- 안내 메시지 15~16초 정도 출력후 다시 "종료_메시지대기" 단계로 돌아가기-->	
+			<transition state="종료_메시지대기"/>	
+		</condition>	
+		
+		<onExit>
+			<action name="HideGuideSummary" entityID="29200004"/>
+		</onExit>		
+	
+	</state>  		
+	
+	
+	
+	<state name="종료_메시지대기">		
+		<onEnter>
+		</onEnter>	
+		
+			<condition name="WaitTick" waitTick="3000" >  
+				<transition state="종료안내메시지_다시출력_대기"/>	
+			</condition>		
+
+
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>		
+			
+		<onExit>
+
+		</onExit>		
+	
+	</state>  		
+
+
+	<state name="종료안내메시지_다시출력_대기">
+		<onEnter>
+		</onEnter>
+
+		<condition name="유저를감지했으면" arg1="97"> <!--   MS2TriggerBox   TriggerObjectID = 97, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        97는 2페이지 전투판만 커버하는 범위-->
+			<transition state="종료안내메시지_다시출력"/>
+		</condition>	
+	</state>  	
+	
+
+	<state name="종료안내메시지_다시출력">		
+		<onEnter>	
+			<!-- 안내 메시지 호출하기, 메시지 글씨 작성 엑셀파일은 여기 stringGuide.xlsx   -->
+			<action name="ShowGuideSummary" entityID="29200004" textID="29200004"/> 			
+		</onEnter>	
+
+			<condition name="WaitTick" waitTick="15500" >  <!-- 안내 메시지 15~16초 정도 출력후 다시 "종료_메시지대기" 단계로 돌아가기-->	
+				<transition state="종료_메시지대기"/>	
+			</condition>	
+
+
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>	
+			
+		<onExit>
+			<action name="HideGuideSummary" entityID="29200004"/>
+		</onExit>		
+	
+	</state>  		
+	
+	
+	
+	 <state name="던전실패">
+		<onEnter> 
+			<action name="DungeonSetEndTime" />  <!--시간 기능 종료시킴, 이 기능 잘 작동시키려면 DungeonRoom.xlsx 의 제한 시간 만료 시(isExpireTimeOut) 빈칸 설정 해야 함  -->		
+			<action name="DungeonCloseTimer" />			
+		
+			<action name="몬스터소멸시킨다" arg1="all" />		
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>	<!-- 나가기 포탈 생성하기, 졸구간 전투판에서 나가기 포탈 -->	
+		
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="500" > 
+
+					<action name="DungeonFail" /> 
+					<transition state="종료" />
+				</condition>
+	</state> 	
+	
+  
+	<state name="종료">
+		<onEnter> 
+			<action name="DungeonEnableGiveUp" isEnable="0" />		
+		</onEnter>		
+	</state>	
+	
+</ms2>

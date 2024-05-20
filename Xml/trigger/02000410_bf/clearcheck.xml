@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  9996  -->
+  <!--  이 트리거는 던전 시간 15분 다 되어서 클리어 처리 그리고 파티원 전멸 될때  파티장이 던전 포기하는 경우에 처리 하는 용도임 -->
+<ms2>
+
+ <state name="Ready">
+    <onEnter>
+
+    </onEnter>
+
+		<condition name="여러명의유저를감지했으면" arg1="750" arg2="1"> <!--   MS2TriggerBox   TriggerObjectID = 750, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면, 750은 스타팅 지점 전투판 다  포함되는 범위, 700은 전투판만 포함되는 범위-->
+				<transition state="전투시작"/>
+		</condition>
+
+    <onExit>
+
+    </onExit>
+  </state>
+
+ <state name="전투시작">
+    <onEnter>
+
+    </onEnter>
+
+		<!-- 전투 진행 7분이 지나거나 인페르녹이 등장하면 ResurrectionProhibition.xml 트리거에서 부활불가 설정을 하는데 여기에 맞춰서 파티절멸체크하여 실패처리 해야 함-->
+
+		<condition name="DungeonCheckPlayTime" playSeconds="420"> <!--  플레이 시간이 7분 되면, 전멸체크 로직 부분으로 넘어가기 -->
+			<transition state="지금부터파티전멸체크" />
+		</condition>
+
+		<condition name="UserValue" key="ThirdPhase" value="1">  <!-- 2페이즈 전투 다 끝나고 , 파괴되어진 AI_AirshipBalrogCrimsonBroken.xml 인페르녹 전함에게   ThirdPhase = 1 신호를 받을때까지 여기서 대기, 즉 AI_AirshipBalrogCrimsonBroken.xml 에서 보냄-->
+
+			<transition state="지금부터파티전멸체크" />
+
+		</condition>
+
+		<condition name="DungeonCheckState" checkState="Fail"><!--파티장이 던전을 포기해서 실패한 경우-->
+			<transition state="던전포기" />
+		</condition>
+
+    <onExit>
+
+    </onExit>
+  </state>
+
+
+   <state name="지금부터파티전멸체크">
+    <onEnter>
+
+    </onEnter>
+
+		 <!-- 인페르녹 등장 이후에 모든 플레이어가 비석 상태가 되거나 맵 밖으로 나가서 맵 안에 활성화 상태의 유저가 없다는  던전실패 처리-->
+		<condition name="!유저를감지했으면" arg1="700"> <!--   MS2TriggerBox   TriggerObjectID = 700 , 이 트리거 박스 안에 플레이어가 한명도 없다면, 700은 전투판만 포함되는 범위, 750은 스타팅 지점 전투판 다  포함되는 범위-->
+			<transition state="전멸던전실패연출01"/>  <!--   MS2TriggerBox   TriggerObjectID = 700 ,  꼭 700 번을 사용해야 함, 실수로 750 설정하면 대박 버그임-->
+		</condition>
+
+
+		<condition name="DungeonCheckState" checkState="Fail"><!--파티장이 던전을 포기해서 실패한 경우-->
+			<transition state="던전포기" />
+		</condition>
+
+		<condition name="DungeonCheckPlayTime" playSeconds="900"> <!--  플레이 시간이 15분 다 됬으면 던전 클리어 처리하기 -->
+			<transition state="15분완료" />
+		</condition>
+
+    <onExit>
+    </onExit>
+  </state>
+
+
+   <state name="던전포기">
+    <onEnter>
+		<action name="몬스터소멸시킨다" arg1="all" /> <!-- 던전 포기 버튼 누르면 바로 몬스터 제거하기 -->
+    </onEnter>
+
+			<condition name="WaitTick" waitTick="1000" >
+				<transition state="전멸던전실패연출01"/>
+			</condition>
+
+    <onExit>
+    </onExit>
+  </state>
+
+
+	<state name="전멸던전실패연출01">
+		<onEnter>
+			<!-- ## 실패연출 설정 작업은 여기서 정의함-->
+ 		<action name="SideNpcTalk" npcID="11000144" illust="tristan_normal" duration="4000" script="$02000410_BF__ClearCheck__0$" voice="ko/Npc/00002171"/>
+
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000" >
+				<transition state="전멸던전실패연출02"/>
+			</condition>
+
+		<onExit>
+
+		</onExit>
+	</state>
+
+	<state name="전멸던전실패연출02">
+		<onEnter>
+			<!-- ## 실패연출 설정 작업은 여기서 정의함-->
+ 		<action name="SideNpcTalk" npcID="11003533" illust="Bliche_nomal" duration="4000" script="$02000410_BF__ClearCheck__1$" voice="ko/Npc/00002156"/>
+
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000" >
+				<transition state="전멸던전실패"/>
+			</condition>
+
+		<onExit>
+
+		</onExit>
+	</state>
+
+	<state name="전멸던전실패"> <!--  TriggerObjectID = 700  즉 전투판에 활성화 상태의 플레이어가 없을 경우의 던전실패 처리 -->
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="all" />
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="2000" >
+				<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>   <!--	던전 나가기 위한 포탈 생성,   arg1="1" 은 포탈ID, 전투판에 있는 포탈  -->
+				<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>   <!--	던전 나가기 위한 포탈 생성,   arg1="2" 은 포탈ID, 안전 부활 지점에 있는 포탈  -->
+
+				<action name="DungeonFail" />
+				<transition state="종료" />
+			</condition>
+
+
+		<onExit>
+		</onExit>
+	</state>
+
+
+
+	<state name="15분완료">
+		<onEnter>
+			<action feature="DungeonRankBalance_01" name="DungeonMissionComplete" missionID="24090003"/>	<!-- ## 한국용 던전랭크 코드: 15분 경과시 던전랭크 체크하기 위한 신호-->
+			<action feature="DungeonRankBalance_02" name="DungeonMissionComplete" missionID="24090013"/>    <!-- ## 중국용 던전랭크 코드: 15분 경과시 던전랭크 체크하기 위한 신호-->
+		</onEnter>
+			<!-- 인페르녹 보스 스폰ID : 102 의 몬스터가 지금까지 받은 대미지가 HP 기준 대비 100% 이상이면 던전 클리어 처리-->
+			<condition name="CheckNpcDamage" spawnPointID="102" damageRate="1.0" operator="GreaterEqual">
+				<transition state="성공연출시작" />
+			</condition>
+
+			<!-- 인페르녹 보스 스폰ID : 102 의 몬스터가 지금까지 받은 대미지가 HP 기준 대비 100%보다 적으면 던전 실패 처리-->
+			<condition name="CheckNpcDamage" spawnPointID="102" damageRate="1.0" operator="Less"> <!-- 인페르녹 보스 스폰ID : 102 -->
+				<transition state="실패연출시작" />
+			</condition>
+
+		<!--	condition name="CheckNpcDamage"   파라미터 기능 설명
+
+					spawnPointID: 체크할 NPC스폰포인트ID 스포너 안에 여러 NPC가 있을 경우 맨 첫 NPC를 체크합니다.
+					damageRate: 누적 대미지 기준 값 1.0 일경우 해당 npc의 maxHP 0.5의 경우 50%
+					operator: 연산자 기준 입니다 생략시 해당 값 이상 (GreaterEqual 이며) 다음 옵션을 사용 가능합니다.
+					Greater, GreaterEqual, Equal, LessEqual, Less, -->
+		<onExit>
+		</onExit>
+
+	</state>
+
+   <state name="성공연출시작">
+    <onEnter>
+		<action name="SetAiExtraData" key="EventClear" value="1" />		<!--  여기서는 인페르녹 보스 소멸 시키지 말고, AI쪽으로 EventClear = 1 신호 보내서 던전성공 이벤트 연출용도 NPC로 교체하고 본인 자신은 퇴장하도록 설정함 -->
+
+		<!-- 다섯번째팝업영상출력 -->
+		<action name="SideNpcTalk" npcID="11003536" illust="Neirin_normal" duration="3000" script="$02000410_BF__ClearCheck__2$" voice="ko/Npc/00002182"/>
+
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="성공연출01" />
+		</condition>
+
+
+    <onExit>
+    </onExit>
+  </state>
+
+   <state name="성공연출01">
+    <onEnter>
+
+		<!-- 다섯번째팝업영상출력 -->
+		<action name="SideNpcTalk" type="movie" usm="Common/WorldInvasionScene5.usm" duration="0"/>  <!-- duration="0" 은 영상 끝날때까지 계속 출력 -->
+		<action name="SideNpcTalk" npcID="11003533" illust="Bliche_nomal" duration="8000" script="$02000410_BF__ClearCheck__3$" voice="ko/Npc/00002177"/>
+
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="10000" >
+			<transition state="성공연출02_pre" />
+		</condition>
+
+
+    <onExit>
+    </onExit>
+  </state>
+
+   <state name="성공연출02_pre">
+    <onEnter>
+
+		<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="성공연출02" />
+		</condition>
+
+
+    <onExit>
+    </onExit>
+  </state>
+
+	<state name="성공연출02" >
+        <onEnter>
+			<action name="CreateWidget" arg1="SceneMovie"/>
+			<action name="WidgetAction" arg1="SceneMovie" arg2="Clear"/>
+			<action name="PlaySceneMovie" fileName="common\WorldInvasionScene6.usm" movieID='1' skipType="needAll"/>
+        </onEnter>
+			<condition name="WidgetCondition" arg1="SceneMovie" arg2="IsStop" arg3="1">
+				<transition state="최종성공처리"/>
+			</condition>
+			<condition name="WaitTick" waitTick="10000">
+				<transition state="최종성공처리"/>
+			</condition>
+		<onExit>
+
+		</onExit>
+    </state>
+
+   <state name="실패연출시작">
+    <onEnter>
+		<action name="SetAiExtraData" key="EventLeave" value="1" />		<!--  여기서는 인페르녹 보스 소멸 시키지 말고, AI쪽으로 EventLeave = 1 신호 보내서 던전실패 이벤트 연출용도 NPC로 교체하고 본인 자신은 퇴장하도록 설정함 -->
+		<!-- 다섯번째팝업영상출력 -->
+		<action name="SideNpcTalk" npcID="11003536" illust="Neirin_normal" duration="3000" script="$02000410_BF__ClearCheck__4$" voice=""/>
+
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="실패연출01" />
+		</condition>
+
+
+    <onExit>
+    </onExit>
+  </state>
+
+   <state name="실패연출01">
+    <onEnter>
+
+		<!-- 다섯번째팝업영상출력 -->
+		<action name="SideNpcTalk" type="movie" usm="Common/WorldInvasionScene5.usm" duration="0"/>  <!-- duration="0" 은 영상 끝날때까지 계속 출력 -->
+		<action name="SideNpcTalk" npcID="11003533" illust="Bliche_nomal" duration="8000" script="$02000410_BF__ClearCheck__5$" voice=""/>
+
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="10000" >
+			<transition state="실패연출02" />
+		</condition>
+
+
+    <onExit>
+    </onExit>
+  </state>
+
+	<state name="실패연출02">
+		<onEnter>
+			<!-- ## 실패연출 설정 작업은 여기서 정의함-->
+ 		<action name="SideNpcTalk" npcID="11003795" illust="infernog_nomal" duration="4000" script="$02000410_BF__ClearCheck__6$" voice="ko/Monster/60000722"/>
+
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000" >
+				<transition state="실패연출03"/>
+			</condition>
+
+		<onExit>
+
+		</onExit>
+	</state>
+
+	<state name="실패연출03">
+		<onEnter>
+			<!-- ## 실패연출 설정 작업은 여기서 정의함-->
+ 		<action name="SideNpcTalk" npcID="11003795" illust="infernog_nomal" duration="4000" script="$02000410_BF__ClearCheck__7$" voice="ko/Monster/60000723"/>
+
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000" >
+				<transition state="실패연출05"/>
+			</condition>
+
+		<onExit>
+
+		</onExit>
+	</state>
+
+	<state name="실패연출05">
+		<onEnter>
+			<!-- ## 실패연출 설정 작업은 여기서 정의함-->
+ 		<action name="SideNpcTalk" npcID="11003536" illust="Neirin_surprise" duration="4000" script="$02000410_BF__ClearCheck__8$" voice="ko/Npc/00002165"/>
+
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000" >
+				<transition state="실패연출06"/>
+			</condition>
+
+		<onExit>
+
+		</onExit>
+	</state>
+
+	<state name="실패연출06">
+		<onEnter>
+			<!-- ## 실패연출 설정 작업은 여기서 정의함-->
+ 		<action name="SideNpcTalk" npcID="11003533" illust="Bliche_closeEye" duration="4000" script="$02000410_BF__ClearCheck__9$" voice="ko/Npc/00002155"/>
+
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000" >
+				<transition state="최종실패처리"/>
+			</condition>
+
+		<onExit>
+
+		</onExit>
+	</state>
+
+	<state name="최종성공처리">
+		<onEnter>
+
+			<!-- 던전성공처리-->
+			<action name="몬스터소멸시킨다" arg1="all" />		<!-- 대포하고 12시 방향의 파괴 직전의 인페르녹 전함 제거함-->
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<!-- arg3="ClearBalrogMagicBurster" 는 achieve.xlsx 의 코드 21230095 던전 클리어 조건 트로피 설정에 넣는 데이터임  -->
+			<action name="업적이벤트를발생시킨다" arg1="750" arg2="trigger" arg3="infernogout"/>
+			<action name="업적이벤트를발생시킨다" arg1="750" arg2="trigger" arg3="ClearBalrogMagicBurster"/>
+			<!--    arg1="750"는 MS2TriggerBox   TriggerObjectID = 750  이것으로 02000410 맵에 트리거 박스가 2개 있는데(700, 750)  750이 안전부활 장소까지 포함되는 범위라서 이거 사용함-->
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>   <!--	던전 나가기 위한 포탈 생성,   arg1="1" 은 포탈ID, 전투판에 있는 포탈  -->
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>   <!--	던전 나가기 위한 포탈 생성,   arg1="2" 은 포탈ID, 안전 부활 지점에 있는 포탈  -->
+			<action name="DungeonClear" />  <!-- 던전성공-->
+
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="종료" />
+			</condition>
+
+		<onExit>
+		</onExit>
+
+	</state>
+
+
+	<state name="최종실패처리">
+		<onEnter>
+
+			<!-- 던전실패처리-->
+			<action name="몬스터소멸시킨다" arg1="all" />		<!-- 대포하고 12시 방향의 파괴 직전의 인페르녹 전함 제거함-->
+			<action name="업적이벤트를발생시킨다" arg1="750" arg2="trigger" arg3="infernogout"/>
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>   <!--	던전 나가기 위한 포탈 생성,   arg1="1" 은 포탈ID, 전투판에 있는 포탈  -->
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>   <!--	던전 나가기 위한 포탈 생성,   arg1="2" 은 포탈ID, 안전 부활 지점에 있는 포탈  -->
+			<action name="DungeonFail" /> <!-- 던전실패-->
+
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="2000" >
+				<transition state="종료" />
+			</condition>
+
+		<onExit>
+		</onExit>
+
+	</state>
+
+
+	<state name="종료">
+		<onEnter>
+			<action name="DungeonEnableGiveUp" isEnable="0" />
+		</onEnter>
+	</state>
+
+
+</ms2>

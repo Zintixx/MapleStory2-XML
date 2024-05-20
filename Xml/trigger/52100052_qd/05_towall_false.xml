@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Wait">
+        <onEnter>					
+			<action name="오브젝트반응설정한다" arg1="10002085" arg2="0" />	<!-- ToWall_False -->			
+			<action name="SetUserValue" key="ToWallFalse" value="0" />		
+			<action name="SetUserValue" key="AnotherGuide" value="0" />	
+        </onEnter>	
+				<condition name="UserValue" key="ToWallFalse" value="1" >		
+			<transition state="ToWallFalse"/>	
+		</condition> 
+		<onExit>
+		</onExit>		
+	</state>	
+
+    <state name="ToWallFalse">	
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10002085" arg2="1" />	<!-- ToWall_False -->				
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10002085" arg2="0" >
+					<transition state="NoticeDelay"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>		
+
+   <state name="NoticeDelay" >	
+        <onEnter>	
+			<action name="SetUserValue" triggerID="6" key="AnotherGuide" value="1" /> 	
+			<action name="SetUserValue" triggerID="7" key="AnotherGuide" value="1" /> 				
+        </onEnter>
+				<condition name="WaitTick" waitTick="500">		
+					<transition state="NoticeOn"/>		
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+	
+    <state name="NoticeOn">	
+        <onEnter>	
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>       		
+			<action name="ShowGuideSummary" entityID="20039603" textID="20039603"/>  <!-- 가이드 : 커튼 너머는 창살로 막혀 있습니다. -->		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="3000">		
+					<transition state="CloseGuide02"/>		
+				</condition>					
+				<condition name="UserValue" key="AnotherGuide" value="1" >		
+			<transition state="CloseGuide01"/>	
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+
+   <state name="CloseGuide01" >	
+        <onEnter>	
+        </onEnter>
+				<condition name="WaitTick" waitTick="300">		
+					<transition state="CloseGuide02"/>		
+				</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+
+   <state name="CloseGuide02" >	
+        <onEnter>	
+			<action name="HideGuideSummary" entityID="20039603"/>		
+			<action name="SetUserValue" triggerID="6" key="AnotherGuide" value="0" /> 	
+			<action name="SetUserValue" triggerID="7" key="AnotherGuide" value="0" /> 					
+        </onEnter>	
+        <onExit>
+        </onExit>
+    </state>	
+</ms2>

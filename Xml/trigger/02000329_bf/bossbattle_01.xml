@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- trigger model = 999999101 -->
+<ms2>
+  <state name="대기">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="611" arg2="0" />
+			<action name="오브젝트반응설정한다" arg1="10000759" arg2="2"/>
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />
+			<action name="액터를설정한다" arg1="211" arg2="1" arg3="Closed" />	
+			<action name="몬스터를생성한다" arg1="1011,1012,1013,1014,1015,1016,1017,1018" arg2="0" />
+			<action name="이펙트를설정한다" arg1="6811" arg2="0" />
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="5001">
+				<transition state="보스소환"/>
+			</condition>	
+			<condition name="몬스터가죽어있으면" arg1="5001,5002">
+				<transition state="닭장열기"/>
+			</condition>			
+    <onExit>
+	</onExit>
+  </state>  
+     
+  <state name="보스소환">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/> 
+			<action name="ShowGuideSummary" entityID="109" textID="20000070"/> <!-- 보스를 처치하세요! -->
+<!-- 			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3" arg2="$02000329_BF__BOSSBATTLE_01__0$" />
+			<action name="타이머를설정한다" arg1="3" arg2="3" /> -->
+			<action name="스킵을설정한다" arg1="보스전투시작" />
+		</onEnter>		
+			<condition name="몬스터가죽어있으면" arg1="5001,5002">
+				<transition state="닭장열기"/>
+			</condition>		
+			<condition name="시간이경과했으면" arg1="3">
+				<transition state="보스전투시작"/>
+			</condition>		
+    <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+    </onExit>
+  </state>  
+ 
+    <state name="보스전투시작">
+		<onEnter>
+
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="5001,5002">
+				<transition state="닭장열기"/>
+			</condition>		
+    <onExit>
+		<action name="HideGuideSummary" entityID="109"/>
+    </onExit>
+  </state>  
+ 
+  <state name="닭장열기">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="611" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="10000759" arg2="1"/>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/> 
+			<action name="ShowGuideSummary" entityID="103" textID="20000050"/> <!-- 닭장을 여세요 -->	
+			<!-- <action name="이벤트UI를설정한다" arg1="1" arg2="$02000329_BF__BOSSBATTLE_01__2$" arg3="3000" /> -->
+			<action name="타이머를설정한다" arg1="3" arg2="3" />
+		</onEnter>		
+			<condition name="오브젝트가반응했으면" arg1="10000759" arg2="0">
+            <transition state="보스전투끝" />
+			</condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="103"/>		
+    </onExit>
+  </state>    
+ 
+  
+  <state name="보스전투끝">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="611" arg2="0" />
+			<action name="이펙트를설정한다" arg1="6811" arg2="1" />
+			<action name="타이머를설정한다" arg1="6" arg2="6" />
+			<action name="타이머를설정한다" arg1="2" arg2="2" />
+			<action name="액터를설정한다" arg1="211" arg2="1" arg3="Opened" />	
+		</onEnter>		
+	<condition name="시간이경과했으면" arg1="2">
+	<transition state="닭장오픈"/>
+	</condition>
+    <onExit>
+			<action name="업적이벤트를발생시킨다" arg1="106" arg2="trigger" arg3="ClearSavetheChicken"/>   <!-- ClearSavetheChicken 퀘스트 --> 		
+    </onExit>
+  </state>    
+
+  
+    <state name="닭장오픈">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/> 
+			<action name="DungeonClear" /> 
+			<action name="NPC를이동시킨다" arg1="1011" arg2="MS2PatrolData_1010" />
+			<action name="NPC를이동시킨다" arg1="1012" arg2="MS2PatrolData_1009" />
+			<action name="NPC를이동시킨다" arg1="1013" arg2="MS2PatrolData_1008" />
+			<action name="NPC를이동시킨다" arg1="1014" arg2="MS2PatrolData_1007" />
+			<action name="NPC를이동시킨다" arg1="1015" arg2="MS2PatrolData_1006" />
+			<action name="NPC를이동시킨다" arg1="1016" arg2="MS2PatrolData_1005" />
+			<action name="NPC를이동시킨다" arg1="1017" arg2="MS2PatrolData_1004" />
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" />
+		</onEnter>		
+    <onExit>
+    </onExit>
+  </state>  
+  
+  
+
+ </ms2>
+
+ 

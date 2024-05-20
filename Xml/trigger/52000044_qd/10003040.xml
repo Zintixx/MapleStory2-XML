@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+ 
+	<state name="대기">
+        <onEnter>
+		    <action name="오브젝트반응설정한다" arg1="10000390" arg2="0" />
+			<action name="이펙트를설정한다" arg1="601" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="602" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1001" arg2="0"/> 
+        </onEnter>	
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="10003042" arg3="1" >
+				<action name="몬스터소멸시킨다" arg1="1001" />
+				<action name="몬스터를생성한다" arg1="1003" arg2="0"/>
+			<transition state="오브젝트반응대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="10003041" arg3="3" >
+				<action name="몬스터소멸시킨다" arg1="1001" />
+				<action name="몬스터를생성한다" arg1="1003" arg2="0"/>
+				<transition state="오브젝트반응조건" />
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="10003041" arg3="2" >
+				<action name="몬스터소멸시킨다" arg1="1001" />
+				<action name="몬스터를생성한다" arg1="1003" arg2="0"/>
+				<transition state="오브젝트반응조건" />
+			</condition>
+		    <condition name="퀘스트유저를감지하면" arg1="103" arg2="10003041" arg3="1" >
+				<transition state="연출시작02"/>
+			</condition>	
+		    <condition name="퀘스트유저를감지하면" arg1="199" arg2="10003041" arg3="1" >
+				<transition state="연출시작"/>
+			</condition>		
+    </state>
+
+
+	<state name="연출시작">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라를선택한다" arg1="301" arg2="1"/>		
+            <action name="몬스터소멸시킨다" arg1="1001" />
+			<action name="몬스터를생성한다" arg1="1002" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="602" arg2="1" />
+			<action name="몬스터를생성한다" arg1="2001,2002,2003,2004,2005" arg2="0"/> 					
+        </onEnter>	
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="말풍선대사01" />
+			</condition>
+    </state>
+
+	<state name="연출시작02">
+        <onEnter>		
+            <action name="몬스터소멸시킨다" arg1="1001" />
+			<action name="몬스터를생성한다" arg1="1002" arg2="0"/>
+			<action name="이펙트를설정한다" arg1 ="602" arg2="1" />
+			<action name="몬스터를생성한다" arg1="2001,2002,2003,2004,2005" arg2="0"/> 					
+        </onEnter>	
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="1차전투시작" />
+			</condition>
+    </state>	
+
+    <state name="말풍선대사01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="2001" arg3="$52000044_QD__10003040__0$" arg4="2" arg5="0" />  				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="말풍선대사02"/>
+				</condition>
+    </state>
+
+    <state name="말풍선대사02">
+		<onEnter>			
+			<action name="NPC를이동시킨다" arg1="2001" arg2="MS2PatrolData_2001"/>
+			<action name="NPC를이동시킨다" arg1="2002" arg2="MS2PatrolData_2002"/>
+			<action name="NPC를이동시킨다" arg1="2003" arg2="MS2PatrolData_2003"/>
+			<action name="NPC를이동시킨다" arg1="2004" arg2="MS2PatrolData_2004"/>
+			<action name="NPC를이동시킨다" arg1="2005" arg2="MS2PatrolData_2005"/>
+			<action name="대화를설정한다" arg1="1" arg2="2003" arg3="$52000044_QD__10003040__1$" arg4="2" arg5="0" />  
+		</onEnter>
+				<condition name="WaitTick" waitTick="1500">
+					<transition state="제이시대사01"/>
+				</condition>
+    </state>
+
+    <state name="제이시대사01">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11000515" arg3="$52000044_QD__10003040__2$" arg4="2" /> 
+			<action name="스킵을설정한다" arg1="제이시대사01스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="제이시대사02"/>
+				</condition>
+    </state>	
+
+    <state name="제이시대사01스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="제이시대사02"/>
+				</condition>
+    </state>	
+
+    <state name="제이시대사02">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="302" arg2="1"/>	
+			<action name="이펙트를설정한다" arg1="601" arg2="1"/>			
+			<action name="대화를설정한다" arg1="2" arg2="11000515" arg3="$52000044_QD__10003040__3$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="제이시대사02스킵"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="연출종료"/>
+				</condition>
+    </state>	
+
+    <state name="제이시대사02스킵">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="연출종료"/>
+				</condition>
+    </state>	
+
+    <state name="연출종료" > 
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			<action name="카메라를선택한다" arg1="302" arg2="0"/>	
+			<action name="이펙트를설정한다" arg1="601" arg2="0"/>		
+			<action name="NPC를이동시킨다" arg1="1002" arg2="MS2PatrolData_1002A"/>			
+		</onEnter>
+				<condition name="WaitTick" waitTick="100">
+					<transition state="1차전투시작"/>
+				</condition>
+    </state>	
+
+	<state name="1차전투시작">
+        <onEnter>
+            <action name="ShowGuideSummary" entityID="25200441" textID="25200441" durationTime="4000"/> 
+        </onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="2001,2002,2003,2004,2005">
+					<action name="NPC를이동시킨다" arg1="1002" arg2="MS2PatrolData_1002B"/>		
+					<transition state="2차전투시작" />
+				</condition>	
+    </state>
+
+	<state name="2차전투시작">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="2006" arg2="0"/>
+        </onEnter>	
+				<condition name="몬스터가죽어있으면" arg1="2006">
+					<action name="NPC를이동시킨다" arg1="1002" arg2="MS2PatrolData_1002C"/>	
+					<transition state="NPC감지대기" />
+				</condition>	
+    </state>
+
+	<state name="NPC감지대기">	
+			<condition name="NPC를감지했으면" arg1="102" arg2="1002" >
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="EscapewithJacy"/>
+			    <action name="몬스터소멸시킨다" arg1="1002" />
+				<action name="몬스터를생성한다" arg1="1003" arg2="0"/>
+				<transition state="오브젝트반응조건" />
+			</condition>
+    </state>
+
+	<state name="오브젝트반응조건">	
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="10003042" arg3="1" >
+				<transition state="오브젝트반응대기"/>
+			</condition>		
+    </state>
+
+  	<state name="오브젝트반응대기" posX="238" posY="311">
+		<onEnter>
+		    <action name="오브젝트반응설정한다" arg1="10000390" arg2="1" />
+        </onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000390" arg2="0">
+					<action name="유저를이동시킨다" arg1="52000045" arg2="1" />		
+					<transition state="종료" />
+				</condition>
+    </state>
+
+	<state name="종료">
+    </state>	
+
+</ms2>
+
+

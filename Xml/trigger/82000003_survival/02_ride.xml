@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+    <state name="Wait" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="7100,7200,7300,7400,7500,7600,7700,7800" arg2="0" />		<!-- MushBalloon Regen Sound -->				
+			<action name="이펙트를설정한다" arg1="5100,5200,5300,5400,5500,5600,5700,5800" arg2="0" />		<!-- MushBalloon Rise Sound -->		
+			<action name="이펙트를설정한다" arg1="6100,6200,6300,6400,6500,6600,6700,6800" arg2="0" />		<!-- MushBalloon Disappear Sound -->					
+			<action name="SetUserValue" key="SetRide" value="0" />
+			<action name="SetUserValue" key="StartPatrol" value="0" />					
+        </onEnter>	
+			<condition name="UserValue" key="SetRide" value="1">	<!-- North_To_South -->
+					<transition state="Ride01_Ready"/>
+				</condition> 		
+			<condition name="UserValue" key="SetRide" value="2">	<!-- South_To_North -->
+					<transition state="Ride02_Ready"/>
+				</condition> 		
+			<condition name="UserValue" key="SetRide" value="3">	<!-- East_To_West -->
+					<transition state="Ride03_Ready"/>
+				</condition> 		
+			<condition name="UserValue" key="SetRide" value="4">	<!-- West_To_East -->
+					<transition state="Ride04_Ready"/>
+				</condition> 				
+			<condition name="UserValue" key="SetRide" value="5">	<!-- NorthWest_To_SouthEast -->
+					<transition state="Ride05_Ready"/>
+				</condition> 		
+			<condition name="UserValue" key="SetRide" value="6">	<!-- NorthEast_To_SouthWest -->
+					<transition state="Ride06_Ready"/>
+				</condition> 		
+			<condition name="UserValue" key="SetRide" value="7">	<!-- SouthWest_To_NorthEast -->
+					<transition state="Ride07_Ready"/>
+				</condition> 		
+			<condition name="UserValue" key="SetRide" value="8">	<!-- SouthEast_To_NorthWest -->
+					<transition state="Ride08_Ready"/>
+				</condition> 						
+        <onExit>			
+        </onExit>
+    </state>
+
+
+<!-- North_To_South -->	
+    <state name="Ride01_Ready" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="7100" arg2="1" />		<!-- MushBalloon Regen Sound -->			
+			<action name="몬스터를생성한다" arg1="110" arg2="0"/>  	<!-- North_To_South -->		
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_01" /> <!--서바이벌 버스 로그 -->					
+        </onEnter>
+			<condition name="UserValue" key="StartPatrol" value="1">	
+					<transition state="Ride01_StartPatrolDelay"/>
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>
+    <state name="Ride01_StartPatrolDelay" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="5100" arg2="1" />		<!-- MushBalloon Rise Sound -->						
+			<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_111"/> 		
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Ride01_StartPatrol"/>	
+				</condition> 							
+        <onExit>		
+        </onExit>
+    </state>
+    <state name="Ride01_StartPatrol" >
+        <onEnter>
+			<action name="버프를걸어준다" arg1="110" arg2="70001081" arg3="1" arg4="1" arg5="0"/>  	<!-- MushBalloon Flying Loop Sound -->						
+			<action name="NPC를이동시킨다" arg1="110" arg2="MS2PatrolData_110"/>  	<!-- North_To_South -->					
+        </onEnter>
+				<condition name="WaitTick" waitTick="32000">    	
+					<transition state="Quit"/>	
+				</condition> 							
+        <onExit>
+			<action name="몬스터소멸시킨다" arg1="110" />  		
+			<action name="이펙트를설정한다" arg1="6100" arg2="1" />		<!-- MushBalloon Disappear Sound -->					
+        </onExit>
+    </state>
+		
+	
+<!-- South_To_North -->	
+    <state name="Ride02_Ready" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="7200" arg2="1" />		<!-- MushBalloon Regen Sound -->					
+			<action name="몬스터를생성한다" arg1="120" arg2="0"/>  	<!-- South_To_North -->	
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_02" /> <!--서바이벌 버스 로그 -->				
+        </onEnter>
+			<condition name="UserValue" key="StartPatrol" value="1">	
+					<transition state="Ride02_StartPatrolDelay"/>
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>
+    <state name="Ride02_StartPatrolDelay" >
+        <onEnter>			
+			<action name="이펙트를설정한다" arg1="5200" arg2="1" />		<!-- MushBalloon Rise Sound -->					
+			<action name="NPC를이동시킨다" arg1="120" arg2="MS2PatrolData_121"/>  		
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Ride02_StartPatrol"/>	
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>	
+    <state name="Ride02_StartPatrol" >
+        <onEnter>
+			<action name="버프를걸어준다" arg1="120" arg2="70001081" arg3="1" arg4="1" arg5="0"/>  	<!-- MushBalloon Flying Loop Sound -->					
+			<action name="NPC를이동시킨다" arg1="120" arg2="MS2PatrolData_120"/>  	<!-- South_To_North -->						
+        </onEnter>
+				<condition name="WaitTick" waitTick="32000">    	
+					<transition state="Quit"/>	
+				</condition> 							
+        <onExit>
+			<action name="몬스터소멸시킨다" arg1="120" />  		
+			<action name="이펙트를설정한다" arg1="6200" arg2="1" />		<!-- MushBalloon Disappear Sound -->							
+        </onExit>
+    </state>
+	
+	
+<!-- East_To_West -->	
+    <state name="Ride03_Ready" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="7300" arg2="1" />		<!-- MushBalloon Regen Sound -->				
+			<action name="몬스터를생성한다" arg1="130" arg2="0"/>  	<!-- East_To_West -->	
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_03" /> <!--서바이벌 버스 로그 -->				
+        </onEnter>
+			<condition name="UserValue" key="StartPatrol" value="1">	
+					<transition state="Ride03_StartPatrolDelay"/>
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>
+    <state name="Ride03_StartPatrolDelay" >
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="5300" arg2="1" />		<!-- MushBalloon Rise Sound -->					
+			<action name="NPC를이동시킨다" arg1="130" arg2="MS2PatrolData_131"/>  		
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Ride03_StartPatrol"/>	
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>		
+    <state name="Ride03_StartPatrol" >
+        <onEnter>
+			<action name="버프를걸어준다" arg1="130" arg2="70001081" arg3="1" arg4="1" arg5="0"/>  	<!-- MushBalloon Flying Loop Sound -->					
+			<action name="NPC를이동시킨다" arg1="130" arg2="MS2PatrolData_130"/>  	<!-- East_To_West -->							
+        </onEnter>
+				<condition name="WaitTick" waitTick="32000">    	
+					<transition state="Quit"/>	
+				</condition> 							
+        <onExit>
+			<action name="몬스터소멸시킨다" arg1="130" />  		
+			<action name="이펙트를설정한다" arg1="6300" arg2="1" />		<!-- MushBalloon Disappear Sound -->							
+        </onExit>
+    </state>
+	
+		
+<!-- West_To_East -->	
+    <state name="Ride04_Ready" >
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="7400" arg2="1" />		<!-- MushBalloon Regen Sound -->				
+			<action name="몬스터를생성한다" arg1="140" arg2="0"/>  	<!-- West_To_East -->			
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_04" /> <!--서바이벌 버스 로그 -->				
+        </onEnter>
+			<condition name="UserValue" key="StartPatrol" value="1">	
+					<transition state="Ride04_StartPatrolDelay"/>
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>
+    <state name="Ride04_StartPatrolDelay" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="5400" arg2="1" />		<!-- MushBalloon Rise Sound -->						
+			<action name="NPC를이동시킨다" arg1="140" arg2="MS2PatrolData_141"/>  		
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Ride04_StartPatrol"/>	
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>			
+    <state name="Ride04_StartPatrol" >
+        <onEnter>
+			<action name="버프를걸어준다" arg1="140" arg2="70001081" arg3="1" arg4="1" arg5="0"/>  	<!-- MushBalloon Flying Loop Sound -->					
+			<action name="NPC를이동시킨다" arg1="140" arg2="MS2PatrolData_140"/>  	<!-- North_To_South -->							
+        </onEnter>
+				<condition name="WaitTick" waitTick="32000">    	
+					<transition state="Quit"/>	
+				</condition> 							
+        <onExit>
+			<action name="몬스터소멸시킨다" arg1="140" />  		
+			<action name="이펙트를설정한다" arg1="6400" arg2="1" />		<!-- MushBalloon Disappear Sound -->							
+        </onExit>
+    </state>
+	
+		
+<!-- West_To_East -->	
+    <state name="Ride05_Ready" >
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="7500" arg2="1" />		<!-- MushBalloon Regen Sound -->				
+			<action name="몬스터를생성한다" arg1="150" arg2="0"/>  	<!-- NorthWest_To_SouthEast -->			
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_05" /> <!--서바이벌 버스 로그 -->				
+        </onEnter>
+			<condition name="UserValue" key="StartPatrol" value="1">	
+					<transition state="Ride05_StartPatrolDelay"/>
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>
+    <state name="Ride05_StartPatrolDelay" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="5500" arg2="1" />		<!-- MushBalloon Rise Sound -->				
+			<action name="NPC를이동시킨다" arg1="150" arg2="MS2PatrolData_151"/>  					
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Ride05_StartPatrol"/>	
+				</condition> 							
+        <onExit>	
+        </onExit>
+    </state>			
+    <state name="Ride05_StartPatrol" >
+        <onEnter>
+			<action name="버프를걸어준다" arg1="150" arg2="70001081" arg3="1" arg4="1" arg5="0"/>  	<!-- MushBalloon Flying Loop Sound -->					
+			<action name="NPC를이동시킨다" arg1="150" arg2="MS2PatrolData_150"/>  	<!-- NorthWest_To_SouthEast -->							
+        </onEnter>
+				<condition name="WaitTick" waitTick="32000">    	
+					<transition state="Quit"/>	
+				</condition> 							
+        <onExit>
+			<action name="몬스터소멸시킨다" arg1="150" />  		
+			<action name="이펙트를설정한다" arg1="6500" arg2="1" />		<!-- MushBalloon Disappear Sound -->						
+        </onExit>
+    </state>
+		
+<!-- NorthEast_To_SouthWest -->	
+    <state name="Ride06_Ready" >
+        <onEnter>			
+			<action name="이펙트를설정한다" arg1="7600" arg2="1" />		<!-- MushBalloon Regen Sound -->					
+			<action name="몬스터를생성한다" arg1="160" arg2="0"/>  	<!-- NorthEast_To_SouthWest -->		
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_06" /> <!--서바이벌 버스 로그 -->				
+        </onEnter>
+			<condition name="UserValue" key="StartPatrol" value="1">	
+					<transition state="Ride06_StartPatrolDelay"/>
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>
+    <state name="Ride06_StartPatrolDelay" >
+        <onEnter>			
+			<action name="이펙트를설정한다" arg1="5600" arg2="1" />		<!-- MushBalloon Rise Sound -->				
+			<action name="NPC를이동시킨다" arg1="160" arg2="MS2PatrolData_161"/>  					
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Ride06_StartPatrol"/>	
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>				
+    <state name="Ride06_StartPatrol" >
+        <onEnter>
+			<action name="버프를걸어준다" arg1="160" arg2="70001081" arg3="1" arg4="1" arg5="0"/>  	<!-- MushBalloon Flying Loop Sound -->					
+			<action name="NPC를이동시킨다" arg1="160" arg2="MS2PatrolData_160"/>  	<!-- NorthEast_To_SouthWest -->							
+        </onEnter>
+				<condition name="WaitTick" waitTick="32000">    	
+					<transition state="Quit"/>	
+				</condition> 							
+        <onExit>
+			<action name="몬스터소멸시킨다" arg1="160" />  		
+			<action name="이펙트를설정한다" arg1="6600" arg2="1" />		<!-- MushBalloon Disappear Sound -->						
+        </onExit>
+    </state>
+		
+<!-- SouthWest_To_NorthEast -->	
+    <state name="Ride07_Ready" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="7700" arg2="1" />		<!-- MushBalloon Regen Sound -->				
+			<action name="몬스터를생성한다" arg1="170" arg2="0"/>  	<!-- SouthWest_To_NorthEast -->		
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_07" /> <!--서바이벌 버스 로그 -->				
+        </onEnter>
+			<condition name="UserValue" key="StartPatrol" value="1">	
+					<transition state="Ride07_StartPatrolDelay"/>
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>
+    <state name="Ride07_StartPatrolDelay" >
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="5700" arg2="1" />		<!-- MushBalloon Rise Sound -->						
+			<action name="NPC를이동시킨다" arg1="170" arg2="MS2PatrolData_171"/>  				
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Ride07_StartPatrol"/>	
+				</condition> 							
+        <onExit>		
+        </onExit>
+    </state>			
+    <state name="Ride07_StartPatrol" >
+        <onEnter>	
+			<action name="버프를걸어준다" arg1="170" arg2="70001081" arg3="1" arg4="1" arg5="0"/>  	<!-- MushBalloon Flying Loop Sound -->					
+			<action name="NPC를이동시킨다" arg1="170" arg2="MS2PatrolData_170"/>  	<!-- SouthWest_To_NorthEast -->							
+        </onEnter>
+				<condition name="WaitTick" waitTick="32000">    	
+					<transition state="Quit"/>	
+				</condition> 							
+        <onExit>
+			<action name="몬스터소멸시킨다" arg1="170" />  		
+			<action name="이펙트를설정한다" arg1="6700" arg2="1" />		<!-- MushBalloon Disappear Sound -->							
+        </onExit>
+    </state>
+		
+<!-- SouthEast_To_NorthWest -->	
+    <state name="Ride08_Ready" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="7800" arg2="1" />		<!-- MushBalloon Regen Sound -->				
+			<action name="몬스터를생성한다" arg1="180" arg2="0"/>  	<!-- SouthEast_To_NorthWest -->		
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_08" /> <!--서바이벌 버스 로그 -->				
+        </onEnter>
+			<condition name="UserValue" key="StartPatrol" value="1">	
+					<transition state="Ride08_StartPatrolDelay"/>
+				</condition> 							
+        <onExit>
+        </onExit>
+    </state>
+    <state name="Ride08_StartPatrolDelay" >
+        <onEnter>			
+			<action name="이펙트를설정한다" arg1="5800" arg2="1" />		<!-- MushBalloon Rise Sound -->					
+			<action name="NPC를이동시킨다" arg1="180" arg2="MS2PatrolData_181"/>  				
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">    	
+					<transition state="Ride08_StartPatrol"/>	
+				</condition> 							
+        <onExit>		
+        </onExit>
+    </state>			
+    <state name="Ride08_StartPatrol" >
+        <onEnter>
+			<action name="버프를걸어준다" arg1="180" arg2="70001081" arg3="1" arg4="1" arg5="0"/>  	<!-- MushBalloon Flying Loop Sound -->					
+			<action name="NPC를이동시킨다" arg1="180" arg2="MS2PatrolData_180"/>  	<!-- SouthEast_To_NorthWest -->							
+        </onEnter>
+				<condition name="WaitTick" waitTick="32000">    	
+					<transition state="Quit"/>	
+				</condition> 							
+        <onExit>
+			<action name="몬스터소멸시킨다" arg1="180" />  		
+			<action name="이펙트를설정한다" arg1="6800" arg2="1" />		<!-- MushBalloon Disappear Sound -->							
+        </onExit>
+    </state>
+
+    <state name="Quit" >
+        <onEnter>
+			<action name="로그를남긴다"  arg1="Survival" arg3="bus_end" /> <!--서바이벌 버스 로그 -->				
+        </onEnter>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	
+</ms2>

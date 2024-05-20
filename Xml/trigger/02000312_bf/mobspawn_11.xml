@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="Setting">
+    <onEnter>
+			<action name="메쉬를설정한다" arg1="3005-3010" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Invisible_Barrier -->		
+			<action name="사다리를설정한다" arg1="510" arg2="0" arg3="0" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="511" arg2="0" arg3="0" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="512" arg2="0" arg3="0" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="513" arg2="0" arg3="0" />	<!-- LadderEnterance -->				
+			<action name="메쉬를설정한다" arg1="3002-3004" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Invisible_Barrier -->		
+			<action name="메쉬를설정한다" arg1="1100-1108" arg2="1" arg3="0" arg4="0" arg5="0" /> 	<!-- 덩굴 -->		
+			<action name="메쉬를설정한다" arg1="1110-1119" arg2="1" arg3="0" arg4="0" arg5="0" /> 	<!-- 덩굴 -->		
+			<action name="메쉬를설정한다" arg1="1120-1126" arg2="1" arg3="0" arg4="0" arg5="0" /> 	<!-- 덩굴 -->		
+			<action name="메쉬를설정한다" arg1="1130-1137" arg2="1" arg3="0" arg4="0" arg5="0" /> 	<!-- 덩굴 -->	
+			<action name="메쉬를설정한다" arg1="1140" arg2="1" arg3="0" arg4="0" arg5="0" /> 	<!-- 씨앗 -->		
+			<action name="메쉬애니를설정한다" arg1="1140" arg2="1" arg3="0" arg4="0" /> 	<!-- 씨앗 -->		
+			<action name="이펙트를설정한다" arg1="5000" arg2="0" />	<!-- UI -->			
+			<action name="이펙트를설정한다" arg1="5001" arg2="0" />	<!-- Vine -->					
+			<action name="SetUserValue" key="MobWaveStop" value="0" /> 					
+    </onEnter>
+			<condition name="CheckUser">
+				<transition state="LoadingDelay"/>	
+			</condition>
+    <onExit>
+    </onExit>
+  </state>
+
+    <state name="LoadingDelay" >
+        <onEnter>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="CheckUserCount"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+ 
+    <import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+
+   <state name="DungeonStart" >	
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5000" arg2="1" />	<!-- GuideUI -->				
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>				
+			<action name="스킵을설정한다" arg1="CameraWalk01" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="CameraWalk01" />	
+        </condition>
+        <onExit>
+        </onExit> 
+    </state>
+
+   <state name="CameraWalk01" >	
+        <onEnter>	
+			<action name="카메라를선택한다" arg1="600" arg2="0"/>										
+			<action name="스킵을설정한다" arg1="" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">		
+			<transition state="Battle01" />	
+        </condition>
+        <onExit>
+			<action name="사다리를설정한다" arg1="510" arg2="1" arg3="1" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="511" arg2="1" arg3="1" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="512" arg2="1" arg3="1" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="513" arg2="1" arg3="1" />	<!-- LadderEnterance -->				
+			<action name="메쉬를설정한다" arg1="3005-3010" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Invisible_Barrier -->				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="Battle01">
+		<onEnter>	 		
+			<action name="몬스터를생성한다" arg1="101,102,103"  arg2="0"/>   	 		
+			<action name="이펙트를설정한다" arg1="5000" arg2="1" />	<!-- UI -->			
+			<action name="ShowGuideSummary" entityID="20031201" textID="20031201"/>  <!-- 몬스터를 모두 처치하기 -->		
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="101,102,103">
+			<transition state="Battle02"/>
+		</condition>
+		<onExit>
+			<action name="몬스터소멸시킨다" arg1="101,102,103"/>
+		</onExit>
+	</state>  
+ 
+	<state name="Battle02">
+		<onEnter>
+			<action name="HideGuideSummary" entityID="20031201"/>						
+			<action name="몬스터를생성한다" arg1="111,112,113,114"  arg2="0"/>   
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="111,112,113,114">
+			<transition state="Battle03"/>
+		</condition>
+		<onExit>
+			<action name="몬스터소멸시킨다" arg1="111,112,113,114"/>
+		</onExit>
+	</state>  
+ 
+	<state name="Battle03">
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="5000" arg2="1" />	<!-- UI -->				
+			<action name="ShowGuideSummary" entityID="20031202" textID="20031202"/>  <!-- 어둠의 씨앗 제거하기 -->				
+			<action name="몬스터를생성한다" arg1="130"  arg2="0"/>   
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="130">
+			<transition state="VineRemove01"/>
+		</condition>
+		<onExit>
+			<action name="몬스터소멸시킨다" arg1="130"/> 
+		</onExit>
+	</state>  
+	
+	<state name="VineRemove01">
+		<onEnter>
+			<action name="HideGuideSummary" entityID="20031202"/>				
+			<action name="이펙트를설정한다" arg1="5001" arg2="1" />	<!-- Vine -->			
+			<action name="메쉬를설정한다" arg1="3002-3004" arg2="0" arg3="500" arg4="0" arg5="0" /> <!-- Invisible_Barrier -->		
+			<action name="랜덤메쉬를설정한다" arg1="1100-1108" arg2="0" arg3="9" arg4="0" arg5="50" /> 	<!-- 덩굴 -->		
+			<action name="랜덤메쉬를설정한다" arg1="1110-1119" arg2="0" arg3="10" arg4="300" arg5="50" /> 	<!-- 덩굴 -->		
+			<action name="랜덤메쉬를설정한다" arg1="1120-1126" arg2="0" arg3="7" arg4="200" arg5="50" /> 	<!-- 덩굴 -->		
+			<action name="랜덤메쉬를설정한다" arg1="1130-1137" arg2="0" arg3="8" arg4="100" arg5="50" /> 	<!-- 덩굴 -->	
+			<action name="메쉬를설정한다" arg1="1140" arg2="0" arg3="200" arg4="0" arg5="10" /> 	<!-- 씨앗 -->		
+			<action name="메쉬애니를설정한다" arg1="1140" arg2="0" arg3="0" arg4="0" /> 	<!-- 씨앗 -->	
+		</onEnter>
+    <condition name="유저를감지했으면" arg1="102">
+			<transition state="MobWaveStart"/>	
+    </condition>			
+		<onExit>
+		</onExit>
+	</state>
+ 
+	<state name="MobWaveStart">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="5000" arg2="1" />	<!-- UI -->				
+			<action name="ShowGuideSummary" entityID="20031203" textID="20031203"/>  <!-- 어둠의 씨앗 모두 제거하기 -->				
+			<action name="몬스터를생성한다" arg1="121,122,123,124,125,126,127,128"  arg2="0"/>   
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="121,122,123,124,125,126,127,128">
+			<transition state="MobWaveDelayRandom"/>
+		</condition>
+			<condition name="UserValue" key="MobWaveStop" value="1">
+			<transition state="Quit"/>	
+		</condition> 			
+		<onExit>
+			<action name="몬스터소멸시킨다" arg1="121,122,123,124,125,126,127,128"/>
+		</onExit>
+	</state>  
+	
+    <state name="MobWaveDelayRandom" >
+        <onEnter>		
+				</onEnter>	
+				<condition name="랜덤조건" arg1="60">	<!-- 기본 12초 -->
+					<transition state="MobWaveDelay01"/>
+				</condition>	
+				<condition name="랜덤조건" arg1="20">	<!-- 17초 -->
+					<transition state="MobWaveDelay02" />
+				</condition>		
+				<condition name="랜덤조건" arg1="20">	<!-- 7초 -->
+					<transition state="MobWaveDelay03"/>
+				</condition>
+			<condition name="UserValue" key="MobWaveStop" value="1">
+			<transition state="Quit"/>	
+		</condition> 					
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="MobWaveDelay01" >
+        <onEnter>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="12000">	
+					<transition state="MobWaveStart"/>	
+				</condition>	
+			<condition name="UserValue" key="MobWaveStop" value="1">
+			<transition state="Quit"/>	
+		</condition> 					
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="MobWaveDelay02" >
+        <onEnter>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="17000">	
+					<transition state="MobWaveStart"/>	
+				</condition>	
+			<condition name="UserValue" key="MobWaveStop" value="1">
+			<transition state="Quit"/>	
+		</condition> 					
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="MobWaveDelay03" >
+        <onEnter>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="7000">	
+					<transition state="MobWaveStart"/>	
+				</condition>	
+			<condition name="UserValue" key="MobWaveStop" value="1">
+			<transition state="Quit"/>	
+		</condition> 					
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+	<state name="Quit">
+		<onEnter>
+			<action name="HideGuideSummary" entityID="20031203"/>				
+		</onEnter>
+		<onExit>
+		</onExit>
+	</state>  
+
+</ms2>

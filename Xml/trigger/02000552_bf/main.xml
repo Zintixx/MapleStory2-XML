@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TriggerModelID = 552 --> 
+<ms2>
+
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="기본셋팅" /> 
+		</condition>		
+	</state> 
+
+
+
+	<state name="기본셋팅"> 
+		<onEnter>
+			<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0"/>	<!-- 미술관 전투판으로 가는 포탈 최초 감추기, 메인 전투판에 있는 포탈-->					
+			<action name="포탈을설정한다" arg1="20" arg2="0" arg3="0" arg4="0"/>	<!-- 미술관 전투판으로 가는 포탈 최초 감추기, 최초 시작 지점 2층 지형에 있는 포탈-->					
+
+			<action name="포탈을설정한다" arg1="13" arg2="0" arg3="0" arg4="0"/>	<!-- 장난감 전투판으로 되돌아가는 포탈 최초 감추기 -->					
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0"/>	<!-- 나가기 포탈 최초에는 감추기 -->					
+			<action name="포탈을설정한다" arg1="12" arg2="0" arg3="0" arg4="0"/>	<!-- 나가기 포탈 최초에는 감추기 -->					
+			
+			<action name="SetUserValue" key="NextPortal" value="0" />		<!-- NextPortal변수 0으로 초기 셋팅, 다음 전투판 이동할때 숨겨진 포탈 생성시키기 위한 용도로 사용-->		 	 
+			<action name="SetUserValue" key="SmallRemove" value="0" />		<!-- SmallRemove변수 0으로 초기 셋팅, 작아짐 디버프 제거 하는데 사용하는 용도, 만약을 위한 장치임-->					
+			<action name="SetUserValue" key="VacuumMessage" value="0" />		<!-- VacuumMessage변수 0으로 초기 셋팅, 진공청소기 흡수도니 플레이어 있으면 메시지 출력 하기 위한 용도-->					
+		</onEnter>  			
+			
+		<condition name="WaitTick" waitTick="500" > 
+				<transition state="난이도체크"/>
+		</condition>
+			
+	</state>  
+
+	<state name="난이도체크">
+		<onEnter>
+		</onEnter>
+
+		<condition name="DungeonID" dungeonID="23050003">  <!-- 현재 입장한 던전ID가 23050003  이라면 ,<transition state="쉬운난이도보스등장" /> 실행-->    
+			<transition state="쉬운난이도보스등장" />
+		</condition> 
+		
+		<condition name="DungeonID" dungeonID="23051003">  <!-- 현재 입장한 던전ID가 23051003  이라면 , <transition state="여려움난이도보스등장" /> 실행-->    
+			<transition state="여려움난이도보스등장" />
+		</condition> 
+		  
+
+
+		<condition name="WaitTick" waitTick="1100" > <!-- 던전 로직을 통해 입장하지 않고, 걍 디버그 모드 맵툴로 들어오면 이 부분 실행됨-->    
+			<transition state="여려움난이도보스등장" /> 
+		</condition>
+		
+	</state>		
+
+
+	<state name="여려움난이도보스등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="101" arg2="0"/>   <!-- arg2="0" 을 넣으면 보스 등장하자마자 바로 공격 상태가 되는 것을 막을 수 있음, 스폰ID 101 어려움 난이도 -->
+		</onEnter>
+
+		<condition name="WaitTick" waitTick="1200"> 
+			<transition state="보스전투중"/>
+		</condition>
+	</state>  
+
+	<state name="쉬운난이도보스등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="102" arg2="0"/>   <!-- arg2="0" 을 넣으면 보스 등장하자마자 바로 공격 상태가 되는 것을 막을 수 있음 , 스폰ID 102 쉬운 난이도 -->
+		</onEnter>
+
+		<condition name="WaitTick" waitTick="1200"> 
+			<transition state="보스전투중"/>
+		</condition>
+	</state>  
+
+	<state name="보스전투중">
+		<onEnter>
+		</onEnter>
+
+			<condition name="UserValue" key="SmallRemove" value="1">  <!-- 블랙빈이 방구 공격 할 때 AI에서 이 신호 SmallRemove = 1 보냄-->
+				<transition state="작아짐제거"/>
+			</condition>	
+
+			<condition name="UserValue" key="VacuumMessage" value="1">  <!-- 블랙빈 진공청소기 흡수된 플레이어 있으면 AI에서 이 신호 VacuumMessage = 1 보냄-->
+				<transition state="메시지출력"/>
+			</condition>		
+		
+			<condition name="UserValue" key="NextPortal" value="1">  <!-- 블랙빈 첫번째 전투판 전투 끝나면 AI에서 이 신호 NextPortal = 1 보냄-->
+				<transition state="다음이동포탈등장"/>
+			</condition>			
+		
+			<condition name="UserValue" key="End" value="1">  <!-- 블랙빈AI에서 End = 1 신호를 보냄-->		 	 
+				<transition state="종료딜레이"/>
+			</condition>
+			
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>	
+			
+		<onExit>
+
+		</onExit>
+	</state> 
+	
+
+   <state name="메시지출력">
+    <onEnter>
+		<!-- 안내 메시지 호출하기 -->
+		<action name="ShowGuideSummary" entityID="29200008" textID="29200008" durationTime='6200'/> 
+		<action name="SetUserValue" key="VacuumMessage" value="0" />		<!-- VacuumMessage변수 0으로 초기 셋팅-->		 	 			
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="800" > 
+			<transition state="보스전투중"/>	
+		</condition>	
+	
+    <onExit>
+    </onExit>
+  </state>	
+  
+
+	<state name="작아짐제거"> 
+		<onEnter>
+			<!-- 702는 첫번째 전투판 영역, 701는 두번째 전투판 영역 -->					
+			<action name="버프를걸어준다" arg1="702" arg2="50001556" arg3="1" arg4="0" arg5="0" /> <!-- 플레이어가 진공청소기 공격 받아서 작아졌는데, 흡수 안되는 이상한 버그가 있어서 만약을 위한 장치로 작아짐 걸렸으면, 여기서 풀어주도록 함 -->		
+			<action name="버프를걸어준다" arg1="701" arg2="50001556" arg3="1" arg4="0" arg5="0" /> <!-- 플레이어가 진공청소기 공격 받아서 작아졌는데, 흡수 안되는 이상한 버그가 있어서 만약을 위한 장치로 작아짐 걸렸으면, 여기서 풀어주도록 함 -->		
+
+			<action name="SetUserValue" key="SmallRemove" value="0" />		<!-- SmallRemove변수 0으로 초기 셋팅-->		 	 			
+		</onEnter>  			
+			
+		<condition name="WaitTick" waitTick="500" > 
+				<transition state="보스전투중"/>
+		</condition>
+			
+	</state>  
+
+
+	<state name="다음이동포탈등장"> 
+		<onEnter>
+			<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="1"/>	<!-- 미술관 전투판으로 가는 포탈 등장하기, 메인 전투판에 있는 포탈 -->					
+			<action name="포탈을설정한다" arg1="20" arg2="1" arg3="1" arg4="1"/>	<!-- 미술관 전투판으로 가는 포탈 등장하기, 최초 시작지점 2층 지형에 있는 포탈 -->					
+			
+			<!-- 702는 첫번째 전투판 영역, 701는 두번째 전투판 영역 -->					
+			<action name="버프를걸어준다" arg1="702" arg2="50001556" arg3="1" arg4="0" arg5="0" /> <!-- 플레이어가 진공청소기 공격 받아서 작아졌는데, 흡수 안되는 이상한 버그가 있어서 만약을 위한 장치로 작아짐 걸렸으면, 여기서 풀어주도록 함 -->		
+			<action name="버프를걸어준다" arg1="701" arg2="50001556" arg3="1" arg4="0" arg5="0" /> <!-- 플레이어가 진공청소기 공격 받아서 작아졌는데, 흡수 안되는 이상한 버그가 있어서 만약을 위한 장치로 작아짐 걸렸으면, 여기서 풀어주도록 함 -->		
+			
+			<action name="SetUserValue" key="NextPortal" value="0" />		<!-- NextPortal변수 0으로 초기 셋팅-->		 	 
+			<action name="SetUserValue" key="SmallRemove" value="0" />		<!-- SmallRemove변수 0으로 초기 셋팅, 혹시 모르니 만약을 위한 장치-->					
+		</onEnter>  			
+			
+		<condition name="WaitTick" waitTick="2300" > 
+				<transition state="보스전투중"/>
+		</condition>
+			
+	</state>  
+
+
+
+	 <state name="던전실패">
+		<onEnter> 
+			<action name="DungeonSetEndTime" />  <!--시간 기능 종료시킴, 이 기능 잘 작동시키려면 DungeonRoom.xlsx 의 제한 시간 만료 시(isExpireTimeOut) 빈칸 설정 해야 함  -->		
+			<action name="DungeonCloseTimer" />			
+		
+			<action name="몬스터소멸시킨다" arg1="all" />		
+		
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="500" > 
+
+					<action name="DungeonFail" /> 
+					<transition state="게임오버" />
+				</condition>
+	</state> 	
+	
+  
+	<state name="게임오버">
+		<onEnter> 
+			<action name="DungeonEnableGiveUp" isEnable="0" />		
+
+			<!-- 701 는 두번째 전투판 영역, 702는 첫번째 전투판 영역, 블랙빈 죽여 클리어 했는데도, 대미지 필드 때문에 죽는 안타까운 상황이 생길 수 있어서 블랙빈 죽이면 바로 플레이어에게 8초간 무적버프 걸어서 죽지 않게 해줌 -->					
+			<action name="버프를걸어준다" arg1="701" arg2="50000266" arg3="1" arg4="0" arg5="0" /> <!-- 플레이어에게 무적 버프 & 진공청소기 흡수에 의한 소인화 디버프 제거, 혹시 바닥 RYB 대미지에맞아서 클리어 했는데 죽는 경우를 막기 위해 -->				
+			<action name="버프를걸어준다" arg1="702" arg2="50000266" arg3="1" arg4="0" arg5="0" /> <!-- 플레이어에게 무적 버프 & 진공청소기 흡수에 의한 소인화 디버프 제거, 혹시 바닥 RYB 대미지에맞아서 클리어 했는데 죽는 경우를 막기 위해 -->		
+		</onEnter>		
+		
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="종료"/> <!--  이 곳에서 나가기 포탈 등장시킴 -->
+		</condition>			
+		
+	</state>	
+	
+
+   <state name="종료딜레이">
+		<onEnter>
+			<!-- 701 는 두번째 전투판 영역, 702는 첫번째 전투판 영역, 블랙빈 죽여 클리어 했는데도, 대미지 필드 때문에 죽는 안타까운 상황이 생길 수 있어서 블랙빈 죽이면 바로 플레이어에게 8초간 무적버프 걸어서 죽지 않게 해줌 -->					
+			<action name="버프를걸어준다" arg1="701" arg2="50000266" arg3="1" arg4="0" arg5="0" /> <!-- 플레이어에게 무적 버프 & 진공청소기 흡수에 의한 소인화 디버프 제거, 혹시 바닥 RYB 대미지에맞아서 클리어 했는데 죽는 경우를 막기 위해 -->				
+			<action name="버프를걸어준다" arg1="702" arg2="50000266" arg3="1" arg4="0" arg5="0" /> <!-- 플레이어에게 무적 버프 & 진공청소기 흡수에 의한 소인화 디버프 제거, 혹시 바닥 RYB 대미지에맞아서 클리어 했는데 죽는 경우를 막기 위해 -->		
+		
+		</onEnter>
+
+		<condition name="WaitTick" waitTick="5000" > 
+			<transition state="클리어처리"/>	
+		</condition>	
+	
+    <onExit>
+    </onExit>
+  </state>
+ 
+	
+
+	<state name="클리어처리">
+		<onEnter>
+			<action name="DungeonClear" /> 		
+			<action name="몬스터소멸시킨다" arg1="all" />						
+		</onEnter>
+		
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="종료"/> <!--  이 곳에서 나가기 포탈 등장시킴 -->	
+		</condition>	
+		
+	</state>
+
+
+  
+	<state name="종료"> 
+		<onEnter>
+			<action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1"/>	<!-- 나가기 포탈 등장 -->					
+			<action name="포탈을설정한다" arg1="12" arg2="1" arg3="1" arg4="1"/>	<!-- 나가기 포탈 등장 -->					
+			<action name="포탈을설정한다" arg1="13" arg2="1" arg3="1" arg4="1"/>	<!-- 장난감 전투판으로 되돌아가는 포탈 등장 -->					
+		</onEnter>  		
+		
+		<onExit>
+
+		</onExit>			
+	</state>  
+
+
+</ms2>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 미혹의 길 Round12 --> 
+  
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 		
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" /> 				
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="or_fi_struc_stonegate_A01_off" /> <!-- StoneGate -->				
+			<action name="이펙트를설정한다" arg1="5012" arg2="0"/> <!-- 12Round_BridgeApp-->				
+			<action name="이펙트를설정한다" arg1="5013" arg2="0"/> <!-- Sound_StoneGate-->						
+			<action name="메쉬를설정한다" arg1="331200-331277" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Stairs -->				
+			<action name="메쉬를설정한다" arg1="4032" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- RoundBarrier -->				
+			<action name="메쉬를설정한다" arg1="3012" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOff -->		
+			<action name="메쉬를설정한다" arg1="3112" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOn -->		
+			<action name="메쉬애니를설정한다" arg1="3012" arg2="1" arg3="0" arg4="0" /> <!-- CrystalOff -->					
+			<action name="메쉬애니를설정한다" arg1="3112" arg2="0" arg3="0" arg4="0" /> <!-- CrystalOn -->						
+			<action name="이펙트를설정한다" arg1="5212" arg2="0" /> <!-- Sound_CrystalOn -->						
+			<action name="SetUserValue" key="FindWay" value="0" /> 			
+			<action name="AGENT를설정한다" arg1="28120" arg2="1"/>	
+			<action name="AGENT를설정한다" arg1="28121" arg2="1"/>			
+			<action name="AGENT를설정한다" arg1="28122" arg2="1"/>				
+				</onEnter>	
+			<condition name="UserValue" key="FindWay" value="1">	
+			<transition state="MovingDelay01"/>
+		</condition> 		
+    <onExit> 
+    </onExit>
+    </state>	
+
+	<state name="MovingDelay01">
+		<onEnter>		
+			<!--action name="몬스터를생성한다" arg1="907,908,909" arg2="0" /--> 					<!-- 레이저 토템 -->			
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="ReadyToWalkIn01"/>	
+				</condition> 			
+		<onExit> 	
+		</onExit> 	
+	</state>	
+	
+    <state name="ReadyToWalkIn01" >	
+        <onEnter>		
+			<action name="몬스터를생성한다" arg1="112,212" arg2="0" /> 		<!-- 연출용 -->				
+			<action name="메쉬를설정한다" arg1="4032" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- RoundBarrier -->				
+			<action name="NPC를이동시킨다" arg1="112" arg2="MS2PatrolData_112" />			
+			<action name="NPC를이동시킨다" arg1="212" arg2="MS2PatrolData_212" />	
+			<action name="대화를설정한다" arg1="1" arg2="212" arg3="$52000052_QD__12_FINDWAY__0$" arg4="3" arg5="1" />	    <!-- 준타 -->					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="ReadyToWalkIn02"/>  
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+
+    <state name="ReadyToWalkIn02" > 	
+        <onEnter>			
+			<action name="대화를설정한다" arg1="1" arg2="112" arg3="$52000052_QD__12_FINDWAY__1$" arg4="3" arg5="1" />	    <!-- 틴차이 -->						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="Round12_Start"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+
+    <state name="Round12_Start" >	
+        <onEnter>		
+			<action name="몬스터소멸시킨다" arg1="112,212" />				
+			<action name="몬스터를생성한다" arg1="1012" arg2="0" /> 		<!-- 수호대상 틴차이 -->		
+			<action name="몬스터를생성한다" arg1="2012" arg2="0" /> 		<!-- 전투용 준타 -->			
+			<action name="대화를설정한다" arg1="1" arg2="1012" arg3="$52000052_QD__12_FINDWAY__2$" arg4="3" arg5="2" />	    <!-- 틴차이 -->					
+			<action name="SetUserValue" triggerID="912" key="MobWaveStart" value="1" /> 		
+				</onEnter>		
+			<condition name="UserValue" key="12RoundSuccess" value="1">	
+			<transition state="Round12_Sucess01"/>	
+		</condition> 		
+    <onExit> 
+    </onExit>	
+    </state>	
+
+<!-- 20170223 업데이트 던전 개편 단축 -->			
+    <state name="Round12_Sucess01" >	
+        <onEnter>				
+				</onEnter>		
+			<condition name="NPC를감지했으면" arg1="9012" arg2="2212">	
+			<transition state="Round12_Sucess02"/>	
+		</condition> 		
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="Round12_Sucess02" >	
+        <onEnter>				
+			<action name="NPC를이동시킨다" arg1="2212" arg2="MS2PatrolData_2012" />	
+			<action name="몬스터소멸시킨다" arg1="1012" />	
+			<action name="몬스터를생성한다" arg1="113" arg2="0" /> 		<!-- 연출용 틴차이 -->		
+			<action name="메쉬를설정한다" arg1="3012" arg2="0" arg3="100" arg4="0" arg5="0" /> <!-- CrystalOff -->		
+			<action name="메쉬를설정한다" arg1="3112" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- CrystalOn -->		
+			<action name="메쉬애니를설정한다" arg1="3012" arg2="0" arg3="0" arg4="0" /> <!-- CrystalOff -->					
+			<action name="메쉬애니를설정한다" arg1="3112" arg2="1" arg3="0" arg4="0" /> <!-- CrystalOn -->						
+			<action name="이펙트를설정한다" arg1="5212" arg2="1" /> <!-- Sound_CrystalOn -->							
+			<action name="AGENT를설정한다" arg1="28120" arg2="0"/>	
+			<action name="AGENT를설정한다" arg1="28121" arg2="0"/>			
+			<action name="AGENT를설정한다" arg1="28122" arg2="0"/>						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="3000">  
+					<transition state="Round12_RouteSelect"/>
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+	<state name="Round12_RouteSelect">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="2213,2212" />			
+			<action name="몬스터를생성한다" arg1="213" arg2="0" /> 		<!-- 연출용 준타 -->			
+			<action name="대화를설정한다" arg1="1" arg2="113" arg3="$52000052_QD__12_FINDWAY__3$" arg4="3" arg5="0" />	    <!-- 틴차이 -->		
+			<action name="NPC를이동시킨다" arg1="113" arg2="MS2PatrolData_199" />			
+			<action name="NPC를이동시킨다" arg1="213" arg2="MS2PatrolData_299" />		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Round12_RouteApp01"/>	
+				</condition>	
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="Round12_RouteApp01">
+		<onEnter>			
+			<action name="이펙트를설정한다" arg1="5012" arg2="1"/> <!-- 12Round_BridgeApp-->	
+			<action name="랜덤메쉬를설정한다" arg1="331200-331277" arg2="1" arg3="78" arg4="100" arg5="30" /> <!-- Stairs -->			
+			<!--action name="몬스터소멸시킨다" arg1="907,908,909" /-->						<!-- 레이저 토템 -->								
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000">  	
+					<transition state="Round12_RouteApp02"/>
+				</condition>	
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="Round12_RouteApp02">
+		<onEnter>				
+			<action name="이펙트를설정한다" arg1="5013" arg2="0"/> <!-- Sound_StoneGate-->					
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Round12_RouteApp03"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="Round12_RouteApp03">	
+		<onEnter>
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="or_fi_struc_stonegate_A01_on" /> <!-- StoneGate -->		
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="0" /> 					
+		</onEnter>
+			<condition name="NPC를감지했으면" arg1="9013" arg2="213">	
+			<transition state="GoToNextMap01"/>	
+		</condition> 		
+		<onExit> 
+		</onExit> 	
+	</state>	
+
+	<state name="GoToNextMap01">
+		<onEnter>				
+			<action name="몬스터소멸시킨다" arg1="213" />					
+		</onEnter>
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="GoToNextMap02"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+	<state name="GoToNextMap02">
+		<onEnter>				
+			<action name="몬스터소멸시킨다" arg1="113" />					
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Quit"/>	
+				</condition> 
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="Quit">
+		<onEnter>
+		</onEnter>
+		<onExit> 
+		</onExit> 
+	</state>		
+</ms2>
+

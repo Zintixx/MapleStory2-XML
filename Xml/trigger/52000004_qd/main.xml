@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="대기" posX="300" posY="199">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />
+			<action name="이펙트를설정한다" arg1="602" arg2="0" />
+			<action name="몬스터소멸시킨다" arg1="2001" />
+			<action name="몬스터소멸시킨다" arg1="2099" />
+			<action name="몬스터소멸시킨다" arg1="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016" />
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />
+			<action name="메쉬를설정한다" arg1="3001-3009" arg2="0" arg3="0" arg4="0" arg5="0" />
+        </onEnter>
+					<condition name="유저를감지했으면" arg1="199">
+						<transition state="던전시작" />
+					</condition>
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>				
+        <onExit />
+    </state>
+
+    <state name="던전시작" posX="392" posY="526">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="1" />
+        </onEnter>
+					<condition name="시간이경과했으면" arg1="1">
+						<transition state="1차목표" />
+					</condition>
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>				
+        <onExit />
+    </state>
+
+   <state name="1차목표" posX="392" posY="526">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3" arg2="$52000004_QD__MAIN__0$" />
+			<action name="스킵을설정한다" arg1="연출종료" />
+        </onEnter>
+					<condition name="시간이경과했으면" arg1="2">
+						<transition state="카메라이동" />
+					</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="카메라이동" posX="362" posY="145">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="3" arg2="3"/>
+		    <action name="카메라를선택한다" arg1="301" arg2="1"/>
+			<action name="스킵을설정한다" arg1="연출종료" />
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="3">
+					<transition state="연출종료"/>
+				</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="연출종료">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="602" arg2="1" />
+		    <action name="카메라경로를선택한다" arg1="301" arg2="1"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+					<condition name="유저를감지했으면" arg1="100">
+						<transition state="피자들기" />
+					</condition>	
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>	
+		<onExit />
+	</state>
+
+    <state name="피자들기" posX="392" posY="526">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="3" arg2="3" />
+			<action name="ShowGuideSummary" entityID="25200401" textID="25200401"/> 
+        </onEnter>
+					<condition name="시간이경과했으면" arg1="3">
+						<transition state="엘리트스폰대기" />
+					</condition>
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>	
+        <onExit>
+			<action name="HideGuideSummary" entityID="25200401"/>
+        </onExit>
+    </state>
+
+    <state name="엘리트스폰대기" posX="392" posY="526">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016" arg2="0" />
+			<action name="이펙트를설정한다" arg1="602" arg2="0" />
+        </onEnter>	
+					<condition name="유저를감지했으면" arg1="101">
+						<transition state="엘리트스폰" />
+					</condition>	
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>	
+        <onExit />
+    </state>
+
+
+    <state name="엘리트스폰" posX="392" posY="526">
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="25200402" textID="25200402"/> 
+			<action name="메쉬를설정한다" arg1="3001-3009" arg2="1" arg3="0" arg4="0" arg5="2" />
+			<action name="몬스터를생성한다" arg1="2001" arg2="0" />
+            <action name="대화를설정한다" arg1="1" arg2="2001" arg3="$52000004_QD__MAIN__3$" arg4="3" />
+        </onEnter>	
+					<condition name="몬스터가죽어있으면" arg1="2001">
+						<transition state="벽해제" />
+					</condition> 
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>	
+        <onExit>
+			<action name="HideGuideSummary" entityID="25200402"/>
+        </onExit>
+    </state>
+
+    <state name="벽해제" posX="392" posY="526">
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="3001-3009" arg2="0" arg3="0" arg4="0" arg5="2" />
+        </onEnter>
+					<condition name="유저를감지했으면" arg1="102">
+						<transition state="NPC등장" />
+					</condition>
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>						
+        <onExit />					
+    </state>
+
+    <state name="NPC등장" posX="392" posY="526">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />
+			<action name="몬스터를생성한다" arg1="2099" arg2="0" />
+			<action name="대화를설정한다" arg1="1" arg2="2099" arg3="$52000004_QD__MAIN__4$" arg4="3" />
+			<action name="NPC를이동시킨다" arg1="2099" arg2="MS2PatrolData_2099" />
+			<action name="타이머를설정한다" arg1="5" arg2="5" />
+        </onEnter>
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>	
+					<condition name="시간이경과했으면" arg1="5">
+						<transition state="미션성공" />
+					</condition>
+        <onExit />					
+    </state>
+
+   <state name="미션성공" posX="392" posY="526">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="3" arg2="3" />
+        </onEnter>	
+					<condition name="퀘스트유저를감지하면" arg1="199" arg2="10001852" arg3="2">
+						<action name="이벤트UI를설정한다" arg1="7" arg2="$52000004_QD__MAIN__5$" arg3="3000" arg4="0" />
+						<transition state="포털생성" />
+					</condition>
+					<condition name="퀘스트유저를감지하면" arg1="199" arg2="10001851" arg3="2">
+						<action name="이벤트UI를설정한다" arg1="7" arg2="$52000004_QD__MAIN__6$" arg3="3000" arg4="0" />
+						<transition state="포털생성" />
+					</condition>
+					<condition name="시간이경과했으면" arg1="3">
+						<transition state="포털생성" />
+					</condition>
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>	
+        <onExit />
+    </state>
+
+    <state name="포털생성" posX="392" posY="526">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="3" arg2="3" />
+        </onEnter>	
+					<condition name="시간이경과했으면" arg1="3">
+						<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" />
+						<action name="ShowGuideSummary" entityID="25200403" textID="25200403"/> 
+						<transition state="종료대기" />
+					</condition>
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>	
+        <onExit />
+    </state>
+
+    <state name="종료대기" posX="392" posY="526">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="30" arg2="30" />
+        </onEnter>	
+					<condition name="시간이경과했으면" arg1="30">
+						<action name="유저를이동시킨다" arg1="02000166" arg2="30" arg3="199" />
+						<transition state="종료"/>
+					</condition>
+					<condition name="!유저를감지했으면" arg1="199">
+						<transition state="종료" />
+					</condition>	
+        <onExit />
+        <onExit>
+			<action name="HideGuideSummary" entityID="25200403"/>
+        </onExit>
+    </state>
+
+    <state name="종료" posX="392" posY="526">
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="2001" />
+			<action name="몬스터소멸시킨다" arg1="2099" />
+			<action name="몬스터소멸시킨다" arg1="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016" />
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />
+			<action name="메쉬를설정한다" arg1="3001-3009" arg2="0" arg3="0" arg4="0" arg5="0" />
+        </onEnter>
+				<condition name="무조건">
+					<transition state="대기" />
+				</condition>		
+        <onExit />
+    </state>
+
+</ms2>

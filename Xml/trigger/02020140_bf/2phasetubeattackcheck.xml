@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID = 104,  2페이즈 때 보스 몸에 튜브 대미지 필드 체크하는 기능  -->
+<ms2>
+
+	<state name="시작대기중">
+		<onEnter>
+			<action name="SetUserValue" key="2PhaseTubeStep" value="0" /> <!-- 변수 최초 초기화: 이 변수가 1이 되면 튜브 대미지 필드 1단계 진행,  이 변수가 2이 되면 튜브 대미지 필드 2단계 진행-->
+			<action name="SetUserValue" key="MarbleTurkaSupportMany" value="0" /> <!-- 변수 최초 초기화: 마법 구슬 오브젝트가 등장하면, 이 오브젝트  AI_MarbleTurkaSupport.xml  AI로 부터 이 변수 +1 신호를 받고, 파괴되어 죽으면  AI_MarbleTurkaSupport.xml AI로 부터 이 변수 -1 신호를 받게 됨-->
+		</onEnter>
+		
+		<condition name="CheckUser">
+			<transition state="트리거작동신호받기대기중" /> 
+		</condition>	
+		
+	</state>  
+	
+	
+	<state name="트리거작동신호받기대기중">
+		<onEnter>
+		</onEnter>
+			<!--  2PhaseTubeStep 변수는  2페이즈 보스 AI_TurkaHoodForce_Phase02.xml AI에서 신호 받아서 1 이상의 숫자가 되는 구조임, 보스가 처음 등장해서 플레이어 강제 잡기 공격 후 2페이즈 전투판으로 점프 이동한 다음에 이 변수 1 혹은 2 신호를 보냄 -->
+			<condition name="UserValue" key="2PhaseTubeStep" value="1" operator="GreaterEqual">   <!--  이 변수가 1 이상이 되면 본격 트리거 작동함, 이 변수는 0 1 2 이렇게 3가지 경우의 수가 있음 -->
+				<transition state="트리거작동대기중" />
+			</condition>				
+			
+	</state>  
+		
+	
+
+
+	<state name="트리거작동대기중">
+		<onEnter>
+		</onEnter>
+			
+			<condition name="WaitTick"  waitTick="2000" >  <!-- 투르카가 2페이즈 시작떄 모든 파티원 잡아서 졸구간 건너띄우기 될 경우 튜브 대미지 필드가 1단계 진행되다가 바로 이어 2단계로 가는 어색한 경우가 있어서,  2PhaseTubeStep = 2 신호 다 받을 때까지 여기서 WaitTick = 3초 이상 설정함 -->
+				<transition state="트리거작동시작" />
+			</condition>				
+			
+	</state>  
+	
+
+
+	<state name="트리거작동시작">
+		<onEnter>
+		</onEnter>
+
+			<condition name="UserValue" key="2PhaseTubeStep" value="1" > <!--  2페이즈 투르카 AI 에서 이 변수 1 신호 받으면,  튜브 대미지 필드 1단계 진행함-->
+				<transition state="튜브대미지필드_1단계진행"/>	
+			</condition>	  
+
+			<condition name="UserValue" key="2PhaseTubeStep" value="2" > <!--  2페이즈 투르카 AI 에서 이 변수 2 신호 받으면,  튜브 대미지 필드 2단계 진행함-->
+				<transition state="튜브대미지필드_2단계전환_우선1단계제거"/>	
+			</condition>	
+			
+	</state>  
+	
+	<state name="튜브대미지필드_1단계진행">
+		<onEnter>
+		</onEnter>
+
+			<condition name="UserValue" key="MarbleTurkaSupportMany" value="1" operator="GreaterEqual"> <!--  이 변수 1 이상이라는 것은 마법 구슬 오브젝트가 최소 1개라도 있어 보스한테 마력 에너지 제공하고 있다는 뜻이기 때문에, 튜브 대미지필드 생성 로직으로 진행해야 함-->
+				<transition state="1단계_튜브대미지필드_생성"/>  
+			</condition>
+			
+			<condition name="WaitTick"  waitTick="1000" >  <!--  보스가 마법 구슬 오브젝트로 부터 레이저를 맞지 않아서 애디셔널 걸리지 않은 상태면, 튜브 대미지필드 제거함 -->
+				<transition state="1단계_튜브대미지필드_제거" />
+			</condition>				
+			
+	</state>  
+	
+
+	<state name="1단계_튜브대미지필드_생성">
+		<onEnter>			
+			<action name="버프를걸어준다" arg1="102" arg2="50004566" arg3="1" arg4="1" arg5="1" /> <!-- 1단계 튜브대미지필드 발동 , arg1 은 등장 몬스터의 스폰ID, arg2은 애디셔널 코드,  arg3은 애디셔널 레벨,   arg4 = 1 이면 플레이어가 아닌 NPC에게 적용,    arg5 = 1 하면 트리거 박스 영역 외의 모든 지점 체크 -->
+		</onEnter>
+			<!--  2페이즈 투르카 AI 로 부터 2PhaseTubeStep = 2 신호 받을때까지 여기서 대기함  -->
+			<condition name="UserValue" key="2PhaseTubeStep" value="2" > <!--  2페이즈 투르카 AI 에서 이 변수 2 신호 받으면,  튜브 대미지 필드 2단계 진행함-->
+				<transition state="튜브대미지필드_2단계전환_우선1단계제거"/>	
+			</condition>	
+
+			<condition name="UserValue" key="MarbleTurkaSupportMany" value="0" > <!--  혹시 이 타이밍에 구슬 오브젝트로 파괴되면 이 변수 0이 되는데, 튜브 대미지필드 제거 진행하기  -->
+				<transition state="1단계_튜브대미지필드_제거"/>  
+			</condition>
+			
+	</state>  	
+	
+
+	<state name="1단계_튜브대미지필드_제거">
+		<onEnter>
+			<action name="NpcRemoveAdditionalEffect" spawnPointID="102" additionalEffectID="50004566"/>  <!-- 1단계 튜브대미지필드 제거 -->
+		</onEnter>
+
+			<!--  2페이즈 투르카 AI 로 부터 2PhaseTubeStep = 2 신호 받을때까지 여기서 대기함  -->
+			<condition name="UserValue" key="2PhaseTubeStep" value="2" > <!--  2페이즈 투르카 AI 에서 이 변수 2 신호 받으면,  튜브 대미지 필드 2단계 진행함-->
+				<transition state="튜브대미지필드_2단계전환_우선1단계제거"/>	
+			</condition>	
+
+			<condition name="WaitTick"  waitTick="1000" > 
+				<transition state="튜브대미지필드_1단계진행" />
+			</condition>	
+			
+	</state>   
+	
+
+	<state name="튜브대미지필드_2단계전환_우선1단계제거">
+		<onEnter>
+			<action name="NpcRemoveAdditionalEffect" spawnPointID="102" additionalEffectID="50004566"/>  <!-- 우선 1단계 튜브대미지필드  제거 -->
+			<action name="SetUserValue" key="TubeLeveStep" value="0" /> <!-- 이 변수 최초 초기화: 보스가 마법 구슬 오브제트로 인한 애디셔널에 계속 걸려 있으면, 이 변수 1씩 더하는데, 이 변수가 10씩 쌓일 수록 튜브대미지필드 1단계씩 상승시킴 -->
+		</onEnter>
+
+			<condition name="WaitTick"  waitTick="3500" >  <!-- 1단계 튜브대미지필드에서 2단계 튜브대미지필드로 넘어갈 때 바로 넘어가지 말고 잠시  WaitTick 딜레이 상황을 부여-->
+				<transition state="2단계_튜브대미지필드_처음단계" />
+			</condition>	
+			
+	</state>  
+	
+	
+
+	<state name="2단계_튜브대미지필드_처음단계">
+		<onEnter>
+		</onEnter>
+		
+			<condition name="UserValue" key="MarbleTurkaSupportMany" value="1" operator="GreaterEqual"> <!--  이 변수 1 이상이라는 것은 마법 구슬 오브젝트가 최소 1개라도 있어 보스한테 마력 에너지 제공하고 있다는 뜻이기 때문에, 튜브 대미지필드 생성 로직으로 진행해야 함-->
+				<transition state="2단계_튜브대미지필드_1Lv생성"/>  
+			</condition>
+
+			<condition name="WaitTick"  waitTick="1000" >  <!--  보스가 마법 구슬 오브젝트로 부터 레이저를 맞지 않아서 애디셔널 걸리지 않은 상태면, 튜브 대미지필드 제거함 -->
+				<transition state="2단계_튜브대미지필드_제거" />
+			</condition>	
+			
+	</state>  
+	
+	
+	
+	<state name="2단계_튜브대미지필드_1Lv생성">
+		<onEnter>
+			<action name="버프를걸어준다" arg1="102" arg2="50004563" arg3="1" arg4="1" arg5="1" /> <!-- 튜브대미지필드 1Lv 발동 , arg1 은 등장 몬스터의 스폰ID, arg2은 애디셔널 코드,  arg3은 애디셔널 레벨,   arg4 = 1 이면 플레이어가 아닌 NPC에게 적용,    arg5 = 1 하면 트리거 박스 영역 외의 모든 지점 체크 -->
+		
+		</onEnter>
+
+			<condition name="WaitTick"  waitTick="1000" > 
+				<transition state="2단계_튜브대미지필드_TubeLeveStep_더하기" />
+			</condition>		
+			
+	</state>  
+	
+	<state name="2단계_튜브대미지필드_2Lv생성">
+		<onEnter>
+			<action name="NpcRemoveAdditionalEffect" spawnPointID="102" additionalEffectID="50004563"/>  <!-- 2단계 튜브대미지필드 1Lv  제거 -->
+			
+			<action name="버프를걸어준다" arg1="102" arg2="50004564" arg3="1" arg4="1" arg5="1" /> <!-- 튜브대미지필드 2Lv 발동 , arg1 은 등장 몬스터의 스폰ID, arg2은 애디셔널 코드,  arg3은 애디셔널 레벨,   arg4 = 1 이면 플레이어가 아닌 NPC에게 적용,    arg5 = 1 하면 트리거 박스 영역 외의 모든 지점 체크 -->
+		</onEnter>
+
+			<condition name="WaitTick"  waitTick="1000" > 
+				<transition state="2단계_튜브대미지필드_TubeLeveStep_더하기" />
+			</condition>		
+			
+	</state>  
+
+	<state name="2단계_튜브대미지필드_3Lv생성">
+		<onEnter>
+			<action name="NpcRemoveAdditionalEffect" spawnPointID="102" additionalEffectID="50004564"/>  <!-- 2단계 튜브대미지필드 2Lv 제거 -->
+		
+			<action name="버프를걸어준다" arg1="102" arg2="50004565" arg3="1" arg4="1" arg5="1" /> <!-- 튜브대미지필드 3Lv 발동 , arg1 은 등장 몬스터의 스폰ID, arg2은 애디셔널 코드,  arg3은 애디셔널 레벨,   arg4 = 1 이면 플레이어가 아닌 NPC에게 적용,    arg5 = 1 하면 트리거 박스 영역 외의 모든 지점 체크 -->
+		</onEnter>
+
+			<condition name="WaitTick"  waitTick="1000" > 
+				<transition state="2단계_튜브대미지필드_TubeLeveStep_더하기" />
+			</condition>		
+			
+	</state>  
+
+	
+
+	<state name="2단계_튜브대미지필드_TubeLeveStep_더하기">
+		<onEnter>
+			<action name="AddUserValue" key="TubeLeveStep" value="1" /> <!--  이 변수 1씩 더하는데, 이 변수가 10씩 쌓일 수록 튜브대미지필드 1단계씩 상승시킴 -->
+		
+		</onEnter>
+
+			<condition name="WaitTick"  waitTick="1000" >  <!--  1초 마다 체크하게 하기 위해 waitTick="1000" 설정 -->
+				<transition state="2단계_튜브대미지필드_TubeLeveStep_체크" />
+			</condition>		
+
+			<condition name="UserValue" key="TubeLeveStep" value="30" > <!--  이 변수가 30이되면 경고 메시지 띄우기-->
+				<transition state="버프부여구슬제거경고메시지"/>	
+			</condition>	  
+			
+	</state>  
+	
+
+	<state name="2단계_튜브대미지필드_TubeLeveStep_체크">
+		<onEnter>
+		
+		</onEnter>
+		
+			<condition name="UserValue" key="TubeLeveStep" value="10" > <!--  이 변수가 1씩 계속 더해져서 10이 되면, 튜브대미지필드 2Lv를 실행함, 즉 마법구슬 에너지 노출 시간 10초면 1단계 상승됨-->
+				<transition state="2단계_튜브대미지필드_2Lv생성"/>	
+			</condition>	  
+			
+			<condition name="UserValue" key="TubeLeveStep" value="20" > <!--  이 변수가 1씩 계속 더해져서 20이 되면, 튜브대미지필드 3Lv를 실행함, 즉 마법구슬 에너지 노출 시간 10초면 1단계 상승됨-->
+				<transition state="2단계_튜브대미지필드_3Lv생성"/>	
+			</condition>	  
+
+		
+			<condition name="UserValue" key="MarbleTurkaSupportMany" value="1" operator="GreaterEqual"> <!--  이 변수 1 이상이라는 것은 마법 구슬 오브젝트가 최소 1개라도 있어 보스한테 마력 에너지 제공하고 있다는 뜻이기 때문에, 튜브 대미지필드 생성 로직으로 진행해야 함-->
+				<transition state="2단계_튜브대미지필드_TubeLeveStep_더하기"/>  
+			</condition>
+
+			<condition name="WaitTick"  waitTick="1000" > <!-- 마법 구슬 오브젝트 전부 파괴하여, MarbleTurkaSupportMany 변수 0이 되기 때문에 튜브 대미지 필드 전부 제거함 -->
+				<transition state="2단계_튜브대미지필드_제거" />
+			</condition>		
+			
+	</state>  
+
+
+	<state name="버프부여구슬제거경고메시지">
+		<onEnter>
+			<action name="AddUserValue" key="TubeLeveStep" value="-9" /> <!--  이 변수 -9를 빼서 21로 만들기, 절대 20 이하로 만들면 안됨!! 대박 버그임 -->
+			<action name="버프를걸어준다" arg1="102" arg2="50000348" arg3="2" arg4="1" arg5="1" /> <!-- 벙업 버프 (5중첩) 걸기(50000348 2Lv), 홀로그램 소녀 소환몹 몬스터가 보스한테 부여하는 버프랑 동일한 것임-->
+
+			<!-- 안내 메시지 호출하기, 메시지 글씨 작성 엑셀파일은 여기 stringGuide.xlsx   -->
+			<action name="ShowGuideSummary" entityID="29200005" textID="29200005" durationTime="5000"/> 
+		</onEnter>
+		
+			<condition name="WaitTick"  waitTick="1000" >  <!--  다시 메인 체크 단계로 돌아가기 -->
+				<transition state="2단계_튜브대미지필드_TubeLeveStep_체크" />
+			</condition>			
+			
+	</state>  
+	
+
+
+	<state name="2단계_튜브대미지필드_제거">
+		<onEnter>
+			<!-- 몇 Lv가 걸려있는지 모르니 일단 모든 레벨 다 제거함 -->
+			<action name="NpcRemoveAdditionalEffect" spawnPointID="102" additionalEffectID="50004563"/>  <!-- 2단계 튜브대미지필드 1Lv  제거 -->
+			<action name="NpcRemoveAdditionalEffect" spawnPointID="102" additionalEffectID="50004564"/>  <!-- 2단계 튜브대미지필드 2Lv 제거 -->
+			<action name="NpcRemoveAdditionalEffect" spawnPointID="102" additionalEffectID="50004565"/>  <!-- 2단계 튜브대미지필드 3Lv 제거 -->
+			<!-- 중첩 방업 버프도 제거하기 걸려있는지 모르니 무조건 제거 -->
+			<action name="NpcRemoveAdditionalEffect" spawnPointID="102" additionalEffectID="50000348"/>  
+			<action name="SetUserValue" key="TubeLeveStep" value="0" /> <!-- 다시 처음부터 시작하니 이 변수  초기화: 보스가 마법 구슬 오브제트로 인한 애디셔널에 계속 걸려 있으면, 이 변수 1씩 더하는데, 이 변수가 10씩 쌓일 수록 튜브대미지필드 1단계씩 상승시킴 -->
+
+			<action name="HideGuideSummary" entityID="29200005"/> <!-- 혹시 마력의 구슬 제거하라는 경고 메시지 떠있는 상태일 경우를 대비해 메시지 제거 명령어 여기에 설정함   -->
+		</onEnter>
+
+			<condition name="WaitTick"  waitTick="1000" > 
+				<transition state="2단계_튜브대미지필드_처음단계" /> <!-- 2단계_튜브대미지필드 로직 다시 처음부터 실행함 -->
+			</condition>	
+			
+	</state>   
+ 
+ 
+ 
+ 
+	<!-- 이 트리거에서는  <state name="종료"> 로 올일 없음-->
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>
+	
+
+
+	
+
+	
+</ms2>

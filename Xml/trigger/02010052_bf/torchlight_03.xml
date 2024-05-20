@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+    <state name="idle">
+    <onEnter>
+			<action name="액터를설정한다" arg1="20499" arg2="0" arg3="Closed" />
+			<action name="액터를설정한다" arg1="20501" arg2="1" arg3="Closed" /> <!--얼어붙은 문-->
+			<action name="메쉬를설정한다" arg1="20500" arg2="1" arg3="1" arg4="1" arg5="1" /> <!--철문-->
+			<action name="이펙트를설정한다" arg1 = "7002" arg2="0" /> <!-- 횃불에 불이 붙는 이펙트 -->
+			<action name="이펙트를설정한다" arg1 = "7003" arg2="0" /> <!-- 횃불에 불이 붙는 이펙트 -->
+    </onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="102">
+			<transition state="burn_state_01"/>
+		</condition>		
+		
+		<condition name="몬스터가죽어있으면" arg1="103">
+			<transition state="burn_state_02"/>
+		</condition>	
+    <onExit>
+		<action name="이펙트를설정한다" arg1 = "71001" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "71002" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "71003" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "71004" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "71005" arg2="1" />
+		<action name="액터를설정한다" arg1 = "8001" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8002" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8003" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8004" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8005" arg2="0" arg3="Dmg_A" />
+		<action name="몬스터를생성한다" arg1="301,302,303,304,305" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+ 		<action name="대화를설정한다" arg1="1" arg2="993" arg3="$02010052_BF__TORCHLIGHT_03__0$" arg4="3" />  <!-- 카나 말풍선 대사 -->
+    </onExit>
+  </state>
+ 
+  <state name="burn_state_01">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1 = "7002" arg2="1" />
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="103">
+			<transition state="burn_state_complete"/>
+		</condition>
+    <onExit>
+		<action name="이펙트를설정한다" arg1 = "7003" arg2="1" />
+    </onExit>
+  </state>
+
+  <state name="burn_state_02">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1 = "7003" arg2="1" />
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="102">
+			<transition state="burn_state_complete"/>
+		</condition>
+    <onExit>
+		<action name="이펙트를설정한다" arg1 = "7002" arg2="1" />
+    </onExit>
+  </state>
+  
+  
+  <state name="burn_state_complete">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1 = "7503" arg2="1" /> <!-- 얼음 녹는 소리 -->
+		<action name="메쉬를설정한다" arg1="6021-6032" arg2="0" arg3="800" arg4="100" arg5="8" /> <!--벽 해제-->
+		<action name="대화를설정한다" arg1="1" arg2="9999" arg3="$02010052_BF__TORCHLIGHT_03__1$" arg4="3" />  <!-- 카나 말풍선 대사 -->
+			<action name="HideGuideSummary" entityID="200"/>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02010052_BF__TORCHLIGHT_03__2$" arg3="3000"/>		
+		<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="spawn_state"/> 
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+
+  
+    <state name="spawn_state">
+    <onEnter>
+		<action name="ShowGuideSummary" entityID="299" textID="20105203"/> <!-- 거대 다크 슬링을 처치하세요 -->		
+		<action name="메쉬를설정한다" arg1="5100-5110" arg2="0" arg3="800" arg4="100" arg5="8" /> <!--카나 위에 있는 벽 해제-->
+		<action name="이펙트를설정한다" arg1 = "7902" arg2="1" />	<!-- 카나 사라짐 -->
+		<action name="몬스터소멸시킨다" arg1="9999"/> <!-- 카나 사라짐 -->
+		<action name="액터를설정한다" arg1 = "8100" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8006" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8007" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8008" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8009" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "8010" arg2="0" arg3="Dmg_A" />
+	<action name="몬스터를생성한다" arg1="199" arg2="1" /> <!-- 얼음이 녹으며 등장하는 몬스터들 (중간)  -->
+	<action name="몬스터를생성한다" arg1="321,322,323,324,325" arg2="1" /> <!-- 얼음이 녹으며 등장하는 몬스터들 -->
+    </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="199">
+			<transition state="monsterkill"/>
+		</condition>
+	<onExit>
+		<action name="HideGuideSummary" entityID="299"/>
+    </onExit>
+  </state>
+   
+      <state name="monsterkill">
+    <onEnter>
+   		<action name="액터를설정한다" arg1="20499" arg2="1" arg3="Opening" />
+		<action name="액터를설정한다" arg1="20501" arg2="0" arg3="Closed" /> <!--얼어붙은 문-->
+		<action name="메쉬를설정한다" arg1="20500" arg2="0" arg3="0" arg4="0" arg5="0" /> <!--철문-->
+    </onEnter>
+	<onExit>
+    </onExit>
+  </state>
+  
+
+  
+</ms2>

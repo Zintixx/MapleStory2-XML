@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  993  , 이 트리거는 아이오브라펜타 최종 10인 던전의 3마리 보스AI에게 PhasePatternTrigger 변수 신호를 보내 행동패턴에 영향 주로록 설정하였음-->
+<ms2>    
+  <state name="Ready">
+    <onEnter>
+		
+		<action name="SetUserValue" key="PhaseSumTotal" value="0" />	<!-- PhaseSumTotal 변수 0으로 초기 세팅 -->			 
+		<action name="SetUserValue" key="PhasePatternTrigger" value="0" />	<!-- PhasePatternTrigger 변수 0으로 초기 세팅 -->			 
+		 
+	</onEnter>	
+
+		<condition name="여러명의유저를감지했으면" arg1="601" arg2="1"> <!--   MS2TriggerBox  ID = 601, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면   601은 스타팅 지점과 1셋트 전투판 전체  포함하는 넓은 범위-->
+				<transition state="보스3마리_페이즈전환계산"/>
+		</condition>		
+		
+    <onExit>			
+    </onExit> 
+  </state>	
+  
+  
+ <state name="보스3마리_페이즈전환계산">
+    <onEnter>
+
+    </onEnter>
+		<!-- 보스 AI에게 변수 신호 받을때까지 대기하기, 3마리 보스가 HP 80% 이하가 되면 페이즈 넘어가면서 스킬 브레이크 발동함, 만약 한마리가 유독 HP 80% 이하가 안되면, 다른 보스가 대신 HP 75% 이하 더 깍이면 스킬 브레이크 발동할 것임  -->
+		<condition name="UserValue" key="PhaseSumTotal" value="3" operator="GreaterEqual"> 	<!-- PhaseSumTotal 이 변수가 3마리 보스의 AI에서 신호를 받아서 1씩 더해지는데, 일정 이상의 숫자가 되면 각 3마리 보스에게 신호 보내 동시에 페이즈가 변화되도록 설정함 --> 
+			<transition state="보스3마리_페이즈전환실행_2페이즈" /> 
+		</condition>				
+
+  </state>    
+  
+  
+   <state name="보스3마리_페이즈전환실행_2페이즈">	
+        <onEnter>
+			<action name="SetAiExtraData" key="PhasePatternTrigger" value="2" />		<!--  PhasePatternTrigger = 2 신호를 보스 3마리한테 보내서 2페이즈로 전환하도록 함 -->
+        </onEnter>
+			<!-- 보스 AI에게 변수 신호 받을때까지 대기하기, 3마리 보스가 HP 50% 이하가 되면 페이즈 넘어가면서 스킬 브레이크 발동함, 만약 한마리가 유독 HP 50% 이하가 안되면, 다른 보스가 대신 HP 45% 이하 더 깍이면 스킬 브레이크 발동할 것임  -->		
+			<condition name="UserValue" key="PhaseSumTotal" value="9" operator="GreaterEqual"> 	<!-- PhaseSumTotal 이 변수가 3마리 보스의 AI에서 신호를 받아서 1씩 더해지는데, 일정 이상의 숫자가 되면 각 3마리 보스에게 신호 보내 동시에 페이즈가 변화되도록 설정함 --> 
+				<transition state="보스3마리_페이즈전환실행_3페이즈" />
+			</condition>
+				
+        <onExit>
+					
+        </onExit> 
+    </state>	   
+
+	
+   <state name="보스3마리_페이즈전환실행_3페이즈" >	
+        <onEnter>
+			<action name="SetAiExtraData" key="PhasePatternTrigger" value="3" />		<!--  PhasePatternTrigger = 3 신호를 보스 3마리한테 보내서 3페이즈로 전환하도록 함 -->
+        </onEnter>
+			<!-- 보스 AI에게 변수 신호 받을때까지 대기하기, 3마리 보스가 HP 45% 이하가 되면  PhaseSumTotal 1씩 더할 것이고, 그리고 마리 보스가 HP 35% 이하가 되면  PhaseSumTotal 1씩 더하게 됨 -->				
+			<condition name="UserValue" key="PhaseSumTotal" value="15" operator="GreaterEqual"> 	<!-- PhaseSumTotal 이 변수가 3마리 보스의 AI에서 신호를 받아서 1씩 더해지는데, 일정 이상의 숫자가 되면 각 3마리 보스에게 신호 보내 동시에 페이즈가 변화되도록 설정함 --> 
+				<transition state="보스3마리_페이즈전환실행_4페이즈" />
+			</condition>
+			
+        <onExit>
+					
+        </onExit> 
+    </state>	   
+	
+   <state name="보스3마리_페이즈전환실행_4페이즈" >	
+        <onEnter>
+			<action name="SetAiExtraData" key="PhasePatternTrigger" value="4" />		<!--  PhasePatternTrigger = 4 신호를 보스 3마리한테 보내서 4페이즈로 전환하도록 함 -->
+        </onEnter>
+			<!-- 보스 AI에게 변수 신호 받을때까지 대기하기, 3마리 보스가 HP 20% 이하가 되면  최종 페이즈 돌입하는데, 만약 한마리가 유독 HP 20% 이하가 안되면, 다른 보스가 대신 HP 10% 이로 더 깎이면 최종 페이즈 돌입할 것임-->				
+			<condition name="UserValue" key="PhaseSumTotal" value="18" operator="GreaterEqual"> 	<!-- PhaseSumTotal 이 변수가 3마리 보스의 AI에서 신호를 받아서 1씩 더해지는데, 일정 이상의 숫자가 되면 각 3마리 보스에게 신호 보내 동시에 페이즈가 변화되도록 설정함 --> 
+				<transition state="보스3마리_페이즈전환실행_5페이즈" />
+			</condition>
+		
+        <onExit>
+					
+        </onExit> 
+    </state>	
+	
+   <state name="보스3마리_페이즈전환실행_5페이즈" >	
+        <onEnter>
+			<action name="SetAiExtraData" key="PhasePatternTrigger" value="5" />		<!--  PhasePatternTrigger = 5 신호를 보스 3마리한테 보내서 5페이즈로 전환하도록 함 -->
+        </onEnter>
+
+			<condition name="WaitTick" waitTick="1200" > 
+				<transition state="종료" />
+			</condition>		
+		
+        <onExit>
+					
+        </onExit> 
+    </state>	
+	 
+	 
+   <state name="종료" >	
+        <onEnter>
+        </onEnter>
+		
+        <onExit>
+        </onExit> 
+    </state>	
+	
+</ms2>

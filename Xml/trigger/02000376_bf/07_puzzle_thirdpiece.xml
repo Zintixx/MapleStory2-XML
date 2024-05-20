@@ -1,0 +1,887 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 순례자의 뜰 : 같은 그림 맞추기 세 번째 문양--> 
+  
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 	
+			<action name="SetUserValue" key="PickThirdPiece" value="0" />	
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+			<action name="메쉬를설정한다" arg1="3300-3309" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground -->	
+			<action name="메쉬를설정한다" arg1="3310-3319" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_LightOn -->				
+				</onEnter>	
+			<condition name="UserValue" key="PickThirdPiece" value="1">
+			<transition state="RandomPick"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>
+
+    <state name="RandomPick" >
+        <onEnter>		
+				</onEnter>	
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern01_Pick"/>
+				</condition> 
+				<condition name="랜덤조건" arg1="10"> 
+					<transition state="Pattern02_Pick" />
+				</condition>	
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern03_Pick" />
+				</condition>	
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern04_Pick" /> 
+				</condition>		
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern05_Pick" /> 
+				</condition>		
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern06_Pick" /> 
+				</condition>		
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern07_Pick" /> 
+				</condition>		
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern08_Pick" /> 
+				</condition>		
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern09_Pick" /> 
+				</condition>		
+				<condition name="랜덤조건" arg1="10">
+					<transition state="Pattern10_Pick" /> 
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 첫 번째 패턴 뽑힘 -->	
+    <state name="Pattern01_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3300" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_A01-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptA01" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern01_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 첫 번째 패턴 정답 체크 -->
+    <state name="Pattern01_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000565">  <!-- Pattern_A01 -->
+					<transition state="Pattern01_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000565">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern01_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 첫 번째 패턴 정답 -->
+    <state name="Pattern01_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3310" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_A01-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern01_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 		
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 첫 번째 패턴 오답 -->		
+    <state name="Pattern01_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern01_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern01_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern01_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 첫 번째 패턴 다시체크 -->	
+    <state name="Pattern01_Reset02" > 
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3310" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_A01-->				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern01_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>		
+	
+
+<!-- 두 번째 패턴 뽑힘 -->	
+    <state name="Pattern02_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3301" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_A02-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptA02" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern02_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+<!-- 두 번째 패턴 정답 체크 -->
+    <state name="Pattern02_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000566">  <!-- Pattern_A02 -->
+					<transition state="Pattern02_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000566">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern02_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 두 번째 패턴 정답 -->
+    <state name="Pattern02_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3311" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_A02-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern02_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 		
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 두 번째 패턴 오답 -->			
+    <state name="Pattern02_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern02_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern02_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern02_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 두 번째 패턴 다시체크 -->	
+    <state name="Pattern02_Reset02" > 
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3311" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_A02-->				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern02_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>			
+
+	
+<!-- 세 번째 패턴 뽑힘 -->	
+    <state name="Pattern03_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3302" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_A03-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptA03" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern03_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 세 번째 패턴 정답 체크 -->
+    <state name="Pattern03_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000567">  <!-- Pattern_A03 -->
+					<transition state="Pattern03_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000567">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern03_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 세 번째 패턴 정답 -->
+    <state name="Pattern03_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3312" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_A03-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern03_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 		
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 세 번째 패턴 오답 -->		
+    <state name="Pattern03_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern03_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern03_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern03_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 세 번째 패턴 다시체크 -->	
+    <state name="Pattern03_Reset02" > 
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3312" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_A03-->			
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern03_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>		
+
+	
+<!-- 네 번째 패턴 뽑힘 -->	
+    <state name="Pattern04_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3303" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_B01-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptB01" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern04_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 네 번째 패턴 정답 체크 -->
+    <state name="Pattern04_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000568">  <!-- Pattern_B01 -->
+					<transition state="Pattern04_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000568">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern04_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 네 번째 패턴 정답 -->
+    <state name="Pattern04_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3313" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_B01-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern04_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 		
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 네 번째 패턴 오답 -->	
+    <state name="Pattern04_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern04_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern04_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern04_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 네 번째 패턴 다시체크 -->	
+    <state name="Pattern04_Reset02" > 
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3313" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_B01-->				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern04_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>		
+
+	
+<!-- 다섯 번째 패턴 뽑힘 -->	
+    <state name="Pattern05_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3304" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_B02-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptB02" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern05_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 다섯 번째 패턴 정답 체크 -->
+    <state name="Pattern05_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000569">  <!-- Pattern_B02 -->
+					<transition state="Pattern05_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000569">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern05_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 다섯 번째 패턴 정답 -->
+    <state name="Pattern05_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3314" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_B02-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern05_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 		
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 다섯 번째 패턴 오답 -->	
+    <state name="Pattern05_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern05_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern05_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />			
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern05_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 다섯 번째 패턴 다시체크 -->	
+    <state name="Pattern05_Reset02" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3314" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_B02-->					
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern05_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>		
+
+	
+<!-- 여섯 번째 패턴 뽑힘 -->	
+    <state name="Pattern06_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3305" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_C01-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptC01" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern06_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 여섯 번째 패턴 정답 체크 -->
+    <state name="Pattern06_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000570">  <!-- Pattern_C01 -->
+					<transition state="Pattern06_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000570">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern06_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 여섯 번째 패턴 정답 -->
+    <state name="Pattern06_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3315" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_C01-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern06_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 			
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 여섯 번째 패턴 오답 -->	
+    <state name="Pattern06_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern06_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern06_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern06_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 여섯 번째 패턴 다시체크 -->	
+    <state name="Pattern06_Reset02" > 
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3315" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_C01-->				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern06_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>		
+
+	
+<!-- 일곱 번째 패턴 뽑힘 -->	
+    <state name="Pattern07_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3306" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_D01-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptD01" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern07_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 일곱 번째 패턴 정답 체크 -->
+    <state name="Pattern07_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000571">  <!-- Pattern_D01 -->
+					<transition state="Pattern07_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000571">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern07_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 일곱 번째 패턴 정답 -->
+    <state name="Pattern07_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3316" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_D01-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern07_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 		
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 일곱 번째 패턴 오답 -->		
+    <state name="Pattern07_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern07_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern07_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern07_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 일곱 번째 패턴 다시체크 -->	
+    <state name="Pattern07_Reset02" > 
+        <onEnter>	
+			<action name="메쉬를설정한다" arg1="3316" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_D01-->				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern07_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>		
+
+	
+<!-- 여덟 번째 패턴 뽑힘 -->	
+    <state name="Pattern08_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3307" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_D02-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptD02" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern08_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 여덟 번째 패턴 정답 체크 -->
+    <state name="Pattern08_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000572">  <!-- Pattern_D02 -->
+					<transition state="Pattern08_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000572">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern08_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 여덟 번째 패턴 정답 -->
+    <state name="Pattern08_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3317" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_D02-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern08_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 			
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 여덟 번째 패턴 오답 -->	
+    <state name="Pattern08_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern08_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern08_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern08_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 여덟 번째 패턴 다시체크 -->	
+    <state name="Pattern08_Reset02" > 
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3317" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_D02-->					
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern08_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>		
+
+	
+<!-- 아홉 번째 패턴 뽑힘 -->	
+    <state name="Pattern09_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3308" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_E01-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptE01" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern09_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 아홉 번째 패턴 정답 체크 -->
+    <state name="Pattern09_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000573">  <!-- Pattern_E01 -->
+					<transition state="Pattern09_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000573">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern09_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 아홉 번째 패턴 정답 -->
+    <state name="Pattern09_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3318" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_E01-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern09_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 		
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 아홉 번째 패턴 오답 -->	
+    <state name="Pattern09_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern09_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern09_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern09_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 아홉 번째 패턴 다시체크 -->	
+    <state name="Pattern09_Reset02" > 
+        <onEnter>	
+			<action name="메쉬를설정한다" arg1="3318" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_E01-->				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern09_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+
+	
+<!-- 열 번째 패턴 뽑힘 -->	
+    <state name="Pattern10_Pick" > 
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="3309" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Pattern_Ground_E02-->	
+			<action name="SetUserValue" triggerID="8" key="PickFourthPieceExceptE02" value="1" /> 				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern10_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+	
+<!-- 열 번째 패턴 정답 체크 -->
+    <state name="Pattern10_Check" >  
+        <onEnter>	
+				</onEnter>	
+ 		<condition name="DetectLiftableObject" triggerBoxIDs="2003" itemID="30000574">  <!-- Pattern_E02 -->
+					<transition state="Pattern10_CorrectAnswer"/>
+				</condition>		
+ 		<condition name="!DetectLiftableObject" triggerBoxIDs="2003" itemID="30000574">  <!--돌이 없거나 정답이 아니면 -->
+					<transition state="Pattern10_WrongAnswer"/>	
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>		
+	
+<!-- 열 번째 패턴 정답 -->
+    <state name="Pattern10_CorrectAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="1" /> 	<!-- 정답 -->		
+			<action name="메쉬를설정한다" arg1="3319" arg2="1" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_E02-->				
+				</onEnter>		
+			<condition name="UserValue" key="ResetThirdPiece" value="1">
+			<transition state="Pattern10_Reset01"/>	
+		</condition> 	
+			<condition name="UserValue" key="LockThirdPiece" value="1">
+			<transition state="Quit"/>	
+		</condition> 		
+    <onExit> 
+    </onExit> 
+    </state>	
+
+<!-- 열 번째 패턴 오답 -->	
+    <state name="Pattern10_WrongAnswer" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="4" key="CorrectThirdPiece" value="2" />  	<!-- 오답-->
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="Pattern10_Reset01"/>
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Pattern10_Reset01" > 
+        <onEnter>		
+			<action name="SetUserValue" key="CheckThirdPiece" value="0" />				
+			<action name="SetUserValue" key="CorrectThirdPiece" value="0" />		
+			<action name="SetUserValue" key="ResetThirdPiece" value="0" />				
+			<action name="SetUserValue" key="LockThirdPiece" value="0" />				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="Pattern10_Reset02"/>
+				</condition>						
+    <onExit> 
+    </onExit>
+    </state>	
+
+<!-- 열 번째 패턴 다시체크 -->	
+    <state name="Pattern10_Reset02" > 
+        <onEnter>	
+			<action name="메쉬를설정한다" arg1="3319" arg2="0" arg3="100" arg4="0" arg5="5" /> <!-- Pattern_LightOn_E02-->				
+				</onEnter>		
+			<condition name="UserValue" key="CheckThirdPiece" value="1">	
+			<transition state="Pattern10_Check"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>	
+
+	
+    <state name="Quit"> 
+        <onEnter>	
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+ 
+</ms2>
+

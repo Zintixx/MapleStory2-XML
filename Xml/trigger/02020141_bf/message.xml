@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!--  MS2TriggerModel  TriggerModelID = 192, 보스가 계속 방업 보호 버프 상태일때 졸몹 제거하라는 안내 메시지 보여주는 기능임  -->
+<ms2>
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="메시지작동준비" /> 
+		</condition>		
+	</state>  
+
+
+
+	<state name="메시지작동준비">
+        <onEnter>
+			<action name="SetUserValue" key="MessageAlarm" value="0" /> <!-- 메시지 출력 유무를 결정하는 변수-->		
+			<action name="SetUserValue" key="TriggerEnd" value="0" /> <!-- 이 변수 99가 되면 이 트리거 작동 중지함, 이 변수 99 신호는 AI_TurkaHoodForce_Phase03.xml에서 받음 -->		
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="15000" >  <!-- 보스 등장해서 활성화 될때까지 여기서 WaitTick 잠시 대기-->		
+				<transition state="메시지작동대기버프체크" />
+			</condition>
+    </state>
+
+
+
+	<state name="메시지작동대기버프체크">
+		<onEnter>
+
+		</onEnter>	
+		
+			<condition name="UserValue" key="TriggerEnd" value="99" > <!--  AI_TurkaHoodForce_Phase03.xml로 부터 이 변수 99 신호 받으면 트리거 종료함 -->
+				<transition state="트리거종료"/>	
+			</condition>			
+		
+		
+			<condition name="UserValue" key="MessageAlarm" value="13" > <!--  이 변수가 1씩 계속 더해져서 13이 되면, 경고 메시지 출력하는 단계로 넘어가기-->
+				<transition state="경고메시지출력"/>	
+			</condition>	  			
+
+																								<!-- 애디셔널 50000348(레벨1) 졸몹이 보스에게 보호 5중첩 버프 애디셔널 부여함  -->
+			<condition name="CheckNpcAdditionalEffect" spawnPointID="99" additionalEffectID="50000348" level="1" > <!--  EventSpawnPointNPC 의 SpawnPointID가 99 번, 즉   spawnPointID="99" -->
+				<transition state="카운트다운체크"/>  <!-- 보스가 방업버프인 상태라면 이 부분 실행  -->
+			</condition>
+
+			<condition name="!CheckNpcAdditionalEffect" spawnPointID="99" additionalEffectID="50000348" level="1" > <!--  EventSpawnPointNPC 의 SpawnPointID가 99 번, 즉   spawnPointID="99" -->
+				<transition state="카운트다운초기화"/>  <!-- 보스가 방업버프 없는 평상시 상태라면 이 부분 실행  -->
+			</condition>			
+
+
+	</state>
+
+
+
+	<state name="카운트다운체크">
+		<onEnter>
+			<action name="AddUserValue" key="MessageAlarm" value="1" /> <!--  이 변수 1씩 더하는데, 이 변수가 13이 되면 메시지 출력함 -->
+
+		</onEnter>	
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="메시지작동대기버프체크" />
+			</condition>	
+		
+	</state>
+	
+	
+
+
+
+	<state name="카운트다운초기화">
+		<onEnter>
+			<action name="SetUserValue" key="MessageAlarm" value="0" /> <!-- 보스가 50000348 버프가 없는 상태라면 이 변수 0 초기화 -->		
+			<action name="HideGuideSummary" entityID="29200006"/>
+
+		</onEnter>	
+	
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="메시지작동대기버프체크" />
+			</condition>	
+
+        <onExit>
+        </onExit>		
+	</state>
+	
+	
+	
+	
+	<state name="경고메시지출력">
+		<onEnter>
+			<!-- 경고 안내 메시지 출력하기, 메시지 글씨 작성 엑셀파일은 여기 stringGuide.xlsx   -->
+			<action name="ShowGuideSummary" entityID="29200006" textID="29200006" durationTime="4000"/> 	
+		
+			<action name="AddUserValue" key="MessageAlarm" value="-11" />   <!-- 이 변수 -11을 빼서 2로 만들기, 계속 보스가 버프 상태를 유지한다면 11초 뒤에 다시 메시지 출력될 것임-->
+
+		</onEnter>
+		
+			<condition name="WaitTick"  waitTick="1000" >  <!--  다시 메인 체크 단계로 돌아가기 -->
+				<transition state="메시지작동대기버프체크" />
+			</condition>			
+			
+	</state>  	
+
+
+
+	<state name="트리거종료">
+		<onEnter>
+			<action name="HideGuideSummary" entityID="29200006"/>
+
+		</onEnter>
+			
+	</state>  		
+	
+</ms2>

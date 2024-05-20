@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Init">
+		<onEnter> 
+			<action name="CreateFieldGame" type="GuildVsGame" />
+			<action name="UserTagSymbol" symbol1="guild_game_red" symbol2="guild_game_blue" />
+		</onEnter>
+		<condition name="CountUsers" arg1="9000" arg2="1" arg3=">=" userTagID="1" >
+			<transition state="Wait"/> 
+		</condition>
+	</state>
+	
+	  <state name="Wait">
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001129" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="10001130" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="10001131" arg2="1" />
+		</onEnter>
+		<condition name="AllOf">
+			<group>
+				<condition name="오브젝트가반응했으면" arg1="10001129" arg2="0" />
+				<!-- <condition name="CheckSameUserTag" triggerBoxID="9000" /> -->
+			</group>
+			<transition state="Move01"/>
+		</condition>
+	  </state>
+	  
+	  <state name="Move01">	
+		<onEnter>
+			<action name="DebugString" string="강제이동 트리거가 발동됩니다." /> 
+			<!-- 
+				<action name="MoveToPortal" boxId="9000" userTagId="1" portalId="1"  />
+				<action name="MoveToPortal" boxId="9000" userTagId="2" portalId="2"  />
+				desc 속성은 설명을 위해서 적어둔 것이니 사용할때는 지우고 사용해주시면 됩니다. 
+			 -->
+			<action name="MoveToPortal" userTagId="1" portalId="1"  />
+			<action name="MoveToPortal" userTagId="2" portalId="2"  />
+			
+			<action name="ShowEventResult" type="notice" text="1팀 안녕?\n줄바꿈확인" duration="3000" userTagID="1"  />
+			<action name="ShowEventResult" type="notice" text="2팀 안녕?\n줄바꿈확인" duration="3000" userTagID="2"  />
+			<action name="PlaySystemSoundByUserTag" userTagID="1" soundKey="System_ShowGuideSummary_01" />
+			<action name="PlaySystemSoundByUserTag" userTagID="2" soundKey="System_PartTimeJob_Right_01" />
+			
+			<action name="GuildVsGameScoreByUser" triggerBoxID="9000" score="1" desc="9000 트리거 박스 안의 유저수가 많은 팀에 1점을 추가한다." />
+			<action name="GuildVsGameGiveReward"  type="exp" teamID="1" isWin="true" desc="길드 경험치를 지급한다."/>
+			<action name="GuildVsGameGiveReward"  type="fund" teamID="1" isWin="true" desc="길드 기금을 지급한다."/>
+			<action name="GuildVsGameGiveContribution" teamID="1" isWin="true" desc="길드 기여도를 지급한다."/>
+			
+			<action name="GuildVsGameGiveReward"  type="exp" teamID="2" isWin="false" desc="길드 경험치를 지급한다."/>
+			<action name="GuildVsGameGiveReward"  type="fund" teamID="2" isWin="false" desc="길드 기금을 지급한다."/>
+			<action name="GuildVsGameGiveContribution" teamID="2" isWin="false" desc="길드 기여도를 지급한다."/>
+			
+			
+			<action name="GuildVsGameResult"  desc="결과창을 출력"/>
+			<action name="GuildVsGameLogResult"  desc="로그를 남긴다"/>
+			<action name="GuildVsGameLogWonByDefault"  teamID="1" desc="1팀의 부전승 보상 로그를 남긴다."/>
+
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">		
+					<transition state="PrintWinnerTeam"/>
+				</condition>		
+	  </state>
+	  
+	   <state name="PrintWinnerTeam">	
+			<onEnter>
+			</onEnter>
+			<condition name="GuildVsGameScoredTeam" teamID="1">
+				<action name="DebugString" string="1팀이 득점 했습니다" />
+				<transition state="Reset"/>
+			</condition>
+			<condition name="GuildVsGameScoredTeam" teamID="2">
+				<action name="DebugString" string="2팀이 득점 했습니다" />
+				<transition state="Reset"/>
+			</condition>
+			<condition name="GuildVsGameScoredTeam" teamID="0">
+				<action name="DebugString" string="아직 득점한 팀이 없습니다." />
+				<transition state="Reset"/>
+			</condition>
+	  </state>
+
+	  
+	  <state name="Reset">	
+		<onEnter>	
+			<action name="DebugString" string="트리거 초기화" /> 		
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="Wait"/>	
+				</condition>		
+	  </state>
+</ms2>

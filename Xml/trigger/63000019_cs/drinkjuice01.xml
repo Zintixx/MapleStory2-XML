@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 90000437 VIP의 호출 / 90000438 전사를 향한 축배/ 90000442 주스 마시기 -->
+<ms2>
+	<state name="Wait">   
+        <onEnter> 
+			<action name="이펙트를설정한다" arg1="5300" arg2="0"/> <!-- 목표지점 바닥 웨이홍 앞-->
+			<action name="이펙트를설정한다" arg1="5400" arg2="0"/> <!-- 목표지점 바닥 바텐더 앞-->			
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- 가이드 서머리 사운드 이펙트-->
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- 화살표 사운드 이펙트-->				
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- 목료 완료 사운드 이펙트-->					
+			<action name="이펙트를설정한다" arg1="5100" arg2="0"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5101" arg2="0"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5102" arg2="0"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5103" arg2="0"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5200" arg2="0"/> <!-- 제 2경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5201" arg2="0"/> <!-- 제 2경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5202" arg2="0"/> <!-- 제 2경로 안내-->	
+			<action name="이펙트를설정한다" arg1="8000" arg2="0"/> <!-- WeiHong 00001395-->	
+			<action name="이펙트를설정한다" arg1="8001" arg2="0"/> <!-- VasaraChen 00001348-->	
+			<action name="이펙트를설정한다" arg1="8002" arg2="0"/> <!-- WeiHong 00001396-->			
+			<action name="몬스터를생성한다" arg1="101,201,301,401,501" arg2="0" /> 				
+				</onEnter>	
+		<condition name="유저를감지했으면" arg1="9000">
+					<transition state="LodingDelay01"/>
+				</condition>										
+    <onExit> 
+    </onExit>
+    </state>
+
+    <state name="LodingDelay01" posX="300" posY="199">
+        <onEnter>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="LodingDelay02"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+		
+    <state name="LodingDelay02" posX="300" posY="199"> 	
+        <onEnter>	
+				</onEnter>	
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000438" arg3="3" > <!--  웨이홍과 마지막 퀘스트 마치고 맵 이동할 차례 -->
+					<transition state="QuestComplete01"/>
+				</condition>				
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000442" arg3="3" > <!--  주스 마시기 퀘스트 완료 후 맵 이동할 차례 -->
+					<transition state="QuestComplete01"/>
+				</condition>				
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000442" arg3="2" > <!--  바텐더 만나기 퀘스트 진행중 -->
+					<transition state="MoveToBartender01"/>
+				</condition>		
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000437" arg3="3" > <!--  맵 입장 직후 웨이홍과 대화하기 퀘스트 완료 후 다음 퀘스트 수락할 차례-->
+					<transition state="TalkToWeiHong02"/>
+				</condition>		
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000437" arg3="2" > <!--  맵 입장 직후 웨이홍과 대화하기 퀘스트 완료 가능 상태 -->
+					<transition state="MoveToWeiHong01"/>
+				</condition>	
+    <onExit> 
+    </onExit>
+    </state>			
+	
+
+<!--  첫 번째 퀘스트 완료 가능 상태-->
+    <state name="MoveToWeiHong01" posX="300" posY="199">
+        <onEnter>		
+			<action name="ShowGuideSummary" entityID="10024010" textID="10024010"/>  <!-- 가이드 : 웨이 홍을 향해 이동하기-->		
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->		
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- 화살표 사운드 이펙트-->				
+			<action name="이펙트를설정한다" arg1="5100" arg2="1"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5101" arg2="1"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5102" arg2="1"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5103" arg2="1"/> <!-- 제 1경로 안내-->		
+			<action name="이펙트를설정한다" arg1="5300" arg2="1"/> <!-- 목표지점 바닥 웨이홍 앞-->			
+				</onEnter>	
+		<condition name="유저를감지했으면" arg1="9001">	
+					<transition state="TalkToWeiHong01"/>
+				</condition>					
+    <onExit> 
+			<action name="HideGuideSummary" entityID="10024010"/>			
+			<action name="이펙트를설정한다" arg1="5100" arg2="0"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5101" arg2="0"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5102" arg2="0"/> <!-- 제 1경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5103" arg2="0"/> <!-- 제 1경로 안내-->		
+			<action name="이펙트를설정한다" arg1="5300" arg2="0"/> <!-- 목표지점 바닥 웨이홍 앞-->					
+    </onExit>
+    </state>			
+
+    <state name="TalkToWeiHong01" posX="300" posY="199">
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="10024020" textID="10024020"/>  <!-- 가이드 : 웨이 홍과 대화하기-->			
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->	
+				</onEnter>		
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000437" arg3="3" > <!--  맵 입장 직후 웨이홍과 대화하기 퀘스트 완료 후 다음 퀘스트 수락할 차례-->
+					<transition state="TalkToWeiHong02"/>
+				</condition>		
+    <onExit>  
+			<action name="HideGuideSummary" entityID="10024020"/>			
+    </onExit>
+    </state>			
+	 
+    <state name="TalkToWeiHong02" posX="300" posY="199"> 
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="10024030" textID="10024030"/>  <!-- 가이드 : 웨이 홍과 대화하기-->			
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->	
+				</onEnter>		
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000438" arg3="2" > <!--  바텐더 만나기 퀘스트 완료 가능 상태 -->
+					<transition state="MoveToBartender01"/>	
+				</condition>		
+    <onExit>  
+    </onExit>
+    </state>			
+	
+    <state name="MoveToBartender01" posX="300" posY="199">
+        <onEnter>		
+			<action name="ShowGuideSummary" entityID="10024040" textID="10024040"/>  <!-- 가이드 : 방향키를 이용해 화살표가 가리키는 곳으로 이동하기-->		
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- 화살표 사운드 이펙트-->				
+			<action name="이펙트를설정한다" arg1="5200" arg2="1"/> <!-- 제 2경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5201" arg2="1"/> <!-- 제 2경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5202" arg2="1"/> <!-- 제 2경로 안내-->		
+			<action name="이펙트를설정한다" arg1="5400" arg2="1"/> <!-- 목표지점 바닥 바텐더 앞-->					
+				</onEnter>	
+		<condition name="유저를감지했으면" arg1="9002">	
+			<transition state="MoveToBartender02"/>
+		</condition> 					
+    <onExit> 
+			<action name="HideGuideSummary" entityID="10024040"/>			
+			<action name="이펙트를설정한다" arg1="5400" arg2="0"/> <!-- 목표지점 바닥 바텐더 앞-->						
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- 화살표 사운드 이펙트-->				
+			<action name="이펙트를설정한다" arg1="5200" arg2="0"/> <!-- 제 2경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5201" arg2="0"/> <!-- 제 2경로 안내-->	
+			<action name="이펙트를설정한다" arg1="5202" arg2="0"/> <!-- 제 2경로 안내-->				
+    </onExit>
+    </state>			
+	
+    <state name="MoveToBartender02" posX="300" posY="199">
+        <onEnter>	
+			<action name="ShowGuideSummary" entityID="10024050" textID="10024050"/>  <!-- 가이드 : 바텐더와 대화하기-->			
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->						
+				</onEnter>	
+				<condition name="무조건" >
+			<transition state="TalkToBartender01"/>
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>			
+	
+    <state name="TalkToBartender01" posX="300" posY="199">
+        <onEnter>	
+				</onEnter>		
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000438" arg3="3" > <!--  바텐더에게 첫 번째 퀘스트 완료한 상태 -->
+					<transition state="QuestComplete01"/>
+				</condition>		
+    <onExit> 	
+    </onExit>
+    </state>			
+
+    <state name="QuestComplete01">
+		<onEnter>
+			<action name="HideGuideSummary" entityID="10024050"/>					
+			</onEnter>
+				<condition name="퀘스트유저를감지하면" arg1="9900" arg2="90000442" arg3="3" > <!--  주스 마시기 퀘스트 완료 후 맵 이동할 차례 -->
+					<transition state="TalkingDelay01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+<!-- 두번째 퀘스트 및 가이드 완료 상태  -->		
+    <state name="TalkingDelay01" posX="300" posY="199">
+        <onEnter>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="WeiHongTalk01"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="WeiHongTalk01">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  			
+			<action name="대화를설정한다" arg1="2" arg2="11000251" arg3="$63000019_CS__DRINKJUICE01__0$" arg4="5" />    	<!-- Voice 00001395 -->  
+			<action name="이펙트를설정한다" arg1="8000" arg2="1"/> <!-- WeiHong 00001395-->				
+			<action name="스킵을설정한다" arg1="WeiHongTalk02"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="WeiHongTalk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="WeiHongTalk02">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="이펙트를설정한다" arg1="8000" arg2="0"/> <!-- WeiHong 00001395-->				
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="WeiHongTalk03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="WeiHongTalk03">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001547" arg3="$63000019_CS__DRINKJUICE01__1$" arg4="4" />     	<!-- Voice 00001348 --> 
+			<action name="이펙트를설정한다" arg1="8001" arg2="1"/> <!-- VasaraChen 00001348-->				
+			<action name="스킵을설정한다" arg1="WeiHongTalk04"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="WeiHongTalk04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="WeiHongTalk04">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>		
+			<action name="이펙트를설정한다" arg1="8001" arg2="0"/> <!-- VasaraChen 00001348-->				
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="WeiHongTalk05"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="WeiHongTalk05">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11000251" arg3="$63000019_CS__DRINKJUICE01__2$" arg4="8" />    	<!-- Voice 00001396 --> 
+			<action name="이펙트를설정한다" arg1="8002" arg2="1"/> <!-- WeiHong 00001396-->				
+			<action name="스킵을설정한다" arg1="MovingDelay01"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="8000">
+					<transition state="MovingDelay01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="MovingDelay01" >
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>		
+			<action name="이펙트를설정한다" arg1="8002" arg2="0"/> <!-- WeiHong 00001396-->				
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="Quit"/>
+		</condition>
+	</state>				
+
+	<state name="Quit">
+		<onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>			
+			<action name="유저를이동시킨다" arg1="63000020" arg2="1" arg3="9900"/>	
+		</onEnter>
+    <onExit>
+    </onExit>
+	</state>		
+ 
+</ms2>
+

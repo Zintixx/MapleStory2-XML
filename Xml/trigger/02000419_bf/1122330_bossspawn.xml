@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="시작대기중">
+    <onEnter>
+            <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>  <!-- 보스 Kill하고 맵에 나가기 포탈 초기화 설정 -->	
+            <action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0"/>  <!-- 보스 Kill하고 맵에 나가기 포탈 초기화설정 -->	
+			
+            <action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0"/> <!-- 스타팅 포인트에서 다리가 사라지면 맵으로 바로 순간이동하는 맵 내부 포탈 설정 -->	
+
+    </onEnter>
+			<condition name="유저를감지했으면" arg1="101">
+					<transition state="몬스터등장"/>
+			</condition>
+  </state>
+  
+
+	<state name="몬스터등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2000" arg2="0"/>
+            <action name="메쉬를설정한다" arg1="2001-2015" arg2="0" arg3="0" arg4="200" arg5="0.5" />   <!-- BridgeSeconds 지점의 다리 순차적으로 제거하기-->	
+            <action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="1"/>								<!-- 시작지점에서 전투판으로 순간이도 시켜주는 포탈 생성-->
+		
+	
+            <action name="메쉬를설정한다" arg1="1001-1025" arg2="0" arg3="0" arg4="200" arg5="0.5" />   <!-- BridgeStart  지점의 다리 순차적으로 제거하기-->	
+			
+			
+		</onEnter>
+				<!-- 여기서 보스가 HP 절반 깍여 두번째 전투판으로 이동하거나, 아니면 그냥 죽거나 둘 중 하나의 이벤트가 발생하게 됨-->
+		
+			<!-- 여기서 보스가 HP 절반 깍여 두번째 전투판으로 이동할 경우-->
+				<!-- 23290005 보스 한테 신호 받게 됨  <event eventName="TriggerEvent" target="SetUserValue" param1="1122330" param2="NextMove" param3="1"/> -->
+				<condition name="UserValue" key="NextMove" value="1" >		
+					<transition state="두번째전투판이동다리생성"/>	
+				</condition>	
+			
+			<!-- 보스가 죽을 경우-->
+				<condition name="몬스터가죽어있으면" arg1="2000">
+					<transition state="연출딜레이"/>
+				</condition>						
+
+	</state>  
+
+
+   <state name="두번째전투판이동다리생성" >	
+        <onEnter>	
+		
+            <action name="메쉬를설정한다" arg1="2001-2015" arg2="1" arg3="1" arg4="120" arg5="0.5"  />   <!-- BridgeSeconds, 두번째 전투판으로 이동하기 위한 다리가 순차적으로 생성 -->				
+            <action name="메쉬를설정한다" arg1="5001-5002" arg2="0" arg3="0" arg4="0" arg5="0" />   <!-- 두번째 전투판으로 이동하기 위한 다리가 생성되면 5001 : 투명 벽 제거하기, 5002 : 지란트 소환몹이 등장하는 곳에 설치된 투명벽도 제거하기-->	
+		
+        </onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2000">
+					<transition state="연출딜레이"/>
+				</condition>		
+		
+        <onExit>
+        </onExit>
+    </state>
+	
+
+	<state name="연출딜레이">
+				<condition name="WaitTick" waitTick="2000"> 
+					<transition state="연출종료"/>
+				</condition>
+	</state>
+
+
+
+	<state name="연출종료">
+		<onEnter>
+
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/> <!-- 보스 죽이면 나가기 포탈 생성하기, 두번째 전투판에서 생성 -->	
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/> <!-- 보스 죽이면 나가기 포탈 생성하기, 첫번째 전투판에서 생성 -->	
+            <action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0"/> <!-- 스타팅 포인트에서 다리가 사라지면 맵으로 바로 순간이동하는 맵 내부 포탈 설정 -->	
+            <action name="메쉬를설정한다" arg1="1001-1025" arg2="1" arg3="1" arg4="1" arg5="1" />   <!-- BridgeStart -->	
+            <action name="메쉬를설정한다" arg1="3001-3014" arg2="0" arg3="0" arg4="0" arg5="0" />   <!-- 시작지점 철창벽 -->	
+			
+			<!--원래 이 설정은 보스가 두번째 전투판 점프 이동할 때 설정하는 것인데,  점프 이동 없이 첫번째 전투판에서 보스가 죽을 수도 있기 때문에 여기서도 다시한번 설정함 -->	
+            <action name="메쉬를설정한다" arg1="2001-2015" arg2="1" arg3="1" arg4="120" arg5="0.5"  />   <!-- BridgeSeconds, 두번째 전투판으로 이동하기 위한 다리가 순차적으로 생성 -->				
+            <action name="메쉬를설정한다" arg1="5001-5002" arg2="0" arg3="0" arg4="0" arg5="0" />   <!-- 두번째 전투판으로 이동하기 위한 다리가 생성되면 5001 : 투명 벽 제거하기, 5002 : 지란트 소환몹이 등장하는 곳에 설치된 투명벽도 제거하기-->	
+			
+			<action name="DungeonClear" /> 
+		</onEnter>
+
+	</state>
+
+
+	
+</ms2>

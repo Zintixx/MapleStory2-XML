@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  120  -->
+
+<ms2>
+
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="기본셋팅" /> 
+		</condition>		
+	</state>  
+	
+	
+	
+  <state name="기본셋팅">
+    <onEnter>
+        <action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>	 <!-- 맵 나가기 포탈, 시작 지점에 -->			
+        <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>	 <!-- 맵 나가기 포탈, 전투판 지점에  -->			
+        <action name="포탈을설정한다" arg1="601" arg2="0" arg3="0" arg4="0"/> <!-- 맵 나가기 포탈, 전투판으로 가기 위한 맵 내부 포탈  -->							
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="199"> <!--   MS2TriggerBox   TriggerObjectID = 199, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        199은 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+				<transition state="보스등장이벤트대기"/>
+		</condition>
+  </state>
+
+
+	<state name="보스등장이벤트대기">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="99" arg2="0" /><!--이슈라 등장-->
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000"> 
+				<transition state="연출대기"/>
+			</condition>		
+
+	</state>  
+
+
+	<state name="연출대기">
+		<onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="23000113" illust="Ishura_Dark_Idle" script="$02020120_BF__BOSSSPAWN__0$" duration="4000" voice="ko/Npc/00002192"/>		
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000"> 
+				<transition state="전투진행"/>
+			</condition>		
+
+	</state>  
+  
+ 
+ 
+ 	<state name="전투진행">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="601" arg2="1" arg3="1" arg4="1"/> <!-- 맵 나가기 포탈, 전투판으로 가기 위한 맵 내부 포탈  -->							
+		</onEnter>
+
+			<condition name="몬스터가죽어있으면" arg1="99">
+				<transition state="종료딜레이"/>
+			</condition>
+
+	</state>  
+ 
+
+		
+	 <state name="종료딜레이">
+		<onEnter> 
+			 <action name="업적이벤트를발생시킨다" arg3="IshuraDungeonClear_Quest"/>  <!--arg1 = "특정트리거 박스 안에 있는 유저만 체크하고자 할때"   arg2 = "trigger"    즉 trigger 이거만 쓸수 있음  특정 트리거 박스 안의 유저만 체크 방식을 사용하고자 할때 이 2개 넣어야 함-->	
+																		<!--   arg1 , arg2  넣지 않으면 맵 안에 있는 모든 유저에게 이 업적이 반영됨   -->
+		</onEnter>	
+		
+			<condition name="WaitTick" waitTick="2500" > 
+				<transition state="마무리연출" />
+			</condition>
+	</state> 
+
+
+	 <state name="마무리연출">
+		<onEnter> 
+			<action name="SideNpcTalk" type="talk" npcID="23000113" illust="Ishura_Dark_Idle" script="$02020120_BF__BOSSSPAWN__2$" duration="6576" voice="ko/Npc/00002194"/>		
+		</onEnter>	
+		
+			<condition name="WaitTick" waitTick="9000" > 
+				<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>	 <!-- 맵 나가기 포탈, 시작 지점에 -->			
+				<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>   <!-- 맵 나가기 포탈, 전투판 지점에  -->			
+				<transition state="종료" />
+			</condition>
+	</state> 	
+	
+
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>
+	
+
+</ms2>

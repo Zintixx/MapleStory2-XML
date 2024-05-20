@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+    <state name="대기" >   <!--오브젝트 활성화-->
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="12000401" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="12000400" arg2="2" />
+			<action name="오브젝트반응설정한다" arg1="12000402" arg2="2" />
+			<action name="오브젝트반응설정한다" arg1="12000403" arg2="2" />
+        </onEnter>
+		<condition name="AllOf" >
+			<group>
+				<condition name="오브젝트가반응했으면" arg1="12000401" arg2="0" />
+					<action name="오브젝트반응설정한다" arg1="12000401" arg2="1" />
+			</group>
+				<transition state="PC_MOVE_01"/>
+		</condition>		
+        <onExit> 			
+        </onExit>  
+    </state>  	
+   
+    <!-- <state name="PC_01" >	 --> 
+        <!-- <onEnter>		 -->
+        <!-- </onEnter>	 -->
+		<!-- <condition name="WaitTick" waitTick="2000" > -->
+			<!-- <transition state="PC_02"/>	 -->
+		<!-- </condition> -->
+    <!-- </state> -->
+	
+    <state name="PC_MOVE_01" >	<!--오브젝트 조작하면 패트롤 시작-->
+        <onEnter>
+        </onEnter>	
+		<condition name="WaitTick" waitTick="1000" >
+			<action name="PatrolConditionUser" patrolName="MS2PatrolData0" patrolIndex="1" additionalEffectID="73000006" />
+			<!-- <action name="PatrolConditionUser" patrolName="MS2PatrolData2" patrolIndex="2" additionalEffectID="73000007"/> -->
+			
+			<transition state="PC_MOVE_02_Delay"/>	
+		</condition>
+    </state>
+	
+    <state name="PC_MOVE_02_Delay" >	
+        <onEnter>  
+        </onEnter>	
+		<condition name="WaitTick" waitTick="500" > 
+			<transition state="PC_MOVE_02"/>	
+		</condition>
+    </state>  
+	 
+    <state name="PC_MOVE_02" >				<!--패트롤 시작하면 1.5초 간격으로 트리거박스 901에 변신푸는 애디셔널 지속적으로 뿌림-->
+        <onEnter>
+			<action name="버프를걸어준다" arg1="901" arg2="73000009" arg3="1" arg4="0" arg5="0" />		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="PC_MOVE_02_Delay"/>	 
+		</condition>
+
+    </state> 
+	
+    <state name="RESET_DELAY" >	
+        <onEnter>
+        </onEnter>	
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="대기"/>	
+		</condition>
+    </state>
+	
+    <!-- <state name="ModelingPC_02" >	 -->
+        <!-- <onEnter> -->
+        <!-- </onEnter>	 -->
+		<!-- <condition name="WaitTick" waitTick="5000" > -->
+			<!-- <transition state="대기"/>	 -->
+		<!-- </condition> -->
+    <!-- </state> -->
+</ms2>

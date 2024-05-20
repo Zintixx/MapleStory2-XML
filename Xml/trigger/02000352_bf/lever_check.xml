@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+
+  <state name="레버체크">
+     <onEnter>
+	 	<action name="오브젝트반응설정한다" arg1="10000823" arg2="0" />
+		<action name="오브젝트반응설정한다" arg1="10000824" arg2="0" />
+    </onEnter>
+	    <condition name="오브젝트가반응했으면" arg1="10000823" arg2="1">
+            <transition state="레버체크2" />
+        </condition>
+		<condition name="오브젝트가반응했으면" arg1="10000824" arg2="1">
+            <transition state="레버체크2" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+
+  <state name="레버체크2">
+      <onEnter>
+    </onEnter>
+	    <condition name="오브젝트가반응했으면" arg1="10000823" arg2="0">
+            <transition state="레버체크3_1개" />
+        </condition>
+		<condition name="오브젝트가반응했으면" arg1="10000824" arg2="0">
+            <transition state="레버체크4_1개" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="레버체크3_1개">
+      <onEnter>
+    </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10000824" arg2="0">
+            <transition state="레버체크완료" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+      <state name="레버체크4_1개">
+      <onEnter>
+    </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10000823" arg2="0">
+            <transition state="레버체크완료" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+    <state name="레버체크완료">
+      <onEnter>
+<!-- 	  	<action name="연출UI를설정한다" arg1="1"/> 	
+		<action name="연출UI를설정한다" arg1="3"/> 
+		<action name="카메라를선택한다" arg1="8002" arg2="1"/> -->
+	  	<action name="타이머를설정한다" arg1="2" arg2="2" />
+		</onEnter>
+			<condition name="시간이경과했으면" arg1="2">
+			<transition state="열림"/>
+			</condition>	
+		<onExit>
+		</onExit>
+  </state>
+  
+  
+      <state name="열림">
+      <onEnter>
+	  	<action name="타이머를설정한다" arg1="2" arg2="2" />
+		<action name="메쉬를설정한다" arg1="6054-6056" arg2="0" arg4="200" arg5="15" /> <!--빨간선 사라지게-->
+		<action name="메쉬를설정한다" arg1="6154-6156" arg2="1" arg4="200" arg5="0" /> <!--파란선 나타나게-->	
+		<action name="이펙트를설정한다" arg1="9000005" arg2="1" /> <!--Sound EFfect on-->	
+		</onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="열림_끝"/>
+		</condition>
+		<onExit>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+<!-- 		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/> -->
+		<action name="메쉬를설정한다" arg1="6003" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+		</onExit>
+  </state>
+
+     <state name="열림_끝">
+    <onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		 <action name="ShowGuideSummary" entityID="113" textID="40011"/> <!-- 다음 지역으로 이동하세요 -->
+		 <action name="카메라를선택한다" arg1="8002" arg2="0"/><!-- 연출 카메라 -->
+		 <action name="타이머를설정한다" arg1="3" arg2="3" />
+    </onEnter>
+			<condition name="시간이경과했으면" arg1="3">
+		<transition state="종료"/>
+		</condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="113"/>
+    </onExit>
+  </state>
+ 
+   
+   <state name="종료">
+    <onEnter>
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state> 
+  
+</ms2>

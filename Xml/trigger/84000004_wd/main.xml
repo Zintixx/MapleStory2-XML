@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	 <state name="시작_타이머설정"> <!-- 필드 생성되자마자 타이머걸어서 유저가 오거나 말거나 10분 타이머가 돌아가게 한다.  -->
+        <onEnter>
+			<action name="타이머를설정한다" arg1="4000" arg2="300" arg3="1" arg4="0" /> <!-- 5분 타이머. 기념촬영장은 맥시멈 5분만 돌아가도록 한다. 포털을 사용할 수 없기 때문에 시간에 제한을 둔다. -->
+			<action name="포탈을설정한다" arg1="10001" arg2="0" arg3="0" arg4="0"/>			
+        </onEnter>
+		<condition name="무조건" > 
+			<transition state="카메라세팅" />
+		</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="카메라세팅">
+        <onEnter>
+			<action name="SetPhotoStudio" isEnable="1" /> 	<!-- 자유각도변환 UI ON -->
+			<action name="포탈을설정한다" arg1="10001" arg2="1" arg3="1" arg4="1"/>		
+		</onEnter>
+			<condition name="무조건" > 
+				<transition state="강제퇴장대기" />
+			</condition>	
+		<onExit>
+		</onExit>
+	</state>		
+
+	<state name="강제퇴장대기">
+        <onEnter>
+		</onEnter>
+		   	<condition name="UserValue" key="exitstudio" value="1"> <!-- 관리인에게 말 걸어 나가겠다고 할 때 npcscriptfunction에서 triggervalue 컬럼에 입력된 값을 쏨(setuservalue와 같은 역할). 이 값을 받은 경우 다음 state로 넘긴다. -->
+				<transition state="강제퇴장준비" />
+			</condition>	
+		<condition name="시간이경과했으면" arg1="4000">
+			<transition state="강퇴안내" />
+		</condition>			
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="강퇴안내">
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="28400138"/>		<!-- 가이드 메시지 : 잠시 후, 기념 촬영장이 폐쇄됩니다. 모두 퇴장해 주세요. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000" > 		<!-- 대기시간 5초 -->
+			<transition state="강제퇴장준비"/>
+		</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="강제퇴장준비">
+        <onEnter>
+			<action name="HideGuideSummary" entityID="28400138"/>		<!-- 가이드 메시지 : 잠시 후, 기념 촬영장이 폐쇄됩니다. 모두 퇴장해 주세요. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" > 		<!-- 대기시간 5초 -->
+			<transition state="강제퇴장"/>
+		</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="강제퇴장">
+        <onEnter>
+			<action name="RoomExpire" />		<!-- 방을 완전 폐쇄해버리는 명령어. 룸스테이지에서 제한시간이 다 되었을때의 처리와 같은 로직 -->
+		</onEnter>
+		<onExit>
+		</onExit>
+	</state>	
+	
+</ms2>

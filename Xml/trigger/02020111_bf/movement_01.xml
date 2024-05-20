@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+	<state name="시작"> 
+		<onEnter>			
+		</onEnter>
+		
+		<condition name="유저를감지했으면" arg1="1001" >
+				<transition state="환경변화" />		
+		</condition>		
+	</state>
+<!--**********************환경 변화 페이즈_1*******************************************************************************************-->			
+	<state name="환경변화"> 
+		<onEnter>		
+		</onEnter>
+        <condition name="UserValue" key="Movement" value="0">			
+				<transition state="시작" />				
+	    </condition>			
+        <condition name="UserValue" key="dark" value="1">
+				<transition state="페이드아웃" />				
+		</condition>		
+	</state>	
+	
+	  <state name="페이드아웃">
+        <onEnter>
+		    <action name="포탈을설정한다" arg1="5" arg2="0" arg3="0" arg4="0" />			
+		    <action name="포탈을설정한다" arg1="6" arg2="0" arg3="0" arg4="0" />		
+		    <action name="포탈을설정한다" arg1="7" arg2="0" arg3="0" arg4="0" />		
+		    <action name="포탈을설정한다" arg1="8" arg2="0" arg3="0" arg4="0" />			
+  		    <action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>						
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="조명변경"/>
+			</condition>			
+	  </state>		
+	  
+	  <state name="조명변경">
+        <onEnter>
+     		<action name="버프를걸어준다" arg1="101" arg2="62100014" arg3="1" arg4="1"/> 				
+  		    <action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+     		<action name="이벤트UI를설정한다" arg1="1" arg2="$02020111_BF__MOVEMENT_01__0$" arg3="3000"/> 						
+			<action name="SetAmbientLight" arg1="52,48,38"/>	
+			<action name="SetDirectionalLight" arg1="0, 0, 0" arg2="206,174,84"/>	
+		    <action name="버프를걸어준다" arg1="1001" arg2="75000001" arg3="1" />			
+        </onEnter>
+				<condition name="WaitTick" waitTick="12000">
+					<transition state="페이드인"/>
+			</condition>		
+        <condition name="UserValue" key="Movement" value="0">			
+				<transition state="시작" />				
+	    </condition>			
+	  </state>	 
+
+	  <state name="페이드인">
+        <onEnter>
+  		    <action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>					
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="유저이동"/>
+			</condition>			
+	  </state>	
+
+	  <state name="유저이동">
+        <onEnter>		
+ <!-- 		    <action name="유저를이동시킨다" arg1="02020111" arg2="5" />		--> 
+      		<action name="이벤트UI를설정한다" arg1="1" arg2="$02020111_BF__MOVEMENT_01__2$" arg3="4000"/> 			
+        </onEnter>		
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="조명리셋"/>
+			</condition>			
+	  </state>	  
+	  
+	  <state name="조명리셋">
+        <onEnter>		
+	    	<action name="대화를설정한다" arg1="1" arg2="101" arg3="$02020111_BF__MOVEMENT_01__1$" arg4="3" arg5="0" />				
+             <action name="MoveNpcToPos" spawnPointID="101" pos="-3743,294,1651" rot="0,0,45" />
+	    <action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+			<action name="SetAmbientLight" arg1="183,189,201"/>	
+			<action name="SetDirectionalLight" arg1="192,210,211" arg2="170,170,170"/>	
+		    <action name="버프를걸어준다" arg1="1001" arg2="75000002" arg3="1" />			
+		    <action name="버프를걸어준다" arg1="1002" arg2="75000002" arg3="1" />		
+		    <action name="버프를걸어준다" arg1="1003" arg2="75000002" arg3="1" />		
+		    <action name="버프를걸어준다" arg1="1004" arg2="75000002" arg3="1" />		
+		    <action name="버프를걸어준다" arg1="1005" arg2="75000002" arg3="1" />	
+			<action name="이펙트를설정한다" arg1="200031,200032,200033,200034,200035" arg2="1" />														
+		    <action name="포탈을설정한다" arg1="9" arg2="1" arg3="1" arg4="1" />	
+		    <action name="포탈을설정한다" arg1="5" arg2="0" arg3="0" arg4="0" />			
+		    <action name="포탈을설정한다" arg1="6" arg2="1" arg3="1" arg4="1" />		
+		    <action name="포탈을설정한다" arg1="7" arg2="1" arg3="1" arg4="1" />		
+		    <action name="포탈을설정한다" arg1="8" arg2="1" arg3="1" arg4="1" />				
+        </onEnter>
+        <condition name="UserValue" key="Movement" value="0">		
+				<transition state="시작" />				
+	    </condition>			
+        <condition name="UserValue" key="dark" value="2">
+					<transition state="중앙지역이동_1"/>
+			</condition>			
+	  </state>	
+ 
+	  <state name="중앙지역이동_1">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="200031,200032,200033,200034,200035" arg2="0" />				
+             <action name="MoveNpcToPos" spawnPointID="101" pos="-13, 288, 1951" rot="0,0,45" />	<!--페이즈 꼬임을 방지하기 위한 npc이동장치 --> 		
+		    <action name="포탈을설정한다" arg1="9" arg2="0" arg3="0" arg4="0" />			
+  <!--		   <action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		-->			
+        </onEnter>
+				<condition name="WaitTick" waitTick="100">
+ <!-- 		        <action name="유저를이동시킨다" arg1="02020111" arg2="4" />			-->	
+					<transition state="중앙지역이동_1_페이드인"/>
+					
+			</condition>			
+	  </state>	
+
+	  <state name="중앙지역이동_1_페이드인">
+        <onEnter>	
+  	<!--	    <action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		-->			
+        </onEnter>
+				<condition name="WaitTick" waitTick="100">
+				<transition state="포탈설정_1"/>				
+			</condition>			
+	  </state>		
+
+	  <state name="포탈설정_1">
+        <onEnter>	
+	        <action name="포탈을설정한다" arg1="5" arg2="1" arg3="1" arg4="1" />			
+		    <action name="포탈을설정한다" arg1="6" arg2="1" arg3="1" arg4="1" />		
+		    <action name="포탈을설정한다" arg1="7" arg2="1" arg3="1" arg4="1" />		
+		    <action name="포탈을설정한다" arg1="8" arg2="1" arg3="1" arg4="1" />		
+        </onEnter>
+        <condition name="UserValue" key="Movement" value="0">		
+				<transition state="시작" />				
+	    </condition>				
+	  </state>		  
+
+</ms2>

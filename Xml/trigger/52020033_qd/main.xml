@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 스카이 포트리스, 위기상황 : 제이든,흑성회 이용해 PC의 능력을 시험하다 -->
+<ms2>
+	<state name="대기">	
+		<condition name="유저를감지했으면" arg1="9000" >   
+			<transition state="퀘스트조건체크"/>
+		</condition>
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="퀘스트조건체크">	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="3"> 
+				<transition state="가버려_대기"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="2"> 
+				<transition state="가버려_대기"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="1"> 
+				<transition state="부유도_대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001750" arg3="3"> 
+				<transition state="기본_대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001750" arg3="2"> 
+				<transition state="소개_대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001750" arg3="1"> 
+				<transition state="소개_대기"/>
+			</condition>		
+		<onExit> 
+		</onExit>
+	</state>
+	
+	<state name="기본">
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="기본_대기">
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="1"> 
+				<transition state="부유도_대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001750" arg3="3"> 
+				<transition state="조건확인_대기01"/>
+			</condition>	
+			<condition name="!퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="1"> 
+				<transition state="조건확인_대기01"/>
+			</condition>		
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="조건확인_대기01">
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="1"> 
+				<transition state="부유도_대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001750" arg3="3"> 
+				<transition state="조건확인_대기02"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001750" arg3="2"> 
+				<transition state="조건확인_대기02"/>
+			</condition>				
+			<condition name="!퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="1"> 
+				<transition state="조건확인_대기02"/>
+			</condition>				
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="조건확인_대기02">
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="1"> 
+				<transition state="부유도_대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001750" arg3="3"> 
+				<transition state="조건확인_대기01"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001750" arg3="2"> 
+				<transition state="조건확인_대기01"/>
+			</condition>				
+			<condition name="!퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="1"> 
+				<transition state="조건확인_대기01"/>
+			</condition>					
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="가버려_대기">
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="3"> 
+				<transition state="부유도로가버려"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="2"> 
+				<transition state="부유도로가버려"/>
+			</condition>
+			<condition name="!퀘스트유저를감지하면" arg1="9000" arg2="50001751" arg3="3"> 
+				<transition state="퀘스트조건체크"/>
+			</condition>	
+		<onExit> 
+		</onExit> 
+	</state>	
+			
+	<state name="부유도로가버려">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="52020001" arg2="1"/>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000">  	<!-- 맵 튕기고 이동 명령 못 받을 상태를 대비한 안전장치 -->
+				<transition state="부유도로가버려"/> 
+			</condition> 
+		<onExit> 
+		</onExit>
+    </state>	
+	
+	<state name="소개_대기">
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+			<action name="유저를이동시킨다" arg1="52020033" arg2="10"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="소개_준비" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="소개_준비">
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="소개_세로줌인01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>				
+	
+	<state name="소개_세로줌인01">		<!-- setsceneskip 1 set --> <!-- setsceneskip set --> <!-- setsceneskip set -->
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8000,8001" arg2="0"/>  
+			<action name="ShowCaption" type="NameCaption" title="$map:52020033$" desc="크리티아스 정찰 임무 지원 중" align="centerLeft" offsetRateX="-0.05" offsetRateY="0.15" duration="12000" scale="2.0" />				
+			<action name="SetSceneSkip" arg1="소개_스킵완료" arg2="nextState"/> <!-- setsceneskip 1 set --> <!-- setsceneskip set --> <!-- setsceneskip set -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="7000" > 
+				<transition state="소개_가로줌인01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="소개_가로줌인01">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8002,8003" arg2="0"/>  
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Walking"/>
+			<action name="AddBalloonTalk" spawnPointID="0" msg="흠…" duration="2000" delayTick="0"/>			
+			<action name="AddBalloonTalk" spawnPointID="101" msg="…네, 현재까지 이상 없습니다." duration="2000" delayTick="5"/>	
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close -->	
+        </onEnter>
+			<condition name="WaitTick" waitTick="5000" > 
+				<transition state="소개_완료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="소개_스킵완료"> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> 
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="유저를이동시킨다" arg1="52020033" arg2="10"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="전투시작01"/>
+			</condition>
+		<onExit> 
+		</onExit>
+	</state>		 
+	
+    <state name="소개_완료" > 
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="2.0"/>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="조건확인_대기01"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="부유도_대기">
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+			<action name="유저를이동시킨다" arg1="52020033" arg2="10"/>
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="부유도_준비" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="부유도_준비">
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="부유도_탐색01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>					
+	
+	<state name="부유도_탐색01"> 	<!-- setsceneskip 2 set --> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set -->	 
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8002,8003" arg2="0"/>  
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC_Walking"/>	
+			<action name="AddCinematicTalk" npcID="0" msg="(함선 아래서부터 들려오는 요란한 소리.\n침입자를 막기 위한 결계, 그리고 방어군과의 전투가 벌어진 듯하다.)" duration="4000" />			
+			<action name="SetSceneSkip" arg1="부유도_스킵완료" arg2="nextState"/> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set -->	        
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="부유도_탐색02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="부유도_탐색02">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8005" arg2="0"/>  
+			<action name="AddCinematicTalk" npcID="11003650" illustID="Neirin_serious" msg="…네, 함장님.\n알겠습니다." duration="3000" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="부유도_탐색03" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="부유도_탐색03">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8010" arg2="0"/>  
+			<action name="AddCinematicTalk" npcID="11003650" illustID="Neirin_serious" msg="$MyPCName$님. 함장님께서는 더 이상의 접근은 어렵다고 판단하셨습니다.\n스카이 포트리스로는요." duration="3000" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="부유도_탐색04" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>		
+
+	<state name="부유도_탐색04">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003650" illustID="Neirin_serious" msg="하지만 비상 탈출에 성공하신다면 크리티아스에 진입할 수는 있을 거예요.\n위험할 수도 있겠지만…" duration="3000" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="부유도_탐색05" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>			
+	
+	<state name="부유도_탐색05">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="0" msg="어떻게든, 저곳에 가야 하니…\n무엇이든 해 보겠습니다." duration="3000" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="부유도_탐색06" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>				
+	
+	<state name="부유도_탐색06">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003650" illustID="Neirin_serious" msg="탈출용 수송선이 있는 격납고도 공격받고 있고…\n지금으로는 낙하산을 타고 주변 섬으로 내려가 경로를 찾는 방법 뿐이에요." duration="3000" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="부유도_탐색07" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+		
+	<state name="부유도_탐색07">
+        <onEnter>	
+			<action name="AddCinematicTalk" npcID="11003650" illustID="Neirin_serious" msg="끝까지 지원해 드리지 못해 죄송합니다, $MyPCName$님.\n그럼… 행운을 빕니다!" duration="3000" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="자막구간_00" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="자막구간_00">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8011" arg2="0"/> 
+ 			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/> 	        
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="자막구간_01" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+    <state name="자막구간_01" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="나는 작은 낙하산 하나에 몸을 의지한 채\n짙은 안개 속으로 몸을 던졌다."/>
+ 			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/> 			
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="자막구간_03"/>
+			</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="자막구간_02" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="이방인의 침입을 허락하지 않겠다는 듯 나를 밀어내는 강한 바람…\n이 안개 너머에서는 무슨 일이 벌어지고 있는 것일까."/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="7000">
+				<transition state="자막구간_03"/>
+			</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="자막구간_03" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="안개 사이로 찢어진 땅이 보인다….\n저곳으로 내려가, 크리티아스로 들어갈 방법을 찾아보자!"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close -->			
+				</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="부유도_종료"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="부유도_스킵완료">  <!-- setsceneskip 2 fin --> <!-- setsceneskip 2 fin --> <!-- setsceneskip 2 fin --> <!-- setsceneskip 2 fin -->
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="부유도_종료"/>
+			</condition>
+		<onExit> 
+		</onExit> 	
+	</state>	
+	
+    <state name="부유도_종료" > 
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="2.0"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/>				
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000"> 
+					<transition state="최종맵이동"/> 
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="최종맵이동">
+        <onEnter>
+			<action name="유저를이동시킨다" arg1="52020001" arg2="1"/>	<!-- 안개 속 부유도로 자동 이동 -->	
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/>	
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000">  	<!-- 맵 튕기고 이동 명령 못 받을 상태를 대비한 안전장치 -->
+				<transition state="최종맵이동"/> 
+			</condition> 
+		<onExit> 
+		</onExit>
+    </state>	
+	
+	<state name="종료">
+    </state>	
+
+</ms2>

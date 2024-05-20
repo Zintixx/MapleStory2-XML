@@ -1,0 +1,735 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	 <state name="대기">
+			<condition name="유저를감지했으면" arg1="100">
+					<!--캐릭터 크기 120% 버프-->
+					<action name="버프를걸어준다" arg1="199" arg2="49179101" arg3="1" arg5="0" /> 
+					<transition state="인트로"/>
+			</condition>
+	  </state>
+
+   <state name="인트로" posX="392" posY="526">
+        <onEnter>
+			<!--여기서 모든 웨폰 오브젝트 set-->
+			<action name="SetCube" IDs="5000-5003" isVisible="false"/>
+			<action name="SetCube" IDs="5101-5105" isVisible="false"/>
+			<action name="SetCube" IDs="5201-5209" isVisible="false"/>
+			<action name="SetCube" IDs="5301-5311" isVisible="false"/>
+			<action name="SetCube" IDs="5401-5414" isVisible="false"/>
+			<action name="SetCube" IDs="5501-5512" isVisible="false"/>
+			<action name="SetCube" IDs="5601-5621" isVisible="false"/>
+			<action name="SetCube" IDs="5701-5721" isVisible="false"/>
+			<action name="SetCube" IDs="5801-5822" isVisible="false"/>
+			<action name="SetCube" IDs="5901-5915" isVisible="false"/>
+			<action name="SetCube" IDs="51001-51024" isVisible="false"/>
+		    <action name="카메라를선택한다" arg1="300" arg2="1"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3" arg2="$51000001_DG__MAIN__0$" />
+			<action name="스킵을설정한다" arg1="튜토리얼시작" />
+        </onEnter>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="튜토리얼시작">
+		<onEnter>
+			<action name="SetCube" IDs="5000-5003" randomCount="4" isVisible="true"/>
+			<action name="ShowGuideSummary" entityID="25100101" textID="25100101" durationTime='3000'/> 
+		</onEnter>
+				<condition name="WaitTick" waitTick="3500" > 
+					<transition state="튜토리얼02"/>
+				</condition>
+				<condition name="유저를감지했으면" arg1="101">
+						<transition state="1라운드카메라"/>
+				</condition>
+	</state>
+
+	<state name="튜토리얼02">
+		<onEnter>
+			<action name="ShowGuideSummary" entityID="25100102" textID="25100102" durationTime='3000'/> 
+		</onEnter>
+				<condition name="WaitTick" waitTick="3500" > 
+					<transition state="튜토리얼03"/>
+				</condition>
+				<condition name="유저를감지했으면" arg1="101">
+						<transition state="1라운드카메라"/>
+				</condition>
+	</state>
+
+	<state name="튜토리얼03">
+		<onEnter>
+			<action name="ShowGuideSummary" entityID="25100103" textID="25100103" durationTime='2500'/> 
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="튜토리얼04"/>
+				</condition>
+				<condition name="유저를감지했으면" arg1="101">
+						<transition state="1라운드카메라"/>
+				</condition>
+	</state>
+
+	<state name="튜토리얼04">
+		<onEnter>
+			<action name="ShowGuideSummary" entityID="25100104" textID="25100104" durationTime='2500'/> 
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="튜토리얼시작"/>
+				</condition>
+				<condition name="유저를감지했으면" arg1="101">
+						<transition state="1라운드카메라"/>
+				</condition>
+	</state>
+
+	<!--각 라운드별로 카메라 이동 시간 만큼 대기 시간을 가짐-->
+   <state name="1라운드카메라" posX="392" posY="526">
+        <onEnter>
+		    <action name="카메라를선택한다" arg1="301" arg2="1"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="1라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="1라운드대기">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_start"/> 
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="arcade_startcheck"/> 
+			<action name="HideGuideSummary" entityID="25100101"/>
+			<action name="HideGuideSummary" entityID="25100102"/>
+			<action name="HideGuideSummary" entityID="25100103"/>
+			<action name="HideGuideSummary" entityID="25100104"/>
+			<!--randomCount : 웨폰 오브젝트를 몇 개나 배치할지 결정-->
+			<action name="SetCube" IDs="5101-5105" randomCount="3" isVisible="true"/>
+			<!--lifeCount : 최대 사망 횟수-->
+			<action name="ArcadeSpringFarm" type="StartGame" lifeCount="3" />
+			<!--SetInteractScore : 반응 오브젝트를 반응했을 때 score-->
+			<action name="ArcadeSpringFarm" type="SetInteractScore" id="19000022" score="50" />
+			<action name="ArcadeSpringFarm" type="SetInteractScore" id="11000013" score="10000" />
+			<action name="ArcadeSpringFarm" type="SetInteractScore" id="11000014" score="10000" />
+			<action name="ArcadeSpringFarm" type="SetInteractScore" id="11000015" score="10000" />
+			<action name="ArcadeSpringFarm" type="SetInteractScore" id="11000016" score="10000" />
+			<action name="ArcadeSpringFarm" type="SetInteractScore" id="11000017" score="10000" />
+			<!--SpawnMonster : 웨폰 오브젝트로 몬스터를 공격시 획득하는 score-->
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1001,1002,1003" score="5000" />
+			<!--uiDuration : 라운드 UI 노출 시간-->	
+			<!--timeScoreType : 게임시간에 따른 점수 획득 방법-->	
+			<!--timeScoreRate : 게임시간에 따른 점수 획득 양-->	
+			<!--roundDuration : 라운드 제한 시간(ms),타이머와 시간을 맞춘다-->	
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="1" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="타이머를설정한다" arg1="100001" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="1,5,1" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="1라운드시작"/>
+				</condition>
+	</state>
+	
+	
+	
+	
+	<state name="1라운드시작">
+				<condition name="시간이경과했으면" arg1="100001">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1001,1002,1003">
+					<!-- 레드마인 26587 문제로 다음 라운드 시작까지 무적을 걸어준다 -->
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />		
+					<transition state="1라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="1라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_1round"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="1" />
+			<action name="타이머를초기화한다" arg1="100001"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="2" arg3="101"/>
+					<transition state="2라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="2라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="2" arg3="101"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="102" > 
+					<transition state="2라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="2라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="302" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="2라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="2라운드대기">
+		<onEnter>
+			<action name="타이머를설정한다" arg1="100002" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="SetCube" IDs="5201-5209" randomCount="5" isVisible="true"/>
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1101,1102,1103,1104" score="5000" />	
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="2" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="2,5,1" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="2라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="2라운드시작">
+		<onEnter>
+			<!-- 레드마인 26587 문제로 다음 라운드 시작까지 걸어준 무적 삭제 -->
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100002">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1101,1102,1103,1104">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />		
+					<transition state="2라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="2라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_2round"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="2" />
+			<action name="타이머를초기화한다" arg1="100002"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="3" arg3="102"/>
+					<transition state="3라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="3라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="3" arg3="102"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="103" > 
+					<transition state="3라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="3라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="303" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="3라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="3라운드대기">
+		<onEnter>
+			<action name="타이머를설정한다" arg1="100003" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="SetCube" IDs="5301-5311" randomCount="6" isVisible="true"/>
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1201,1202,1203,1204,1205,1206,1207" score="5000" />	
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="3" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="3,5,1" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="3라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="3라운드시작">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100003">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1201,1202,1203,1204,1205,1206,1207">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />	
+					<transition state="3라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="3라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_3round"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="3" />
+			<action name="타이머를초기화한다" arg1="100003"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="4" arg3="103"/>
+					<transition state="4라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="4라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="4" arg3="103"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="104" > 
+					<transition state="4라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="4라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="304" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="4라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="4라운드대기">
+		<onEnter>
+			<action name="SetCube" IDs="5401-5414" randomCount="7" isVisible="true"/>
+			<action name="타이머를설정한다" arg1="100004" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1301,1302,1303,1304,1305,1306,1307,1308" score="5000" />	
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="4" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="4,5,1" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="4라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="4라운드시작">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100004">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1301,1302,1303,1304,1305,1306,1307,1308">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />	
+					<transition state="4라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="4라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_4round"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="4" />
+			<action name="타이머를초기화한다" arg1="100004"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="5" arg3="104"/>
+					<transition state="5라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="5라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="5" arg3="104"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="105" > 
+					<transition state="5라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="5라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="305" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="5라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="5라운드대기">
+		<onEnter>
+			<action name="SetCube" IDs="5501-5512" randomCount="6" isVisible="true"/>
+			<action name="타이머를설정한다" arg1="100005" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1401,1402,1403,1404,1405" score="5000" />
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="5" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="5,5,1" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="5라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="5라운드시작">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100005">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1401,1402,1403,1404,1405">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />	
+					<transition state="5라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="5라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_5round"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="5" />
+			<action name="타이머를초기화한다" arg1="100005"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="6"  arg3="105"/>
+					<transition state="6라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="6라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="6"  arg3="105"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="106" > 
+					<transition state="6라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="6라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="306" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="6라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="6라운드대기">
+		<onEnter>
+			<action name="SetCube" IDs="5601-5621" randomCount="10" isVisible="true"/>
+			<action name="타이머를설정한다" arg1="100006" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1501,1502,1503,1504,1505,1506,1507,1508,1509,1510" score="5000" />
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="6" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="6,10,6" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="6라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="6라운드시작">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100006">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1501,1502,1503,1504,1505,1506,1507,1508,1509,1510">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />	
+					<transition state="6라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="6라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_6round"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="6" />
+			<action name="타이머를초기화한다" arg1="100006"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="7"  arg3="106"/>
+					<transition state="7라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="7라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="7"  arg3="106"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="107" > 
+					<transition state="7라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="7라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="307" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="7라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="7라운드대기">
+		<onEnter>
+			<action name="SetCube" IDs="5701-5721" randomCount="12" isVisible="true"/>
+			<action name="타이머를설정한다" arg1="100007" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1601,1602,1603,1604,1605,1606,1607,1608,1609,1610" score="5000" />
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="7" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="7,10,6" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="7라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="7라운드시작">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100007">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1601,1602,1603,1604,1605,1606,1607,1608,1609,1610">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />	
+					<transition state="7라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="7라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_7round"/> 
+			<action name="타이머를초기화한다" arg1="100007"/>
+			<action name="ArcadeSpringFarm" type="ClearRound" round="7" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="8"  arg3="107"/>
+					<transition state="8라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="8라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="8"  arg3="107"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="108" > 
+					<transition state="8라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="8라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="308" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="8라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="8라운드대기">
+		<onEnter>
+			<action name="SetCube" IDs="5801-5822" randomCount="12" isVisible="true"/>
+			<action name="타이머를설정한다" arg1="100008" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1701,1702,1703,1704,1705,1706,1707,1708,1709,1710,1711" score="5000" />
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="8" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="8,10,6" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="8라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="8라운드시작">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100008">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1701,1702,1703,1704,1705,1706,1707,1708,1709,1710,1711">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />	
+					<transition state="8라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="8라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_8round"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="8" />
+			<action name="타이머를초기화한다" arg1="100008"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="9"  arg3="108"/>
+					<transition state="9라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="9라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="9"  arg3="108"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="109" > 
+					<transition state="9라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="9라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="309" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="9라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="9라운드대기">
+		<onEnter>
+			<action name="SetCube" IDs="5901-5915" randomCount="8" isVisible="true"/>
+			<action name="타이머를설정한다" arg1="100009" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="1901,1902,1903,1904,1905,1906,1907,1908,1909,1910,1911,1912,1913,1914,1915" score="5000" />
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="9" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="9,10,6" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="9라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="9라운드시작">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100009">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="1901,1902,1903,1904,1905,1906,1907,1908,1909,1910,1911,1912,1913,1914,1915">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />	
+					<transition state="9라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="9라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_9round"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="9" />
+			<action name="타이머를초기화한다" arg1="100009"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="10"  arg3="109"/>
+					<transition state="10라운드유저위치"/>
+				</condition>
+	</state>
+
+	<state name="10라운드유저위치">
+		<onEnter>
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="10"  arg3="109"/>		
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="110" > 
+					<transition state="10라운드카메라"/>
+				</condition>
+	</state>	
+	
+   <state name="10라운드카메라" posX="392" posY="526">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="310" arg2="1"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="10라운드대기"/>
+				</condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onExit>
+    </state>
+
+	<state name="10라운드대기">
+		<onEnter>
+			<action name="SetCube" IDs="51001-51024" randomCount="6" isVisible="true"/>
+			<action name="타이머를설정한다" arg1="100010" arg2="120" arg3="1" arg4="1" arg5="-30" arg6="TR" />
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="2001" score="10000" />
+			<action name="ArcadeSpringFarm" type="SpawnMonster" spawnID="2002,2003,2004,2005" score="5000" />
+			<action name="ArcadeSpringFarm" type="StartRound" uiDuration="3000" round="10" timeScoreType="remain" timeScoreRate="500" roundDuration="120000" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="10,10,6" arg4="120"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="10라운드시작"/>
+				</condition>
+	</state>
+
+	<state name="10라운드시작">
+		<onEnter>
+			<action name="버프를삭제한다" arg1="199" arg2="70000091" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="100010">
+					<transition state="종료"/>
+				</condition>
+				<condition name="몬스터가죽어있으면" arg1="2001,2002,2003,2004,2005">
+					<action name="버프를걸어준다" arg1="199" arg2="70000091" arg3="1" arg5="0" />	
+					<transition state="10라운드종료"/>
+				</condition>
+	</state>
+
+	<state name="10라운드종료">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="springfarm_clear"/> 
+			<action name="ArcadeSpringFarm" type="ClearRound" round="10" />
+			<action name="타이머를초기화한다" arg1="100010"/>
+			<action name="이벤트UI를설정한다" arg1="7" arg2="" arg3="2000" arg4="0" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+				    <action name="유저를이동시킨다" arg1="51000001" arg2="44"  arg3="110"/>
+					<transition state="종료"/>
+				</condition>
+	</state>
+
+	  <state name="종료">
+			<onEnter>
+				<action name="PlaySystemSoundInBox" arg2="System_Ending_Popup_01"/>
+				<action name="ArcadeSpringFarm" type="EndGame"/>
+				<action name="유저를이동시킨다" arg1="51000001" arg2="44"  arg3="110"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="진짜끝"/>
+				</condition>
+	  </state>
+
+	  <state name="진짜끝">
+	  </state>
+</ms2>

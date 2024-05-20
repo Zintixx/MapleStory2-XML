@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUser10_GuildRaid.xml" /> -->
+<!-- 다음 스테이트 이름 : DungeonStart -->
+
+<ms2>
+    <state name="CheckUser10_GuildRaid">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="30" arg3="1" arg4="0" arg5="0"/>  		<!-- 최대 30초 대기 -->				
+        </onEnter>
+				<!-- 10명이면 바로 시작 -->		
+				<condition name="CountUsers" arg1="9900" arg2="10" arg3="GreaterEqual">
+					<transition state="MaxCount10_Start"/>	
+				</condition>	
+				<condition name="CountUsers" arg1="9900" arg2="10" arg3="Less"> 
+					<transition state="MaxCount10_Wait"/>	
+				</condition>			
+    </state>
+
+    <state name="MaxCount10_Wait">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="40012" textID="40012" durationTime="3000"/> 		
+        </onEnter>		
+				<condition name="CountUsers" arg1="9900" arg2="10" arg3="GreaterEqual">		<!-- 10명이면 바로 시작 -->
+					<transition state="MaxCount10_Start"/>	
+				</condition>	
+				<condition name="시간이경과했으면" arg1="1"> 
+					<transition state="MaxCount10_Start"/>
+				</condition>					
+				<condition name="WaitTick" waitTick="6000" > 
+					<transition state="MaxCount10_Wait"/>
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="MaxCount10_Start">	
+        <onEnter>
+			<!-- 최대 30초 대기 타이머 초기화-->		
+			<action name="타이머를초기화한다" arg1="1"/>  		
+        </onEnter>		
+				<condition name="무조건" > 
+					<transition state="DungeonStart"/>	
+				</condition>			
+        <onExit>
+        </onExit>
+    </state>
+	
+</ms2>

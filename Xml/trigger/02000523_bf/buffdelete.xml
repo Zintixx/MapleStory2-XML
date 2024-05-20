@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>  <!-- TriggerModelID =  7 , 이 트리거는   AI_SandstoneGiantBlueShine.xml    AI_SandstoneDwarf2CloseAttack.xml   AI_SandstoneDwarf2LongAttack.xml 로 부터 신호를 받음   -->
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="기본셋팅" /> 
+		</condition>		
+	</state>  
+
+
+	<state name="기본셋팅">
+		<onEnter>
+			<action name="SetUserValue" key="MonsterMany" value="0" />		<!-- MonsterMany변수 0으로 초기 셋팅, 소환몹이 한마리 나올때마다 1 더하고 한마리씩 죽으몬 1 빼기 함, 몬스터 등장 이전에 이 변수 0 초기화 하기-->		 	 
+			<action name="SetUserValue" key="BuffDeleteOk" value="0" />		<!-- BuffDeleteOk 0으로 초기 셋팅, 보스가 소환몹 호출하면 AI_SandstoneGiantBlueShine.xml로 부터 1 셋팅 신호를 받게 됨-->		 	 
+		</onEnter>
+		
+		<condition name="WaitTick" waitTick="2000" >
+			<transition state="트리거작동01" />
+		</condition>
+			
+	</state>
+	
+	<state name="트리거작동01">
+		<onEnter>
+		</onEnter>
+		
+		<condition name="UserValue" key="BuffDeleteOk" value="1"> <!-- 보스가 버프 사용 행동을 한 다음 바로, 이 트리거에게 BuffDeleteOk= 1 셋팅 신호를 보냄, (AI_SandstoneGiantBlueShine.xml로 )-->
+			<transition state="트리거작동02대기중" />
+		</condition>	
+
+	</state>	
+
+
+	<state name="트리거작동02대기중">
+		<onEnter>
+		</onEnter>
+		
+		<condition name="WaitTick" waitTick="1200" > 
+			<transition state="트리거작동02" />
+		</condition>
+			
+	</state>
+
+	<state name="트리거작동02">
+		<onEnter>
+
+		</onEnter>
+		 <!-- 중요!!:: 소환몹이 등장하자마자 바로 죽어서 소환몹 AI에서 신호를 못받는 경우가 생길수 있어서, 그러면 보스는 버프 상태인데 MonsterMany=0 인 어긋난 상태가 될 수 있기 때문에, 그냥 MonsterMany 변수가 0이면 무조건 반복적으로 버프 제거 작동하도록 함 -->
+		<condition name="UserValue" key="MonsterMany" value="0"> <!-- 소환몹이 다 죽어 이 변수가 0되면 버프 제거 단계로 가기 -->
+			<transition state="버프제거" />
+		</condition>	
+
+	</state>
+
+	
+	
+	<state name="버프제거">
+		<onEnter>
+			<!-- 어떤 버프가 걸려있는지 잘 모르겠으니 그냥 3개 버프 다 제거함 (트리거 박스 ID 안에 있는 대상 ) ,  참고로 버프 부여는 보스AI인 AI_SandstoneGiantBlueShine.xml 에서 진행함 -->
+			<action name="버프를걸어준다" arg1="900" arg2="50001098" arg3="1" arg4="1"/>   <!--물방업, 마방업, 공업 버프 제거 하는 기능이 있는 버프 부여하기 ,   arg1="900" 보스 스폰 ID ,  arg3="1" 은 애디셔널 레벨 -->	
+														<!--몬스터에게 애디셔널 거는 경우:  arg4 = "타겟이 몬스터로 하려면 1 인 경우  ->    arg1 = "몬스터스폰ID", arg2 = "애디셔널코드", arg3 = "애디셔널레벨", arg4 = "타겟이 몬스터로 하려면 1설정"  -->	
+		
+			<action name="SetUserValue" key="BuffDeleteOk" value="0" /> <!-- 이 변수 0 초기화 시켜, 보스가 졸몹 소환때까지 다시 대기 상태가 되도록 함 -->
+		</onEnter>
+		
+		<condition name="WaitTick" waitTick="3700" >  <!-- 트리거나 다음 단계로 너무 빨리 넘어가면 꼬일 수 있어서 WaitTick 천천히 넘어가도록 함 -->
+			<transition state="트리거작동01" />
+		</condition>		
+
+	</state>	
+	
+
+</ms2>

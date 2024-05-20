@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  995  -->
+<ms2>    
+  <state name="Ready">
+    <onEnter>  <!-- 주요 3개 변수 0으로 초기화-->	
+		<action name="SetUserValue" key="IshuraFirstSetEnd" value="0" />		
+		<action name="SetUserValue" key="RenduebianFirstSetEnd" value="0" />	
+		 <action name="SetUserValue" key="YuperiaFirstSetEnd" value="0" />	
+	</onEnter>	
+
+		<condition name="여러명의유저를감지했으면" arg1="601" arg2="1"> <!--   MS2TriggerBox  ID = 601, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면   601은 스타팅 지점과 1셋트 전투판 전체  포함하는 넓은 범위-->
+				<transition state="1셋트전투판스킬트리거셋팅"/>
+		</condition>		
+		 
+    <onExit>			
+    </onExit> 
+  </state>
+  
+ <state name="1셋트전투판스킬트리거셋팅">
+    <onEnter>
+		<action name="스킬을설정한다" arg1="1301" arg2="1" />  <!--이슈라 전투판 디버프 스킬 On으로 초기 셋팅하기-->		
+		<action name="스킬을설정한다" arg1="1302" arg2="1" />  <!--렌듀비앙 전투판 디버프 스킬 On으로 초기 셋팅하기-->		
+		<action name="스킬을설정한다" arg1="1303" arg2="1" />  <!--유페리아 전투판 디버프 스킬 On으로 초기 셋팅하기-->		
+    </onEnter>
+	
+			<condition name="WaitTick" waitTick="310" > 
+				<transition state="1셋트전투판마무리신호대기" />
+			</condition>
+		
+  </state>    
+  
+  
+ <state name="1셋트전투판마무리신호대기">
+    <onEnter>
+    </onEnter>
+		<!-- 이슈라 보스 AI에게 변수 신호 받을때까지 대기하기  -->
+		<condition name="UserValue" key="IshuraFirstSetEnd" value="1">  <!-- 이슈라가 첫번째 전투판에서 전투 끝나면 IshuraFirstSetEnd = 1  신호 보냄 -->
+			<transition state="이슈라_디버프스킬끄기" />
+		</condition>		
+
+		<!-- 레듀비앙 보스 AI에게 변수 신호 받을때까지 대기하기  -->
+		<condition name="UserValue" key="RenduebianFirstSetEnd" value="1"> <!-- 레듀비앙이 첫번째 전투판에서 전투 끝나면 RenduebianFirstSetEnd = 1  신호 보냄 -->
+			<transition state="렌듀비앙_디버프스킬끄기" />
+		</condition>		
+
+		<!-- 유페리아 보스 AI에게 변수 신호 받을때까지 대기하기  -->
+		<condition name="UserValue" key="YuperiaFirstSetEnd" value="1"> <!-- 유페리아가 첫번째 전투판에서 전투 끝나면 YuperiaFirstSetEnd = 1  신호 보냄 -->
+			<transition state="유페리아_디버프스킬끄기" />
+		</condition>		
+		
+  </state>    
+  
+ 
+  
+  <state name="이슈라_디버프스킬끄기">
+		<onEnter>
+			 <action name="SetUserValue" key="IshuraFirstSetEnd" value="0" />		<!-- IshuraFirstSetEnd 변수 0으로 초기화-->			
+			<action name="스킬을설정한다" arg1="1301" arg2="0" />  <!--이슈라 전투판 디버프 스킬 끄기-->				 
+		</onEnter>
+
+			
+			<condition name="WaitTick" waitTick="370" > 
+				<transition state="1셋트전투판마무리신호대기" />
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>     
+
+  
+   <state name="렌듀비앙_디버프스킬끄기">
+		<onEnter>
+			 <action name="SetUserValue" key="RenduebianFirstSetEnd" value="0" />		<!-- RenduebianFirstSetEnd 변수 0으로 초기화-->			 
+			<action name="스킬을설정한다" arg1="1302" arg2="0" />  <!--렌듀비앙 전투판 디버프 스킬 끄기-->				 
+		</onEnter>
+
+			
+			<condition name="WaitTick" waitTick="370" > 
+				<transition state="1셋트전투판마무리신호대기" />
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>     
+
+  
+  <state name="유페리아_디버프스킬끄기">
+		<onEnter>
+			 <action name="SetUserValue" key="YuperiaFirstSetEnd" value="0" />		<!-- YuperiaFirstSetEnd 변수 0으로 초기화-->			 
+			<action name="스킬을설정한다" arg1="1303" arg2="0" />  <!--유페리아 전투판 디버프 스킬 끄기-->				 
+		</onEnter>
+
+			
+			<condition name="WaitTick" waitTick="370" > 
+				<transition state="1셋트전투판마무리신호대기" />
+			</condition>
+		  
+		<onExit>
+		
+		</onExit>
+  </state>       
+
+	
+
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>	
+	
+</ms2>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  120  -->
+
+<ms2>
+  <state name="시작대기중">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="1920-1937" arg2="0" /> <!--  몬스터는 밟을 수 있고 플레이어는 밟을 수 없는 투명벽 설정하기 -->
+        <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>				
+		 <action name="SetUserValue" key="DungeonReset" value="0" /> <!-- 스킬브레이크 실패하여 보스의 신호를 받아서 던전 리셋할때 사용하는 변수-->			 
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="199"> <!--   MS2TriggerBox   TriggerObjectID = 199, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        199은 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+				<transition state="보스등장"/>
+		</condition>
+  </state>
+
+	<state name="보스등장">
+		<onEnter>
+			<action name="DungeonResetTime" seconds="720" /> <!-- 던전 시간 12분 설정 초기화 하기 , 이 던전의 시간 설정은 DoungeonRoom.xml 이 아닌 여기서 진행함 -->			
+			<action name="SideNpcTalk" type="talk" npcID="23000113" illust="Ishura_Dark_Idle" script="$02020120_BF__BOSSSPAWN__0$" duration="4000" voice="ko/Npc/00002192"/>		
+			<action name="몬스터를생성한다" arg1="99" arg2="0" /><!--이슈라 등장-->
+			<action name="포탈을설정한다" arg1="9901" arg2="0" arg3="0" arg4="0"/>	<!-- 버그 때문에 이거 사용 안함, 그렇다고 이거 지우면 대박 버그 생기니 조심 그냥 내버려 두자, 다시 처음으로 되돌리는 순간이동 포탈 Off 처리 하는거 여기서 하기, 스킬브레이크 막기 실패하여 던전 초기화 될 경우를 대비해 여기서 초기화 처리 하는 것이 좋음, 보스 메인 전투판 주변 범위의 포발 --> 					
+			<action name="포탈을설정한다" arg1="9902" arg2="0" arg3="0" arg4="0"/>	<!-- 버그 때문에 이거 사용 안함, 그렇다고 이거 지우면 대박 버그 생기니 조심 그냥 내버려 두자, 다시 처음으로 되돌리는 순간이동 포탈 Off 처리 하는거 여기서 하기, 스킬브레이크 막기 실패하여 던전 초기화 될 경우를 대비해 여기서 초기화 처리 하는 것이 좋음, 스타팅 포인트 근처 주변 범위의 포발 --> 		
+		</onEnter>
+
+		
+			<!-- 스킬 브레이크 막기 실패하면 이슈라AI에서  DungeonReset = 1 신호를 보내서 던전 초기화 시킴 -->
+			<condition name="UserValue" key="DungeonReset" value="1">  
+				<transition state="던전초기화진행" /> <!-- @####@## -->
+			</condition>		
+			
+		
+			<condition name="몬스터가죽어있으면" arg1="99">
+				<transition state="종료딜레이"/>
+			</condition>
+			<condition name="DungeonTimeOut" >
+				<transition state="던전실패" />
+			</condition>				
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패" />
+			</condition>		
+	</state>  
+  
+ 
+ 	<state name="던전초기화진행"> <!-- @####@## -->
+		<onEnter>
+		
+			<action name="유저를이동시킨다" arg1="02020120" arg2="9903"/>   <!-- 맵 안에 있는 모든 플레이어를 스타팅 지점에 있는 포탈로 이동시킴, arg1 은 이동시킬 맵 코드, arg2 은 도착 장소 포탈ID 임 -->
+
+			<action name="사운드를설정한다" arg1="19601" arg2="1" /> <!-- 던전 초기화 되면 노말 BGM으로 교체함, 보스 BGM 교체 설정은 BgmChangeSkillBreakReset.xml 트리거에 설정 되어있음 --> 	
+			<action name="SideNpcTalk" type="talk" npcID="23000113" illust="Ishura_Dark_smile" script="$02020120_BF__BOSSSPAWN__1$" duration="7000" voice="ko/Npc/00002193"/>		
+			<action name="몬스터소멸시킨다" arg1="all" />
+			
+		</onEnter> 
+			<condition name="WaitTick" waitTick="9000" > <!-- 위 던전 초기화 연출에 나오는 텍스트 문구 충분히 읽는 시간 확보를 위해 9초 정도 waitTick 설정하였음 -->
+				<transition state="던전초기화시간등각종설정" />
+			</condition>
+	</state>  		
+	
+  <state name="던전초기화시간등각종설정">
+    <onEnter>
+		<!-- 스킬 브레이크 막기 실패로 던전 초기화 되면, 기존 흐르던 시간 정지 셋팅 종료 하고, 다시 시간 셋팅 해야 함,   이거 안하면 던전미션랭크에서 정밀한 시간 측정이 안될 수 있음-->				
+		<action name="DungeonStopTimer" />
+		
+		<action name="SetUserValue" key="DungeonReset" value="0" /> <!-- 스킬브레이크 실패하여 보스의 신호를 받아서 던전 리셋할때 사용하는 변수 0 초기화 하기-->			 
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="199"> <!--   MS2TriggerBox   TriggerObjectID = 199, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        199은 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+				<transition state="보스등장"/> <!-- 여기서 12분 시간 설정 다시 함-->				
+		</condition>
+  </state>	
+	
+		
+	 <state name="종료딜레이">
+		<onEnter> 
+			<action name="SideNpcTalk" type="talk" npcID="23000113" illust="Ishura_Dark_Idle" script="$02020120_BF__BOSSSPAWN__2$" duration="6576" voice="ko/Npc/00002194"/>		
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="8000" > 
+					<action name="스킬을설정한다" arg1="2222" arg2="0" />  <!--맵 스킬 다 끄기, 이 맵은 낮으로 시작하기 때문에-->		
+					<action name="스킬을설정한다" arg1="1212" arg2="0" />  <!--맵 스킬 다 끄기, 달빛의 저주 디버프 스킬 Off으로 초기 셋팅하기-->		
+					
+					<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+					<action name="DungeonClear" /> 
+					 <!--던전 클리어 성공하면, 맵 트리거에 설정된 트리거 기능 정지 셋팅 종료 시킴, 이거 안하면 던전미션랭크에서 정밀한 시간 측정이 안될 수 있음-->		
+					<action name="DungeonSetEndTime" />
+			
+					 <action name="업적이벤트를발생시킨다" arg3="IshuraDungeonClear"/>  <!--arg1 = "특정트리거 박스 안에 있는 유저만 체크하고자 할때"   arg2 = "trigger"    즉 trigger 이거만 쓸수 있음  특정 트리거 박스 안의 유저만 체크 방식을 사용하고자 할때 이 2개 넣어야 함-->	
+																		<!--   arg1 , arg2  넣지 않으면 맵 안에 있는 모든 유저에게 이 업적이 반영됨   -->
+																		
+					<transition state="종료" />
+				</condition>
+	</state> 
+
+	 <state name="던전실패">
+		<onEnter> 
+			<action name="몬스터소멸시킨다" arg1="all" />			
+			
+		</onEnter>		 
+				<condition name="WaitTick" waitTick="1500" > 
+					<action name="스킬을설정한다" arg1="2222" arg2="0" />  <!--맵 스킬 다 끄기, 이 맵은 낮으로 시작하기 때문에-->		
+					<action name="스킬을설정한다" arg1="1212" arg2="0" />  <!--맵 스킬 다 끄기, 달빛의 저주 디버프 스킬 Off으로 초기 셋팅하기-->		
+					<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+					<action name="DungeonFail" /> 
+					<transition state="종료" />
+				</condition>
+	</state> 	
+	
+
+	<state name="종료">
+		<onEnter> 
+			<!--	순간이동 포탈 전부 꺼내기, 최종 보스방 가기 전에 전투가 끝날 수 있어서 종료 되었으면 모든 포탈 등장시킴 -->	
+			<action name="포탈을설정한다" arg1="2101" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="2201" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="2301" arg2="1" arg3="1" arg4="1"/>   
+
+			
+			<action name="포탈을설정한다" arg1="3101" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3102" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3103" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3104" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3201" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3202" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3203" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3301" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3302" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3303" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3304" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3305" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="3306" arg2="1" arg3="1" arg4="1"/>   
+			
+			
+			<action name="포탈을설정한다" arg1="4101" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="4102" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="4201" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="4202" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="4301" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="4302" arg2="1" arg3="1" arg4="1"/>   
+
+
+			<action name="포탈을설정한다" arg1="5101" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5102" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5201" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5202" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5203" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5204" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5205" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5206" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5301" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5302" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5303" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5304" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="5401" arg2="1" arg3="1" arg4="1"/>   
+
+			
+			<action name="포탈을설정한다" arg1="6101" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="6201" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="6301" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="6302" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="6303" arg2="1" arg3="1" arg4="1"/>   
+			<action name="포탈을설정한다" arg1="6304" arg2="1" arg3="1" arg4="1"/>   
+		
+			<action name="DungeonEnableGiveUp" isEnable="0" />		
+		</onEnter>		
+		
+
+		
+	</state>
+
+</ms2>

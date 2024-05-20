@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+    <state name="대기" > 
+        <onEnter>
+			<action name="이펙트를설정한다" arg1 = "601" arg2="0" />
+			<action name="이펙트를설정한다" arg1 = "602" arg2="0" />
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="101" arg2="90" >
+					<transition state="연출시작" />
+				</condition>
+    </state> 		
+
+    <state name="연출시작" posX="361" posY="465">
+        <onEnter>
+			<action name="CreateWidget" arg1="SceneMovie"/>
+			<action name="WidgetAction" arg1="SceneMovie" arg2="Clear"/>
+			<action name="PlaySceneMovie" fileName="Nutaman_intro.swf" movieID='1' /> 
+			<action name="카메라를선택한다" arg1="301" arg2="1"/>
+            <action name="몬스터를생성한다" arg1="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014" arg2="0" />
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+        </onEnter>
+			<condition name="WidgetCondition" arg1="SceneMovie" arg2="IsStop" arg3="1">
+				<transition state="이슈라대사01"/> 
+			</condition>
+    </state>
+
+    <state name="이슈라대사01" >
+		<onEnter>
+			<action name="이펙트를설정한다" arg1 = "602" arg2="1" />
+			<action name="대화를설정한다" arg1="2" arg2="11001244" arg3="$52000030_QD__MAIN__0$" arg4="3" arg5="0"/>	 <!-- 음성 코드 00001301 -->		
+		    <action name="스킵을설정한다" arg1="NPC 단체 이동" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="4500">
+					<transition state="NPC 단체 이동"/>
+				</condition>
+    </state>
+
+    <state name="NPC 단체 이동" >
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="1001" arg2="MS2PatrolData_1001"/>
+			<action name="NPC를이동시킨다" arg1="1002" arg2="MS2PatrolData_1002"/>
+			<action name="NPC를이동시킨다" arg1="1003" arg2="MS2PatrolData_1003"/>
+			<action name="NPC를이동시킨다" arg1="1004" arg2="MS2PatrolData_1004"/>
+			<action name="NPC를이동시킨다" arg1="1005" arg2="MS2PatrolData_1005"/>
+			<action name="NPC를이동시킨다" arg1="1006" arg2="MS2PatrolData_1006"/>
+			<action name="NPC를이동시킨다" arg1="1007" arg2="MS2PatrolData_1007"/>
+			<action name="NPC를이동시킨다" arg1="1008" arg2="MS2PatrolData_1008"/>
+			<action name="NPC를이동시킨다" arg1="1009" arg2="MS2PatrolData_1009"/>
+			<action name="NPC를이동시킨다" arg1="1010" arg2="MS2PatrolData_1010"/>
+			<action name="NPC를이동시킨다" arg1="1011" arg2="MS2PatrolData_1011"/>
+			<action name="NPC를이동시킨다" arg1="1012" arg2="MS2PatrolData_1001"/>
+			<action name="NPC를이동시킨다" arg1="1013" arg2="MS2PatrolData_1002"/>
+			<action name="NPC를이동시킨다" arg1="1014" arg2="MS2PatrolData_1003"/>
+		</onEnter>
+				<condition name="NPC를감지했으면" arg1="102" arg2="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014">
+					<transition state="전투판으로이동"/>
+				</condition>
+		<onExit>  
+            <action name="몬스터소멸시킨다" arg1="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014"/>
+            <action name="몬스터를생성한다" arg1="1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,2001,2002" arg2="0" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  					
+		</onExit>
+    </state>	
+
+    <state name="전투판으로이동" >
+		<onEnter>
+			<action name="카메라를선택한다" arg1="301" arg2="0"/>	
+            <action name="유저를이동시킨다" arg1="52000030" arg2="100" />
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2002">
+					<transition state="2차전투"/>
+				</condition>
+		<onExit>  
+            <action name="몬스터소멸시킨다" arg1="2001"/>
+		</onExit>
+    </state>	
+
+    <state name="2차전투" >
+		<onEnter>
+            <action name="몬스터를생성한다" arg1="2003,2004" arg2="0" />
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2003">
+					<transition state="이슈라대사02"/>
+				</condition>
+		<onExit>  
+            <action name="몬스터소멸시킨다" arg1="2004"/>
+		</onExit>
+    </state>
+	
+    <state name="이슈라대사02" >
+		<onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="이펙트를설정한다" arg1 = "601" arg2="1" />
+			<action name="대화를설정한다" arg1="2" arg2="11001230" arg3="$52000030_QD__MAIN__1$" arg4="2" arg5="0"/>	 <!-- 음성 코드 00001158 -->
+		</onEnter>
+				<condition name="WaitTick" waitTick="2500">
+					<transition state="3차전투"/>
+				</condition>
+		<onExit>  
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+		</onExit>
+    </state>	
+
+    <state name="3차전투" >
+		<onEnter>	
+            <action name="몬스터를생성한다" arg1="2005" arg2="0" />	
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2005">
+					<transition state="이슈라대사03"/>
+				</condition>
+    </state>
+
+    <state name="이슈라대사03" >
+		<onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="이펙트를설정한다" arg1 = "601" arg2="1" />
+			<action name="대화를설정한다" arg1="2" arg2="11001244" arg3="$52000030_QD__MAIN__2$" arg4="2" arg5="0"/>	<!-- 음성 코드 00001158 -->
+		</onEnter>
+				<condition name="WaitTick" waitTick="2500">
+					<action name="유저를이동시킨다" arg1="52000031" arg2="0"/>
+					<transition state="종료"/>
+				</condition>
+		<onExit>  
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+		</onExit>
+    </state>
+
+    <state name="종료" >			
+    </state>	
+	
+ <!--   <state name="이슈라대사01" >
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001244" arg3="서둘러라! 홀슈타트가 루닉타의 주인이 되는 것은 막아야 해!" arg4="3" arg5="0"/>			
+		    <action name="스킵을설정한다" arg1="전투시작" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="4500">
+					<transition state="전투시작"/>
+				</condition>
+		<onExit>  
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+		</onExit>
+    </state>		
+	
+    <state name="전투시작" >
+		<onEnter>
+			<action name="카메라를선택한다" arg1="301" arg2="0"/>	
+            <action name="몬스터를생성한다" arg1="2001" arg2="0" />
+			<action name="NPC를이동시킨다" arg1="1001" arg2="MS2PatrolData_1001"/>
+			<action name="NPC를이동시킨다" arg1="1002" arg2="MS2PatrolData_1002"/>
+			<action name="NPC를이동시킨다" arg1="1003" arg2="MS2PatrolData_1003"/>
+			<action name="NPC를이동시킨다" arg1="1004" arg2="MS2PatrolData_1004"/>
+			<action name="NPC를이동시킨다" arg1="1005" arg2="MS2PatrolData_1005"/>
+			<action name="NPC를이동시킨다" arg1="1006" arg2="MS2PatrolData_1006"/>
+			<action name="NPC를이동시킨다" arg1="1007" arg2="MS2PatrolData_1007"/>
+			<action name="NPC를이동시킨다" arg1="1008" arg2="MS2PatrolData_1008"/>
+			<action name="NPC를이동시킨다" arg1="1009" arg2="MS2PatrolData_1009"/>
+			<action name="NPC를이동시킨다" arg1="1010" arg2="MS2PatrolData_1010"/>
+			<action name="NPC를이동시킨다" arg1="1011" arg2="MS2PatrolData_1011"/>
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="2001">
+					<transition state="이슈라대사02"/>
+				</condition>
+    </state>	
+
+    <state name="이슈라대사02" >
+		<onEnter>	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="대화를설정한다" arg1="2" arg2="11001244" arg3="자, 2층으로! 서둘러라!" arg4="2" arg5="0"/>	
+		</onEnter>
+				<condition name="WaitTick" waitTick="2500">
+					<action name="유저를이동시킨다" arg1="52000031" arg2="0"/>
+					<transition state="종료"/>
+				</condition>
+		<onExit>  
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+		</onExit>
+    </state>
+
+    <state name="종료" >			
+    </state>-->
+
+</ms2>

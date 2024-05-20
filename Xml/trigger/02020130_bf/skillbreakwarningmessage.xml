@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  996  , 이 트리거는 보스가 스킬브레이크 사용직전 이 트리거에 신호를 보내서 현재 스킬 브레이크가 작동 되었음을 UI메시지로 알려주도록 함-->
+<ms2>    <!-- 이슈라 렌듀비앙 유페리아가 죽었을 때 메시지 알림 기능도 있음-->
+  <state name="Ready">
+    <onEnter> 
+	</onEnter>	
+
+		<condition name="여러명의유저를감지했으면" arg1="601" arg2="1"> <!--   MS2TriggerBox  ID = 601, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면   601은 스타팅 지점과 1셋트 전투판 전체  포함하는 넓은 범위-->
+				<transition state="신호받기대기중"/>
+		</condition>		
+		
+    <onExit>			
+    </onExit> 
+  </state>	
+  
+    <state name="신호받기대기중">	
+        <onEnter>
+			<action name="SetUserValue" key="WarningMessage" value="0" />		<!--다음 사용을 위해 꼭 WarningMessage 변수 0으로 초기화 하기, 이 변수는 여기서 초기화 해야지 그렇지 않으면 3번 보내는 신호를 다 받아서 메지시 여러번 뜨게 됨 -->			 
+		
+        </onEnter>
+		
+			<condition name="UserValue" key="WarningMessage" value="1">  <!--  이슈라 유페리아 렌듀비앙 3개 중 한곳에서  WarningMessage =  1 신호를 받으면-->			
+				<transition state="스킬브레이크메시지출력" />
+			</condition>				
+			
+			<condition name="UserValue" key="DeathIshuraRbladerDark" value="1">  <!--  이슈라 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="이슈라죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathRenduebianRbladerDark" value="1">   <!--  렌듀비앙 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="렌듀비앙죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathYuperiaRbladerDark" value="1"> <!--  유페리아 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="유페리아죽음알림" />
+			</condition>					
+				
+		<onExit> 
+		</onExit>
+    </state>	 
+	
+  
+  
+   <state name="스킬브레이크메시지출력">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="20051001" textID="20051001"/> <!-- 스킬브레이크 작동되었음을 이 UI 메시지로 알려주기-->
+			
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="6000" > 
+				<transition state="천천히다시처음으로돌아가기직전" /> 
+			</condition>
+				
+		<onExit>
+			<action name="HideGuideSummary" entityID="20051001"/>
+		</onExit>
+    </state>	   
+
+	
+   <state name="이슈라죽음알림">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="20051002" textID="20051002"/> <!-- 이슈라의 죽음을 이 UI 메시지로 알려주기-->
+			<action name="SetUserValue" key="DeathIshuraRbladerDark" value="0" />		<!--변수 0으로 초기화 하기, 이거 안하면 무한루프에 걸림 -->			 
+		
+        </onEnter>
+		 
+			<condition name="WaitTick" waitTick="3200" > 
+				<transition state="신호받기대기중" /> 
+			</condition>
+
+			
+			
+			<!--  아슈라 죽음 메시지 출력 도중에 다른 보스가 죽었을 경우에 대한 처리-->			
+			<condition name="UserValue" key="DeathRenduebianRbladerDark" value="1">   <!--  렌듀비앙 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="렌듀비앙죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathYuperiaRbladerDark" value="1"> <!--  유페리아 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="유페리아죽음알림" />
+			</condition>			
+			
+			
+		<onExit>
+			<action name="HideGuideSummary" entityID="20051002"/>
+		</onExit>
+    </state>	   
+
+   <state name="렌듀비앙죽음알림">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="20051003" textID="20051003"/> <!-- 렌듀비앙의 죽음을 이 UI 메시지로 알려주기-->
+			<action name="SetUserValue" key="DeathRenduebianRbladerDark" value="0" />		<!--변수 0으로 초기화 하기, 이거 안하면 무한루프에 걸림 -->			 
+			
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="3200" > 
+				<transition state="신호받기대기중" /> 
+			</condition>
+
+
+			
+			
+			<!--  렌듀비앙 죽음 메시지 출력 도중에 다른 보스가 죽었을 경우에 대한 처리-->			
+			<condition name="UserValue" key="DeathIshuraRbladerDark" value="1">  <!--  이슈라 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="이슈라죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathYuperiaRbladerDark" value="1"> <!--  유페리아 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="유페리아죽음알림" />
+			</condition>					
+				
+		<onExit>
+			<action name="HideGuideSummary" entityID="20051003"/>
+		</onExit>
+    </state>	   
+	
+   <state name="유페리아죽음알림">	
+        <onEnter>
+			<action name="ShowGuideSummary" entityID="20051004" textID="20051004"/> <!--유페리아의 죽음을 이 UI 메시지로 알려주기-->
+			<action name="SetUserValue" key="DeathYuperiaRbladerDark" value="0" />		<!--변수 0으로 초기화 하기, 이거 안하면 무한루프에 걸림 -->			 
+			
+        </onEnter>
+		
+			<condition name="WaitTick" waitTick="3200" > 
+				<transition state="신호받기대기중" /> 
+			</condition>
+				
+				
+			<!--  유페리아 죽음 메시지 출력 도중에 다른 보스가 죽었을 경우에 대한 처리-->			
+			<condition name="UserValue" key="DeathIshuraRbladerDark" value="1">  <!--  이슈라 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="이슈라죽음알림" />
+			</condition>		
+
+			<condition name="UserValue" key="DeathRenduebianRbladerDark" value="1">   <!--  렌듀비앙 죽으면 이 변수 1 신호를 받음 -->			
+				<transition state="렌듀비앙죽음알림" />
+			</condition>		
+			
+		<onExit>
+			<action name="HideGuideSummary" entityID="20051004"/>
+		</onExit>
+    </state>	   	
+	
+	
+	
+	
+   <state name="천천히다시처음으로돌아가기직전">	  <!-- 바로  <transition state="신호받기대기중" > 단계로 가면 혹시 다른 보스의 <event eventName="TriggerEvent" target="SetUserValue" param1="996" param2="WarningMessage" param3="1"/>   신호를 또 받아서 메시지가 연속 두번 출력되는 어색한 상황이 생길 수 있어서 이 단계에서 잠시 4~7초 머물기 함-->
+        <onEnter>
+			
+        </onEnter> 
+		
+			<condition name="WaitTick" waitTick="4500" >  <!-- 이 waitTick 너무 길면 보스가 죽을 때 제때 메시지 출력이 안될 수 있어서 적당히 길게 설정해야 함-->
+				<transition state="신호받기대기중" />  <!-- 다시 위 처음 단계로 돌아가기-->
+			</condition>
+				
+		<onExit>
+		</onExit>
+    </state>	  	
+
+	 
+   <state name="종료" >	
+        <onEnter>
+        </onEnter>
+		
+        <onExit>
+        </onExit> 
+    </state>	
+	
+</ms2>

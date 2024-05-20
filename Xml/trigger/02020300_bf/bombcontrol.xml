@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+
+    <state name="대기" >
+        <onEnter>
+			<action name="SetUserValue" triggerID="99990001" key="RandomBombEnd" value="0" />
+			<action name="StartCombineSpawn" groupId="516" isStart="false" />
+			<action name="StartCombineSpawn" groupId="517" isStart="false" />
+			<action name="StartCombineSpawn" groupId="518" isStart="false" />
+        </onEnter>
+		<condition name="UserValue" key="RandomBomb" value="1" >
+			<transition state="포탑생성_1"/>
+		</condition>
+    </state>
+	
+	<state name="포탑생성_1" >
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="152" arg2="1" /> <!-- 몬스터 등장 -->
+			<action name="StartCombineSpawn" groupId="518" isStart="true" />
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="152">	
+					<transition state="포탑생성_2"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="포탑생성_2" >
+		<onEnter>
+			<action name="StartCombineSpawn" groupId="516" isStart="true" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="15000">	
+					<transition state="포탑생성_3"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="포탑생성_3" >
+		<onEnter>
+			<action name="StartCombineSpawn" groupId="517" isStart="true" />
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="151,152,153,154,155,156,157,158,159" >	
+				<transition state="종료"/>	
+			</condition>
+		<onExit>
+		</onExit>
+    </state>
+     
+    <state name="종료" >
+        <onEnter>
+			<action name="SetUserValue" triggerID="99990001" key="RandomBombEnd" value="1" />
+			<action name="StartCombineSpawn" groupId="516" isStart="false" />
+			<action name="StartCombineSpawn" groupId="517" isStart="false" />
+			<action name="StartCombineSpawn" groupId="518" isStart="false" />
+        </onEnter>
+    </state>
+
+</ms2>

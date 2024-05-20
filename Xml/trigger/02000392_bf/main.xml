@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<ms2>
+	<state name="대기">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />					
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>		
+			<action name="메쉬를설정한다" arg1="3000" arg2="0" arg3="0" arg4="0" arg5="0" />			
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="199">
+				<transition state="룸체크"/>
+			</condition>			
+	</state> 
+
+	<state name="룸체크"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="던전시작" />	
+				</condition>		
+				<condition name="!IsDungeonRoom" > 
+					<transition state="퀘스트던전시작" />	
+				</condition>		
+	</state>  	  
+  
+	<state name="던전시작">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="1001,1002,2001" arg2="0" />
+		</onEnter>			
+			<condition name="몬스터가전투상태면" arg1="2001">
+				<action name="이펙트를설정한다" arg1="601" arg2="1" />						
+				<transition state="사망체크"/>
+			</condition>		
+			<condition name="몬스터가죽어있으면" arg1="2001,2002">
+				<transition state="사망딜레이" />
+			</condition>
+	</state>	  
+ 
+	<state name="사망체크">		
+			<condition name="몬스터가죽어있으면" arg1="2001,2002">
+				<transition state="사망딜레이" />
+			</condition>
+	</state>	
+
+	<state name="사망딜레이">
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="종료체크"/> 
+			</condition>
+	</state>
+
+	<state name="종료체크">
+			<condition name="몬스터가죽어있으면" arg1="2001,2002">
+				<transition state="암전대기" />
+			</condition>
+	</state>	
+
+			<state name="퀘스트던전시작">
+				<onEnter>
+					<action name="몬스터를생성한다" arg1="1001,1002,2101" arg2="0" />
+				</onEnter>			
+					<condition name="몬스터가전투상태면" arg1="2101">
+						<action name="이펙트를설정한다" arg1="601" arg2="1" />						
+						<transition state="퀘스트사망체크"/>
+					</condition>		
+					<condition name="몬스터가죽어있으면" arg1="2101,2102">
+						<transition state="퀘스트사망딜레이" />
+					</condition>
+			</state>	 	
+
+			<state name="퀘스트사망체크">		
+					<condition name="몬스터가죽어있으면" arg1="2101,2102">
+						<transition state="퀘스트사망딜레이" />
+					</condition>
+			</state>	
+
+			<state name="퀘스트사망딜레이">
+					<condition name="WaitTick" waitTick="1500">
+						<transition state="퀘스트종료체크"/> 
+					</condition>
+			</state>
+
+			<state name="퀘스트종료체크">
+					<condition name="몬스터가죽어있으면" arg1="2101,2102">
+						<transition state="암전대기" />
+					</condition>
+			</state>				
+
+	<state name="암전대기">
+			<condition name="WaitTick" waitTick="1500">
+				<transition state="암전"/> 
+			</condition>
+	</state>	
+ 
+	<state name="암전">
+		<onEnter>				
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 										
+		</onEnter>
+			<condition name="WaitTick" waitTick="1500">				
+				<transition state="종료연출대기"/> 
+			</condition>
+	</state> 		 
+  
+	<state name="종료연출대기">
+		<onEnter>	
+			<action name="카메라를선택한다" arg1="301" arg2="1"/>
+			<action name="유저를이동시킨다" arg1="02000392" arg2="2"/>	
+			<action name="몬스터소멸시킨다" arg1="1001,1002,2001,2002,2101,2102" />	
+			<action name="몬스터를생성한다" arg1="1098,1099" arg2="0" />			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  				
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 			
+			<action name="SetNpcEmotionLoop" arg1="1098" arg2="Dead_B" arg3="3000000" />						
+			<action name="SetNpcEmotionLoop" arg1="1099" arg2="Dead_B" arg3="3000000" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="종료연출"/>  
+			</condition>
+	</state>	 
+ 
+	<state name="종료연출">
+		<onEnter>								
+			<action name="스킵을설정한다" arg1="연출종료" />				
+			<action name="대화를설정한다" arg1="1" arg2="1098" arg3="$02000392_BF__MAIN__0$" arg4="3" arg5="0"/>
+			<action name="대화를설정한다" arg1="1" arg2="1099" arg3="$02000392_BF__MAIN__1$" arg4="3" arg5="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="PC대사"/> 
+			</condition>
+	</state>		
+
+	<state name="PC대사">
+		<onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="$02000392_BF__MAIN__2$" arg4="3" arg5="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="PC대사2"/> 
+			</condition>
+	</state>	
+ 
+ 	<state name="PC대사2">
+		<onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="$02000392_BF__MAIN__10$" arg4="3" arg5="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="자매교체"/> 
+			</condition>
+	</state>	
+ 
+	<state name="자매교체">
+		<onEnter>		
+			<action name="몬스터소멸시킨다" arg1="1098,1099" />	
+			<action name="몬스터를생성한다" arg1="1096,1097" arg2="0" />							
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="자매대화"/>  
+			</condition>
+			
+	</state>		
+
+	<state name="자매대화">
+		<onEnter>	 
+			<action name="카메라를선택한다" arg1="302" arg2="1"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="자매대화01"/>  
+			</condition>
+			
+	</state>	
+
+	<state name="자매대화01">
+		<onEnter>								
+			<action name="대화를설정한다" arg1="1" arg2="1096" arg3="$02000392_BF__MAIN__3$" arg4="3" arg5="0"/>
+			<action name="대화를설정한다" arg1="1" arg2="1097" arg3="$02000392_BF__MAIN__4$" arg4="3" arg5="1"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="자매대화02"/> 
+			</condition>
+	</state>	
+
+	<state name="자매대화02">
+		<onEnter>								
+			<action name="대화를설정한다" arg1="1" arg2="1096" arg3="$02000392_BF__MAIN__5$" arg4="3" arg5="0"/>
+			<action name="대화를설정한다" arg1="1" arg2="1097" arg3="$02000392_BF__MAIN__6$" arg4="2" arg5="2"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="자매대화03"/> 
+			</condition>
+	</state>		
+	
+	<state name="자매대화03">
+		<onEnter>								
+			<action name="대화를설정한다" arg1="1" arg2="1097" arg3="$02000392_BF__MAIN__11$" arg4="2" arg5="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="PC대사3"/> 
+			</condition>
+	</state>		
+
+ 	<state name="PC대사3">
+		<onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="$02000392_BF__MAIN__12$" arg4="3" arg5="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="자매대화04"/> 
+			</condition>
+	</state>		
+
+	<state name="자매대화04">
+		<onEnter>								
+			<action name="대화를설정한다" arg1="1" arg2="1097" arg3="$02000392_BF__MAIN__7$" arg4="3" arg5="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="자매대화05"/> 
+			</condition>
+	</state>		
+
+	<state name="자매대화05">
+		<onEnter>								
+			<action name="대화를설정한다" arg1="1" arg2="1097" arg3="$02000392_BF__MAIN__8$" arg4="3" arg5="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="자매대화06"/> 
+			</condition>
+	</state>		
+
+	<state name="자매대화06">
+		<onEnter>								
+			<action name="대화를설정한다" arg1="1" arg2="1097" arg3="$02000392_BF__MAIN__9$" arg4="3" arg5="0"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="연출종료"/> 
+			</condition>
+	</state>			
+	 
+	<state name="연출종료">
+		<onEnter>					
+			<action name="스킵을설정한다" arg1="" />					
+			<action name="몬스터소멸시킨다" arg1="1098,1099" />	
+			<action name="몬스터소멸시킨다" arg1="1096,1097" />				
+			<action name="몬스터를생성한다" arg1="1096,1097" arg2="0" />						
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			<!--action name="카메라를선택한다" arg1="302" arg2="0"/-->
+			<action name="카메라리셋" interpolationTime="1.0"/>	 			
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">			
+				<transition state="룸체크2"/> 
+			</condition>
+	</state>		
+
+	<state name="룸체크2"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="던전완료" />	
+				</condition>		
+				<condition name="!IsDungeonRoom" > 
+					<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>							
+					<transition state="종료" />	
+				</condition>		
+	</state>  	  	
+
+  <state name="던전완료">
+		<onEnter>
+			<action name="DungeonClear"/> 		
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="ClearSirenSisters"/> 			
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">			
+				<transition state="종료"/> 
+			</condition> 	
+  </state> 	
+
+	<state name="종료">
+	</state>	  
+  
+</ms2>
+

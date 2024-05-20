@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+<!-- 아프렐라 오지 : 연주 시 특수 효과가 발동되는 패시브 버프 부여 -->
+	<state name="Wait">   
+        <onEnter> 	
+			<action name="SetUserValue" key="GiveBuffSlowly" value="0" />				
+			</onEnter>	
+				<condition name="유저를감지했으면" arg1="9900">	
+					<transition state="GiveBuff01"/>	
+				</condition>	
+    <onExit> 
+    </onExit>
+    </state>	
+
+	<!-- 시작 초반에 철창 문이 닫히기 전까지 1초마다 버프 지급 -->
+    <state name="GiveBuff01" >
+        <onEnter>		
+			<action name="버프를걸어준다" arg1="9900" arg2="71000030" arg3="1"/>	
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="GiveBuff01"/>	
+				</condition>		
+			<condition name="UserValue" key="GiveBuffSlowly" value="1">
+			<transition state="GiveBuff02"/>
+		</condition> 				
+    <onExit> 	
+    </onExit>
+    </state>	
+
+	<!-- 철창문이 닫힌 이후에는 세이프 존에 유저를 감지하면 세이프 존에 있는 유저에게 버프 지급 -->	
+	<state name="GiveBuff02">   
+        <onEnter> 	
+			<action name="버프를걸어준다" arg1="9901" arg2="71000030" arg3="1"/>			
+			</onEnter>	
+				<condition name="유저를감지했으면" arg1="9901">	
+					<transition state="GiveBuff02"/>	
+				</condition>	
+			<condition name="UserValue" key="GiveBuffSlowly" value="2">
+			<transition state="Quit"/>
+		</condition> 						
+    <onExit> 
+    </onExit>
+    </state>	
+	
+	<!-- 플레이 제한 시간이 끝나면 버프 지급을 멈춤 -->	
+	<state name="Quit">   
+        <onEnter> 	
+			<action name="버프를걸어준다" arg1="9900" arg2="71000034" arg3="1"/>			
+			</onEnter>	
+    <onExit> 
+    </onExit>	
+    </state>	
+</ms2>

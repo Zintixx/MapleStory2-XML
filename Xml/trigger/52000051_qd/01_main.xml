@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 순례자의 뜰 퀘스트용 1인 던전--> 
+  
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 	
+			<action name="메쉬를설정한다" arg1="3500-3501" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Invisible_IronDoor -->						
+			<action name="메쉬를설정한다" arg1="3010-3013" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Barrier -->			
+			<action name="메쉬를설정한다" arg1="3014" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- FrontBarrier -->						
+			<action name="메쉬를설정한다" arg1="3030" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- GatePortal -->						
+			<action name="액터를설정한다" arg1="4001" arg2="1" arg3="Closed" /> <!-- IronDoor -->			
+			<action name="액터를설정한다" arg1="4002" arg2="1" arg3="Closed" /> <!-- IronDoor -->					
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="or_fi_struc_stonegate_A01_off" /> <!-- StoneGate -->				
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" /> 					
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- 가이드 서머리 사운드 이펙트-->	
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- StoneGate 사운드 이펙트-->		
+			<action name="이펙트를설정한다" arg1="5004" arg2="0"/> <!-- MetalDoorOpen 사운드 이펙트-->					
+			<action name="AGENT를설정한다" arg1="8000" arg2="1"/>	
+			<action name="AGENT를설정한다" arg1="8001" arg2="1"/>	
+			<action name="AGENT를설정한다" arg1="8002" arg2="1"/>	
+			<action name="AGENT를설정한다" arg1="8003" arg2="1"/>	
+			<action name="SetUserValue" key="FindLotus" value="0" />					
+			<action name="SetUserValue" key="PuzzleSolved" value="0" />			
+			<action name="SetUserValue" key="PatrolEnd" value="0" />					
+			<action name="몬스터를생성한다" arg1="900" arg2="0" /> 	<!-- 어둠의 토템 -->					
+				</onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9000" arg2="1"> 
+			<transition state="LodingDelay01"/>
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>
+
+    <state name="LodingDelay01" >
+        <onEnter>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="연출UI를설정한다" arg1="4"/>		
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="SetDarkness01"/>  
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+
+    <state name="SetDarkness01" >
+        <onEnter>			
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>				
+			<action name="몬스터를생성한다" arg1="800,801,802,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826" arg2="0" /> 	<!-- 연출용 검은 그림자 -->			
+			<action name="몬스터를생성한다" arg1="950,951,952,953,955,956,957,958,959,962,963,964,967,970,974,975,976,977,978,980,981,982" arg2="0" /> 	<!-- 미혹의 령 일부 제거 954,960,961,965,966,968,969,971,972,973,979 -->			
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="SetDarkness02"/>
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+
+    <state name="SetDarkness02" > 
+        <onEnter>			
+			<action name="연출UI를설정한다" arg1="1"/>  
+			<action name="연출UI를설정한다" arg1="3"/>   
+			<action name="몬스터를생성한다" arg1="100,200" arg2="0" /> 	
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1000" />					
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000"> 
+					<transition state="NpcCinematic01"/>	
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="NpcCinematic01">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000051_QD__01_MAIN__0$" arg4="5" />  <!-- 틴차이 -->
+			<action name="스킵을설정한다" arg1="NpcCinematic01Skip"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="NpcCinematic01Skip"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="NpcCinematic01Skip">	
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="NpcCinematic02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="NpcCinematic02">	
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000051_QD__01_MAIN__1$" arg4="5" />  <!-- 틴차이 -->
+			<action name="스킵을설정한다" arg1="NpcCinematic02Skip"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="NpcCinematic02Skip"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="NpcCinematic02Skip">	
+		<onEnter>	
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="NpcCinematic03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="NpcCinematic03" > 
+        <onEnter>		
+			<action name="카메라를선택한다" arg1="601" arg2="1"/>				
+			<action name="NPC를이동시킨다" arg1="100" arg2="MS2PatrolData_110" />						
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1001" />					
+			<action name="대화를설정한다" arg1="2" arg2="11001708" arg3="$52000051_QD__01_MAIN__2$" arg4="3" />  <!-- 틴차이 -->				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="NpcCinematic04"/>		
+				</condition>		
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="NpcCinematic04" > 
+        <onEnter>		
+			<action name="NPC를이동시킨다" arg1="200" arg2="MS2PatrolData_210" />						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="NpcCinematic05"/>		
+				</condition>		
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="NpcCinematic05" > 	
+        <onEnter>			
+			<action name="대화를설정한다" arg1="2" arg2="11001557" arg3="$52000051_QD__01_MAIN__3$" arg4="5" />     <!-- 준타 -->		
+			<action name="스킵을설정한다" arg1="NpcCinematic05Skip"/>			
+				</onEnter>		
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="NpcCinematic05Skip"/>	
+				</condition>		
+    <onExit> 
+    </onExit>	
+    </state>	
+
+    <state name="NpcCinematic05Skip" > 
+        <onEnter>			
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>						
+			<action name="카메라를선택한다" arg1="601" arg2="0"/>					
+			<action name="연출UI를설정한다" arg1="0"/>  
+			<action name="연출UI를설정한다" arg1="2"/>   		
+			<action name="SetUserValue" triggerID="9" key="FindLotus" value="1" /> 					
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="NpcMonologue01"/>	
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="NpcMonologue01" > 
+        <onEnter>	
+				</onEnter>		
+				<condition name="오브젝트가반응했으면" arg1="10001022" arg2="0" >
+					<transition state="NpcMonologue02"/>	
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="NpcMonologue02" > 
+        <onEnter>					
+			<action name="NPC를이동시킨다" arg1="200" arg2="MS2PatrolData_200" />		
+			<action name="NPC를이동시킨다" arg1="100" arg2="MS2PatrolData_100" />					
+			<action name="대화를설정한다" arg1="1" arg2="200" arg3="$52000051_QD__01_MAIN__4$" arg4="2" arg5="0" />	    <!-- 준타 -->				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="NpcPatrol01"/>	
+				</condition>		
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="NpcPatrol01" >	
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3014" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- FrontBarrier -->				
+			<action name="SetUserValue" triggerID="10" key="PatrolStart" value="1" /> 					
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="NpcPatrol02"/>	
+				</condition>			
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="NpcPatrol02" >
+        <onEnter>		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$52000051_QD__01_MAIN__5$" arg3="5000" arg4="0" />				
+				</onEnter>		
+			<condition name="UserValue" key="PatrolEnd" value="1">	
+					<transition state="NpcPatrol03"/>	
+				</condition>		
+				<condition name="몬스터가죽어있으면" arg1="900" >	<!-- 토템 제거 -->	
+					<transition state="NpcChange01"/>	
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>	
+    <state name="NpcPatrol03" > 
+        <onEnter>						
+				</onEnter>		
+				<condition name="NPC를감지했으면" arg1="9400" arg2="202"> 	
+			<transition state="NpcPatrol04"/>	
+		</condition> 		
+				<condition name="몬스터가죽어있으면" arg1="900" >	<!-- 토템 제거 -->	
+					<transition state="NpcChange01"/>	
+				</condition>				
+    <onExit> 
+    </onExit>
+    </state>	
+	<state name="NpcPatrol04">   
+        <onEnter> 						
+				</onEnter>	
+				<condition name="여러명의유저를감지했으면" arg1="9400" arg2="1"> 
+			<transition state="FoundTotem01"/>	
+		</condition> 		
+				<condition name="몬스터가죽어있으면" arg1="900" >	<!-- 토템 제거 -->	
+					<transition state="NpcChange01"/>	
+				</condition>				
+    <onExit> 
+    </onExit>
+    </state>
+
+
+<!-- 20170223 업데이트 던전 개편 단축 -->		
+	<state name="NpcChange01">   
+        <onEnter> 					
+			<action name="몬스터소멸시킨다" arg1="101,201" />		
+			<action name="몬스터소멸시킨다" arg1="102,202" />			
+			<action name="몬스터를생성한다" arg1="105,205" arg2="0" /> 	<!-- 연출용 -->						
+				</onEnter>	
+				<condition name="WaitTick" waitTick="500">  
+			<transition state="RemoveTotem02"/>	
+		</condition> 	
+    <onExit> 
+    </onExit>	
+    </state>
+
+	<state name="NpcChange02">   
+        <onEnter> 		
+			<action name="몬스터소멸시킨다" arg1="101,201" />	
+			<action name="몬스터소멸시킨다" arg1="102,202" />					
+			<action name="몬스터소멸시킨다" arg1="103,203" />	<!-- 전투 -->				
+			<action name="몬스터를생성한다" arg1="105,205" arg2="0" /> 	<!-- 연출용 -->			
+			<action name="RemoveBalloonTalk" spawnPointID="203" />		
+			<action name="RemoveBalloonTalk" spawnPointID="103" />				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="500">  
+			<transition state="RemoveTotem02"/>	
+		</condition> 	
+    <onExit> 
+    </onExit>	
+    </state>
+	
+	<state name="FoundTotem01">   
+        <onEnter> 		
+			<action name="몬스터소멸시킨다" arg1="101,201" />		
+			<action name="몬스터소멸시킨다" arg1="102,202" />					
+			<action name="몬스터를생성한다" arg1="103,203" arg2="0" /> 	<!-- 전투 -->		
+			<action name="대화를설정한다" arg1="1" arg2="203" arg3="$02000376_BF__01_MAIN__3$" arg4="3" arg5="0" />	    <!-- 준타 -->					
+			<action name="대화를설정한다" arg1="1" arg2="103" arg3="$02000376_BF__01_MAIN__4$" arg4="3" arg5="2" />	    <!-- 틴차이 -->						
+				</onEnter>	
+				<condition name="WaitTick" waitTick="3000">  
+			<transition state="RemoveTotem01"/>	
+		</condition> 		
+				<condition name="몬스터가죽어있으면" arg1="900" >	<!-- 토템 제거 -->	
+					<transition state="NpcChange02"/>	
+				</condition>				
+    <onExit> 
+    </onExit>	
+    </state>	
+
+    <state name="RemoveTotem01" > 
+        <onEnter>			
+				</onEnter>		
+				<condition name="몬스터가죽어있으면" arg1="900" >	<!-- 토템 제거 -->
+					<transition state="RemoveTotem02"/>	
+				</condition>		
+    <onExit> 
+			<action name="몬스터소멸시킨다" arg1="101,201" />		
+			<action name="몬스터소멸시킨다" arg1="102,202" />						
+			<action name="몬스터소멸시킨다" arg1="103,203" />	<!-- 전투 -->							
+			<action name="몬스터를생성한다" arg1="105,205" arg2="0" /> 	
+			<action name="RemoveBalloonTalk" spawnPointID="203" />		
+			<action name="RemoveBalloonTalk" spawnPointID="103" />					
+    </onExit>
+    </state>	
+	
+    <state name="RemoveTotem02" > 
+        <onEnter>		
+			<action name="몬스터소멸시킨다" arg1="102,202" />				
+			<action name="NPC를이동시킨다" arg1="950" arg2="MS2PatrolData_850" />	
+			<action name="NPC를이동시킨다" arg1="951" arg2="MS2PatrolData_851" />		
+			<action name="NPC를이동시킨다" arg1="952" arg2="MS2PatrolData_852" />	
+			<action name="NPC를이동시킨다" arg1="953" arg2="MS2PatrolData_853" />		
+			<!--action name="NPC를이동시킨다" arg1="954" arg2="MS2PatrolData_854" /-->	
+			<action name="NPC를이동시킨다" arg1="955" arg2="MS2PatrolData_855" />		
+			<action name="NPC를이동시킨다" arg1="956" arg2="MS2PatrolData_856" />	
+			<action name="NPC를이동시킨다" arg1="957" arg2="MS2PatrolData_857" />		
+			<action name="NPC를이동시킨다" arg1="958" arg2="MS2PatrolData_858" />	
+			<action name="NPC를이동시킨다" arg1="959" arg2="MS2PatrolData_859" />		
+			<!--action name="NPC를이동시킨다" arg1="960" arg2="MS2PatrolData_860" /-->	
+			<!--action name="NPC를이동시킨다" arg1="961" arg2="MS2PatrolData_861" /-->		
+			<action name="NPC를이동시킨다" arg1="962" arg2="MS2PatrolData_862" />	
+			<action name="NPC를이동시킨다" arg1="963" arg2="MS2PatrolData_863" />		
+			<action name="NPC를이동시킨다" arg1="964" arg2="MS2PatrolData_864" />	
+			<!--action name="NPC를이동시킨다" arg1="965" arg2="MS2PatrolData_865" /-->		
+			<!--action name="NPC를이동시킨다" arg1="966" arg2="MS2PatrolData_866" /-->	
+			<action name="NPC를이동시킨다" arg1="967" arg2="MS2PatrolData_867" />		
+			<!--action name="NPC를이동시킨다" arg1="968" arg2="MS2PatrolData_868" /-->	
+			<!--action name="NPC를이동시킨다" arg1="969" arg2="MS2PatrolData_869" /-->			
+			<action name="NPC를이동시킨다" arg1="970" arg2="MS2PatrolData_870" />	
+			<!--action name="NPC를이동시킨다" arg1="971" arg2="MS2PatrolData_871" /-->		
+			<!--action name="NPC를이동시킨다" arg1="972" arg2="MS2PatrolData_872" /-->	
+			<!--action name="NPC를이동시킨다" arg1="973" arg2="MS2PatrolData_873" /-->		
+			<action name="NPC를이동시킨다" arg1="974" arg2="MS2PatrolData_874" />	
+			<action name="NPC를이동시킨다" arg1="975" arg2="MS2PatrolData_875" />		
+			<action name="NPC를이동시킨다" arg1="976" arg2="MS2PatrolData_876" />	
+			<action name="NPC를이동시킨다" arg1="977" arg2="MS2PatrolData_877" />		
+			<action name="NPC를이동시킨다" arg1="978" arg2="MS2PatrolData_878" />	
+			<!--action name="NPC를이동시킨다" arg1="979" arg2="MS2PatrolData_879" /-->	
+			<action name="NPC를이동시킨다" arg1="980" arg2="MS2PatrolData_880" />	
+			<action name="NPC를이동시킨다" arg1="981" arg2="MS2PatrolData_881" />		
+			<action name="NPC를이동시킨다" arg1="982" arg2="MS2PatrolData_882" />				
+		</onEnter>		
+				<condition name="WaitTick" waitTick="500"> 
+					<transition state="RemoveTotem03"/>	
+				</condition>		
+    <onExit> 				
+    </onExit>
+    </state>	
+	
+	<!-- 미혹의 령 일부 제거 954,960,961,965,966,968,969,971,973,979 -->	
+    <state name="RemoveTotem03" > 	
+        <onEnter>		
+			<action name="몬스터소멸시킨다" arg1="102,202" />				
+			<action name="몬스터를변경한다" arg1="950" arg2="850" />		
+			<action name="몬스터를변경한다" arg1="951" arg2="851" />		
+			<action name="몬스터를변경한다" arg1="952" arg2="852" />		
+			<action name="몬스터를변경한다" arg1="953" arg2="853" />		
+			<!--action name="몬스터를변경한다" arg1="954" arg2="854" /-->		
+			<action name="몬스터를변경한다" arg1="955" arg2="855" />		
+			<action name="몬스터를변경한다" arg1="956" arg2="856" />		
+			<action name="몬스터를변경한다" arg1="957" arg2="857" />		
+			<action name="몬스터를변경한다" arg1="958" arg2="858" />		
+			<action name="몬스터를변경한다" arg1="959" arg2="859" />	
+			<!--action name="몬스터를변경한다" arg1="960" arg2="860" /-->		
+			<!--action name="몬스터를변경한다" arg1="961" arg2="861" /-->		
+			<action name="몬스터를변경한다" arg1="962" arg2="862" />		
+			<action name="몬스터를변경한다" arg1="963" arg2="863" />		
+			<action name="몬스터를변경한다" arg1="964" arg2="864" />		
+			<!--action name="몬스터를변경한다" arg1="965" arg2="865" /-->		
+			<!--action name="몬스터를변경한다" arg1="966" arg2="866" /-->		 
+			<action name="몬스터를변경한다" arg1="967" arg2="867" />		
+			<!--action name="몬스터를변경한다" arg1="968" arg2="868" /-->		
+			<action name="몬스터를변경한다" arg1="969" arg2="869" />		
+			<action name="몬스터를변경한다" arg1="970" arg2="870" />		
+			<!--action name="몬스터를변경한다" arg1="971" arg2="871" /-->		
+			<!--action name="몬스터를변경한다" arg1="972" arg2="872" /-->		
+			<!--action name="몬스터를변경한다" arg1="973" arg2="873" /-->		
+			<action name="몬스터를변경한다" arg1="974" arg2="874" />		
+			<action name="몬스터를변경한다" arg1="975" arg2="875" />		
+			<action name="몬스터를변경한다" arg1="976" arg2="876" />		
+			<action name="몬스터를변경한다" arg1="977" arg2="877" />		
+			<action name="몬스터를변경한다" arg1="978" arg2="878" />		
+			<!--action name="몬스터를변경한다" arg1="979" arg2="879" /-->	
+			<action name="몬스터를변경한다" arg1="980" arg2="880" />		
+			<action name="몬스터를변경한다" arg1="981" arg2="881" />		
+			<action name="몬스터를변경한다" arg1="982" arg2="882" />		
+			<action name="대화를설정한다" arg1="1" arg2="105" arg3="$52000051_QD__01_MAIN__8$" arg4="3" arg5="0" />	    <!-- 틴차이 -->						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="500"> 
+					<transition state="RemoveTotem04"/>
+				</condition>			
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="RemoveTotem04" > 
+        <onEnter>		
+			<action name="대화를설정한다" arg1="1" arg2="205" arg3="$52000051_QD__01_MAIN__9$" arg4="3" arg5="1" />	    <!-- 준타 -->			
+			<action name="NPC를이동시킨다" arg1="105" arg2="MS2PatrolData_106" />	
+			<action name="NPC를이동시킨다" arg1="205" arg2="MS2PatrolData_206" />			
+			<action name="메쉬를설정한다" arg1="3500-3501" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Invisible_IronDoor -->		
+			<action name="액터를설정한다" arg1="4002" arg2="1" arg3="Opened" /> <!-- IronDoor -->				
+			<action name="액터를설정한다" arg1="4001" arg2="1" arg3="Opened" /> <!-- IronDoor -->	
+			<action name="이펙트를설정한다" arg1="5004" arg2="1"/> <!-- MetalDoorOpen 사운드 이펙트-->		
+			<action name="AGENT를설정한다" arg1="8000" arg2="0"/>	
+			<action name="AGENT를설정한다" arg1="8001" arg2="0"/>	
+			<action name="AGENT를설정한다" arg1="8002" arg2="0"/>	
+			<action name="AGENT를설정한다" arg1="8003" arg2="0"/>						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="3000">  
+					<transition state="FoundGate01"/>
+				</condition>			
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+	<state name="FoundGate01">   
+        <onEnter> 		
+			<action name="대화를설정한다" arg1="1" arg2="205" arg3="$52000051_QD__01_MAIN__10$" arg4="3" arg5="0" />	    <!-- 준타 -->		
+			<action name="NPC를이동시킨다" arg1="105" arg2="MS2PatrolData_107" />	
+			<action name="NPC를이동시킨다" arg1="205" arg2="MS2PatrolData_207" />				
+				</onEnter>	
+				<condition name="NPC를감지했으면" arg1="9500" arg2="105"> 
+			<transition state="FoundGate02"/>	
+		</condition> 	
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+	<state name="FoundGate02">   
+        <onEnter> 		
+			<action name="대화를설정한다" arg1="1" arg2="105" arg3="$52000051_QD__01_MAIN__11$" arg4="2" arg5="0" />	    <!-- 틴차이 -->				
+				</onEnter>	
+				<condition name="NPC를감지했으면" arg1="9501" arg2="105"> 	
+			<transition state="ShadowApp01"/>	
+		</condition> 	
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="ShadowApp01" > 
+        <onEnter>		
+			<action name="대화를설정한다" arg1="1" arg2="205" arg3="$52000051_QD__01_MAIN__12$" arg4="2" arg5="0" />	    <!-- 준타 -->					
+			<action name="몬스터를생성한다" arg1="901,903,905" arg2="0" /> 					
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2500">  	
+					<transition state="ShadowApp02"/>
+				</condition>		
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="ShadowApp02" > 
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="105,205" />	<!-- 전투 -->						
+			<action name="몬스터를생성한다" arg1="106,206" arg2="0" /> 				
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$52000051_QD__01_MAIN__13$" arg3="3000" arg4="0" />		
+			<action name="몬스터를생성한다" arg1="914,916,918" arg2="0" /> 	
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2500">  
+					<transition state="ShadowApp03"/>
+				</condition>		
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="ShadowApp03" > 
+        <onEnter>			
+			<action name="몬스터를생성한다" arg1="921,926,928" arg2="0" /> 		
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">  
+					<transition state="ShadowApp04"/>
+				</condition>		
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="ShadowApp04" > 
+        <onEnter>	
+				</onEnter>		
+				<condition name="몬스터가죽어있으면" arg1="901,902,903,904,905,906,907,908,911,912,913,914,915,916,917,918,921,922,923,924,925,926,927,928,931,932,933,934,935,936,937,938" >		
+					<transition state="StartPuzzle01"/>	
+				</condition>		
+    <onExit> 
+			<action name="몬스터소멸시킨다" arg1="106,206" />			
+			<action name="몬스터를생성한다" arg1="104,204" arg2="0" /> 	<!-- 연출용 NPC -->			
+    </onExit>	
+    </state>	
+	
+	<state name="StartPuzzle01">   
+        <onEnter> 		
+			<action name="SetUserValue" triggerID="4" key="PuzzleStart" value="1" /> 					
+			<action name="대화를설정한다" arg1="1" arg2="104" arg3="$52000051_QD__01_MAIN__14$" arg4="2" arg5="0" />	    <!-- 틴차이-->				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">  
+			<transition state="StartPuzzle02"/>	
+		</condition> 			
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="StartPuzzle02" > 
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$52000051_QD__01_MAIN__15$" arg3="5000" arg4="0" />		
+				</onEnter>		
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="EndPuzzle01"/>	
+				</condition>		
+    <onExit> 
+    </onExit>	
+    </state>	
+
+<!-- NPC 말풍선 퍼즐에 대한 멘트 스크립트 모노로그 -->	
+
+    <state name="EndPuzzle01" > 	
+        <onEnter>	 	
+				</onEnter>	
+			<condition name="UserValue" key="PuzzleSolved" value="1">
+			<transition state="GateOpen01"/>	
+		</condition> 			
+    <onExit> 
+    </onExit>	
+    </state>	 
+	
+    <state name="GateOpen01" > 
+        <onEnter>			
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- StoneGate 사운드 이펙트-->				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="1000">  
+					<transition state="GateOpen02"/> 
+				</condition>		
+    <onExit> 
+    </onExit>	
+    </state>	
+	
+    <state name="GateOpen02">	
+        <onEnter>		
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_108" />	
+			<action name="NPC를이동시킨다" arg1="204" arg2="MS2PatrolData_208" />		
+			<action name="대화를설정한다" arg1="1" arg2="104" arg3="$52000051_QD__01_MAIN__16$" arg4="2" arg5="0" />	    <!-- 틴차이-->					
+			<action name="대화를설정한다" arg1="1" arg2="204" arg3="$52000051_QD__01_MAIN__17$" arg4="2" arg5="2" />	    <!-- 준타 -->					
+			<action name="액터를설정한다" arg1="4000" arg2="1" arg3="or_fi_struc_stonegate_A01_on" /> <!-- StoneGate -->			
+			<action name="메쉬를설정한다" arg1="3030" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- GatePortal -->						
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" /> 				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="3000">  
+			<transition state="GateOpen03"/>	
+		</condition> 		
+    <onExit>  	
+    </onExit>	
+    </state>			
+	
+    <state name="GateOpen03"> 
+        <onEnter>		
+			<action name="NPC를이동시킨다" arg1="104" arg2="MS2PatrolData_109" />	
+			<action name="NPC를이동시킨다" arg1="204" arg2="MS2PatrolData_209" />				
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">  
+			<transition state="Quit"/>	
+		</condition> 	
+    <onExit>
+    </onExit>
+    </state> 
+	
+    <state name="Quit"> 	
+        <onEnter>		
+			<action name="몬스터소멸시킨다" arg1="104,204" />		
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+ 
+</ms2>
+

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>   
+  
+    <state name="대기" >
+        <onEnter>
+			<action name="SetUserValue" triggerID="99990002" key="Spawn" value="0" />
+			<action name="SetUserValue" triggerID="99990003" key="RandomBomb" value="0" />
+			<action name="SetUserValue" triggerID="99990004" key="Laser" value="0" />
+			<action name="SetUserValue" triggerID="99990005" key="elevator" value="0" />
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0" />
+			<action name="오브젝트반응설정한다" arg1="10002185" arg2="0" /> <!--엘리베이터 발판-->
+			<action name="EnableSpawnPointPC" spawnPointID="100" isEnable="1" />    <!-- <시작 위치 세팅> -->
+			<action name="EnableSpawnPointPC" spawnPointID="101" isEnable="0" />    
+			<action name="EnableSpawnPointPC" spawnPointID="102" isEnable="0" />
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="901" >
+			<transition state="시작"/>
+		</condition>
+    </state> 	
+
+    <state name="시작" >
+        <onEnter>
+        </onEnter>
+			<condition name="유저를감지했으면" arg1="902">
+				<action name="이벤트UI를설정한다" arg1="1" arg2="$02020300_BF__MAIN__0$" arg3="5000" />
+				<action name="몬스터를생성한다" arg1="101,102,103" arg2="0" />	
+				<transition state="추가대사_01"/>	
+			</condition>
+    </state>
+
+    <state name="추가대사_01">
+		<condition name="WaitTick" waitTick="5000" >	
+			<action name="SetUserValue" triggerID="99990004" key="Laser" value="1" />
+			<action name="SideNpcTalk" type="talk" npcID="29500101" illust="ArcheonBlack_Normal" script="$02020300_BF__MAIN__1$" duration="5000" />						
+			<transition state="추가대사_02"/>	
+		</condition>
+    </state>
+
+	<state name="추가대사_02">
+		<condition name="몬스터가죽어있으면" arg1="101,102,103" >	
+			<action name="SideNpcTalk" type="talk" npcID="29000170" illust="ArcaneBlader_normal" script="$02020300_BF__MAIN__2$" duration="5000" />						
+			<transition state="추가대사_03"/>	
+		</condition>
+	</state>
+
+    <state name="추가대사_03" >
+		<condition name="WaitTick" waitTick="5000" >	
+			<action name="SideNpcTalk" type="talk" npcID="11003536" illust="Neirin_normal" script="$02020300_BF__MAIN__3$" duration="5000" />						
+			<transition state="엘리베이터_체크"/>	
+		</condition>
+    </state>
+	
+    <state name="엘리베이터_체크" >
+		<condition name="WaitTick" waitTick="5000" >	
+			<action name="SideNpcTalk" type="talk" npcID="29000170" illust="ArcaneBlader_normal" script="$02020300_BF__MAIN__4$" duration="5000" />						
+			<transition state="엘리베이터_스위치"/>	
+		</condition>
+    </state>
+
+    <state name="엘리베이터_스위치" >
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="10002185" arg2="1" />
+        </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="10002185" arg2="0" >	
+			<transition state="엘리베이터_활성화"/>	
+		</condition>
+    </state>
+
+    <state name="엘리베이터_활성화" >
+        <onEnter>
+			<action name="움직이는발판을설정한다" arg1="5001" arg2="1" />
+       </onEnter>
+		<condition name="유저를감지했으면" arg1="903" >
+			<transition state="아르케온_탑승_가이드"/>	 
+		</condition>
+    </state>
+
+	<state name="아르케온_탑승_가이드" >
+        <onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02020300_BF__MAIN__5$" arg3="5000" />
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="711" >
+			<action name="SetUserValue" triggerID="99990005" key="elevator" value="1" />
+ 			<action name="EnableSpawnPointPC" spawnPointID="100" isEnable="0" />    <!-- <시작 위치 세팅> -->
+			<action name="EnableSpawnPointPC" spawnPointID="101" isEnable="1" />    
+			<action name="EnableSpawnPointPC" spawnPointID="102" isEnable="0" />
+			<transition state="레이저_패턴_시작"/>	 
+		</condition>
+    </state>
+
+	<state name="레이저_패턴_시작" >
+        <onEnter>
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="904" >
+			<transition state="갈림길_전투"/>	 
+		</condition>
+    </state>
+	
+	<state name="갈림길_전투" >
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="201,202,203,204" arg2="0" />	
+			<action name="액터를설정한다" arg1="9001" arg2="1" arg3="sf_fi_funct_darkdoor_A01_end" />
+			<action name="메쉬를설정한다" arg1="1001" arg2="1" />
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="905" >
+			<transition state="짜투리_전투"/>	 
+		</condition>
+    </state>
+
+	<state name="짜투리_전투" >
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="301,302,303,304" arg2="0" />	        
+			<action name="메쉬를설정한다" arg1="2001,2002,2003,2004" arg2="1" />
+			<action name="메쉬를설정한다" arg1="30000,30010,30020,30030" arg2="1" />
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="911" >
+			<transition state="웨이브_시작"/>	 
+		</condition>
+    </state>
+	
+    <state name="웨이브_시작" >
+        <onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="29000170" illust="ArcaneBlader_unfair" script="$02020300_BF__MAIN__6$" duration="5000" />						
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000" >	
+				<action name="메쉬를설정한다" arg1="2001,2002,2003,2004" arg2="0" />
+				<action name="메쉬를설정한다" arg1="30000,30010,30020,30030" arg2="0" />
+				<transition state="추가대사_04"/>	
+			</condition>
+    </state>
+
+    <state name="추가대사_04" >
+		<onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="29500101" illust="ArcheonBlack_Normal" script="$02020300_BF__MAIN__7$" duration="5000" />						
+			<action name="SetUserValue" triggerID="99990002" key="Spawn" value="1" />
+		</onEnter>
+			<condition name="UserValue" key="SpawnRoomEnd" value="1" >
+				<action name="액터를설정한다" arg1="9001" arg2="1" arg3="sf_fi_funct_darkdoor_A01_start" />
+				<transition state="길열림"/>
+			</condition>
+    </state>
+
+    <state name="길열림" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="1001" arg2="0" />
+			<action name="메쉬를설정한다" arg1="2001,2002,2003,2004" arg2="1" />
+			<action name="메쉬를설정한다" arg1="30000,30010,30020,30030" arg2="1" />
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="921" >
+			<transition state="지뢰방_시작"/>
+		</condition>
+    </state>
+
+    <state name="지뢰방_시작" >
+        <onEnter>
+ 			<action name="EnableSpawnPointPC" spawnPointID="100" isEnable="0" />    <!-- <시작 위치 세팅> -->
+			<action name="EnableSpawnPointPC" spawnPointID="101" isEnable="0" />    
+			<action name="EnableSpawnPointPC" spawnPointID="102" isEnable="1" />
+			<action name="액터를설정한다" arg1="9002" arg2="1" arg3="sf_fi_funct_darkdoor_A01_end" />
+			<action name="액터를설정한다" arg1="9003" arg2="1" arg3="sf_fi_funct_darkdoor_A01_end" />
+			<action name="액터를설정한다" arg1="9004" arg2="1" arg3="sf_fi_funct_darkdoor_A01_end" />
+			<action name="메쉬를설정한다" arg1="5001" arg2="0" />
+			<action name="메쉬를설정한다" arg1="3001,3002,3003" arg2="1" />
+			<action name="SetUserValue" triggerID="99990003" key="RandomBomb" value="1" />
+			<action name="SideNpcTalk" type="talk" npcID="29500101" illust="ArcheonBlack_Normal" script="$02020300_BF__MAIN__8$" duration="5000" />						
+        </onEnter>
+			<condition name="WaitTick" waitTick="5000" >	
+				<transition state="추가대사_05"/>	
+			</condition>
+    </state>
+
+    <state name="추가대사_05" >
+		<onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="29000170" illust="ArcaneBlader_normal" script="$02020300_BF__MAIN__9$" duration="5000" />						
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000" >	
+				<transition state="추가대사_06"/>	
+			</condition>
+    </state>
+
+    <state name="추가대사_06" >
+		<onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="11003536" illust="Neirin_normal" script="$02020300_BF__MAIN__10$" duration="5000" />						
+		</onEnter>
+			<condition name="UserValue" key="RandomBombEnd" value="1" >
+				<action name="SetUserValue" triggerID="99990004" key="Laser" value="0" />
+				<transition state="보스전"/>
+			</condition>
+    </state>
+	
+    <state name="보스전" >
+        <onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="29000170" illust="ArcaneBlader_normal" script="$02020300_BF__MAIN__11$" duration="5000" />						
+			<action name="액터를설정한다" arg1="9002" arg2="1" arg3="sf_fi_funct_darkdoor_A01_start" />
+			<action name="메쉬를설정한다" arg1="3001" arg2="0" />
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1" />
+        </onEnter>
+		<condition name="무조건" >
+			<transition state="종료"/>
+		</condition>
+    </state>
+
+    <state name="종료" >
+        <onEnter>
+			<action name="SetUserValue" triggerID="99990005" key="elevator" value="0" />
+        </onEnter>
+    </state>
+
+</ms2>

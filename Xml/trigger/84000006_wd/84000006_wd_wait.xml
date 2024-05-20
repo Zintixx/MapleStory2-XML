@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<!--ME공통 대기설정-->
+	<!--대기 페이즈1&2 반복하다 시간 경과 or 인원 충족 시 게임 시작-->	
+	<!--대기 시작-->
+    <state name="시작">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="40" arg3="1" arg4="0" />	<!--테스트 수정 가능 지점-->
+        </onEnter>
+		<condition name="유저를감지했으면" arg1="9000">
+			<transition state="대기" />
+		</condition>
+    </state>
+
+	<!--대기 페이즈1-->
+    <state name="대기">
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$84000006_WD__84000006_WD_WAIT__0$" duration="5000" delayTick="1000"/> <!--npc대사 : 애프터파티에 오신 것을 환영해요!-->		
+			<action name="ShowGuideSummary" entityID="28500001" textID="28500001" durationTime="5000"/> 						 <!--가이드 : 잠시만 기다리셈-->
+        </onEnter>
+			    <condition name="여러명의유저를감지했으면" arg1="9000" arg2="70">
+					<transition state="종료" />
+				</condition>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="대기2"/>
+				</condition>	
+				<condition name="시간이경과했으면" arg1="1">
+					<transition state="종료" />
+				</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+	<!--대기 페이즈2-->
+    <state name="대기2">
+        <onEnter>
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$84000006_WD__84000006_WD_WAIT__1$" duration="5000" delayTick="1000"/> <!--npc대사 : 애프터파티에 오신 것을 환영해요!-->		
+			<action name="ShowGuideSummary" entityID="28500002" textID="28500002" durationTime="5000" /> 						<!--가이드 : 곧 시작함-->		
+        </onEnter>
+			    <condition name="여러명의유저를감지했으면" arg1="9000" arg2="70">
+					<transition state="종료" />
+				</condition>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="대기"/>
+				</condition>	
+				<condition name="시간이경과했으면" arg1="1">
+					<transition state="종료" />
+				</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+	<state name="종료">
+    </state>
+</ms2>

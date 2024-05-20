@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="PvP" posX="238" posY="108">
+        <onEnter>
+			<!--이펙트 ID 하드코딩임으로 바꾸지 말것-->
+			<action name="이펙트를설정한다" arg1="701" arg2="0" />
+			<action name="이펙트를설정한다" arg1="702" arg2="0" />
+        </onEnter>
+        <condition name="무조건" >
+			<!--arg6="A길드트리거박스, B길드트리거박스, A길드선수선발박스, B길드선수선발박스, A길드이동포털, B길드이동포털, 경기장포털, 필요승수"-->
+			<!--arg5가 4일 때 arg2는 (시작대기시간)으로 Timeout이 걸려있다. 변경하려면 프로그래머에게 문의-->
+			<action name="PVP존을설정한다" arg1="101" arg2="30" arg3="120" arg4="90001002" arg5="4" arg6="102, 103, 112, 113, 10, 11, 1, 3"/>
+            <transition state="PvP종료" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="PvP종료" posX="238" posY="108">
+        <onEnter>
+        </onEnter>
+        <condition name="PVP존이종료했으면" arg1="101" >
+            <transition state="게임종료" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="게임종료" posX="857" posY="303">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="999" arg2="4" arg3="0" />
+        </onEnter>
+		 <condition name="시간이경과했으면" arg1="999">
+			<!--트로피 / 1=타겟박스 id, 2=achieveType, 3=code에 들어갈 값-->
+			<!--action name="업적이벤트를발생시킨다" arg1="102" arg2="pvp_win" arg3="61000009"/-->
+            <transition state="완료" />
+        </condition>
+        <onExit>
+            <action name="타이머를초기화한다" arg1="999" />
+        </onExit>
+    </state>
+
+  <state name="완료">
+    <onEnter>
+      <action name="타이머를설정한다" arg1="1" arg2="60"/>
+      <!--action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/-->
+    </onEnter>
+    <condition name="시간이경과했으면" arg1="1">
+      <action name="유저를이동시킨다" arg1="0" arg2="0"/>
+    </condition>
+  </state>
+</ms2>

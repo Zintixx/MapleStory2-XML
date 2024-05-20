@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+
+  <state name="닫힘상태">
+     <onEnter>
+	 	<action name="메쉬를설정한다" arg1="6001-6002" arg2="1" arg4="0" arg5="0" /> <!--벽 -->
+	  	<action name="메쉬를설정한다" arg1="6020-6026" arg2="0" arg4="0" arg5="0" /> <!--벽 -->
+    </onEnter>
+	        <condition name="오브젝트가반응했으면" arg1="10000818" arg2="1">
+            <transition state="작동" />
+        </condition>
+    <onExit>
+    </onExit>
+  </state>
+
+  <state name="작동">
+      <onEnter>
+	  		<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>  
+			<action name="ShowGuideSummary" entityID="111" textID="20000080"/> <!-- 스위치를 정지하세요 -->	
+    </onEnter>
+	        <condition name="오브젝트가반응했으면" arg1="10000818" arg2="0">
+            <transition state="열림상태" />
+        </condition>
+    <onExit>
+			<action name="HideGuideSummary" entityID="111"/>
+    </onExit>
+  </state>
+  
+    <state name="열림상태">
+      <onEnter>
+<!-- 		<action name="연출UI를설정한다" arg1="1"/> 	
+		<action name="연출UI를설정한다" arg1="3"/>  -->
+<!-- 		<action name="카메라를선택한다" arg1="8001" arg2="1"/> --><!-- 연출 카메라 -->
+		<action name="타이머를설정한다" arg1="2" arg2="2" />
+		<action name="메쉬를설정한다" arg1="6010-6016" arg2="0" arg4="200" arg5="15" /> <!--벽 해제-->
+		<action name="메쉬를설정한다" arg1="6020-6026" arg2="1" arg4="200" arg5="15" /> <!--벽 해제-->		
+		<action name="이펙트를설정한다" arg1="9000002" arg2="1" /> <!--Object_Electricity_On_01-->	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="열림"/>
+		</condition>	
+    <onExit>
+    </onExit>
+	
+  </state>
+  
+      <state name="열림">
+    <onEnter>
+		<action name="메쉬를설정한다" arg1="6001,6002" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+		<action name="타이머를설정한다" arg1="2" arg2="2" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="열림_끝"/>
+		</condition>
+    <onExit>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+  </state>
+  
+   <state name="열림_끝">
+    <onEnter>
+		 <action name="카메라를선택한다" arg1="8001" arg2="0"/><!-- 연출 카메라 -->
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state>
+
+</ms2>

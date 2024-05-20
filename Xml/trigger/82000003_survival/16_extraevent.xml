@@ -1,0 +1,912 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="Setting" >
+        <onEnter>	
+			<action name="버프를걸어준다" arg1="9000" arg2="70001101" arg3="1" arg4="0" arg5="0"/>		<!-- 변신 탈 것 해제용 버프 -->			
+			<action name="SetGravity" gravity="0" /> 	
+			<action name="버프를삭제한다" arg1="9000" arg2="71000075" />		
+			<action name="버프를삭제한다" arg1="9000" arg2="71000052" />	
+			<action name="버프를삭제한다" arg1="9000" arg2="71000076" />				
+			<action name="SetUserValue" key="ExtraEventCheck" value="0" />		
+			<action name="SetUserValue" key="ExtraEventOff" value="0" />		
+			<action name="SetUserValue" key="ExtraEventTestOn" value="0" />					
+        </onEnter>
+			<condition name="UserValue" key="ExtraEventTestOn" value="1">		<!-- test용 수정 가능 지점 : 발동 시킬 이벤트 종류	-->	
+					<transition state="ExtraEventOn"/>					
+				</condition> 	
+				<!-- ExtraEventOn / ExtraEventRandomDelay01 / ExtraEvent01_Fast / ExtraEvent02_MapHack / ExtraEvent03_RobotSpawn / ExtraEvent04_DogEverywhere / ExtraEvent05_SkillCoolDownTimeReduce / ExtraEvent06_NoMoreFarming --> 	
+			<condition name="UserValue" key="ExtraEventCheck" value="1">		
+					<transition state="ExtraEventOccurrenceProbability"/>	<!-- ExtraEventOccurrenceProbability / ExtraEventOn -->
+				</condition> 
+        <onExit>			
+        </onExit>	
+    </state>
+	
+    <state name="ExtraEventOccurrenceProbability" >
+        <onEnter>	
+        </onEnter>	
+				<condition name="랜덤조건" arg1="60" >	
+					<transition state="ExtraEventOff"/>	
+				</condition> 		
+				<condition name="랜덤조건" arg1="40" >	
+					<transition state="ExtraEventOn"/>	
+				</condition> 					
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+        </onExit>
+    </state>
+	
+	    <state name="ExtraEventOff" >
+        <onEnter>				
+		</onEnter>
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 				
+        <onExit>
+        </onExit>
+    </state>	
+	
+    <state name="ExtraEventOn" >
+        <onEnter>		
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumEventOn" /> 	<!-- 모쿰 이벤트 로그 - 모쿰 소환 됨-->	
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">    	
+					<transition state="RelicLeft05"/>	
+				</condition>				
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="RelicLeft05" >
+        <onEnter>		
+			<action name="SetUserValue" triggerID="11" key="RelicMobSpawn" value="1" />		
+			<action name="SetUserValue" triggerID="12" key="RelicMobSpawn" value="1" />	
+			<action name="SetUserValue" triggerID="13" key="RelicMobSpawn" value="1" />	
+			<action name="SetUserValue" triggerID="14" key="RelicMobSpawn" value="1" />	
+			<action name="SetUserValue" triggerID="15" key="RelicMobSpawn" value="1" />					
+        </onEnter>
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft04_NoRed"/>	
+				</condition> 	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft04_NoSkyblue"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft04_NoGreen"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft04_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft04_NoGrey"/>	
+				</condition> 						
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 					
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200002" textID="28200002" durationTime="4000"/>  <!-- 가이드 : [b:첫 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__0$"/>				
+        </onExit>
+    </state>
+
+<!-- 4 마리 남음 -->	
+    <state name="RelicLeft04_NoRed" >
+        <onEnter>	
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumKill_01" /> 	<!-- 모쿰 이벤트 로그 - 4마리 남음-->	
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft03_NoRed_NoSkyblue"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft03_NoRed_NoGreen"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft03_NoRed_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft03_NoRed_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200003" textID="28200003" durationTime="3000"/>  <!-- 가이드 : [b:두 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__1$"/>			
+        </onExit>
+    </state>
+
+    <state name="RelicLeft04_NoSkyblue" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft03_NoRed_NoSkyblue"/>	
+				</condition> 	
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft03_NoSkyblue_NoGreen"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft03_NoSkyblue_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft03_NoSkyblue_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200003" textID="28200003" durationTime="3000"/>  <!-- 가이드 : [b:두 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__1$"/>			
+        </onExit>
+    </state>
+
+    <state name="RelicLeft04_NoGreen" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft03_NoRed_NoGreen"/>	
+				</condition> 	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft03_NoSkyblue_NoGreen"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft03_NoGreen_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft03_NoGreen_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>		
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200003" textID="28200003" durationTime="3000"/>  <!-- 가이드 : [b:두 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__1$"/>				
+        </onExit>
+    </state>
+
+    <state name="RelicLeft04_NoYellow" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft03_NoRed_NoYellow"/>	
+				</condition> 	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft03_NoSkyblue_NoYellow"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft03_NoGreen_NoYellow"/>	
+				</condition> 	
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft03_NoYellow_NoGrey"/>	
+				</condition> 				
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>		
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200003" textID="28200003" durationTime="3000"/>  <!-- 가이드 : [b:두 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__1$"/>			
+        </onExit>
+    </state>
+
+    <state name="RelicLeft04_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft03_NoRed_NoGrey"/>	
+				</condition> 	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft03_NoSkyblue_NoGrey"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft03_NoGreen_NoGrey"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft03_NoYellow_NoGrey"/>	
+				</condition> 					
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>		
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200003" textID="28200003" durationTime="3000"/>  <!-- 가이드 : [b:두 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__1$"/>			
+        </onExit>
+    </state>
+
+<!-- 3 마리 남음 -->
+    <state name="RelicLeft03_NoRed_NoSkyblue" >
+        <onEnter>		
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumKill_02" /> 	<!-- 모쿰 이벤트 로그 - 3마리 남음-->	
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoGreen"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>		
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>			
+        </onExit>
+    </state>
+
+    <state name="RelicLeft03_NoRed_NoGreen" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoGreen"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoGreen_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoGreen_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>		
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>			
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft03_NoRed_NoYellow" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoYellow"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoGreen_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoYellow_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>		
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>			
+        </onExit>
+    </state>	
+	
+    <state name="RelicLeft03_NoRed_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoGrey"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoGreen_NoGrey"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoYellow_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>				
+        </onExit>
+    </state>	
+	
+    <state name="RelicLeft03_NoSkyblue_NoGreen" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoGreen"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoGreen_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoGreen_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>			
+        </onExit>
+    </state>		
+	
+    <state name="RelicLeft03_NoSkyblue_NoYellow" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoYellow"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoGreen_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoYellow_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>			
+        </onExit>
+    </state>		
+	
+    <state name="RelicLeft03_NoSkyblue_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoSkyblue_NoGrey"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoGreen_NoGrey"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoYellow_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>				
+        </onExit>
+    </state>		
+	
+    <state name="RelicLeft03_NoGreen_NoYellow" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoGreen_NoYellow"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoGreen_NoYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft02_NoGreen_NoYellow_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>			
+        </onExit>
+    </state>	
+	
+    <state name="RelicLeft03_NoGreen_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoGreen_NoGrey"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoGreen_NoGrey"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft02_NoGreen_NoYellow_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>			
+        </onExit>
+    </state>	
+	
+    <state name="RelicLeft03_NoYellow_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft02_NoRed_NoYellow_NoGrey"/>	
+				</condition> 
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft02_NoSkyblue_NoYellow_NoGrey"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft02_NoGreen_NoYellow_NoGrey"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200004" textID="28200004" durationTime="3000"/>  <!-- 가이드 : [b:세 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__2$"/>			
+        </onExit>
+    </state>	
+	
+	
+<!-- 2 마리 남음 -->	
+    <state name="RelicLeft02_NoRed_NoSkyblue_NoGreen" >
+        <onEnter>		
+				<action name="로그를남긴다"  arg1="Survival" arg3="MokumKill_03" /> 	<!-- 모쿰 이벤트 로그 - 2마리 남음-->	
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft01_OnlyGrey"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft01_OnlyYellow"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>			
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoRed_NoSkyblue_NoYellow" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft01_OnlyGrey"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft01_OnlyGreen"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>			
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoRed_NoSkyblue_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft01_OnlyYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft01_OnlyGreen"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>			
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoRed_NoGreen_NoYellow" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft01_OnlyGrey"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft01_OnlySkyblue"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>		
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoRed_NoGreen_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft01_OnlyYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft01_OnlySkyblue"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>			
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoRed_NoYellow_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft01_OnlyGreen"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft01_OnlySkyblue"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>		
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoSkyblue_NoGreen_NoYellow" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft01_OnlyGrey"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="RelicLeft01_OnlyRed"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>	
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoSkyblue_NoGreen_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft01_OnlyYellow"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="RelicLeft01_OnlyRed"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>			
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoSkyblue_NoYellow_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft01_OnlyGreen"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="RelicLeft01_OnlyRed"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>			
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft02_NoGreen_NoYellow_NoGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="RelicLeft01_OnlySkyblue"/>	
+				</condition> 		
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="RelicLeft01_OnlyRed"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200005" textID="28200005" durationTime="3000"/>  <!-- 가이드 : [b:네 번째] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__3$"/>			
+        </onExit>
+    </state>
+		
+		
+<!-- 1 마리 남음 -->	
+    <state name="RelicLeft01_OnlyRed" >
+        <onEnter>		
+				<action name="로그를남긴다"  arg1="Survival" arg3="MokumKill_04" /> 	<!-- 모쿰 이벤트 로그 - 1마리 남음-->	
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobRedDie" value="1">	
+					<transition state="ExtraEventRandomDelay01"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>	
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200006" textID="28200006" durationTime="3000"/>  <!-- 가이드 : [b:마지막] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__4$"/>			
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft01_OnlySkyblue" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobSkyblueDie" value="1">	
+					<transition state="ExtraEventRandomDelay01"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200006" textID="28200006" durationTime="3000"/>  <!-- 가이드 : [b:마지막] 모쿰이 잡혔습니다! -->	 
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__4$"/>		
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft01_OnlyGreen" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobGreenDie" value="1">	
+					<transition state="ExtraEventRandomDelay01"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200006" textID="28200006" durationTime="3000"/>  <!-- 가이드 : [b:마지막] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__4$"/>		
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft01_OnlyYellow" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobYellowDie" value="1">	
+					<transition state="ExtraEventRandomDelay01"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200006" textID="28200006" durationTime="3000"/>  <!-- 가이드 : [b:마지막] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__4$"/>		
+        </onExit>
+    </state>
+	
+    <state name="RelicLeft01_OnlyGrey" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="UserValue" key="RelicMobGreyDie" value="1">	
+					<transition state="ExtraEventRandomDelay01"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Die_01"/>		
+			<action name="ShowGuideSummary" entityID="28200006" textID="28200006" durationTime="3000"/>  <!-- 가이드 : [b:마지막] 모쿰이 잡혔습니다! -->	
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="5000" script="$82000002_survival__16_ExtraEvent__4$"/>		
+        </onExit>
+    </state>
+	
+    <state name="ExtraEventRandomDelay01" >
+        <onEnter>		
+        </onEnter>	
+				<condition name="WaitTick" waitTick="6000">  	
+					<transition state="ExtraEventRandomDelay02" />	
+				</condition>			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>	
+        </onExit>
+    </state>
+	
+    <state name="ExtraEventRandomDelay02" >
+        <onEnter>	
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Message_01"/>		
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="8000" script="$82000002_survival__16_ExtraEvent__5$"/>				
+        </onEnter>	
+				<condition name="WaitTick" waitTick="5000">  	
+					<transition state="ExtraEventRandomDelay03" />	
+				</condition>			
+				<condition name="UserValue" key="ExtraEventOff" value="1">  
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>	
+        </onExit>
+    </state>
+	
+    <state name="ExtraEventRandomDelay03" >
+        <onEnter>	
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Popup_UI_01"/>		
+			<action name="ShowGuideSummary" entityID="28200007" textID="28200007" durationTime="4000"/>  <!-- 가이드 : 모쿰의 장난이 시작됩니다! -->				
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumEventStart" /> 	<!-- 모쿰 이벤트 로그 - 이벤트 시작 -->					
+        </onEnter>	
+				<condition name="WaitTick" waitTick="5000">  
+					<transition state="ExtraEventRandom" />	<!-- ExtraEventRandom -->
+				</condition>			
+				<condition name="UserValue" key="ExtraEventOff" value="1">  
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>	
+        </onExit>
+    </state>
+	
+    <state name="ExtraEventRandom" >
+        <onEnter>	
+        </onEnter>	
+				<condition name="랜덤조건" arg1="20" >	
+					<transition state="ExtraEvent01_Fast"/>	
+				</condition> 			
+				<condition name="랜덤조건" arg1="20" >	
+					<transition state="ExtraEvent02_MapHack"/>	
+				</condition> 	
+				<condition name="랜덤조건" arg1="20" >	
+					<transition state="ExtraEvent03_RobotSpawn"/>	
+				</condition> 	
+				<condition name="랜덤조건" arg1="20" >	
+					<transition state="ExtraEvent04_SkillCoolDownTimeReduce"/>	
+				</condition> 	
+				<condition name="랜덤조건" arg1="20" >	
+					<transition state="ExtraEvent05_NoMoreFarming"/>	
+				</condition> 			
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="ExtraEvent01_Fast" >
+        <onEnter>	
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumEvent_01" /> 	<!-- 모쿰 이벤트 로그 1-->							
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Completion_01"/>		
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="8000" script="$82000002_survival__16_ExtraEvent__6$"/>			
+			<action name="버프를걸어준다" arg1="9000" arg2="71000075" arg3="1" arg4="0" arg5="0" />			
+			<action name="SetGravity" gravity="30" />
+        </onEnter>	
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="ExtraEvent02_MapHack" >
+        <onEnter>	
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumEvent_02" /> 	<!-- 모쿰 이벤트 로그 2-->							
+			<action name="버프를삭제한다" arg1="9000" arg2="71000052" />			
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Completion_01"/>		
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="8000" script="$82000002_survival__16_ExtraEvent__7$"/>			
+			<action name="버프를걸어준다" arg1="9000" arg2="71000052" arg3="2" arg4="0" arg5="0" />							
+        </onEnter>	
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+        </onExit>
+    </state>
+	
+    <state name="ExtraEvent03_RobotSpawn" >
+        <onEnter>	
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumEvent_03" /> 	<!-- 모쿰 이벤트 로그 3-->							
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Completion_01"/>		
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="8000" script="$82000002_survival__16_ExtraEvent__8$"/>			
+			<action name="SetUserValue" triggerID="10" key="BattleRidingOnCount" value="1" />							
+        </onEnter>	
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>
+			<action name="SetUserValue" triggerID="10" key="BattleRidingOff" value="1" />			
+        </onExit>
+    </state>
+	
+    <state name="ExtraEvent04_SkillCoolDownTimeReduce" >
+        <onEnter>	
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumEvent_04" /> 	<!-- 모쿰 이벤트 로그 4-->							
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Completion_01"/>		
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="8000" script="$82000002_survival__16_ExtraEvent__9$"/>			
+			<action name="버프를걸어준다" arg1="9000" arg2="71000076" arg3="1" arg4="0" arg5="0" />	
+        </onEnter>	
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>		
+        </onExit>
+    </state>
+	
+    <state name="ExtraEvent05_NoMoreFarming" >
+        <onEnter>	
+			<action name="로그를남긴다"  arg1="Survival" arg3="MokumEvent_05" /> 	<!-- 모쿰 이벤트 로그 5 -->							
+			<action name="PlaySystemSoundInBox" arg2="System_Mokum_Completion_01"/>		
+			<action name="SideNpcTalk" npcID="21001019" type="talkbottom" illust="MushroomRichPorter_normal" duration="8000" script="$82000002_survival__16_ExtraEvent__10$"/>	
+			<action name="StartCombineSpawn" groupId="355-477" isStart="false"/>	<!-- 나태 버섯 Normal Mob -->				
+			<action name="StartCombineSpawn" groupId="10000342-10000381" isStart="false"/>	<!-- groupId="10000342-10000381" 황금 상자 Rare Box -->		
+			<action name="StartCombineSpawn" groupId="319-354" isStart="false"/>	<!-- 축복의 슬라임 Rare Mob -->	
+			<action name="StartCombineSpawn" groupId="10000382-10000506" isStart="false"/>	<!-- 10000040-10000506 나무 상자 Normal Box -->		
+			<action name="SetUserValue" triggerID="5" key="RareBoxOff" value="1" />		
+			<action name="SetUserValue" triggerID="8" key="RareMobOff" value="1" />		
+			<action name="SetUserValue" triggerID="9" key="NormaBoxOff" value="1" />			
+        </onEnter>	
+				<condition name="UserValue" key="ExtraEventOff" value="1">	
+					<transition state="Quit"/>
+				</condition> 		
+        <onExit>		
+        </onExit>
+    </state>
+	
+    <state name="Quit" >	
+        <onEnter>	
+			<action name="SetUserValue" triggerID="11" key="RelicMobRemove" value="1" />		
+			<action name="SetUserValue" triggerID="12" key="RelicMobRemove" value="1" />		
+			<action name="SetUserValue" triggerID="13" key="RelicMobRemove" value="1" />		
+			<action name="SetUserValue" triggerID="14" key="RelicMobRemove" value="1" />		
+			<action name="SetUserValue" triggerID="15" key="RelicMobRemove" value="1" />	
+        </onEnter>	
+        <onExit>
+        </onExit>
+    </state>
+	
+	
+</ms2>

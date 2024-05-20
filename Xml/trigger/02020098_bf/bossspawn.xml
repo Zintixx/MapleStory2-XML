@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  101, 보스 생성하고 그외 각종 트리거 메쉬 생성 투명벽 생성 등 게임의 전반적인 진행에 대한 부분을 처리하는 트리거임  -->
+<ms2>
+
+  <state name="시작대기중">
+    <onEnter>
+		<!--참고로 나가기 포탈 초기화 설정은 portal.xml 에서 설정함  -->
+		<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0"/> <!-- 스타팅 부활 지점에서 바로 보스  전투판 근처로 가는 순간이동 포탈 최초에는 감추기, 10: 스타팅 지점에서 1페이지 전투판 근처로 도착-->	
+		<action name="포탈을설정한다" arg1="20" arg2="0" arg3="0" arg4="0"/> <!-- 전투판 근처로 가는 순간이동 포탈 최초에는 감추기, 20: 2페이지 전투판으로 도착하기, 30: 3페이지 도착하기-->	
+		<action name="포탈을설정한다" arg1="30" arg2="0" arg3="0" arg4="0"/> <!-- 전투판 근처로 가는 순간이동 포탈 최초에는 감추기, 30: 3페이지 도착하기-->	
+
+		
+		<action name="메쉬를설정한다" arg1="201-223" arg2="0" arg3="0" arg4="0" arg5="0" />	 <!-- 	 몬스터는 밟고 플레이어는 밟지 못하는 트리거메쉬 설정하기-->
+
+		<action name="메쉬를설정한다" arg1="101-178" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--  보스 전투판으로 진입하는 계단 트리거메쉬 처음에는 감추기-->
+
+	<!--  	<action name="메쉬를설정한다" arg1="6001-6072" arg2="0" arg3="0" arg4="0" arg5="0" />	1페이즈 보스 전투판의 플레이어만 막는 투명벽 테스트용 설정, 주석 처리해야 함-->
+	 	<action name="메쉬를설정한다" arg1="6501-6580" arg2="0" arg3="0" arg4="0" arg5="0" />	<!-- 2페이즈 보스 전투판의 플레이어만 막는 투명벽 최초에는 Off 상태로 하기, 보스가 2페이지 전투 시작할 때 이 투명벽을 On 해야 함-->
+	 	<action name="메쉬를설정한다" arg1="6701-6729" arg2="0" arg3="0" arg4="0" arg5="0" />	<!-- 3페이즈 보스 전투판의 플레이어만 막는 투명벽 최초에는 Off 상태로 하기, 보스가 3페이지 전투 시작할 때 이 투명벽을 On 해야 함-->
+		
+		
+		<action name="SetUserValue" key="StairsOkPass" value="0" /> <!-- @중요!:  트리거가 순서대로 실행되면 좋은데 보스 HP가 급감되어 건너띄기 되어 순서대로 실행이 안될 경우 로직이 꼬일 수 있는데 그것을 방지하기 위한 변수임 -->
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="10"> <!--   MS2TriggerBox   TriggerObjectID = 10, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        10은 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+			<transition state="던전코드별보스등장"/>
+		</condition>
+  </state>
+
+ 
+	<state name="던전코드별보스등장">
+		<onEnter>
+		</onEnter>
+
+			<condition name="DungeonID" dungeonID="23042003">  <!-- 10인던전으로 입장하면 10인용 보스 등장,   dungeonID 의 숫자는 DungeonRoom.xlsx 에 정의된 던전코드-->			 
+				<transition state="어려움난이도보스등장" />
+			</condition>	
+		
+			<condition name="DungeonID" dungeonID="23043003">   <!-- 4인던전으로 입장하면 6인용 보스 등장-->			 
+				<transition state="쉬움난이도보스등장" />
+			</condition>	
+
+			<condition name="WaitTick" waitTick="2000" > <!-- 그냥 테스트용으로 맵코드로 바로 들어왔으면 10인용 보스 등장-->			 
+				<transition state="어려움난이도보스등장" />
+			</condition>	
+			
+	</state>  
+
+ 
+	<state name="어려움난이도보스등장"> <!-- 10인던전으로 입장하면 10인용 보스 등장,  디버그 모드로 바로 맵으로 들어가도 이 부분 실행함-->			 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="99" arg2="0" /> <!-- 어려운 난이도의 인페르녹 등장-->			 		
+			<action name="몬스터를생성한다" arg1="97" arg2="0" /> <!-- 어려운 난이도의 우호적 NPC 트리스탄 등장-->			 		
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="인페르녹최초이미지대사연출" />
+			</condition>				
+		
+	</state>  
+	
+	
+	<state name="쉬움난이도보스등장"> <!-- 6인던전으로 입장하면 6인용 보스 등장-->			 
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="98" arg2="0" /> <!-- 쉬운 난이도의 인페르녹 등장-->			 		
+			<action name="몬스터를생성한다" arg1="96" arg2="0" /> <!-- 쉬운 난이도의 우호적 NPC 트리스탄 등장-->			 		
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="4000" > 
+				<transition state="인페르녹최초이미지대사연출" />
+			</condition>				
+		
+	</state>  	
+
+	<state name="인페르녹최초이미지대사연출"> 
+		<onEnter>
+			<action name="SideNpcTalk" npcID="23000150" illust="infernog_nomal" duration="9000" script="$02020098_BF__PopUpCinema__0$"/>	
+		</onEnter>
+
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기상태" />
+			</condition>				
+		
+	</state>  	
+	
+	<state name="대기상태">
+		<onEnter>
+			
+		</onEnter>
+			<!-- 졸구간 전투 다 끝나고 보스 1페이즈로 넘어갈 때, AI_BalrogMagicBurster_Kritias.xml 인페르녹에게   StairsOk = 1 신호를 받으면 이 부분 실행-->
+			<condition name="UserValue" key="StairsOk" value="1">  
+				<transition state="계단생성시작중"/>
+			</condition>		
+			
+			<!--1페이즈 끝나서 보스가 바닥 큐브 파괴하면서 2페이즈로 넘어갈 때, AI_BalrogMagicBurster_Kritias.xml 인페르녹에게   2PhaseStart = 1 신호를 받으면 이 부분 실행-->
+			<condition name="UserValue" key="2PhaseStart" value="1">  
+				<transition state="2페이지_바로가기포탈생성"/>
+			</condition>		
+
+			<!-- 2페이즈 끝나서 보스가 바닥 큐브 파괴하면서  3페이즈로 넘어갈 때, AI_BalrogMagicBurster_Kritias.xml 인페르녹에게   3PhaseStart = 1 신호를 받으면 이 부분 실행-->
+			<condition name="UserValue" key="3PhaseStart" value="1">  
+				<transition state="3페이지_바로가기포탈생성"/>
+			</condition>		
+
+
+	</state>  
+   
+   
+	<state name="계단생성시작중">
+		<onEnter>
+			<action name="SetUserValue" key="StairsOk" value="0" />  <!--  무한 루프 빠지는 것을 막기 위해 이 변수 0 초기화 하기, 이후 이 변수 다시 사용할 일 없음-->
+		</onEnter>
+			<condition name="UserValue" key="StairsOkPass" value="0">   <!-- @중요!: StairsOkPass 변수가 0이라는 것은 순조롭게 순서대로 실행되고 있다는 뜻이기 때문에 계단생성함-->
+				<transition state="계단생성" />
+			</condition>		
+			<condition name="UserValue" key="StairsOkPass" value="1">   <!-- @중요!:  StairsOkPass 변수가 1이라는 것은 이미  <condition name="UserValue" key="2PhaseStart" value="1">   이것이 먼저 달성되어 2페이지 이상 넘어갔다는 뜻이기 때문에 계단생성 안하고 대기 상태로 넘어감-->
+				<transition state="대기상태" />
+			</condition>					
+	</state>   
+	
+	<state name="계단생성">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="198-199" arg2="0" arg3="0" arg4="0" arg5="0" />	 <!-- 	최초에 설치된 계단 진입로 투명벽, 계단이 생성되면서 제거하기-->
+            <action name="메쉬를설정한다" arg1="101-178" arg2="1" arg3="1" arg4="50" arg5="0.5"/>   <!--  계단 트리거메쉬 생성-->			
+			<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="1"/>	<!--스타트 지점에서  1페이지 전투판 바로 가는 포탈 생성 -->	
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000" > <!--계단 트리거메쉬 다 생성될 때까지 여기서 충분히 기다림, 계단 다 생기기 전에  <state name="2페이지_바로가기포탈생성"> 단계로 넘어가면 계단 제거가 안되어 상황이 꼬일 수 있어서, 계단 다 생성될 때까지 충분히 대기하고 있어야 함 -->	
+				<transition state="대기상태" />
+			</condition>		
+	</state>        
+	
+
+
+	<state name="2페이지_바로가기포탈생성">
+		<onEnter>
+			<!--2페이지 시작할 때 트리스탄은 점프로 아래 전투판으로 신속하게 점프 이동해야 하기 때문에 제일 먼저 트리스탄이 이동하는 구멍 생성되도록 이 트리거 메쉬 제일 먼저 제거,
+			이 트리거 메쉬는 TOK가 없어서 빨리 제거 안해도 상관 없는데, 비주얼 적으로 트리스탁이 바닥 뚫고 내려가는 모습이 어색해 보이니 빨리 제거하도록 함 -->
+			<action name="메쉬를설정한다" arg1="125,116,168,126" arg2="0" arg3="0" arg4="50" arg5="0.5" />	<!-- 비주얼적인 이슈로 이 4개 트리거메쉬 제일 먼저 제거함 -->
+			<action name="SetUserValue" key="2PhaseStart" value="0" />  <!--  무한 루프 빠지는 것을 막기 위해 이 변수 0 초기화 하기, 이후 이 변수 다시 사용할 일 없음-->
+			<action name="포탈을설정한다" arg1="20" arg2="1" arg3="1" arg4="1"/>	<!--2페이지 전투판 바로 가는 포탈 생성 -->	
+			<action name="메쉬를설정한다" arg1="198-199" arg2="1" arg3="1" arg4="1" arg5="1" />	 <!-- 	1페이지 진입 계단 사라졌으니, 계단 진입로의 투명벽으로 다시 막기-->			
+			<action name="메쉬를설정한다" arg1="101-178" arg2="0" arg3="0" arg4="50" arg5="0.5" />	<!--2페이지 시작할 때 1페이지 전투판 파괴하기 때문에 1페이지 진입하는 계단 제거하기 -->
+			<!--@중요!: 인페르녹의 HP가 급 감소되어서    <condition name="UserValue" key="StairsOk" value="1">   보다   <condition name="UserValue" key="2PhaseStart" value="1">  이 먼저 실행될 경우 로직이 꼬일 수있기 때문에  
+			  이 단계에서 StairsOkPass 변수에 1을 부여하여  StairsOkPass =  1 인 경우에는 <condition name="UserValue" key="StairsOk" value="1">   나중 실행시 계단 생성하지 않도록 하기 위한 용도로 이 변수를 활용함  -->
+			<action name="SetUserValue" key="StairsOkPass" value="1" />  
+		</onEnter>
+			<condition name="WaitTick" waitTick="6300" >  <!--  중요!: 플레이어 추락 도중에 2PhaseWall 투명벽이 생성되도록 적절히 시간 조절을 함, 너무 빨리 투명벽 생성하면 두명벽 위쪽에 착지 하는 버그가 발생할 것임-->
+				<transition state="2페이지_2PhaseWall_생성" />
+			</condition>		
+	</state>   
+	
+	<state name="2페이지_2PhaseWall_생성">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="6501-6580" arg2="1" arg3="1" arg4="1" arg5="1" />	<!-- 플레이어 추락 하여 2페이지 전투판 도착할 때 쯤 2PhaseWall  투명벽 생성함-->
+			<action name="메쉬를설정한다" arg1="6001-6072" arg2="0" arg3="0" arg4="0" arg5="0" />	<!--  	1페이지 전투판이 전부 파괴되니 1페이지용 1PhaseWall 투명벽은 제거함-->
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기상태" />
+			</condition>		
+	</state>   
+	
+	
+
+	<state name="3페이지_바로가기포탈생성">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="60" arg2="0" arg3="0" arg4="0"/> <!-- 2페이지 드랍때 전투판 밖으로 떨어지는 플레이어 체크하는 포탈 3페이지 시작할때 꼭 제거하기-->	
+			<action name="포탈을설정한다" arg1="61" arg2="0" arg3="0" arg4="0"/> <!-- 2페이지 드랍때 전투판 밖으로 떨어지는 플레이어 체크하는 포탈 3페이지 시작할때 꼭 제거하기-->	
+			<action name="포탈을설정한다" arg1="62" arg2="0" arg3="0" arg4="0"/> <!-- 2페이지 드랍때 전투판 밖으로 떨어지는 플레이어 체크하는 포탈 3페이지 시작할때 꼭 제거하기-->	
+			<action name="포탈을설정한다" arg1="63" arg2="0" arg3="0" arg4="0"/> <!-- 2페이지 드랍때 전투판 밖으로 떨어지는 플레이어 체크하는 포탈 3페이지 시작할때 꼭 제거하기-->	
+			<action name="포탈을설정한다" arg1="64" arg2="0" arg3="0" arg4="0"/> <!-- 2페이지 드랍때 전투판 밖으로 떨어지는 플레이어 체크하는 포탈 3페이지 시작할때 꼭 제거하기-->	
+			<action name="포탈을설정한다" arg1="65" arg2="0" arg3="0" arg4="0"/> <!-- 2페이지 드랍때 전투판 밖으로 떨어지는 플레이어 체크하는 포탈 3페이지 시작할때 꼭 제거하기-->	
+			<action name="포탈을설정한다" arg1="66" arg2="0" arg3="0" arg4="0"/> <!-- 2페이지 드랍때 전투판 밖으로 떨어지는 플레이어 체크하는 포탈 3페이지 시작할때 꼭 제거하기-->	
+			
+			<action name="SetUserValue" key="3PhaseStart" value="0" />  <!--  무한 루프 빠지는 것을 막기 위해 이 변수 0 초기화 하기, 이후 이 변수 다시 사용할 일 없음-->
+			<action name="포탈을설정한다" arg1="30" arg2="1" arg3="1" arg4="1"/>	<!--3페이지 전투판 바로 가는 포탈 생성 -->	
+			<action name="포탈을설정한다" arg1="20" arg2="0" arg3="0" arg4="0"/> <!-- 3페이지 시작할 때 2페이지 전투판 파괴하기 때문에 2페이지 가는 포탈 제거함, 이거 안하면 버그 생김 -->
+			
+		</onEnter>
+			<condition name="WaitTick" waitTick="6300" >  <!-- 중요!: 플레이어 추락 도중에 3PhaseWall 투명벽이 생성되도록 적절히 시간 조절을 함, 너무 빨리 투명벽 생성하면 두명벽 위쪽에 착지 하는 버그가 발생할 것임-->
+				<transition state="3페이지_3PhaseWall_생성" />
+			</condition>		
+	</state>   
+	
+	<state name="3페이지_3PhaseWall_생성">
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="6701-6729" arg2="1" arg3="1" arg4="1" arg5="1" />	<!-- 플레이어 추락 하여 3페이지 전투판 도착할 때 쯤 3PhaseWall  투명벽 생성함-->
+			<action name="메쉬를설정한다" arg1="6501-6580" arg2="0" arg3="0" arg4="0" arg5="0" />    <!--  	2페이지 전투판이 전부 파괴되니 2페이지용 2PhaseWall 투명벽은 제거함-->
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="대기상태" />
+			</condition>		
+	</state>   
+	
+</ms2>

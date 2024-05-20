@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<!-- <state name="대기">             -->
+		<!-- <onEnter> -->
+		<!-- </onEnter>	 -->
+		<!-- <condition name="UserValue" key="CameraStart" value="1">	 -->
+			<!-- <transition state="유저감지"/> -->
+		<!-- </condition>  -->
+	<!-- </state>  -->
+  
+	<state name="유저감지">            
+		<onEnter>
+			<!-- <action name="SetUserValue" triggerID="1001" key="CameraStart" value="0" /> -->
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="2001" arg2="0">
+			<transition state="연출준비"/>
+		</condition> 
+	</state>   
+	 
+	<state name="연출준비">            
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="연출UI를설정한다" arg1="1"/>			
+			<action name="몬스터소멸시킨다" arg1="202" />			
+			<action name="몬스터소멸시킨다" arg1="203" />			
+			<action name="몬스터를생성한다" arg1="203" agr2="0"/>	
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="연출_01"/>
+		</condition> 
+	</state> 
+	 
+	<state name="연출_01">            
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500" >
+			<transition state="연출_01_01"/>
+		</condition> 
+	</state>
+	
+	<state name="연출_01_01">            
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4001,4002" arg2="0"/>
+			<action name="SetSceneSkip" arg1="Skip_1" arg2="nextState"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000" >
+			<transition state="연출_02"/>
+		</condition> 
+	</state>
+	
+	<state name="연출_02">            
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4003,4004" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000" >
+			<transition state="연출_03"/>
+		</condition> 
+	</state>
+	
+	<state name="연출_03">            
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500" >
+			<transition state="연출_05"/>
+		</condition> 
+	</state>
+ 	   
+	<state name="연출_05">            
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="카메라경로를선택한다" arg1="4005,4006" arg2="0"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000" >
+			<transition state="연출_07"/>
+		</condition> 
+	</state> 
+	   
+	<state name="연출_07">             
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4007,4008" arg2="0"/>
+			<action name="ShowCaption" type="VerticalCaption" title="$83000002_COLOSSEUM__START__0$" desc="" align="bottomLeft" offsetRateX="0" offsetRateY="0" duration="5000" scale="2.5"/>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000" >
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="카메라리셋" interpolationTime="0" />	
+			<transition state="연출끝_01"/>
+		</condition> 
+	</state>
+ 	
+	 <state name="Skip_1" >
+        <onEnter>		
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 					
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="카메라경로를선택한다" arg1="4009" arg2="0"/>
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<action name="연출UI를설정한다" arg1="0"/>
+				<action name="카메라리셋" interpolationTime="0" />			
+				<transition state="대화딜레이"/>
+			</condition>		
+        <onExit />
+    </state>
+
+	 <state name="대화딜레이" >
+        <onEnter>		
+        </onEnter>	
+			<condition name="무조건">		
+				<transition state="연출끝_01"/>
+			</condition>		
+        <onExit />
+    </state>	
+	 
+	<state name="연출끝_01">             
+		<onEnter>
+			<!--NPC에게 자동으로 대화걸기 NPCID: 11004288/나기-->
+			<action name="TalkNpc" spawnPointID="203" />
+			<!--
+			<action name="DebugString" string="라운드 클리어 테스트 합니다. 현재 5라운드 클리어로 설정됩니다." />
+			<action name="DungeonClearRound" round="5" />
+			<action name="DungeonClear" />
+			-->
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="902" >
+			<action name="MoveUserToPos" pos="300,-225,1500" rot="0,0,270" />
+			<transition state="대화딜레이"/>
+		</condition>
+		
+		<condition name="UserValue" key="DungeonPlayType" value="1" >
+			<transition state="NewGame"/>
+		</condition> 
+		<condition name="UserValue" key="DungeonPlayType" value="2" >
+			<transition state="ContinueGame"/>
+		</condition> 
+		
+	</state>	
+	
+	<state name="NewGame" >
+        <onEnter>		
+			<action name="DebugString" string="새로 시작하기를 설정했습니다." />
+			<action name="SetUserValue" triggerID="900001" key="MainStart" value="1" />
+        </onEnter>	
+		
+        <onExit />
+    </state>	
+	<state name="ContinueGame" >
+        <onEnter>		
+			<action name="DebugString" string="이어하기를 설정했습니다." />
+			<action name="DungeonDisableRanking"/>
+			<action name="SetUserValue" triggerID="900001" key="MainStart" value="2" />
+        </onEnter>	
+		
+        <onExit />
+    </state>
+
+</ms2>

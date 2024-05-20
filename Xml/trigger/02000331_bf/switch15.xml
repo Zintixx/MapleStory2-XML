@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 보스 전투 중 유저가 사망 후 다시 돌아올 때 다시 외다리를 생성할 수 있는 레버01 나타나게하기-->
+<ms2>
+    <state name="대기" >
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000801" arg2="2"/>   <!-- 외다리 재생성레버 감춤-->
+			<action name="이펙트를설정한다" arg1="4200" arg2="0" />	<!-- 아랫방향 화살표--> 						
+			<action name="SetUserValue" key="SecondBridgeOff" value="0" />					
+        </onEnter>
+			<condition name="유저를감지했으면" arg1="99993">
+				<transition state="전투체크" />
+			</condition>	
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="전투체크" >
+        <onEnter>
+        </onEnter>
+				<condition name="UserValue" key="SecondBridgeOff" value="1" >	
+				<transition state="스위치준비" />
+			</condition>	
+    <onExit>
+    </onExit>
+    </state>	
+		
+    <state name="스위치준비" >
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="777703" arg2="0" />  <!-- 길 나타남02 사운드 / 외다리-->
+			<action name="이펙트를설정한다" arg1="777804" arg2="0" />  <!-- 길 없어짐02 사운드 /  외다리-->
+        </onEnter>
+			<condition name="유저를감지했으면" arg1="99995">
+				<transition state="스위치켜기" />
+			</condition>	
+    <onExit>
+    </onExit>
+    </state>	
+	
+    <state name="스위치켜기" >
+        <onEnter>
+			<!--action name="이벤트UI를설정한다" arg1="1" arg2="$02000331_BF__Seeker01__810$" arg3="3000" arg4="0" / -->	
+			<action name="이펙트를설정한다" arg1="7771" arg2="1" />  <!-- UI  메시지 알림 사운드-->
+			<action name="오브젝트반응설정한다" arg1="10000801" arg2="0"/>  <!-- 외다리 생성하는 레버01 나타남-->
+			<action name="오브젝트반응설정한다" arg1="10000801" arg2="1"/>  <!-- 외다리 생성하는 레버01 나타남-->
+			<action name="이펙트를설정한다" arg1="4200" arg2="1" />	<!-- 아랫방향 화살표--> 					
+        </onEnter>	 
+			<condition name="오브젝트가반응했으면" arg1="10000801">
+				<transition state="외다리재생성" />
+			</condition>
+    <onExit>
+			<action name="이펙트를설정한다" arg1="7775" arg2="1" />  <!-- 레버 작동 사운드--> 
+    </onExit>
+    </state> 
+
+    <state name="외다리재생성" >
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="90008" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- 9th barrier OFF-->
+			<action name="랜덤메쉬를설정한다" arg1="10040-10044" arg2="1" arg3="5" arg4="100" arg5="100" />
+			<action name="이펙트를설정한다" arg1="777703" arg2="1" />  <!-- 길 나타남02 사운드 / 외다리-->
+			<action name="이펙트를설정한다" arg1="4200" arg2="0" />	<!-- 아랫방향 화살표--> 					
+        </onEnter>	 
+			<condition name="유저를감지했으면" arg1="99992">
+				<transition state="이동안내" />
+			</condition>
+    <onExit>
+    </onExit>
+    </state> 	
+	
+
+    <state name="이동안내" >
+        <onEnter>
+			<!-- action name="이벤트UI를설정한다" arg1="1" arg2="$02000331_BF__Seeker01__811$" arg3="3000" arg4="0" / -->	
+			<action name="이펙트를설정한다" arg1="7771" arg2="1" />  <!-- UI  메시지 알림 사운드-->
+			<action name="메쉬를설정한다" arg1="90008" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- 9th barrier OFF-->
+			<action name="랜덤메쉬를설정한다" arg1="10040-10044" arg2="1" arg3="5" arg4="150" arg5="150" /> <!-- 3rd bridge ON-->
+			</onEnter>	
+		<condition name="WaitTick" waitTick="3000">		
+				<transition state="종료" />
+			</condition>
+    <onExit>
+    </onExit>
+    </state>			
+
+    <state name="종료" >
+        <onEnter>
+			</onEnter>	
+    <onExit>
+    </onExit>
+    </state> 
+
+</ms2>  

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 은하수 정원 : 칠월칠석 이벤트 연출 npc 견우, 직녀 스폰 위치 변경 제어 위한 트리거 -->
+<ms2>
+  <state name="날짜체크">    
+           <condition name="DayOfWeek" dayOfWeeks="3" desc="1(일)-7(토)">
+               <transition state="만남"/> <!-- 화요일이면 사랑의 섬에서 둘이 만남 121 122 -->
+           </condition>                
+           <condition name="DayOfWeek" dayOfWeeks="1,2,4,5,6,7" desc="1(일)-7(토)">
+               <transition state="헤어짐"/> <!-- 화요일이 아니면 동섬, 서섬에 각각 떨어져 있음 111 112 -->
+           </condition>            
+       <onExit>
+       </onExit>
+  </state>    
+
+   <state name="만남"> <!-- 화요일이면 사랑의 섬에서 둘이 만남 121 견우 122 직녀 -->
+       <onEnter>            
+           <action name="몬스터소멸시킨다" arg1="111,112"/>
+           <action name="몬스터를생성한다" arg1="121,122" arg2="0"/>
+       </onEnter>                
+           <condition name="DayOfWeek" dayOfWeeks="1,2,4,5,6,7" desc="1(일)-7(토)">  <!-- 화요일이 아니면 헤어짐 -->
+               <transition state="헤어짐"/>
+           </condition>    
+       <onExit>
+       </onExit>
+   </state>    
+
+   <state name="헤어짐"> <!-- 화요일이 아니면 동섬, 서섬에 각각 떨어져 있음 111 견우 112 직녀--> 
+       <onEnter>            
+           <action name="몬스터소멸시킨다" arg1="121,122"/>
+           <action name="몬스터를생성한다" arg1="111,112" arg2="0"/>
+       </onEnter>                
+           <condition name="DayOfWeek" dayOfWeeks="3" desc="1(일)-7(토)">  <!-- 화요일이면 만남 -->
+               <transition state="만남"/>
+           </condition>    
+       <onExit>
+       </onExit>
+   </state>  
+</ms2>

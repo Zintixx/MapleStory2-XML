@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<ms2>
+
+	<state name="룸체크"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="Wait" />	
+				</condition>			
+	</state>  	
+
+	<state name="Wait">		
+		<onEnter>
+			<action name="SetUserValue" key="CheckDualKill" value="0" />	
+		</onEnter>		
+			<condition name="UserValue" key="CheckDualKill" value="1">
+				<transition state="CheckDualKill" />
+			</condition>	
+	</state>
+
+	<state name="CheckDualKill">
+			<condition name="몬스터가죽어있으면" arg1="900">	
+				<transition state="LionBlueDead" />
+			</condition>	
+			<condition name="몬스터가죽어있으면" arg1="901">
+				<transition state="LionRedDead" />
+			</condition>				
+	</state> 
+
+	<state name="LionBlueDead">
+		<onEnter>		
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="901">			
+				<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="ChangeLionDualKill"/> 							
+				<transition state="Quit" />
+			</condition>				
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="Quit"/> 
+			</condition>
+	</state>	 
+ 
+	<state name="LionRedDead">
+		<onEnter>				
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="900">
+				<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="ChangeLionDualKill"/>			
+				<transition state="Quit" />
+			</condition>				
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="Quit"/> 
+			</condition>
+	</state>	 
+
+	<state name="Quit">
+	</state>  
+  
+</ms2>
+

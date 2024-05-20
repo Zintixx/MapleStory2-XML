@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+
+	<state name="대기">
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="SkillBreakMissionReset" value="1">	
+			<transition state="대기_1차_발동체크" />
+	    </condition>
+	</state>
+
+	<state name="대기_1차_발동체크">
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="SkillBreakMissionReset" value="0">	
+			<transition state="대기" />
+	    </condition>
+		<condition name="CheckNpcAdditionalEffect" spawnPointID="111" additionalEffectID="62100016" level="1" >		<!-- <블루라펜샤드 1차 스킬 브레이크 체크> -->
+			<transition state="던전미션1차_체크" />
+		</condition>
+	</state>
+
+	<state name="던전미션1차_체크">	<!-- <스킬 브레이크 성공했을 때 보스한테 걸리는 애디셔널로 성공여부 체크> -->
+		<condition name="UserValue" key="SkillBreakMissionReset" value="0">	
+			<transition state="대기" />
+	    </condition>
+		<condition name="AllOf">
+      		<group>
+				<condition name="CheckNpcExtraData" spawnPointID="111" extraDataKey="brokenShieldRemainTick" extraDataValue="8000" operator="GreaterEqual" />	<!-- <쉴드가 깨지기까지 8초보다 많은 시간이 남은 경우 = 6초 이내로 파괴> -->
+				<condition name="CheckNpcAdditionalEffect" spawnPointID="101" additionalEffectID="70002171" level="1" /> 	<!-- <스킬 브레이크 성공 애디셔널> -->
+      		</group>
+        		<transition state="던전미션1차_스킬브레이크저지_성공"/>
+		</condition>
+		<condition name="CheckNpcAdditionalEffect" spawnPointID="101" additionalEffectID="70002181" level="1" >		<!-- <스킬 브레이크 실패 애디셔널> -->
+			<transition state="던전미션1차_스킬브레이크저지_실패" />
+		</condition>
+	</state>
+	
+	<state name="던전미션1차_스킬브레이크저지_성공">	<!-- <스킬 브레이크 던전 미션은 득점형이므로 계속 체크> -->
+		<onEnter>
+			<action name="DungeonMissionComplete" missionID="23039004" />
+		</onEnter>
+		<condition name="UserValue" key="SkillBreakMissionReset" value="0">	
+			<transition state="대기" />
+	    </condition>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="대기_2차" />		
+		</condition>
+	</state>
+
+	<state name="던전미션1차_스킬브레이크저지_실패">	<!-- <스킬 브레이크 던전 미션 1회라도 실패하면 차감되므로 종료> -->
+		<condition name="UserValue" key="SkillBreakMissionReset" value="0">	
+			<transition state="대기" />
+	    </condition>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="대기_2차" />		
+		</condition>
+	</state>
+
+	<state name="대기_2차">
+		<condition name="UserValue" key="SkillBreakMissionReset" value="0">	
+			<transition state="대기" />
+	    </condition>
+		<condition name="CheckNpcAdditionalEffect" spawnPointID="115" additionalEffectID="62100016" level="1" >		<!-- <블루라펜샤드 2차 스킬 브레이크 체크> -->
+			<transition state="던전미션2차_체크" />		
+		</condition>
+	</state>
+
+	<state name="던전미션2차_체크">	<!-- <스킬 브레이크 성공했을 때 보스한테 걸리는 애디셔널로 성공여부 체크> -->
+		<condition name="UserValue" key="SkillBreakMissionReset" value="0">	
+			<transition state="대기" />
+	    </condition>
+		<condition name="AllOf">
+      		<group>
+				<condition name="CheckNpcExtraData" spawnPointID="115" extraDataKey="brokenShieldRemainTick" extraDataValue="8000" operator="GreaterEqual" />	<!-- <쉴드가 깨지기까지 8초보다 많은 시간이 남은 경우 = 6초 이내로 파괴> -->
+				<condition name="CheckNpcAdditionalEffect" spawnPointID="101" additionalEffectID="70002171" level="1" /> 	<!-- <스킬 브레이크 성공 애디셔널> -->
+      		</group>
+        		<transition state="던전미션2차_스킬브레이크저지_성공"/>
+		</condition>
+		<condition name="CheckNpcAdditionalEffect" spawnPointID="101" additionalEffectID="70002181" level="1" >		<!-- <스킬 브레이크 실패 애디셔널> -->
+			<transition state="던전미션2차_스킬브레이크저지_실패" />
+		</condition>
+	</state>
+	
+	<state name="던전미션2차_스킬브레이크저지_성공">	<!-- <스킬 브레이크 던전 미션은 득점형이므로 계속 체크> -->
+		<onEnter>
+			<action name="DungeonMissionComplete" missionID="23039004" />
+		</onEnter>
+		<condition name="UserValue" key="SkillBreakMissionReset" value="0">	
+			<transition state="대기" />
+	    </condition>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="종료" />		
+		</condition>
+	</state>
+
+	<state name="던전미션2차_스킬브레이크저지_실패">	<!-- <스킬 브레이크 던전 미션 1회라도 실패하면 차감되므로 종료> -->
+		<condition name="UserValue" key="SkillBreakMissionReset" value="0">	
+			<transition state="대기" />
+	    </condition>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="종료" />		
+		</condition>
+	</state>
+
+	<state name="종료">
+		<onEnter>
+		</onEnter>
+	</state>
+
+</ms2>
+

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>   
+   <state name="QuestDungeonStart">
+    <onEnter>
+		<action name="SetLocalCamera" cameraId="8100" enable="1"/>		<!-- LocalTargetCamera -->	
+    </onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="1000" arg2="50100320" arg3="3">>
+			<transition state="teleport02000487"/>
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="1000" arg2="50100320" arg3="2">
+			<transition state="Ready"/>
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="1000" arg2="50100320" arg3="1">
+			<transition state="Ready"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+ 
+	<state name="Ready">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="1" arg2="1"/>		
+			<action name="VisibleMyPC" isVisible="0"/>	<!-- 유저 투명 처리 -->			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="이펙트를설정한다" arg1="600" arg2="0" />
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="1000">
+				<transition state="narration01"/>
+		</condition>
+    </state>	
+
+	<state name="narration01">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$52100060_QD__MAIN__12$"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="Camera_Move_01"/>  
+		</condition>
+	</state>	
+	
+	<state name="Camera_Move_01">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 
+			<action name="이펙트를설정한다" arg1="600" arg2="1" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">		
+			<transition state="NPC_Show"/>
+		</condition>
+    </state>	
+
+	<state name="NPC_Show">
+		<onEnter>
+			<action name="스킵을설정한다" arg1="teleport02000487" />	
+			<action name="몬스터를생성한다" arg1="1,2" arg2="0" />	
+			<action name="SetNpcRotation" arg1="1" arg2="180" />
+			<action name="SetNpcRotation" arg1="2" arg2="180" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">		
+			<transition state="NPC_Change_1"/>
+		</condition>
+    </state>
+
+	<state name="NPC_Change_1">
+		<onEnter>
+		
+			<action name="몬스터소멸시킨다" arg1="1,2" arg2="0" />	
+			<action name="몬스터를생성한다" arg1="101,102" arg2="0" />				
+			<action name="카메라경로를선택한다" arg1="2,3" arg2="1"/>				
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">		
+			<transition state="Talk_1"/>
+		</condition>
+    </state>	
+	
+	<state name="Talk_1">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="600" arg2="0" />		
+			<action name="카메라를선택한다" arg1="4" arg2="1"/>	
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Attack_01_A" />
+	   		<action name="AddCinematicTalk" npcID="11004022" illustID="11004022" msg="$52100060_QD__MAIN__0$" duration="2000" align="left" />		
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">		
+			<transition state="Talk_2"/>
+		</condition>
+    </state>	
+	
+	<state name="Talk_2">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="5" arg2="1"/>	
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Bore_B" />
+	   		<action name="AddCinematicTalk" npcID="11001813" illustID="11001813" msg="$52100060_QD__MAIN__1$" duration="3000" align="Right" />
+			<action name="AddCinematicTalk" npcID="11001813" illustID="11001813" msg="$52100060_QD__MAIN__2$" duration="3000" align="Right" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="6000">		
+			<transition state="Talk_3"/>
+		</condition>
+    </state>
+	
+	<state name="Talk_3">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="10,11,12" arg2="0"/>	
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Bore_A" />
+	   		<action name="AddCinematicTalk" npcID="11001813" illustID="11001813" msg="$52100060_QD__MAIN__3$" duration="3000" align="Right" />
+					</onEnter>
+		<condition name="WaitTick" waitTick="4000">		
+			<transition state="Talk_4"/>
+		</condition>
+    </state>	
+
+	<state name="Talk_4">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="4" arg2="1"/>		
+			<action name="AddCinematicTalk" npcID="11004022" illustID="11004022" msg="$52100060_QD__MAIN__4$" duration="3000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">		
+			<transition state="Talk_5"/>
+		</condition>
+    </state>	
+	
+	<state name="Talk_5">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="6,7" arg2="0"/>			
+	   		<action name="AddCinematicTalk" npcID="11001813" illustID="11001813" msg="$52100060_QD__MAIN__5$" duration="3000" align="Right" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">		
+			<transition state="Talk_6"/>
+		</condition>
+    </state>			
+	
+	<state name="Talk_6">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="77,78" arg2="0"/>	
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Bore_B" />
+	   		<action name="AddCinematicTalk" npcID="11004022" illustID="11004022" msg="$52100060_QD__MAIN__6$" duration="2000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">		
+			<transition state="Talk_7"/>
+		</condition>
+    </state>				
+			
+	<state name="Talk_7">
+		<onEnter>			
+	   		<action name="AddCinematicTalk" npcID="11004022" illustID="11004022" msg="$52100060_QD__MAIN__7$" duration="3000" align="left" />					
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">		
+			<transition state="Talk_8"/>
+		</condition>
+    </state>			
+
+	<state name="Talk_8">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="44" arg2="1"/>
+			<action name="몬스터소멸시킨다" arg1="101"/>
+			<action name="몬스터를생성한다" arg1="200"/>						
+	   		<action name="AddCinematicTalk" npcID="11001813" illustID="11001813" msg="$52100060_QD__MAIN__8$" duration="4000" align="Right" />	
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">		
+			<transition state="Talk_9"/>
+		</condition>
+    </state>	
+
+	<state name="Talk_9">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="13,14,15" arg2="0"/>		
+			<action name="이펙트를설정한다" arg1="600" arg2="0" />				
+			<action name="AddCinematicTalk" npcID="11001813" illustID="11001813" msg="$52100060_QD__MAIN__9$" duration="3000" align="Right" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">		
+			<transition state="Talk_10"/>
+		</condition>
+    </state>	
+	
+	<state name="Talk_10">
+		<onEnter>
+			<action name="SetNpcEmotionSequence" arg1="200" arg2="Bore_A" />		
+	   		<action name="AddCinematicTalk" npcID="11001593" illustID="11001593" msg="$52100060_QD__MAIN__10$" duration="4000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">		
+			<transition state="Talk_11"/>
+		</condition>			
+    </state>
+		
+		
+	<state name="Talk_11">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="16" arg2="1"/>
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Bore_B" />			
+			<action name="AddCinematicTalk" npcID="11001813" illustID="11001813" msg="$52100060_QD__MAIN__11$" duration="2000" align="Right" />
+			<action name="카메라를선택한다" arg1="8" arg2="1"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">		
+				<transition state="NPC_Attack_Move"/>
+			</condition>
+    </state>
+			
+	<state name="NPC_Attack_Move">
+		<onEnter>
+			<action name="SetTimeScale" enable="1" startScale="0.5" endScale="0.3" duration="3.0" interpolator="1" />		
+			<action name="카메라경로를선택한다" arg1="8,9" arg2="0"/>		
+			<action name="NPC를이동시킨다" arg1="200" arg2="MS2PatrolData2" />	
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData3" />
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_WhiteFlash.xml"/>			
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">		
+				<transition state="teleport02000487"/>
+			</condition>
+    </state>		
+			
+	<state name="teleport02000487">
+		<onEnter>	
+			<action name="스킵을설정한다" arg1="" />		  			
+			<action name="몬스터소멸시킨다" arg1="All"/>	
+			<action name="VisibleMyPC" isVisible="1"/>	
+			<action name="유저를이동시킨다" arg1="02000487" arg2="3"/>		<!-- 프론티어 재단 저택 맵 3번 회의실 앞 포탈 -->		
+		</onEnter>
+    </state>		
+</ms2>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+	<state name="대기">
+		<onEnter>
+			<action name="SetUserValue" key="Success" value="0" />
+			<action name="SetUserValue" triggerID="99990001" key="End" value="0" />
+		</onEnter>
+		<condition name="UserValue" key="battlesetting" value="1" >
+			<transition state="전투_시작"/>
+		</condition>
+	</state>
+
+	<state name="전투_시작">
+		<onEnter>
+			<action name="DungeonResetTime" seconds="300"/>
+			<action name="SetNpcDuelHpBar" isOpen="true" spawnPointID="201" durationTick="300000" npcHpStep="100"/>
+		</onEnter>
+		<condition feature="FameChallengeBuff_01" name="AllOf">		<!-- <한국용 컨디션체크> -->
+			<group>
+				<condition name="DungeonCheckPlayTime" playSeconds="180" operator="LessEqual"/>
+				<condition name="몬스터가죽어있으면" arg1="201" />
+			</group>
+			<action name="DungeonMissionComplete" missionID="24094005" />
+			<transition state="전투_종료"/>
+		</condition>
+		<condition feature="FameChallengeBuff_02" name="AllOf">		<!-- <중국용 컨디션체크> -->
+			<group>
+				<condition name="DungeonCheckPlayTime" playSeconds="70" operator="LessEqual"/>
+				<condition name="몬스터가죽어있으면" arg1="201" />
+			</group>
+			<action name="DungeonMissionComplete" missionID="24094006" />
+			<transition state="전투_종료"/>
+		</condition>
+		<condition feature="FameChallengeBuff_03" name="AllOf">		<!-- <NA용 컨디션체크> -->
+			<group>
+				<condition name="DungeonCheckPlayTime" playSeconds="270" operator="LessEqual"/>
+				<condition name="몬스터가죽어있으면" arg1="201" />
+			</group>
+			<action name="DungeonMissionComplete" missionID="24094010" />
+			<transition state="전투_종료"/>
+		</condition>
+		<condition name="몬스터가죽어있으면" arg1="201" >		<!-- <5분내에 처치> -->
+			<transition state="전투_종료"/>
+		</condition>
+		<condition name="!유저를감지했으면" arg1="1003">		<!-- <pc 사망> -->
+			<transition state="전투_종료" />
+		</condition>
+		<condition name="DungeonCheckPlayTime" playSeconds="300" >		<!-- <5분 다 지날 경우> -->
+			<transition state="전투_종료"/>
+		</condition>
+	</state>
+
+	<state name="전투_종료">
+		<onEnter>
+			<!-- <action name="SetUserValue" triggerID="99990003" key="TimerReset" value="1" /> -->
+			<action name="DungeonSetEndTime" />
+			<action name="몬스터소멸시킨다" arg1="all"/>
+			<!-- <action name="버프를걸어준다" arg1="1003" arg2="72000050" arg3="1"/> -->
+			<!-- <action name="몬스터소멸시킨다" arg1="301,302,303,304,305,306"/> -->
+			<!-- <action name="몬스터소멸시킨다" arg1="401,402,403,404,405,406"/> -->
+			<!-- <action name="SetNpcEmotionLoop" arg1="201" arg2="Attack_Idle_A" arg3="60000" /> -->
+			<action name="SideNpcTalk" npcID="24120006" illust="Mason_normal" duration="4000" script="$02020027_BF__02020027_battle__0$" voice="ko/Npc/00002259" />
+			<action name="SetNpcDuelHpBar" isOpen="false" spawnPointID="201" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="종료신호"/>
+		</condition>
+	</state>
+
+	<state name="종료신호">
+		<onEnter>
+			<action name="SetUserValue" triggerID="99990001" key="End" value="1" />
+		</onEnter>
+	</state>
+
+</ms2>

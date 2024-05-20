@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+ 
+	<state name="대기">
+		<onEnter>  
+			<action name="이펙트를설정한다" arg1="6000" arg2="0"/>	
+			<action name="오브젝트반응설정한다" arg1="10001339" arg2="1" /> 					
+			<action name="오브젝트반응설정한다" arg1="10001340" arg2="2" />		
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>				
+			<action name="메쉬를설정한다" arg1="3020-3023" arg2="1" arg3="0" arg4="0" arg5="0" />		
+			<action name="메쉬를설정한다" arg1="3024" arg2="0" arg3="0" arg4="0" arg5="0" />							
+			<action name="메쉬를설정한다" arg1="30001-30090" arg2="1" arg3="0" arg4="0" arg5="0" />	
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="199">
+				<!-- <action name="타이머를설정한다" arg1="30" arg2="600" arg3="1" arg4="1" arg5="80"/> -->
+				<transition state="문열기"/>
+			</condition> 					
+	</state>  
+
+	<state name="문열기"> 
+			<condition name="오브젝트가반응했으면" arg1="10001339" arg2="0">
+				<transition state="시작" />
+			</condition>				
+	</state>		
+      
+	<state name="시작">
+		<onEnter>
+			<action name="ScoreBoardCreate" type="ScoreBoardTopCenter" title="" maxScore="0"/>
+			<action name="ScoreBoardSetScore" score="0" />		
+			<action name="SpawnItemRange" rangeID="9001-9019" randomPickCount="11"/>				
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$80000015_bonus__main__0$" arg3="3000" />				
+		</onEnter>		
+			<condition name="AllOf">
+				<group>
+					<condition name="UserValue" key="Dead_A" value="1" />			
+					<condition name="UserValue" key="Dead_B" value="1" />			
+				</group>
+					<transition state="보스소환대기"/>
+			</condition>	
+			<!-- <condition name="WaitTick" waitTick="1500"> 				 -->
+				<!-- <transition state="보스소환대기" /> -->
+			<!-- </condition> 	 -->
+			
+	</state>  
+
+	<state name="보스소환대기">
+			<condition name="AllOf">
+				<group>
+					<condition name="유저를감지했으면" arg1="198" />		
+					<condition name="유저를감지했으면" arg1="194" />				
+				</group>
+					<transition state="보스등장"/>
+			</condition>		
+	</state>  	
+	  
+	<state name="보스등장">
+		<onEnter>       
+			<action name="이펙트를설정한다" arg1="6000" arg2="1"/>				
+			<action name="메쉬를설정한다" arg1="30001-30090" arg2="0" arg3="0" arg4="0" arg5="3" />	
+			<action name="SpawnNpcRange" rangeID="2099-2099" isAutoTargeting="0" score="5000"/>				
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="2099">
+				<transition state="딜레이"/>
+			</condition>				
+	</state>  	
+	
+	<state name="딜레이">
+		<onEnter>  
+			<action name="몬스터소멸시킨다" arg1="0" />		
+		</onEnter>					
+			<condition name="WaitTick" waitTick="1500"> 								
+				<transition state="정산" />
+			</condition> 		
+	</state>		
+	
+	<state name="정산">
+		<onEnter>  
+			<action name="메쉬를설정한다" arg1="3020-3023" arg2="0" arg3="0" arg4="0" arg5="0" />		
+			<action name="메쉬를설정한다" arg1="3024" arg2="1" arg3="0" arg4="0" arg5="0" />					
+		</onEnter>		
+			<condition name="ScoreBoardCompare" compareOp="GreaterEqual" score="28000">
+				<action name="DebugString" value="28000 이상" />			
+				<!-- <action name="이벤트UI를설정한다" arg1="7" arg2="미션 성공! 참 잘했어요!" arg3="2500" />		 -->
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="HighScoreTreasureMap04"/> 							
+				<transition state="반응대기" />
+			</condition>	  
+			<condition name="ScoreBoardCompare" compareOp="Less" score="28000">
+				<action name="DebugString" value="28000 미만" />						
+				<!-- <action name="이벤트UI를설정한다" arg1="7" arg2="미션 성공!" arg3="2500" />		 -->
+				<transition state="반응대기" />
+			</condition>		
+			<condition name="WaitTick" waitTick="500"> 								
+				<transition state="반응대기" />
+			</condition> 				
+	</state>	
+	
+	<state name="반응대기"> 
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001340" arg2="1" />		
+		</onEnter>			
+			<condition name="오브젝트가반응했으면" arg1="10001340" arg2="0">
+				<action name="DungeonClear" /> 	
+				<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="TreasureMap04"/> 								
+				<action name="ScoreBoardRemove" />									
+				<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>					
+				<transition state="종료" />
+			</condition>				
+	</state>  		
+ 
+	<state name="종료">
+	</state> 
+	
+</ms2>

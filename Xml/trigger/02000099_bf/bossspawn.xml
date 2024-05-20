@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="시작대기중">
+		<onEnter>
+            <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>
+			<action name="메쉬를설정한다" arg1="3001-3006" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3101-3106" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3201-3208" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3301-3311" arg2="1" arg3="0" arg4="0" arg5="0" />
+		</onEnter>
+					<condition name="유저를감지했으면" arg1="199">
+						<transition state="CheckUserCount" />
+					</condition>	
+    </state>
+
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+
+	 <state name="DungeonStart">
+        <onEnter>
+		    <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			<action name="ShowGuideSummary" entityID="20000991" textID="20000991" durationTime='5000'/> 
+		    <action name="카메라를선택한다" arg1="301" arg2="1"/>
+			<action name="몬스터를생성한다" arg1="1001,1002,1003,1004,1005,1006,1007,2000" arg2="0"/> 
+			<action name="버프를걸어준다" arg1="199" arg2="70000107" arg3="1" arg4="0" arg5="0" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000" > 
+					<transition state="시작" />
+				</condition>
+        <onExit>
+		    <action name="카메라를선택한다" arg1="301" arg2="0"/>
+		    <action name="버프를삭제한다" arg1="199" arg2="70000107" /> 
+        </onExit>
+    </state>  
+
+  <state name="시작">
+		<onEnter>
+		    <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+			<action name="ShowGuideSummary" entityID="20000992" textID="20000992" durationTime='3000'/> 
+			<action name="메쉬를설정한다" arg1="3001-3006" arg2="0" arg3="0" arg4="0" arg5="0" />
+		</onEnter>
+					<condition name="WaitTick" waitTick="5000" > 
+							<transition state="시작가이드2"/>
+					</condition>
+  </state>
+
+  <state name="시작가이드2">
+		<onEnter>
+		</onEnter>
+					<condition name="유저를감지했으면" arg1="101">
+							<transition state="1차등장"/>
+					</condition>
+  </state>
+ 
+	<state name="1차등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2001" arg2="0"/> 
+		</onEnter>
+					<condition name="UserValue" key="SetSkillA" value="1">			
+							<action name="메쉬를설정한다" arg1="3101-3106" arg2="0" arg3="0" arg4="0" arg5="0" />
+							<transition state="2차등장대기"/>
+					</condition>
+	</state>  
+
+	<state name="2차등장대기">
+					<condition name="유저를감지했으면" arg1="102">
+							<transition state="2차등장"/>
+					</condition>
+	</state>  
+
+	<state name="2차등장">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2002" arg2="0"/> 
+		</onEnter>
+					<condition name="UserValue" key="SetSkillB" value="1">
+							<action name="메쉬를설정한다" arg1="3201-3208" arg2="0" arg3="0" arg4="0" arg5="0" />
+							<transition state="엘리트등장"/>
+					</condition>
+	</state>   
+
+  <state name="엘리트등장">
+					<condition name="몬스터가죽어있으면" arg1="2000">
+							<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+							<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+							<action name="ShowGuideSummary" entityID="20000993" textID="20000993" durationTime='5000'/> 
+							<action name="메쉬를설정한다" arg1="3301-3311" arg2="0" arg3="0" arg4="0" arg5="0" />
+							<transition state="엘리트처치"/>
+					</condition>
+  </state>
+
+  <state name="엘리트처치">
+					<condition name="WaitTick" waitTick="3000" > 
+						   <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+							<action name="ShowGuideSummary" entityID="20000994" textID="20000994" durationTime='3000'/> 
+							<transition state="종료"/>
+					</condition>
+  </state>
+
+	<state name="종료">
+	</state>
+
+</ms2>

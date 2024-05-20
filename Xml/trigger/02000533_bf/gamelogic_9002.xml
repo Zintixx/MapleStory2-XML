@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 수호군 연합 본부 -->
+<ms2>	
+	<state name="대기">
+		<onEnter>
+			<action name="CreateWidget" arg1="TypingGame" /><!--키입력 게임 선언-->
+			<action name="CreateWidget" arg1="Round" /><!--라운드 관리 트리거위젯 선언-->
+			<action name="WidgetAction" arg1="Round" arg2="SettingFinalRound" arg3="1" />
+			<action name="WidgetAction" arg1="Round" arg2="SettingAllowedFailCount" arg3="3" />
+			<action name="WidgetAction" arg1="Round" arg2="SettingRoundInitIfFail" arg3="0" />			
+			<action name="LockMyPC" isLock="0"/>
+		</onEnter>
+		<condition name="UserValue" key="GameLogicStart" value="1">
+			<transition state="게임진입" />
+		</condition>
+	</state>
+	
+	<state name="게임진입">
+			<action name="LockMyPC" isLock="1"/>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="새라운드시작가능체크" />
+		</condition>
+	</state>
+	
+	<state name="새라운드시작가능체크">
+		<condition name="WidgetCondition" arg1="Round" arg2="GameClear">
+			<transition state="게임성공종료" />
+		</condition>
+		<condition name="WidgetCondition" arg1="Round" arg2="GameFail">
+			<transition state="게임실패종료" />
+		</condition>	
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="라운드체크" />
+		</condition>
+	</state>
+	
+	<state name="라운드체크">
+		<condition name="WidgetCondition" arg1="Round" arg2="CurrentRound" arg3="= 1">
+			<transition state="라운드1시작전UI" />
+		</condition>		
+		<condition name="WidgetCondition" arg1="Round" arg2="CurrentRound" arg3="= 2">
+			<transition state="라운드2시작전UI" />
+		</condition>		
+		<condition name="WidgetCondition" arg1="Round" arg2="CurrentRound" arg3="= 3">
+			<transition state="라운드3시작전UI" />
+		</condition>
+	</state>
+	
+	<state name="라운드1시작전UI">
+		<onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__0$" arg3="3000" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<action name="LockMyPC" isLock="1"/>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__1$" arg3="6000" />
+			<action name="WidgetAction" arg1="TypingGame" arg2="Start" widgetArgNum="7" arg3="6000" />
+			<transition state="라운드1진행" />
+		</condition>
+	</state>
+	
+	<state name="라운드1진행">
+		<condition name="WidgetCondition" arg1="TypingGame" arg2="Result" arg3="1">
+			<action name="WidgetAction" arg1="Round" arg2="RoundResult" arg3="1" />
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__2$" arg3="3000" />
+			<transition state="라운드종료" />
+		</condition>
+		
+		<condition name="WidgetCondition" arg1="TypingGame" arg2="Result" arg3="0">
+			<action name="WidgetAction" arg1="Round" arg2="RoundResult" arg3="0" />
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__3$" arg3="3000" />
+			<transition state="라운드종료" />
+		</condition>
+	</state>
+	
+	<state name="라운드2시작전UI">
+		<onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__4$" arg3="3000" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<action name="LockMyPC" isLock="1"/>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__5$" arg3="4000" />
+			<action name="WidgetAction" arg1="TypingGame" arg2="Start" widgetArgNum="6" arg3="4000" />
+			<transition state="라운드2진행" />			
+		</condition>
+	</state>
+
+	<state name="라운드2진행">
+		<condition name="WidgetCondition" arg1="TypingGame" arg2="Result" arg3="1">
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__6$" arg3="3000" />
+			<action name="WidgetAction" arg1="Round" arg2="RoundResult" arg3="1" />
+			<transition state="라운드종료" />
+		</condition>
+		<condition name="WidgetCondition" arg1="TypingGame" arg2="Result" arg3="0">
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__7$" arg3="3000" />
+			<action name="WidgetAction" arg1="Round" arg2="RoundResult" arg3="0" />
+			<transition state="라운드종료" />
+		</condition>
+	</state>
+	
+	<state name="라운드3시작전UI">
+		<onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__8$" arg3="3000" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<action name="LockMyPC" isLock="1"/>		
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__9$" arg3="3000" />
+			<action name="WidgetAction" arg1="TypingGame" arg2="Start" widgetArgNum="7" arg3="3000" />
+			<transition state="라운드3진행" />
+		</condition>
+	</state>
+	
+	<state name="라운드3진행">
+		<condition name="WidgetCondition" arg1="TypingGame" arg2="Result" arg3="1">
+			<action name="LockMyPC" isLock="1"/>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__10$" arg3="3000" />
+			<action name="WidgetAction" arg1="Round" arg2="RoundResult" arg3="1" />
+			<transition state="라운드종료" />
+		</condition>
+		
+		<condition name="WidgetCondition" arg1="TypingGame" arg2="Result" arg3="0">
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000533_BF__GAMELOGIC_9002__11$" arg3="3000" />
+			<action name="WidgetAction" arg1="Round" arg2="RoundResult" arg3="0" />
+			<transition state="라운드종료" />
+		</condition>
+	</state>
+	
+	<state name="라운드종료">
+		<condition name="무조건">
+			<action name="LockMyPC" isLock="0"/>
+			<transition state="새라운드시작가능체크" />
+		</condition>
+	</state>
+	
+	<state name="게임성공종료">
+		<onEnter>
+			<action name="SetUserValue" triggerID="9001" key="GameLogicEnd" value="1" />
+			<action name="SetUserValue" key="GameLogicStart" value="999" />	<!-- 코드는 테스트 후 지워주세요 -->
+		</onEnter>
+		<condition name="무조건">
+			<transition state="대기" />
+		</condition>
+	</state>
+	
+	<state name="게임실패종료">
+		<onEnter>
+			<action name="SetUserValue" triggerID="9001" key="GameLogicEnd" value="2" />
+			<action name="SetUserValue" key="GameLogicStart" value="999" /> <!-- 코드는 테스트 후 지워주세요 -->
+		</onEnter>
+		<condition name="무조건">
+			<transition state="대기" />
+		</condition>
+	</state>
+</ms2>

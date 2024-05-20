@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+ 
+	<state name="대기">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="1001" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="1002" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="1003" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="1004" arg2="0"/>
+			<action name="몬스터를생성한다" arg1="1007" arg2="0"/>
+			<action name="이펙트를설정한다" arg1= "601" arg2="0" />				
+        </onEnter>		
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="유저감지" />
+			</condition>				
+    </state>
+
+	<state name="유저감지">		
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="90000561" arg3="3" >
+			   <transition state="종료"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="90000561" arg3="2" >
+			   <transition state="연퀘감지2"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="90000560-90000561" arg3="1-1" >
+			   <transition state="연퀘감지"/>
+			</condition>
+			<condition name="유저를감지했으면" arg1="199">
+			   <transition state="페르시카대사01"/>
+			</condition>				
+    </state>
+
+	<state name="페르시카대사01">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라를선택한다" arg1="301" arg2="1"/>	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="페르시카대사02" />
+			</condition>
+    </state>
+
+    <state name="페르시카대사02">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="11001176" arg3="$52000062_QD__GUIDESCENE_01__0$" arg4="3" arg5="0" /> 		
+			<action name="대화를설정한다" arg1="2" arg2="11001176" arg3="$52000062_QD__GUIDESCENE_01__1$" arg4="3" arg5="0" /> 
+		</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="연출종료"/>
+				</condition>
+    </state>
+
+	<state name="연출종료">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="카메라를선택한다" arg1="301" arg2="0"/>						
+        </onEnter>	
+				<condition name="WaitTick" waitTick="100">
+			   <transition state="연퀘감지"/>
+			</condition>
+    </state>
+
+	<state name="연퀘감지">
+        <onEnter>	
+			<action name="NPC를이동시킨다" arg1="1001" arg2="MS2PatrolData_Fercika"/>					
+        </onEnter>		
+			<condition name="퀘스트유저를감지하면" arg1="199" arg2="90000561" arg3="2" >
+			   <transition state="PC이동"/>
+			</condition>	
+    </state>
+
+	<state name="연퀘감지2">
+        <onEnter>	
+			<action name="NPC를이동시킨다" arg1="1001" arg2="MS2PatrolData_Fercika"/>					
+        </onEnter>		
+			<condition name="WaitTick" waitTick="500">
+			   <transition state="PC이동"/>
+			</condition>	
+    </state>	
+	
+	<state name="PC이동">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라를선택한다" arg1="301" arg2="1"/>			
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC"/>					
+        </onEnter>	
+			<condition name="유저를감지했으면" arg1="198">
+			   <transition state="찬양NPC이동"/>
+			</condition>
+    </state>
+
+    <state name="찬양NPC이동">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1= "601" arg2="1" />
+			<action name="NPC를이동시킨다" arg1="1001" arg2="MS2PatrolData_Fercika2"/>	
+			<action name="몬스터를생성한다" arg1="1005" arg2="0"/>
+			<action name="몬스터소멸시킨다" arg1="1002" arg2="0"/>	
+			<action name="몬스터를생성한다" arg1="1006" arg2="0"/>
+			<action name="몬스터소멸시킨다" arg1="1004" arg2="0"/>	
+			<action name="몬스터를생성한다" arg1="1008" arg2="0"/>
+			<action name="몬스터소멸시킨다" arg1="1007" arg2="0"/>				
+		</onEnter>
+			    <condition name="NPC를감지했으면" arg1="197" arg2="1001">
+					<transition state="찬양연출"/>
+				</condition>
+    </state>
+
+	<state name="찬양연출">
+        <onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="1008" arg3="$52000062_QD__GUIDESCENE_01__2$" arg4="2" arg5="1" />		
+		    <action name="대화를설정한다" arg1="1" arg2="1005" arg3="$52000062_QD__GUIDESCENE_01__3$" arg4="2" arg5="3" />
+			<action name="대화를설정한다" arg1="1" arg2="1006" arg3="$52000062_QD__GUIDESCENE_01__4$" arg4="2" arg5="5" />		
+        </onEnter>	
+			<condition name="WaitTick" waitTick="7000">
+			   <transition state="연출종료2"/>
+			</condition>
+    </state>
+
+	<state name="연출종료2">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="카메라를선택한다" arg1="301" arg2="0"/>
+			<action name="이펙트를설정한다" arg1= "601" arg2="0" />			
+        </onEnter>	
+				<condition name="WaitTick" waitTick="100">
+			   <transition state="종료"/>
+			</condition>
+    </state>
+
+	<state name="종료">
+    </state>	
+
+</ms2>
+
+

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NPC 따라잡기 -->  
+<ms2>
+    <state name="Wait"> 
+        <onEnter>	
+		<action name="SetUserValue" key="ChangeNpc" value="0" />		<!-- 17101 몬스터 AI에서 받는 신호 -->
+		<action name="몬스터소멸시킨다" arg1="17101,17102"/> 
+        </onEnter>
+		<condition name="CheckUser">  
+			<transition state="SettingDelay"/>	
+		</condition> 	
+        <onExit> 			
+        </onExit>  
+    </state>
+
+    <state name="SettingDelay"> <!-- 임시 스테이트 테스트용 -->
+        <onEnter>		
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="Setting"/>	
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+	
+	<state name="Setting"> 
+        <onEnter>			
+		<action name="몬스터를생성한다" arg1="17101" arg2="0" /> 		
+        </onEnter>	
+		<condition name="UserValue" key="ChangeNpc" value="1">	<!-- 17101 몬스터 AI에서 받는 신호 -->
+			<transition state="ChatchUpNpc"/>
+		</condition>		
+        <onExit>	
+        </onExit>		
+    </state>
+ 
+    <state name="ChatchUpNpc"> 
+        <onEnter>	
+		<action name="타이머를설정한다" arg1="1" arg2="30" arg3="1" arg4="0" arg5="0" />  <!-- UI 표시 안함 / NPC AI에서 스폰시킨 InteractObject 의 LifeTime -->				
+		<action name="몬스터를변경한다" arg1="17101" arg2="17102" /> 	<!-- 동일 맵에 스포너가 있으면 대상 npc의 위치를 보정해서 교체되는 npc를 스폰 시켜줌 -->
+        </onEnter>	
+		<condition name="시간이경과했으면" arg1="1">  	 
+			<transition state="ChatchUpNpc_Quit"/>		
+		</condition>			
+        <onExit>
+        </onExit>
+    </state>	
+		
+
+    <state name="ChatchUpNpc_Quit" >
+        <onEnter>	
+		<action name="타이머를초기화한다" arg1="1"/> 	
+		<action name="몬스터소멸시킨다" arg1="17101,17102"/> 		
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="Wait"/>	
+		</condition>	
+        <onExit>	
+        </onExit>
+    </state>	
+	
+</ms2>

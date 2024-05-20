@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!--  MS2TriggerModel  TriggerModelID = 103,  2페이즈 시작때 플레이어 잡기 공격이후 안잡힌 남은 플레이어 체크하고 투르카 보스AI에게 신호 보내는 용도의 트리거임  --> 
+ <!--  즉 이 던전에 파티원 1~2명인 경우 2페이즈 시작때 보스가 잡기 공격하면 모든 파티원이 잡히는데, 이때는 졸구간 클리어할 파티원이 없기 때문에 졸구간 건너띄기 해야 하는데, 그 부분을 체크하여 실행하는 트리거임  -->
+ <!--  그런데 조심해야 하는 것이 이 시스템을 악용해서 안잡힌 플레이어 다수가 있는데, 꼼수를 사용해 졸구간 건너띄기 시도할 수 있어서 이 점을 주의해서 트리거 설정 해야함  -->
+<ms2>
+
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="안잡힌플레이어체크" /> 
+		</condition>		
+	</state>  
+
+
+
+	<state name="안잡힌플레이어체크">
+		<onEnter>
+		</onEnter>
+
+			<condition name="UserValue" key="2PhasePlayerCheckStart" value="1" > <!--  2페이즈 트루카AI에서 전투 시작때 플레이어 잡기 행동이후, 안잡힌 남은 플레이어의 유무 체크 시작을 위해, 이  변수 1을 보냄 -->
+				<transition state="1페이즈지점체크하기"/>	
+			</condition>	  
+			
+	</state>  
+	
+
+
+
+	<state name="1페이즈지점체크하기">
+		<onEnter>
+		</onEnter>
+			
+			<condition name="유저를감지했으면" arg1="98"> <!--   MS2TriggerBox   TriggerObjectID = 98, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        98는 1페이즈 지점과 졸구간 전체를 커버하는 넓은 범위-->
+				<transition state="종료"/>  <!--  안잡힌 플레이어가 1페이지 전투판 지점 혹은 줄구가에 설치한 트리거 영역에 있음을 확인했으면, 그냥 종료 처리하기-->
+			</condition>
+
+			<condition name="WaitTick"  waitTick="900" > 
+				<transition state="추가로최초시작지점체크하기" />
+			</condition>			
+			
+	</state>  
+	
+	
+	
+	
+	<state name="추가로최초시작지점체크하기">
+		<onEnter>
+		</onEnter>
+
+			<condition name="유저를감지했으면" arg1="99"> <!--   MS2TriggerBox   TriggerObjectID = 99, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        99는 스타팅 포인트 지점 커버하는 범위-->
+				<transition state="종료"/>  <!--  안잡힌 플레이어가 최초 시작 지점 트리거 영역에 있음을 확인했으면, 그냥 종료 처리하기-->
+			</condition>
+
+			<condition name="WaitTick"  waitTick="900" > 
+				<transition state="안잡힌플레이어없음확인" />
+			</condition>			
+			
+	</state>  
+	
+
+
+
+	<state name="안잡힌플레이어없음확인">  <!-- 안잡힌 플레이어가 1페이지 전투판과 졸구간 그리고 최초 시작지점에 없다면, 모든 플레이가 보스한테 잡혀서 2페이지 전투판에 있다는 뜻이기 때문에 , 투르카 보스 AI 에게 TwoPhaseMainBattle = 1 신호를 보내서 본격 2페이즈 전투 행동을 하도록 함-->
+		<onEnter>
+			<action name="SetAiExtraData" key="TwoPhaseMainBattle" value="1" />
+		</onEnter>
+
+			<condition name="WaitTick"  waitTick="500" > 
+				<transition state="2페이즈복격진행_안내메시지출력" />
+			</condition>			
+			
+	</state>  	
+	
+	
+   <state name="2페이즈복격진행_안내메시지출력"> <!--   모든 파티원이 보스한테 잡혀서 졸구간 건너띌 경우에 출력되는 상황,   참고로 이 안내메시지 출력은     main.xml    2PhasePlayerCheck.xml  두 트리거에 설정되어있음  -->	
+    <onEnter>
+		<action name="스킬을설정한다" arg1="91" arg2="1" /> <!-- CubeBreak ,  MS2TriggerSkill = 91 스킬코드 70000105(레벨1) 발동시켜 마법구슬 지점에 계단을 막고 있는 큐브 제거함 -->			
+		
+		<!-- 안내 메시지 호출하기, 메시지 글씨 작성 엑셀파일은 여기 stringGuide.xlsx   -->
+		<action name="ShowGuideSummary" entityID="29200003" textID="29200003"/> 
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="6500" >  <!-- 안내 메시지 5~6초 정도 출력후 다시 "졸구간진행체크중" 으로 되돌아가기-->	
+			<transition state="종료"/>	
+		</condition>	
+	
+    <onExit>
+		<action name="HideGuideSummary" entityID="29200003"/>
+    </onExit>
+  </state>
+	
+
+ 
+ 
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>
+
+	
+</ms2>

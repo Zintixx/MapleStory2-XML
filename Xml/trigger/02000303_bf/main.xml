@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="대기">
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="3005" arg2="0" arg3="0" arg4="0" arg5="0" />
+            <action name="오브젝트반응설정한다" arg1="13000008" arg2="2" />
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />
+			<action name="이펙트를설정한다" arg1="602" arg2="0" />
+            <action name="오브젝트반응설정한다" arg1="10000585" arg2="0" />
+            <action name="오브젝트반응설정한다" arg1="10000575,10000576,10000577,10000578" arg2="1" />
+			<action name="몬스터를생성한다" arg1="2001" arg2="0" />
+        </onEnter>
+			<condition name="유저를감지했으면" arg1="101">
+				<transition state="연출시작딜레이" />
+			</condition>	
+    </state>
+ 
+	<state name="연출시작딜레이">
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="연출시작"/>
+				</condition>
+	</state>
+
+	<state name="연출시작">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="타이머를설정한다" arg1="5" arg2="5"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000145" arg3="$02000303_BF__MAIN__0$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="연출종료" />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="5">
+					<transition state="연출종료"/>
+				</condition>
+	</state>
+
+    <state name="연출종료">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="몬스터를생성한다" arg1="1001,1002,1003,1004,1005,1006,1007" arg2="0" />
+			<action name="ShowGuideSummary" entityID="20003031" textID="20003031" durationTime="5000" /> 
+		    <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+        </onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000575,10000576,10000577,10000578" arg2="0" >
+					<transition state="또다른연출시작" />
+				</condition>
+    </state>
+
+    <state name="또다른연출시작" posX="362" posY="145">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+		    <action name="카메라를선택한다" arg1="301" arg2="1"/>
+			<action name="스킵을설정한다" arg1="또다른연출종료" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="연출이펙트"/>
+				</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="연출이펙트" posX="362" posY="145">
+        <onEnter>
+			<action name="메쉬를설정한다" arg1="3005" arg2="1" arg3="0" arg4="0" arg5="2" />
+			<action name="이펙트를설정한다" arg1="602" arg2="1" />
+			<action name="스킵을설정한다" arg1="또다른연출종료" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="2500" > 
+					<transition state="카메라이동2"/>
+				</condition>
+    </state>
+
+    <state name="카메라이동2" posX="362" posY="145">
+        <onEnter>
+		    <action name="카메라를선택한다" arg1="302" arg2="1"/>
+			<action name="스킵을설정한다" arg1="또다른연출종료" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="2500" > 
+					<transition state="NPC대사"/>
+				</condition>
+    </state>
+
+
+	<state name="NPC대사">
+		<onEnter>
+			<action name="NPC를이동시킨다" arg1="2001" arg2="MS2PatrolData_2001_A"/>
+			<action name="대화를설정한다" arg1="2" arg2="11000145" arg3="$02000303_BF__MAIN__1$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="또다른연출종료" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000" > 
+					<transition state="또다른연출종료"/>
+				</condition>
+		<onExit>
+		</onExit>
+	</state>
+
+	<state name="또다른연출종료">
+		<onEnter>
+            <action name="몬스터소멸시킨다" arg1="2001" />
+		    <action name="카메라를선택한다" arg1="302" arg2="0"/>
+			<action name="메쉬를설정한다" arg1="3005" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+		<condition name="무조건">
+			<transition state="이동대기"/>
+            <!--action name="오브젝트반응설정한다" arg1="13000008" arg2="1" /-->
+            <!--action name="아이템을생성한다" arg1="9001" arg2="101" /--> 
+		</condition>
+		<onExit />
+	</state>
+
+	<state name="이동대기">
+		<onEnter>
+            <action name="오브젝트반응설정한다" arg1="10000585" arg2="1" />
+			<action name="ShowGuideSummary" entityID="20002999" textID="20002999"/> 
+		    <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10000585" arg2="0" >
+				 	  <action name="HideGuideSummary" entityID="20002999"/>
+					  <transition state="이동"/>
+				</condition>
+        <onExit>
+        </onExit>
+	</state>
+
+	<state name="이동">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />
+		    <action name="타이머를설정한다" arg1="4" arg2="4"/>
+			<action name="ShowCountUI" text="$02000303_BF__MAIN__3$" stage="1" count="3"  />
+		</onEnter>
+				<condition name="시간이경과했으면" arg1="4">
+                      <action name="유저를이동시킨다" arg1="02000299" arg2="2" arg3="101" />
+						<transition state="이동대기"/>
+				</condition>
+        <onExit>
+        </onExit>
+	</state>
+
+    <state name="종료">
+
+    </state>
+
+</ms2>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+   
+  <state name="시작대기중">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="1001" arg2="0" />
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>  <!-- 포탈ID 1: 던전 입구에 있는 나가기 포탈 셋팅 초기화 -->			
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>  <!-- 포탈ID 2: 3페이즈 전투 장소에 나가기 포탈 셋팅 초기화 -->
+			<action name="포탈을설정한다" arg1="8" arg2="0" arg3="0" arg4="0"/> <!-- 포탈ID 8: 1페이즈 전투 장소에 나가기 포탈 셋팅 초기화, 보스가 1페이즈에서 순삭 당할 수 있기 때문에 1페이즈 전투 장소에도 나가기 포탈 생성함 -->
+			<action name="포탈을설정한다" arg1="9" arg2="0" arg3="0" arg4="0"/> <!-- 포탈ID 9: 2페이즈 전투 장소에 나가기 포탈 셋팅 초기화, 보스가 2페이즈에서 순삭 당할 수 있기 때문에 1페이즈 전투 장소에도 나가기 포탈 생성함 -->			
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="101">
+					<transition state="룸체크"/>
+			</condition>
+  </state> 
+  
+    <state name="룸체크"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="난이도체크" />	
+				</condition>		
+				<condition name="!IsDungeonRoom" > 
+					<transition state="퀘스트던전" />	
+				</condition>		
+  </state>  
+ 
+  
+    <state name="난이도체크"> 
+		<onEnter>
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>	<!-- 포탈ID 1: 던전 입구에 있는 나가기 포탈 작동 활성화 -->						
+		</onEnter>	
+				<condition name="DungeonLevel" level="2">
+					<transition state="레이드" />	
+				</condition>
+				<condition name="DungeonLevel" level="3">
+					<transition state="카오스레이드" />	
+				</condition>
+  </state>
+
+  	<state name="퀘스트던전">
+		<onEnter>
+			<!-- <action name="타이머를설정한다" arg1="1" arg2="300" arg3="0" arg4="1"/>		 -->
+			<action name="버프를걸어준다" arg1="101" arg2="70000118" arg3="1" arg4="0" arg5="0" />					
+			<action name="몬스터를생성한다" arg1="2299" arg2="0" />
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="2299">
+				<transition state="종료딜레이"/>
+			</condition>
+	</state>  
+  
+	<state name="레이드">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="2099" arg2="0" />
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="2099">
+				<transition state="종료딜레이"/>
+			</condition>
+	</state>  
+
+	<state name="카오스레이드">
+		<onEnter>	
+			<action name="몬스터를생성한다" arg1="2199" arg2="0" />
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="2199">
+				<transition state="종료딜레이"/>
+			</condition>
+	</state>  
+
+	 <state name="종료딜레이">
+				<condition name="WaitTick" waitTick="2000" > 
+					<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>   <!-- 포탈ID 2: 3페이즈 전투 장소에 나가기 포탈 작동 활성화 -->
+					<action name="포탈을설정한다" arg1="8" arg2="1" arg3="1" arg4="1"/> <!-- 포탈ID 8: 1페이즈 전투 장소에 나가기 포탈 작동 활성화, 보스가 1페이즈에서 순삭 당할 수 있기 때문에 1페이즈 전투 장소에도 나가기 포탈 생성함 -->
+					<action name="포탈을설정한다" arg1="9" arg2="1" arg3="1" arg4="1"/> <!-- 포탈ID 9:  2페이즈 전투 장소에 나가기 포탈 작동 활성화, 보스가 2페이즈에서 순삭 당할 수 있기 때문에 1페이즈 전투 장소에도 나가기 포탈 생성함 -->
+					<action name="DungeonClear" /> 
+					<transition state="종료" />
+				</condition>
+	</state> 
+
+	<state name="종료">
+	</state>
+
+</ms2>

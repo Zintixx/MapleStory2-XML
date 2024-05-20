@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  전투 중 유저가 사망 후 다시 돌아올 때 다시 첫 번째  다리를 생성할 수 있는 10000802 레버 나타나게하기-->
+<ms2>
+    <state name="대기" >
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000802" arg2="2"/>   <!-- 첫번째 다리 재생성레버 감춤-->
+			<action name="이펙트를설정한다" arg1="4100" arg2="0" />	<!-- 아랫방향 화살표--> 	
+			<action name="SetUserValue" key="FirstBridgeOff" value="0" />				
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="9001" >     <!-- 입장체크-->
+				<transition state="첫번째전투종료" />
+			</condition>	
+    <onExit>
+    </onExit>
+    </state>
+	
+    <state name="첫번째전투종료" >
+        <onEnter>
+        </onEnter>
+				<condition name="UserValue" key="FirstBridgeOff" value="1" >	<!-- 다리무너진후-->
+				<transition state="딜레이01" />
+			</condition>	
+    <onExit>
+    </onExit>
+    </state>
+
+    <state name="딜레이01" >
+        <onEnter>
+        </onEnter>
+		<condition name="WaitTick" waitTick="3000">	
+				<transition state="유저재시작" />
+			</condition>	
+    <onExit>
+    </onExit>
+    </state>	
+	
+    <state name="유저재시작" >
+        <onEnter>
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="9000" >    
+				<transition state="딜레이02" />
+			</condition>	
+    <onExit>
+    </onExit>
+    </state>	
+
+    <state name="딜레이02" >
+        <onEnter>
+        </onEnter>
+		<condition name="WaitTick" waitTick="3000">			
+				<transition state="이동안내" />
+			</condition>	
+    <onExit>
+    </onExit>
+    </state>	
+	
+	
+    <state name="이동안내" >
+        <onEnter>	
+			<!-- action name="이벤트UI를설정한다" arg1="1" arg2="$02000331_BF__Seeker01__812$" arg3="3000" arg4="0" /-->	
+			<action name="이펙트를설정한다" arg1="7771" arg2="1" />  <!-- UI  메시지 알림 사운드-->
+			<action name="오브젝트반응설정한다" arg1="10000802" arg2="0"/>  <!-- 첫번째 다리 재생성레버 나타남-->
+			<action name="오브젝트반응설정한다" arg1="10000802" arg2="1"/>  <!-- 첫번째 다리 재생성레버 활성화-->
+			<action name="이펙트를설정한다" arg1="4100" arg2="1" />	<!-- 아랫방향 화살표--> 						
+			</onEnter>	
+		<condition name="WaitTick" waitTick="2000">		
+				<transition state="스위치켜기" />
+			</condition>
+    <onExit>
+    </onExit>
+    </state>			
+
+	
+    <state name="스위치켜기" >
+        <onEnter>
+        </onEnter>	 
+			<condition name="오브젝트가반응했으면" arg1="10000802">
+				<transition state="다리재생성" />
+			</condition>
+    <onExit>
+    </onExit>
+    </state> 
+
+    <state name="다리재생성" >
+        <onEnter>	
+			<action name="랜덤메쉬를설정한다" arg1="10001-10016" arg2="1" arg3="16" arg4="100" arg5="100" />  <!-- 없어졌던 다리 재생성-->
+			<action name="이펙트를설정한다" arg1="777701" arg2="1" />  <!-- 길 나타남01 사운드 / 첫 번째 다리-->
+			<action name="메쉬를설정한다" arg1="90000" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- 1st barrier OFF-->
+			<action name="메쉬를설정한다" arg1="90001" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- 2nd barrier OFF-->
+			<action name="이펙트를설정한다" arg1="4100" arg2="0" />	<!-- 아랫방향 화살표--> 						
+        </onEnter>	 
+		<condition name="WaitTick" waitTick="1000">		
+				<transition state="종료" />
+			</condition>
+    <onExit>
+    </onExit>
+    </state> 	
+
+    <state name="종료" >
+        <onEnter>
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state>		
+
+</ms2>  

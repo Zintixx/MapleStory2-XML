@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	  <state name="Wait">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="5007" arg2="0"/> <!-- 내려놓을 위치 가이드 -->
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9061">	
+					<transition state="Guide"/>		
+			</condition>	
+	  </state>
+	  
+	  <state name="Guide">	
+		<onEnter>
+			<action name="DebugString" string="7번 영역에 들어가면 DetectLiftableObject 트리거가 발동됩니다." /> 
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9060">	
+					<transition state="Ready01"/>
+			</condition>	
+	  </state>
+	  
+	<state name="Ready01">
+		<onEnter>
+			<action name="DebugString" string="DetectLiftableObject 2초 후에 시작됩니다." /> 		
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000" > 	
+					<transition state="Ready02"/>
+				</condition>
+	</state>
+	  
+	<state name="Ready02">
+		<onEnter>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$99999949__07_DETECTLIFTABLEOBJECT__0$" arg3="3000" arg4="0" />						
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 	
+					<transition state="QuizRandom01"/>	
+				</condition>
+	</state>
+	
+    <state name="QuizRandom01" > 	
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="5007" arg2="1"/> <!-- 내려놓을 위치 가이드 -->		
+		</onEnter>
+				<condition name="랜덤조건" arg1="50">	
+					<transition state="AnswerIsWood01"/>		<!-- Wooditem : 30000377 -->
+				</condition> 
+				<condition name="랜덤조건" arg1="50"> 	
+					<transition state="AnswerIsRock01" />		<!-- Rockitem : 30000440 -->
+				</condition>	
+    <onExit> 
+    </onExit>				
+    </state> 			
+	 
+	 
+	 
+	 
+    <state name="AnswerIsWood01" >
+        <onEnter>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$99999949__07_DETECTLIFTABLEOBJECT__1$" arg3="2000" arg4="0" />				
+        </onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9062" itemID="0">  <!-- 아이템을 내려놓았는지 체크 -->
+					<transition state="CheckAnswerWood01"/>
+				</condition>
+    <onExit>	
+    </onExit>
+    </state> 	
+	 
+    <state name="CheckAnswerWood01" >
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="5007" arg2="0"/> <!-- 내려놓을 위치 가이드 -->				
+        </onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9062" itemID="30000377">   <!-- 내려놓은 아이템이 나무 상자이면 정답-->
+					<transition state="RightAnswerWood01"/>
+				</condition>
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9062" itemID="30000377">   <!-- 내려놓은 아이템이 나무 상자가 아니면 실패-->  
+					<transition state="WrongAnswerWood01"/>		
+				</condition>				
+    <onExit>	
+    </onExit>
+    </state> 	
+	  
+	<state name="RightAnswerWood01">
+		<onEnter>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$99999949__07_DETECTLIFTABLEOBJECT__2$" arg3="3000" arg4="0" />						
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3500" > 	
+					<transition state="ClearDetectBox01"/>	
+				</condition>
+	</state>
+	  
+	<state name="WrongAnswerWood01">	
+		<onEnter>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$99999949__07_DETECTLIFTABLEOBJECT__3$" arg3="3000" arg4="0" />						
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3500" > 	
+					<transition state="ClearDetectBox01"/>	
+				</condition>
+	</state>
+	 
+	 
+	 
+	 
+    <state name="AnswerIsRock01" >
+        <onEnter>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$99999949__07_DETECTLIFTABLEOBJECT__4$" arg3="2000" arg4="0" />				
+        </onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9062" itemID="0">  <!-- 아이템을 내려놓았는지 체크 -->
+					<transition state="CheckAnswerRock01"/>
+				</condition>
+    <onExit>	
+    </onExit>
+    </state> 	
+	 
+    <state name="CheckAnswerRock01" >
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="5007" arg2="0"/> <!-- 내려놓을 위치 가이드 -->				
+        </onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9062" itemID="30000440">   <!-- 내려놓은 아이템이 바위덩이이면 정답-->
+					<transition state="RightAnswerRock01"/>
+				</condition>
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9062" itemID="30000440">   <!-- 내려놓은 아이템이 바위덩이가 아니면 실패-->  
+					<transition state="WrongAnswerRock01"/>		
+				</condition>				
+    <onExit>	
+    </onExit>
+    </state> 	
+	  
+	<state name="RightAnswerRock01">
+		<onEnter>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$99999949__07_DETECTLIFTABLEOBJECT__5$" arg3="3000" arg4="0" />						
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3500" > 	
+					<transition state="ClearDetectBox01"/>	
+				</condition>
+	</state>
+	  
+	<state name="WrongAnswerRock01">	
+		<onEnter>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$99999949__07_DETECTLIFTABLEOBJECT__6$" arg3="3000" arg4="0" />						
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3500" > 	
+					<transition state="ClearDetectBox01"/>	
+				</condition>
+	</state>
+	 
+	 
+	 
+	 
+    <state name="ClearDetectBox01" >
+        <onEnter>			
+        </onEnter>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9062" itemID="0">  <!-- 체크박스에 아무 오브젝트가 없는지 체크 -->
+					<transition state="Quit"/>	
+				</condition>
+    <onExit>		
+    </onExit>
+    </state> 	
+	
+	  <state name="Quit">
+		<onEnter>		
+			<action name="DebugString" string="3초 후에 트리거가 리셋됩니다. 7번 영역 밖으로 나가세요." /> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 	
+					<transition state="Wait"/>	
+			</condition>
+        <onExit>				
+        </onExit>			
+	  </state>
+</ms2>

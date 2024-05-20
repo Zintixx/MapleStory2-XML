@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+  <state name="Idle">
+    <onEnter>
+    </onEnter>
+		<condition name="UserValue" key="CannonSpawn" value="1">
+		<transition state="CannonSpawn" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+      <state name="CannonSpawn">
+        <onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="190" arg3="$02000334_BF__WAVE__12$" arg4="3" arg5="1" />  <!-- 보스 대사 -->
+			<action name="대화를설정한다" arg1="1" arg2="199" arg3="$02000334_BF__MAIN__12$" arg4="3" arg5="3" />  <!-- 오스칼 대사 -->
+			<action name="타이머를설정한다" arg1="3" arg2="3" arg4="1"/>											
+        </onEnter>
+			<condition name="시간이경과했으면" arg1="3">
+			<transition state="CannonSpawn_start"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	      <state name="CannonSpawn_start">
+        <onEnter>						
+			<action name="SetUserValue" triggerID="9999131" key="cannon_01" value="1" />
+			<action name="SetUserValue" triggerID="9999132" key="cannon_02" value="1" />
+			<action name="SetUserValue" triggerID="9999133" key="cannon_03" value="1" />		
+			<action name="몬스터를생성한다" arg1="301,302,303" arg2="0" />  <!-- 대포 생성 -->	
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>   
+			<action name="ShowGuideSummary" entityID="102" textID="20000020"/> <!-- 대포를 쏘세요 -->
+			<action name="이펙트를설정한다" arg1 = "90021" arg2="1" /> <!-- 이벤트 UI 에 맞는 사운드 -->
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="190">
+			<transition state="Clear"/>
+			</condition>	
+		<onExit>
+			<action name="HideGuideSummary" entityID="102"/> <!-- 대포를 쏘세요 -->
+		</onExit>
+    </state>
+	
+	  <state name="Clear">
+    <onEnter>
+    </onEnter>
+    <onExit>
+    </onExit>
+  </state>
+	
+</ms2>

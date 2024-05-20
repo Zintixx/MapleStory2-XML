@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>	
+    <state name="입장" posX="281" posY="48">
+			    <condition name="유저를감지했으면" arg1="196">
+					<transition state="퍼즐대기중" />
+				</condition>
+    </state>
+
+<!-- 퍼즐 시작하기 전의 맵 상태로 정리 -->
+	<state name="퍼즐대기중" posX="286" posY="250">
+        <onEnter>
+			<action name="상태를설정한다" arg1="1" arg2="퍼즐패턴1,퍼즐패턴2,퍼즐패턴3" arg3="1" /> <!--arg1은 상태그룹의 ID, arg2 상태그룹에 포함되는 상태이름들, arg3 0이면 순서대로 1이면 상태그룹을 랜덤하게 섞는다. -->		
+            <action name="메쉬를설정한다" arg1="101-176" arg2="1" /> <!-- 퍼즐 큐브를 모두 보인다(arg2=1) -->
+            <action name="메쉬를설정한다" arg1="201-208" arg2="1" /> <!-- 순간 이동 발판이 보인다 (arg2=1) -->
+			<action name="메쉬를설정한다" arg1="211-212" arg2="1" /> <!-- 닫힌 문이 보인다 (arg2=1) -->
+			<action name="메쉬를설정한다" arg1="401-436" arg2="1" /> <!-- 퍼즐 펜스 모두 보인다 (arg2=1) -->
+			<action name="메쉬를설정한다" arg1="451-494" arg2="1" /> <!-- 퍼즐 큐브 바운딩 모두 살린다 (arg2=1) -->
+			<action name="메쉬를설정한다" arg1="501-544" arg2="0" /> <!-- 퍼즐 큐브 외곽 발판 모두 가린다 (arg2=0) -->
+			<action name="메쉬를설정한다" arg1="551-552" arg2="0" /> <!-- 열린 문을 가린다 (arg2=0) -->
+			<action name="포탈을설정한다" arg1="101" arg2="0" arg3="1" arg4="0"/> <!-- 순간 이동 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="포탈을설정한다" arg1="102" arg2="0" arg3="1" arg4="0"/> <!-- 순간 이동 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="포탈을설정한다" arg1="103" arg2="0" arg3="1" arg4="0"/> <!-- 순간 이동 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="포탈을설정한다" arg1="104" arg2="0" arg3="1" arg4="0"/> <!-- 순간 이동 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="포탈을설정한다" arg1="115" arg2="0" arg3="1" arg4="0"/> <!-- 순간 이동 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="포탈을설정한다" arg1="116" arg2="0" arg3="1" arg4="0"/> <!-- 순간 이동 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="포탈을설정한다" arg1="117" arg2="0" arg3="1" arg4="0"/> <!-- 순간 이동 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="포탈을설정한다" arg1="118" arg2="0" arg3="1" arg4="0"/> <!-- 순간 이동 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="포탈을설정한다" arg1="500" arg2="0" arg3="1" arg4="0"/> <!-- 탈락자용 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="몬스터소멸시킨다" arg1="202" arg2="0" /> <!-- 202 스폰 포인트의 NPC(문 안의 퍼즈룬)를 없앤다 -->
+        </onEnter>
+				<condition name="WaitTick" waitTick="90000" > 
+						<transition state="시작대기멘트1"/>
+				 </condition>
+				<condition name="여러명의유저를감지했으면" arg1="196" arg2="20">
+					<transition state="시작대기멘트1" />
+				</condition>
+        <onExit />
+    </state>
+
+<!-- 곧 게임을 시작할 거지만, 조금 더 시간을 줘서 퍼즐 구간으로 넘어오도록 -->
+    <state name="시작대기멘트1" posX="406" posY="48">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="5" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__0$" arg3="4500" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="시작대기멘트2" />
+        </condition>
+        <onExit />
+    </state>	
+	<state name="시작대기멘트2" posX="283" posY="182">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="5" /> <!-- arg2는 시간 (초) -->
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__1$" arg3="4500" /> <!-- arg1=1인 경우 최대 3줄, arg3는 시간(1/1000초) -->
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="시작대기멘트3" />
+        </condition>
+        <onExit /> <!-- 스테이트 나갈 때 타이머 자동 초기화 되기 때문에 초기화 생략 -->
+    </state>
+	<state name="시작대기멘트3" posX="283" posY="182">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="5" />
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__2$" arg3="4500" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="시작대기멘트4" />
+        </condition>
+        <onExit />
+    </state>
+	<state name="시작대기멘트4" posX="283" posY="182">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="5" />
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__3$" arg3="4500" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="시작대기멘트5" />
+        </condition>
+        <onExit />
+    </state>
+
+    <state name="시작대기멘트5" posX="469" posY="51">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="5" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__4$" arg3="4500" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="시작대기" />
+        </condition>
+        <onExit />
+    </state>
+
+<!-- 퍼즐 시작을 위한 세팅 -->
+    <state name="시작대기" posX="312" posY="80">
+        <onEnter>
+			<!--퍼즐 대기에서 패턴을 섞을 경우 섞이지 않는 경우가 있어서 여기에서 퍼즐 패턴을 한번 더 섞어줌-->
+            <action name="상태를설정한다" arg1="1" arg2="퍼즐패턴1,퍼즐패턴2,퍼즐패턴3" arg3="1" /> <!--arg1은 상태그룹의 ID, arg2 상태그룹에 포함되는 상태이름들, arg3 0이면 순서대로 1이면 상태그룹을 랜덤하게 섞는다.-->		
+			<!--퍼즐 패턴 섞기 종료-->	
+            <action name="메쉬를설정한다" arg1="201-208" arg2="0" /> <!-- 순간 이동 발판이 사라진다 -->
+			<action name="포탈을설정한다" arg1="101" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="102" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="103" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="104" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="115" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="116" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="117" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="118" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="몬스터를생성한다" arg1="202" arg2="0" /> <!-- 202 스폰 포인트의 NPC(문 안의 퍼즈룬)를 리젠시킨다. 타겟지정 안 한다(arg2=0) -->
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__5$" arg3="4500" />
+            <action name="타이머를설정한다" arg1="1" arg2="5" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="멘트1" />
+        </condition>
+        <onExit />
+    </state>
+
+<!-- 퍼즐 시작 -->
+    <state name="멘트1" posX="515" posY="130">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="6" /> <!-- 5초 카운트하는 UI 쓸 때, 본 스테이트는 7초 정도를 줘야 안 어색함 -->
+            <action name="이벤트UI를설정한다" arg1="0" arg2="1,3" /> <!-- 1/3 스테이지 -->
+			<action name="ShowCountUI" text="$61000005_ME__MAINPROCESS__6$" stage="1" count="5"  />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="퍼즐단계1" />
+        </condition>
+        <onExit />
+    </state>
+
+<!-- 퍼즐 1단계 -->
+    <state name="퍼즐단계1" posX="492" posY="200">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="99" arg2="14" /> <!-- 바닥이 사라지는 데 걸리는 시간과 맞출 것 -->
+            <action name="상태를사용한다" arg1="1" arg2="0" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="99">
+            <transition state="퍼즐단계1정리" />
+        </condition>
+        <onExit />
+    </state>
+    <state name="퍼즐단계1정리" posX="416" posY="327">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="3" />
+            <action name="메쉬를설정한다" arg1="101-176" arg2="1" /> <!-- 퍼즐 큐브를 모두 보인다(arg2=1) -->
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="퍼즐단계1종료" />
+        </condition>
+        <condition name="!유저를감지했으면" arg1="197,198,199"> <!-- 아무도 살아남지 못한다면 -->
+            <transition state="모두실패" />
+        </condition>
+        <onExit />
+    </state>
+    <state name="퍼즐단계1종료" posX="409" posY="275">
+        <onEnter />
+        <condition name="유저를감지했으면" arg1="197,198,199"> <!-- 살아 남은 사람이 있다면 (사실 위에서 걸러지지 않았기 때문에 살아 남은 사람이 있어야 함 -->
+            <transition state="퍼즐단계2대기" />
+        </condition>
+        <onExit />
+    </state>
+
+<!-- 2단계 퍼즐 -->
+    <state name="퍼즐단계2대기" posX="300" posY="361">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="6" /> <!-- 5초 카운트하는 UI 쓸 때, 본 스테이트는 7초 정도를 줘야 안 어색함 -->
+			<action name="이벤트UI를설정한다" arg1="0" arg2="2,3" /> <!-- 2/3 스테이지 -->
+			<action name="ShowCountUI" text="$61000005_ME__MAINPROCESS__7$" stage="2" count="5"  />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="퍼즐단계2" />
+        </condition>
+        <onExit>
+            <action name="타이머를초기화한다" arg1="1" />
+        </onExit>
+    </state>
+
+    <state name="퍼즐단계2" posX="261" posY="443">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="99" arg2="14" /> <!-- 바닥이 사라지는 데 걸리는 시간과 맞출 것 -->
+            <action name="상태를사용한다" arg1="1" arg2="0" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="99">
+            <transition state="퍼즐단계2정리" />
+        </condition>
+        <onExit>
+            <action name="타이머를초기화한다" arg1="99" />
+        </onExit>
+    </state>
+    <state name="퍼즐단계2정리" posX="245" posY="520">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="3" />
+            <action name="메쉬를설정한다" arg1="101-176" arg2="1" /> <!-- 퍼즐 큐브를 모두 보인다(arg2=1) -->
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="퍼즐단계2종료" />
+        </condition>
+        <condition name="!유저를감지했으면" arg1="197,198,199"> <!-- 아무도 살아남지 못한다면 -->
+            <transition state="모두실패" />
+        </condition>
+        <onExit />
+    </state>
+    <state name="퍼즐단계2종료" posX="493" posY="519">
+        <onEnter />
+        <condition name="유저를감지했으면" arg1="197,198,199"> <!-- 살아 남은 사람이 있다면 (사실 위에서 걸러지지 않았기 때문에 살아 남은 사람이 있어야 함 -->
+            <transition state="퍼즐단계3대기" />
+        </condition>
+        <onExit />
+    </state>
+
+<!-- 3단계 퍼즐 -->
+
+    <state name="퍼즐단계3대기" posX="569" posY="460">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="6" /> <!-- 5초 카운트하는 UI 쓸 때, 본 스테이트는 7초 정도를 줘야 안 어색함 -->
+			<action name="이벤트UI를설정한다" arg1="0" arg2="3,3" /> <!-- 3/3 스테이지 -->
+			<action name="ShowCountUI" text="$61000005_ME__MAINPROCESS__8$" stage="3" count="5"  />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="퍼즐단계3" />
+        </condition>
+        <onExit>
+            <action name="타이머를초기화한다" arg1="1" />
+        </onExit>
+    </state>
+    <state name="퍼즐단계3" posX="538" posY="378"> <!-- 바닥이 사라지는 데 걸리는 시간과 맞출 것 -->
+        <onEnter>
+			<action name="타이머를설정한다" arg1="99" arg2="14" />
+            <action name="상태를사용한다" arg1="1" arg2="0" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="99">
+            <transition state="퍼즐단계3정리" />
+        </condition>
+        <onExit />
+    </state>
+    <state name="퍼즐단계3정리" posX="614" posY="326">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="3" />
+            <action name="메쉬를설정한다" arg1="101-176" arg2="1" /> <!-- 퍼즐 큐브를 모두 보인다(arg2=1) -->
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="퍼즐단계3종료" />
+        </condition>
+        <condition name="!유저를감지했으면" arg1="197,198,199"> <!-- 아무도 살아남지 못한다면 -->
+            <transition state="모두실패" />
+        </condition>
+        <onExit />
+    </state>
+    <state name="퍼즐단계3종료" posX="874" posY="235">
+        <onEnter />
+        <condition name="유저를감지했으면" arg1="197,198,199">
+            <action name="메쉬를설정한다" arg1="101-176" arg2="1" /> <!-- 퍼즐 큐브를 모두 보인다(arg2=1) -->
+            <transition state="보상단계" />
+        </condition>
+        <onExit />
+    </state>
+
+<!-- 성공한 사람이 있을 경우 보상 -->
+
+    <state name="보상단계" posX="891" posY="305">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="7" />
+            <action name="이벤트UI를설정한다" arg1="0" arg2="0,0" /> <!-- 이벤트 UI 사라짐 -->
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__9$" arg3="5000" arg4="0" /> 
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="돈벼락" />
+        </condition>
+        <onExit />
+    </state>
+		
+    <state name="돈벼락" posX="910" posY="351">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="15" />
+            <action name="이벤트UI를설정한다" arg1="0" arg2="0,0" />
+            <action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__10$" arg3="5000" arg4="0" />
+            <action name="버프를걸어준다" arg1="197,198,199" arg2="70000020" arg3="1"/>	  
+            <action name="아이템을생성한다" arg1="1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043,1044,1045,1046,1047,1048,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1067,1068,1069,1070,1071,1072,1073,1074,1075" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="퍼즐종료처리" />
+        </condition>
+        <onExit />
+    </state>
+
+<!-- 모두 실패했을 경우 처리 -->
+
+    <state name="모두실패" posX="730" posY="409">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="7" />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="0,0" />
+            <action name="이벤트UI를설정한다" arg1="5" arg2="$61000005_ME__MAINPROCESS__11$" arg3="5000" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="퍼즐종료처리" />
+        </condition>
+        <onExit />
+    </state>
+	
+<!-- 퍼즐 종료 -->
+
+    <state name="퍼즐종료처리" posX="882" posY="447">
+        <onEnter>
+            <action name="이벤트UI를설정한다" arg1="0" arg2="0,0" />
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$61000005_ME__MAINPROCESS__12$" arg3="5000" />
+            <action name="메쉬를설정한다" arg1="101-176" arg2="1" /> <!-- 퍼즐 큐브를 모두 보인다 -->
+            <action name="메쉬를설정한다" arg1="211-212" arg2="0" /> <!-- 닫힌 문을 가린다 -->
+			<action name="메쉬를설정한다" arg1="401-436" arg2="0" /> <!-- 퍼즐 펜스 모두 가린다 -->
+			<action name="메쉬를설정한다" arg1="451-494" arg2="0" /> <!-- 퍼즐 큐브 바운딩 모두 죽인다 -->
+			<action name="메쉬를설정한다" arg1="501-544" arg2="1" /> <!-- 퍼즐 큐브 외곽 발판 모두 보인다 -->
+			<action name="메쉬를설정한다" arg1="551-552" arg2="1" /> <!-- 열린 문을 보인다 -->
+			<action name="포탈을설정한다" arg1="101" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="102" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="103" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="104" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="115" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="116" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="117" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="118" arg2="0" arg3="0" arg4="0"/> <!-- 순간 이동 포털을 안 보이게 하고 동작 안하게 한다 -->
+			<action name="포탈을설정한다" arg1="500" arg2="0" arg3="1" arg4="0"/> <!-- 탈락자용 포털을 안 보이게(arg2=0) 하고 동작하게(arg3=1) 한다 -->
+			<action name="타이머를설정한다" arg1="1" arg2="6" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="강제종료" />
+        </condition>
+        <onExit />
+    </state>
+
+<!-- 혹시라도 안 나가고 남아 있는 사람 있을 까봐 모두 밖으로 내보내는 처리 -->
+
+    <state name="강제종료" posX="737" posY="601">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="30" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="유저이동" />
+        </condition>
+        <onExit />
+    </state>
+
+	<state name="유저이동" posX="746" posY="534">
+        <onEnter>
+        </onEnter>
+		<condition name="무조건">
+				<action name="유저를이동시킨다" arg1="63000001" arg2="5" arg3="0" /> <!-- 단풍나무 광장 5번 포털로 이동 -->
+			    <transition state="종료" />
+        </condition>
+        <onExit />
+    </state>
+
+<!--퍼즐 패턴 시작-->
+	
+  <!-- 밖에서 안으로 없어지면서 들어온다. 살아남는 건 가운데 4개 -->
+	<state name="퍼즐패턴1">
+		<onEnter>
+		
+			<action name="타이머를설정한다" arg1="1" arg2="14"/>
+
+			<!-- arg3:start delay / arg4:떨어지는 간격 / 모두  1/1000초 단위 -->
+			<action name="메쉬를설정한다" arg1="101,102,103,104" arg2="0" arg3="0" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="128,138,148,158" arg2="0" arg3="0" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="176,175,174,173" arg2="0" arg3="0" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="149,139,129,119" arg2="0" arg3="0" arg4="300"/>
+
+			<action name="메쉬를설정한다" arg1="110,109,108,107,106,105" arg2="0" arg3="2500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="166,157,147,137,127,118" arg2="0" arg3="2500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="167,168,169,170,171,172" arg2="0" arg3="2500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="111,120,130,140,150,159" arg2="0" arg3="2500" arg4="300"/>
+
+			<action name="메쉬를설정한다" arg1="112,113,114,115,116" arg2="0" arg3="4500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="117,126,136,146,156" arg2="0" arg3="4500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="165,164,163,162,161" arg2="0" arg3="4500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="160,151,141,131,121" arg2="0" arg3="4500" arg4="300"/>
+
+			<action name="메쉬를설정한다" arg1="125,124,123" arg2="0" arg3="6500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="122,132,142" arg2="0" arg3="6500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="152,153,154" arg2="0" arg3="6500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="155,145,135" arg2="0" arg3="6500" arg4="300"/>
+		  
+		</onEnter>
+	</state>
+
+	<!-- 안에서 밖으로 없어지면서 나간다. 살아남는 건 최 외곽의 4개씩 -->
+	<state name="퍼즐패턴2">  
+		<onEnter>
+
+			<action name="타이머를설정한다" arg1="1" arg2="14"/>
+
+			<!-- arg3:start delay / arg4:떨어지는 간격 / 모두  1/1000초 단위 -->
+			<action name="메쉬를설정한다" arg1="133,134,144,143" arg2="0" arg3="0" arg4="300"/>
+
+			<action name="메쉬를설정한다" arg1="142,132,122,123,124,125" arg2="0" arg3="2500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="135,145,155,154,153,152" arg2="0" arg3="2500" arg4="300"/>
+			
+			<action name="메쉬를설정한다" arg1="113,114,115,116,117,126,136,146,156,165" arg2="0" arg3="5500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="164,163,162,161,160,151,141,131,121,112" arg2="0" arg3="5500" arg4="300"/>
+			
+			<action name="메쉬를설정한다" arg1="105,106,107,108,109,110" arg2="0" arg3="9500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="118,127,137,147,157,166" arg2="0" arg3="9500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="172,171,170,169,168,167" arg2="0" arg3="9500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="159,150,140,130,120,111" arg2="0" arg3="9500" arg4="300"/>
+		  
+		</onEnter>
+	</state>
+ 
+	<!-- 안과 밖에서 동시에 없어지는 패턴, 도넛 모양으로 살아 남는다 -->
+ 
+	<state name="퍼즐패턴3">
+		<onEnter>
+		
+			<action name="타이머를설정한다" arg1="1" arg2="14"/>
+
+			<!-- arg3:start delay / arg4:떨어지는 간격 / 모두  1/1000초 단위 -->
+			<action name="메쉬를설정한다" arg1="101,102,103,104" arg2="0" arg3="0" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="128,138,148,158" arg2="0" arg3="0" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="176,175,174,173" arg2="0" arg3="0" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="149,139,129,119" arg2="0" arg3="0" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="133,134,144,143" arg2="0" arg3="0" arg4="300"/>
+			
+			<action name="메쉬를설정한다" arg1="105,106,107,108,109,110" arg2="0" arg3="2500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="118,127,137,147,157,166" arg2="0" arg3="2500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="172,171,170,169,168,167" arg2="0" arg3="2500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="159,150,140,130,120,111" arg2="0" arg3="2500" arg4="300"/>
+			<action name="메쉬를설정한다" arg1="122,123,124" arg2="0" arg3="2500" arg4="600"/>
+			<action name="메쉬를설정한다" arg1="125,135,145" arg2="0" arg3="2500" arg4="600"/>
+			<action name="메쉬를설정한다" arg1="155,154,153" arg2="0" arg3="2500" arg4="600"/>
+			<action name="메쉬를설정한다" arg1="152,142,132" arg2="0" arg3="2500" arg4="600"/>
+			
+			<action name="메쉬를설정한다" arg1="112,117,165,160" arg2="0" arg3="6500" arg4="300"/>
+		  
+		</onEnter>
+	</state>
+
+<!--퍼즐 패턴 끝-->	
+
+	<state name="종료" posX="746" posY="534">
+    </state>
+	
+</ms2>

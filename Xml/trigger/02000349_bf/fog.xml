@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+    <state name="준비" posX="362" posY="145">
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="10000813" arg2="2" />
+        </onEnter>
+				<condition name="NPC를감지했으면" arg1="136" arg2="2006">
+						<transition state="시작대기중" />
+				</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+
+    <state name="시작대기중" posX="362" posY="145">
+        <onEnter>
+            <action name="몬스터를생성한다" arg1="1098" />
+			<action name="이펙트를설정한다" arg1="600" arg2="0" /><!--fog 500-->
+			<action name="이펙트를설정한다" arg1="602" arg2="0" /><!--fog 1500-->
+			<action name="오브젝트반응설정한다" arg1="10000813" arg2="2" />
+        </onEnter>
+				<condition name="몬스터가죽어있으면" arg1="1098">
+						<transition state="포그" />
+				</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="포그" posX="595" posY="150">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="600" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="10000813" arg2="1" />
+			<action name="ShowGuideSummary" entityID="20003494" textID="20003494"/> 
+		    <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+        </onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10000813" arg2="0">
+					<transition state="대기시간" />
+			</condition>
+			<condition name="몬스터가죽어있으면" arg1="1099">
+					<transition state="대기시간" />
+			</condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="대기시간" posX="836" posY="144">
+        <onEnter>
+			<action name="HideGuideSummary" entityID="20003494"/>
+			<action name="이펙트를설정한다" arg1="602" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="10000813" arg2="0" />
+            <action name="타이머를설정한다" arg1="10" arg2="10"/>
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="10">
+					<transition state="시작대기중" />
+				</condition>
+        <onExit />
+    </state>
+
+</ms2>

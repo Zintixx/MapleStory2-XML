@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+<!-- 룬블레이더 떡밥 -->
+
+<!--
+11003843 - 렌듀비앙(101)
+11003844 - 유페리아(102)
+11003845 - 이슈라(104)
+11003846 - 레잔(103)
+-->
+ 
+    <state name="입장"> 
+        <onEnter>			
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="6001" arg2="91000076" arg3="3">
+			<transition state="칼리브해안전경"/> 
+		</condition>
+		<condition name="!퀘스트유저를감지하면" arg1="6001" arg2="91000076" arg3="3">
+			<transition state="맵이동"/> 
+		</condition>
+		<onExit>
+		</onExit>
+    </state> 
+	
+	<state name="칼리브해안전경"> 
+        <onEnter>
+		<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		<action name="연출UI를설정한다" arg1="1"/>
+		<action name="연출UI를설정한다" arg1="3"/>
+		<action name="VisibleMyPC" isVisible="0" /><!--유저안보이게-->
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="칼리브해안전경_02"/> 
+			</condition>		
+		<onExit>
+		</onExit> 
+    </state>
+	
+	<state name="칼리브해안전경_02"> 
+        <onEnter>
+		<action name="SetSceneSkip" arg1="종료_02" arg2="exit"/>
+		<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+		<action name="카메라경로를선택한다" arg1="4001,4002" arg2="0"/><!--전경비추는카메라-->					
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="칼리브해안전경_03"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="칼리브해안전경_03"> 
+        <onEnter>
+		<action name="ShowCaption" type="VerticalCaption" title="$52010061_QD__main__0$" align="centerLeft" offsetRateX="0" offsetRateY="0" duration="2800" scale="2"/>					
+		</onEnter>
+			<condition name="WaitTick" waitTick="1800">
+				<transition state="교역선비추기"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="교역선비추기"> 
+        <onEnter>
+		<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="스폰조절"/> 
+			</condition>		 
+		<onExit>
+		</onExit> 
+    </state> 
+	
+	<state name="스폰조절"> 
+        <onEnter>
+		<action name="몬스터를생성한다" arg1="101" arg2="0" arg3="0"/><!--렌듀비앙-->
+		<action name="몬스터를생성한다" arg1="102" arg2="0" arg3="0"/><!--유페리아-->
+		<action name="몬스터를생성한다" arg1="103" arg2="0" arg3="0"/><!--레잔-->
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="교역선비추기_02"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="교역선비추기_02"> 
+        <onEnter>
+		<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		<action name="카메라경로를선택한다" arg1="4003,4005" arg2="0"/><!--교역선비추는카메라-->
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="레잔대사_01"/> 
+			</condition>		  
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="레잔대사_01"> 
+        <onEnter>
+		<action name="카메라경로를선택한다" arg1="4008" arg2="0"/>
+		<action name="SetNPcEmotionLoop" arg1="103" arg2="Talk_A" arg3="4000" />
+		<action name="AddCinematicTalk" npcID="11003846" msg="$52010061_QD__main__1$" duration="4000"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="레잔대사_02"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+		<state name="레잔대사_02"> 
+        <onEnter>
+		<action name="카메라경로를선택한다" arg1="4003" arg2="0"/>
+		<action name="AddCinematicTalk" npcID="11003846" msg="$52010061_QD__main__2$" duration="4000"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="유페리아대사_01"/> 
+			</condition>		 
+		<onExit>
+		</onExit> 
+    </state>
+	
+	
+	<state name="유페리아대사_01"> 
+        <onEnter>
+		<action name="카메라경로를선택한다" arg1="4009" arg2="0"/>
+		<action name="SetNPcEmotionLoop" arg1="102" arg2="Talk_A" arg3="6000" />
+		<action name="AddCinematicTalk" npcID="11003844" illustID="Yuperia_normal" msg="$52010061_QD__main__3$" duration="4800" align="left"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="랜듀비앙대사_01"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="랜듀비앙대사_01"> 
+        <onEnter>
+		<action name="SetNPcEmotionLoop" arg1="101" arg2="Talk_A" arg3="5000" />
+		<action name="카메라경로를선택한다" arg1="4005" arg2="0"/>
+		<action name="AddCinematicTalk" npcID="11001567" illustID="Renduebian_normal" msg="$52010061_QD__main__4$" duration="4800" align="left"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="랜듀비앙대사_02"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="랜듀비앙대사_02"> 
+        <onEnter>
+		<action name="SetNPcEmotionLoop" arg1="101" arg2="Talk_A" arg3="4000" />
+		<action name="카메라경로를선택한다" arg1="4005" arg2="0"/>
+		<action name="AddCinematicTalk" npcID="11001567" illustID="Renduebian_normal" msg="$52010061_QD__main__5$" duration="3800" align="left"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="유페리아대사_02"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+		<state name="유페리아대사_02"> 
+        <onEnter>
+		<action name="카메라경로를선택한다" arg1="4009" arg2="0"/>
+		<action name="SetNPcEmotionLoop" arg1="102" arg2="Talk_A" arg3="4000" />
+		<action name="AddCinematicTalk" npcID="11003844" illustID="Yuperia_normal" msg="$52010061_QD__main__6$" duration="3800" align="left"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="랜듀비앙대사_03"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+		<state name="랜듀비앙대사_03"> 
+        <onEnter>
+		<action name="SetNPcEmotionLoop" arg1="101" arg2="Talk_A" arg3="4000" />
+		<action name="카메라경로를선택한다" arg1="4010" arg2="0"/>
+		<action name="AddCinematicTalk" npcID="11001567" illustID="Renduebian_normal" msg="$52010061_QD__main__7$" duration="3800" align="left"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="이슈라등장"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+		
+	<state name="이슈라등장"> 
+        <onEnter>
+		<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="이슈라등장_02"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="이슈라등장_02"> 
+        <onEnter>
+		<action name="AddCinematicTalk" npcID="11001975" msg="$52010061_QD__main__8$" duration="4000" />
+		<action name="몬스터를생성한다" arg1="104" arg2="0" arg3="0"/><!--이슈라-->
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="이슈라등장_03"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="이슈라등장_03"> 
+        <onEnter> 
+		<action name="카메라경로를선택한다" arg1="4006,4007" arg2="0"/>
+		<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="이슈라대사"/> 
+			</condition>		 
+		<onExit> 
+		</onExit>
+    </state>  
+	
+	<state name="이슈라대사"> 
+        <onEnter>
+		<action name="SetNPcEmotionLoop" arg1="104" arg2="Talk_A" arg3="4000" />
+		<action name="AddCinematicTalk" npcID="11003845" illustID="Ishura_normal" msg="$52010061_QD__main__9$" duration="3000" align="left"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="이슈라모션"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="이슈라모션"> <!--나중에 수정-->
+        <onEnter>
+		<action name="SetNpcEmotionSequence" arg1="104" arg2="RuneBlader_Bore_A"/> <!--이 후 새로운 모션으로 수정-->
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="종료"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state> 
+	
+	<state name="종료"> 
+        <onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="종료_02"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="종료_02">  <!--스폰조절-->
+        <onEnter>
+			<action name="SetOnetimeEffect" id="300" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+		</onEnter>
+			<condition name="WaitTick" waitTick="500">
+				<transition state="UI초기화"/> 
+			</condition>		 
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="UI초기화"> 
+        <onEnter>
+			<action name="VisibleMyPC" isVisible="1" />
+			<action name="몬스터소멸시킨다" arg1="101"/>
+			<action name="몬스터소멸시킨다" arg1="102"/>
+			<action name="몬스터소멸시킨다" arg1="103"/>
+			<action name="몬스터소멸시킨다" arg1="104"/>		
+			<action name="카메라리셋" interpolationTime="2.0"/>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>	 
+			<condition name="WaitTick" waitTick="500">
+				<transition state="맵이동"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>
+
+  <state name="맵이동">
+       <onEnter>
+           <action name="유저를이동시킨다" arg1="02000422" arg2=""/>    <!-- 스카이 포트리스 함교로 텔레포트 -->                    
+       </onEnter>    
+        <condition name="WaitTick" waitTick="1000">
+            <transition state=""/>
+        </condition>
+        <onExit>             
+       </onExit>
+   </state>    
+    
+   <state name="" >
+
+   </state>	
+
+	
+ </ms2>

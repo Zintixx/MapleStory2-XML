@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="대기">
+		<onEnter>
+            <action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0"/> 
+		
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="10">
+			<transition state="난이도별보스등장" />
+        </condition>
+	</state>
+
+	<state name="난이도별보스등장">
+		<onEnter>
+		</onEnter>
+
+		<condition name="DungeonID" dungeonID="23048003">  <!-- 현재 입장한 던전ID가 23048003  이라면 , <transition state="일반난이도_보스등장" /> 실행-->    
+			<transition state="일반난이도_보스등장" />
+		</condition> 
+		  
+		<condition name="DungeonID" dungeonID="23049003">  <!-- 현재 입장한 던전ID가 23049003  이라면 ,<transition state="어려움난이도_보스등장" /> 실행-->    
+			<transition state="어려움난이도_보스등장" />
+		</condition> 
+
+		<condition name="WaitTick" waitTick="1100" >  <!-- 던전 로직을 통해 입장하지 않고, 걍 디버그 모드 맵툴로 들어오면 이 부분 실행됨-->    
+			<transition state="일반난이도_보스등장" /> 
+		</condition>
+
+	</state>	
+	
+
+
+	<state name="일반난이도_보스등장">
+		<onEnter>
+            <action name="몬스터를생성한다" arg1="101" arg2="1" />
+		</onEnter>
+        <condition name="몬스터가죽어있으면" arg1="101">
+            <transition state="클리어처리" />
+        </condition>
+	</state>
+	
+	<state name="어려움난이도_보스등장">
+		<onEnter>
+            <action name="몬스터를생성한다" arg1="102" arg2="1" />
+		</onEnter>
+        <condition name="몬스터가죽어있으면" arg1="102">
+            <transition state="클리어처리" />
+        </condition>
+	</state>	
+
+	<state name="클리어처리"> 
+		<onEnter>      
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000" > 
+				<action name="DungeonClear" /> 
+				<transition state="종료처리" />
+			</condition>
+	</state>	
+	
+	<state name="종료처리"> 
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="all" />			
+            <action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1"/>            
+		</onEnter>
+	</state>	
+	
+</ms2>

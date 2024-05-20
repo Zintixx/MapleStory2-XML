@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- trigger model = 999999101 -->
+<ms2>
+
+  <state name="idle">
+    <onEnter>
+		<action name="몬스터를생성한다" arg1="701" arg2="0" />
+		<action name="이펙트를설정한다" arg1="6701" arg2="1" />
+		<action name="몬스터를생성한다" arg1="5001,5002,1301,1302,1303,1304" arg2="0" /> <!-- 보스 소환 --> 
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="101" arg2="1">
+			<transition state="CheckUserCount" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+ 
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+	
+  <state name="DungeonStart">
+    <onEnter>	
+		<action name="연출UI를설정한다" arg1="1"/> 
+		<action name="연출UI를설정한다" arg1="3"/> 
+		<action name="스킵을설정한다" arg1="scene_02"/>
+		<action name="카메라경로를선택한다" arg1="80001,80002,80003,80004" arg2="1"/>
+	</onEnter>
+		<condition name="WaitTick" waitTick="3000"> 
+			<transition state="scene_01"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+    <state name="scene_01">
+    <onEnter>	
+		<action name="스킵을설정한다" arg1="scene_02"/>
+  		<action name="대화를설정한다" arg1="1" arg2="1301" arg3="$02000329_BF__01_MAIN__0$" arg4="2" arg5="0"/>
+	</onEnter>
+		<condition name="WaitTick" waitTick="3000"> 
+			<transition state="scene_02"/>
+		</condition>
+    <onExit>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+  </state>
+
+
+  <state name="scene_02">
+    <onEnter>	
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+		<action name="카메라경로를선택한다" arg1="80005" arg2="1"/>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000329_BF__01_MAIN__1$" arg3="3000" arg4="0" />	
+		<action name="몬스터를생성한다" arg1="2001,2002,2003,2004,2005" arg2="0" />
+		<action name="메쉬를설정한다" arg1="10000,11001,11002,11003,19999" arg2="0"/>	
+	</onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="105" arg2="1">
+			<transition state="npc_talk" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+      
+    
+
+<state name="npc_talk">
+    <onEnter>
+		<action name="SetNpcEmotionSequence" arg1="1301" arg2="Talk_A" />		
+		<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/> 
+		<action name="ShowGuideSummary" entityID="101" textID="20000051" duration="5000"/> <!-- 닭들을 찾아주세요 -->
+		<action name="대화를설정한다" arg1="1" arg2="1301" arg3="$02000329_BF__01_MAIN__2$" arg4="2" arg5="0"/>
+    </onEnter>	
+		<condition name="WaitTick" waitTick="3000"> 
+			<transition state="npc_talk_02"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>  
+  
+  <state name="npc_talk_02">
+    <onEnter>
+		<action name="SetNpcEmotionSequence" arg1="1301" arg2="Talk_A" />		
+		<action name="대화를설정한다" arg1="1" arg2="1301" arg3="$02000329_BF__01_MAIN__3$" arg4="2" arg5="0"/>
+    </onEnter>	
+    <onExit>
+    </onExit>
+  </state>  
+ </ms2>

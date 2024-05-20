@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 라딘의 막사 : 라딘_101_110036520, 제이든_110_11003540, 크리티아스 고대 지도 더미 npc_130_11003768 스폰은 -->
+<!-- npcmask로 관리하며 나머지는 트리거에서 제어  -->
+<ms2>
+    <state name="start">	
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="4001,4002" arg2="1" />
+			<action name="몬스터소멸시킨다" arg1="120,121"/>
+		</onEnter>	
+			<condition name="유저를감지했으면" arg1="9000"> 
+				<transition state="퀘스트조건체크"/>
+			</condition>	
+		<onExit> 
+		</onExit>
+    </state>	
+	
+    <state name="퀘스트조건체크">	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001779" arg3="3"> 
+				<transition state="진행이후_기본"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001775-50001779" arg3="1-2"> 
+				<transition state="제이든보고연출_완료"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001774" arg3="3"> 
+				<transition state="제이든보고연출_완료"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001774" arg3="2"> 
+				<transition state="제이든보고연출_완료"/>
+			</condition>			
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001774" arg3="1"> 
+				<transition state="제이든보고연출_대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="50001773" arg3="3"> 
+				<transition state="기본"/>
+			</condition>		
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="기본">
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="진행이후_기본">
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="4001,4002" arg2="0" />
+			<action name="몬스터소멸시킨다" arg1="120,121"/>
+		</onEnter>	
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="제이든보고연출_대기">
+		<onEnter>	
+			<action name="몬스터를생성한다" arg1="120" arg2="0"/>		
+			<action name="메쉬를설정한다" arg1="4001,4002" arg2="0" />
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		</onEnter> 
+				<condition name="WaitTick" waitTick="500">
+					<transition state="연출준비"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+    <state name="연출준비" > 
+		<onEnter>			
+			<action name="유저를이동시킨다" arg1="52020002" arg2="1"/>  
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="VisibleMyPC" isVisible="0"/>  <!-- 유저 투명 처리 -->			
+		 </onEnter> 
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="연출시작"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+    <state name="연출시작" > 
+		<onEnter>			
+  			<action name="카메라경로를선택한다" arg1="8000" arg2="0"/> 		
+			<action name="SetSceneSkip" arg1="제이든보고_스킵완료" arg2="nextState"/> <!-- setsceneskip set --> <!-- setsceneskip set --> <!-- setsceneskip set -->
+		 </onEnter> 
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="제이든등장"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+   <state name="제이든등장"> 
+        <onEnter>	
+			<!-- <action name="카메라경로를선택한다" arg1="8001" arg2="0"/> 		 -->
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+			<action name="AddCinematicTalk" npcID="11003540" illustID="Jaiden_normal" msg="안녕하세요? 제가 나타났습니다.\n연출은 제작 중이니 기다려 주세요." duration="3000" />
+			<action name="SetNpcEmotionLoop" arg1="120" arg2="Talk_A" arg3="3000"/>	
+			<action name="스킵을설정한다" arg1="01_skip"/>			
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="제이든보고_스킵완료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+    <state name="01_skip">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="제이든보고_스킵완료"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+    
+<!-- 	<state name="케이틀린탈주01">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/> 	
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_100_wayout" />
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_PC01" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="케이틀린탈주02" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="케이틀린탈주02">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11003262" arg3="$02000035_IN__MAIN__7$" arg4="2" arg5="0" />				
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="케이틀린탈주03" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="케이틀린탈주03">
+		<onEnter> 
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101_wayout" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="PC멈칫" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+ 	<state name="PC멈칫">
+        <onEnter>	
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="$02000035_IN__MAIN__11$" arg4="2" arg5="0" />
+			<action name="몬스터소멸시킨다" arg1="101"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="앤대사03" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+   	<state name="앤대사03">
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8005" arg2="0"/> 	
+			<action name="대화를설정한다" arg1="2" arg2="11003264" arg3="$02000035_IN__MAIN__8$" arg4="3" arg5="0" />
+			<action name="SetNpcEmotionSequence" arg1="103" arg2="ChatUp_A"/>	 
+        </onEnter>
+			<condition name="WaitTick" waitTick="4022" > 
+				<transition state="연출종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state> -->
+
+	<state name="제이든보고_스킵완료"> <!-- setsceneskip fin -->
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  		
+			<action name="몬스터소멸시킨다" arg1="120" />					
+			<action name="몬스터를생성한다" arg1="121" arg2="0"/>	
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="연출종료"/>
+			</condition>
+		<onExit>  
+		</onExit>
+	 </state>		
+	
+	
+    <state name="연출종료" > 
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="JaidenReportstoRadin"/>	
+			<action name="카메라리셋" interpolationTime="2.0"/>	
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>			
+			<action name="VisibleMyPC" isVisible="1"/> 			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="종료"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="제이든보고연출_완료">
+		<onEnter>	
+			<action name="몬스터소멸시킨다" arg1="120"/>					
+			<action name="몬스터를생성한다" arg1="121" arg2="0"/>		
+			<action name="메쉬를설정한다" arg1="4001,4002" arg2="0" />
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		</onEnter> 
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="연출종료"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+	
+	<state name="종료">
+    </state>	
+
+</ms2>

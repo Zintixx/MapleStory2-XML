@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="대기">
+        <onEnter>
+			<action name="액터를설정한다" arg1="299" arg2="1" arg3="Dead_Idle_A" />
+            <action name="몬스터를생성한다" arg1="2101,2102,2103,2104,2105,2106,2107,2108" arg2="0" />
+			<action name="이펙트를설정한다" arg1="600" arg2="0" />
+			<action name="이펙트를설정한다" arg1="699" arg2="0" />
+			<action name="메쉬를설정한다" arg1="3999" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3900" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3701-3716" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3801-3808" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="스킬을설정한다" arg1="7001" arg2="0"/>
+            <action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>
+        </onEnter>
+			<condition name="유저를감지했으면" arg1="100">
+					<transition state="CheckUserCount" />
+				</condition>	
+    </state>
+
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+
+    <state name="DungeonStart">
+        <onEnter>
+				<action name="연출UI를설정한다" arg1="1"/>
+				<action name="연출UI를설정한다" arg1="3"/>
+				<action name="카메라를선택한다" arg1="301" arg2="1"/>
+				<action name="이펙트를설정한다" arg1="699" arg2="1" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+					<transition state="카드반교체"/>
+				</condition>
+	</state>
+
+	<state name="카드반교체">
+		<onEnter>
+			<action name="액터를설정한다" arg1="299" arg2="0" arg3="Dead_Idle_A" />
+            <action name="몬스터를생성한다" arg1="2097" arg2="0" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="카드반대사01"/>
+				</condition>
+	</state>
+
+	<state name="카드반대사01">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="600" arg2="1" />
+			<action name="대화를설정한다" arg1="2" arg2="24001705" arg3="$02000355_BF__MAIN__0$" arg4="4"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="카트반이동"/>
+				</condition>
+	</state>
+
+	<state name="카트반이동">
+		<onEnter>
+			<action name="스킬을설정한다" arg1="7001" arg2="1"/>
+			<action name="메쉬를설정한다" arg1="3701-3716" arg2="0" arg3="0" arg4="0" arg5="0" />
+		    <action name="카메라경로를선택한다" arg1="301" arg2="1"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="연출종료"/>
+				</condition>
+	</state>
+
+    <state name="연출종료" posX="362" posY="145">
+        <onEnter>
+            <action name="NPC를이동시킨다" arg1="2097" arg2="MS2PatrolData2097_A" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="1500" > 
+						<action name="메쉬를설정한다" arg1="3900" arg2="0" arg3="0" arg4="0" arg5="0" />
+						<action name="연출UI를설정한다" arg1="0"/>
+						<action name="연출UI를설정한다" arg1="2"/>
+						<action name="카메라를선택한다" arg1="301" arg2="0"/>
+						<action name="ShowGuideSummary" entityID="20003552" textID="20003552" durationTime="4000" /> 
+					    <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>    
+						<transition state="카트반소멸" />
+				</condition>
+    </state>
+
+	<state name="카트반소멸">
+				<condition name="WaitTick" waitTick="1500" > 
+					 <action name="몬스터를생성한다" arg1="2099" arg2="0" />
+					 <action name="몬스터소멸시킨다" arg1="2097" />	
+					<transition state="종료체크"/>
+				</condition>
+	</state>
+
+    <state name="종료체크" posX="410" posY="281">
+				<condition name="몬스터가죽어있으면" arg1="2099">
+						<transition state="종료연출시작" />
+				</condition>	
+    </state>
+
+    <state name="종료연출시작" posX="361" posY="465">
+        <onEnter>
+				<action name="연출UI를설정한다" arg1="1"/>
+				<action name="연출UI를설정한다" arg1="3"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="100" > 
+					<transition state="카드반대사02"/>
+				</condition>
+	</state>
+
+	<state name="카드반대사02">
+		<onEnter>
+			<action name="이펙트를설정한다" arg1="600" arg2="1" />
+			<action name="대화를설정한다" arg1="2" arg2="24001705" arg3="$02000355_BF__MAIN__1$" arg4="4"/>
+			<action name="스킵을설정한다" arg1="연출종료2"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="4000" > 
+					<transition state="연출종료2"/>
+				</condition>
+	</state>
+
+    <state name="연출종료2" posX="362" posY="145">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+        </onEnter>
+				<condition name="WaitTick" waitTick="500" > 
+						<action name="DungeonClear" /> 
+						<action name="메쉬를설정한다" arg1="3801-3808" arg2="1" arg3="0" arg4="50" arg5="2" />
+						<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+						<transition state="종료" />
+				</condition>
+    </state>
+
+    <state name="종료" posX="392" posY="526">
+    </state>
+
+</ms2>

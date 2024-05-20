@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ms2>
+
+<state name="대기">
+    <onEnter>
+		<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="0" />	
+		<action name="EnableSpawnPointPC" spawnPointID="991" isEnable="1" />
+		<action name="EnableSpawnPointPC" spawnPointID="992" isEnable="0" />		
+		<action name="메쉬를설정한다" arg1="6311-6315" arg2="1" arg4="1" arg5="1" /> <!--벽 생성-->	
+		<action name="이펙트를설정한다" arg1 = "6921" arg2="0" /> <!-- BG\Common\Eff_Com_ObjectShake.xml -->
+		<action name="몬스터를생성한다" arg1="149" arg2="0" /> <!-- 기본 배치 될 NPC 등장 -->
+    </onEnter>
+			<condition name="여러명의유저를감지했으면" arg1="710" arg2="1">
+					<transition state="시작"/>
+			</condition>				
+    <onExit>
+    </onExit>
+  </state>
+  
+  <state name="시작">
+    <onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>   
+		<action name="ShowGuideSummary" entityID="105" textID="20003361"/> <!-- 키 몬스터를 처치하세요. -->
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="149">
+		<transition state="화물문_개방"/>
+		</condition>			
+    <onExit>
+		<action name="HideGuideSummary" entityID="105"/>
+    </onExit>
+  </state>
+  
+    <state name="화물문_개방">
+    <onEnter>
+		<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="0" />	
+		<action name="EnableSpawnPointPC" spawnPointID="991" isEnable="0" />
+		<action name="EnableSpawnPointPC" spawnPointID="992" isEnable="1" />	
+		<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>   
+		<action name="ShowGuideSummary" entityID="106" textID="20003362"/> <!-- 다음 구역으로 이동할 수 있습니다. -->
+		<action name="메쉬를설정한다" arg1="7991-7993" arg2="0" arg4="0" arg5="0" /> <!--문 파괴-->	
+		<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="3">
+		<transition state="화물문_개방_종료"/>
+		</condition>
+		<condition name="여러명의유저를감지했으면" arg1="711" arg2="1">
+		<transition state="보스등장연출_00"/>
+		</condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="106"/>
+    </onExit>
+  </state>
+  
+      <state name="화물문_개방_종료">
+    <onEnter>
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="711" arg2="1">
+		<transition state="보스등장연출_00"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="보스등장연출_00">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000335_BF__BOSS__0$" arg3="3000"/>
+		<action name="이펙트를설정한다" arg1 = "6921" arg2="1" /> <!-- BG\Common\Eff_Com_ObjectShake.xml -->
+		<action name="타이머를설정한다" arg1="3" arg2="3" arg4="0" />	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="3">
+		<transition state="보스등장연출_01"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="보스등장연출_01">
+    <onEnter>
+		<action name="몬스터소멸시킨다" arg1="141,142,143,144,145,146,147,148"/> <!-- 기본 배치 된 NPC 삭제 -->
+		<action name="스킬을설정한다" arg1="5801" arg2="1" /> <!--벽 날리는 스킬-->	
+		<action name="스킬을설정한다" arg1="5802" arg2="1" /> <!--벽 날리는 스킬-->	
+		<action name="이펙트를설정한다" arg1 = "6911" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "6912" arg2="1" />	
+		<action name="몬스터를생성한다" arg1="199" arg2="0" /> <!-- 보스 몬스터 등장 -->	
+		<action name="NPC를이동시킨다" arg1="199" arg2="MS2PatrolData_1003" />
+		<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="보스등장연출_02"/>
+		</condition>
+		<condition name="몬스터가죽어있으면" arg1="199">
+		<transition state="포탈_개방"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+     <state name="보스등장연출_02">
+    <onEnter>	
+		<action name="스킬을설정한다" arg1="5803" arg2="1" /> <!--벽 날리는 스킬-->	
+		<action name="스킬을설정한다" arg1="5804" arg2="1" /> <!--벽 날리는 스킬-->	
+		<action name="이펙트를설정한다" arg1 = "6913" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "6914" arg2="1" />			
+		<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />	
+		
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="보스등장연출_03"/>
+		</condition>
+		<condition name="몬스터가죽어있으면" arg1="199">
+		<transition state="포탈_개방"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+       <state name="보스등장연출_03">
+    <onEnter>
+		<action name="스킬을설정한다" arg1="5805" arg2="1" /> <!--벽 날리는 스킬-->	
+		<action name="스킬을설정한다" arg1="5806" arg2="1" /> <!--벽 날리는 스킬-->	
+		<action name="이펙트를설정한다" arg1 = "6915" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "6916" arg2="1" />	
+		<action name="타이머를설정한다" arg1="1" arg2="1" arg4="0" />	
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="199">
+		<transition state="포탈_개방"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+         <state name="포탈_개방">
+    <onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="112" textID="40009"/> <!--  포탈을 타세요 -->
+		<action name="메쉬를설정한다" arg1="6311-6315" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+		<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/> <!--포탈 개방-->
+    </onEnter>
+    <onExit>
+		<action name="HideGuideSummary" entityID="112"/>
+    </onExit>
+  </state>
+  
+</ms2>

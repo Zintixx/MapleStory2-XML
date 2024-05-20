@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID = 105, 맵에 진입하고 몇초뒤에 맵 진입로에 투명벽 설치하여기 위한 트리거  -->
+<ms2>
+	<state name="시작대기중">
+		<condition name="CheckUser">
+			<transition state="칸막이대기시작" /> 
+		</condition>		
+	</state>  
+
+	<state name="칸막이대기시작">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />
+			<action name="이펙트를설정한다" arg1="602" arg2="0" />
+			<action name="이펙트를설정한다" arg1="603" arg2="0" />
+			<action name="이펙트를설정한다" arg1="604" arg2="0" />
+			<action name="이펙트를설정한다" arg1="605" arg2="0" />
+			<action name="메쉬를설정한다" arg1="608" arg2="0" arg3="0" arg4="0" arg5="0"/>
+			<action name="메쉬를설정한다" arg1="609" arg2="0" arg3="0" arg4="0" arg5="0"/>
+        </onEnter>
+		
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="칸막이대기알림" />
+		</condition>
+    </state>
+
+
+
+	<state name="칸막이대기알림">
+		<onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02020140_BF__BARRICADE__0$" arg3="3000" />
+			<action name="DungeonEnableGiveUp" isEnable="1" />		
+		</onEnter>	
+
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패종료" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패종료" />
+			</condition>			
+			
+		
+			<condition name="WaitTick" waitTick="30000" > 
+				<transition state="칸막이막기"/> 
+			</condition>
+			
+	</state>
+
+
+
+	<state name="칸막이막기">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="601" arg2="1" />
+			<action name="이펙트를설정한다" arg1="602" arg2="1" />
+			<action name="이펙트를설정한다" arg1="603" arg2="1" />
+			<action name="이펙트를설정한다" arg1="604" arg2="1" />
+			<action name="이펙트를설정한다" arg1="605" arg2="1" />
+			<action name="메쉬를설정한다" arg1="608" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="609" arg2="1" arg3="0" arg4="0" arg5="0" />
+        </onEnter>
+		
+			<condition name="DungeonTimeOut" > <!-- 던전 시간 다 된경우-->						
+				<transition state="던전실패종료" />
+			</condition>
+			<condition name="DungeonCheckState" checkState="Fail"><!--던전을 포기해서 실패한 경우-->
+				<transition state="던전실패종료" />
+			</condition>					
+
+    </state>
+	
+
+
+	<state name="던전실패종료">
+		<onEnter> 
+			 <!-- 던전실패로 던전 종료되면 시작지점 막은거 다시 풀기-->						
+			<action name="이펙트를설정한다" arg1="601" arg2="0" />
+			<action name="이펙트를설정한다" arg1="602" arg2="0" />
+			<action name="이펙트를설정한다" arg1="603" arg2="0" />
+			<action name="이펙트를설정한다" arg1="604" arg2="0" />
+			<action name="이펙트를설정한다" arg1="605" arg2="0" />
+			<action name="메쉬를설정한다" arg1="608" arg2="0" arg3="0" arg4="0" arg5="0"/>
+			<action name="메쉬를설정한다" arg1="609" arg2="0" arg3="0" arg4="0" arg5="0"/>
+		</onEnter>		
+	</state>
+
+
+</ms2>

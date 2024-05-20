@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<ms2>
+
+ <state name="idle">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1="5001" arg2="0" />
+		<action name="이펙트를설정한다" arg1="5002" arg2="0" />
+		<action name="이펙트를설정한다" arg1="5003" arg2="0" />
+		<action name="이펙트를설정한다" arg1="5004" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "6001" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "6002" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "6003" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "6004" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "6101" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "6301" arg2="0" />
+		<action name="이펙트를설정한다" arg1 = "6302" arg2="0" />
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="701" arg2="1">
+			<transition state="CheckUserCount" />
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+	
+  <state name="DungeonStart">
+    <onEnter>				
+		<action name="메쉬를설정한다" arg1="2001-2004" arg2="1" arg3="0" arg4="0" arg5="0" />
+	</onEnter>
+		<condition name="WaitTick" waitTick="3000" > 
+			<transition state="Start"/>	
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+    
+    <state name="Start">
+    <onEnter>
+    </onEnter>
+		<condition name="WaitTick" waitTick="1000" > 
+			<transition state="시작_03"/>	
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+        <state name="시작_03">
+    <onEnter>
+		<action name="이펙트를설정한다" arg1="5004" arg2="1" />
+		<action name="타이머를설정한다" arg1="2" arg2="2" arg4="0" />	
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="시작_04"/>
+		</condition>
+    <onExit>
+    </onExit>
+  </state>
+  
+
+        <state name="시작_04">
+    <onEnter>
+			<action name="메쉬를설정한다" arg1="901-903" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->	
+			<action name="스킬을설정한다" arg1="2020" arg2="1" /> <!--벽 날리는 스킬-->
+    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="702" arg2="1">
+			<transition state="시작_05"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+  
+      <state name="시작_05">
+    <onEnter>
+		<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+		<action name="ShowGuideSummary" entityID="101" textID="40010"/> <!-- 적을 모두 처치하시오 -->
+		<action name="이펙트를설정한다" arg1 = "6001" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "6002" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "6003" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "6004" arg2="1" />
+		<action name="이펙트를설정한다" arg1 = "6101" arg2="1" />
+		<action name="액터를설정한다" arg1 = "3001" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "3002" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "3003" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "3004" arg2="0" arg3="Dmg_A" />
+		<action name="액터를설정한다" arg1 = "3101" arg2="0" arg3="Dmg_A" />
+		<action name="몬스터를생성한다" arg1="11,12,13,14,15" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+		<action name="몬스터를생성한다" arg1="101,102,103,104,105,106,108,109,110,111,112,113,114,115,116,117,118" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+    </onEnter>
+		<condition name="몬스터가죽어있으면" arg1="11,12,13,14,15">
+			<transition state="관문_01_개방전"/>
+		</condition>
+    <onExit>
+			<action name="HideGuideSummary" entityID="101"/>
+    </onExit>
+  </state>
+    
+        <state name="관문_01_개방전">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000353_BF__MAIN__2$" arg3="2000"/>
+		<action name="타이머를설정한다" arg1="2" arg2="2" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="관문_01_개방"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+  
+   <state name="관문_01_개방">
+	<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="스킵을설정한다" arg1="관문_02_스킵" />					
+			<action name="카메라를선택한다" arg1="8001" arg2="1"/>
+			<action name="타이머를설정한다" arg1="1" arg2="1" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_01_개방_이벤트_00"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>  
+  
+  
+     <state name="관문_01_개방_이벤트_00">
+	<onEnter>
+		<action name="이펙트를설정한다" arg1="5001" arg2="1" />	
+		<action name="타이머를설정한다" arg1="1" arg2="1" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_01_개방_이벤트_01"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state> 
+  
+  
+  
+     <state name="관문_01_개방_이벤트_01">
+	<onEnter>
+
+		<action name="스킬을설정한다" arg1="2001" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="스킬을설정한다" arg1="2002" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+			<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_01_개방_이벤트_02"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+       <state name="관문_01_개방_이벤트_02">
+	<onEnter>
+		<action name="스킬을설정한다" arg1="2003" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+			<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_01_개방_이벤트_03"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+    
+       <state name="관문_01_개방_이벤트_03">
+	<onEnter>
+		<action name="스킬을설정한다" arg1="2004" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="2" arg2="2" />		
+    </onEnter>	
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="관문_02_시작"/>
+		</condition>	
+    <onExit>
+		<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+		<action name="연출UI를설정한다" arg1="0"/>
+		<action name="연출UI를설정한다" arg1="2"/>
+		<action name="연출UI를설정한다" arg1="7"/>
+    </onExit>
+  </state>
+ 
+     <state name="관문_02_스킵" > 
+		<onEnter>
+			<action name="스킬을설정한다" arg1="2001" arg2="1" /> 		
+			<action name="스킬을설정한다" arg1="2002" arg2="1" /> 			
+			<action name="스킬을설정한다" arg1="2003" arg2="1" /> 			
+			<action name="스킬을설정한다" arg1="2004" arg2="1" /> 		
+			<action name="스킵을설정한다" arg1="" />				
+			<action name="카메라리셋" interpolationTime="0.0"/>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+		</onEnter>
+				<condition name="WaitTick" waitTick="100">
+					<action name="버프를삭제한다" arg1="199" arg2="70000107" />				
+					<transition state="관문_02_시작"/>
+				</condition>
+	</state>		
+  
+    <state name="관문_02_시작">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="카메라를선택한다" arg1="8001" arg2="0"/>
+			<action name="ShowGuideSummary" entityID="103" textID="40011"/> <!--다음 지역으로 이동하세요-->
+<!-- 			<action name="이벤트UI를설정한다" arg1="1" arg2="다음 지역으로 이동하세요." arg3="2000"/> -->
+		</onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="703" arg2="1">
+			<transition state="관문_02_시작_02"/>
+		</condition>				
+    <onExit>
+			<action name="HideGuideSummary" entityID="103"/>
+    </onExit>
+  </state>
+  
+  
+  
+    <state name="관문_02_시작_02">
+	<onEnter>
+	<action name="이펙트를설정한다" arg1 = "6005" arg2="1" />
+	<action name="이펙트를설정한다" arg1 = "6006" arg2="1" />
+	<action name="이펙트를설정한다" arg1 = "6007" arg2="1" />
+	<action name="이펙트를설정한다" arg1 = "6008" arg2="1" />
+	<action name="액터를설정한다" arg1 = "3005" arg2="0" arg3="Dmg_A" />
+	<action name="액터를설정한다" arg1 = "3006" arg2="0" arg3="Dmg_A" />
+	<action name="액터를설정한다" arg1 = "3007" arg2="0" arg3="Dmg_A" />
+	<action name="액터를설정한다" arg1 = "3008" arg2="0" arg3="Dmg_A" />
+	<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+	<action name="ShowGuideSummary" entityID="101" textID="40010"/>
+	<!-- 적을 모두 처치하시오 -->
+	<action name="몬스터를생성한다" arg1="21,22,23,24,25,26,27" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->   
+    </onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="21,22,23,24,25,26,27">
+			<transition state="관문_02_개방전"/>
+		</condition>
+    <onExit>
+		<action name="HideGuideSummary" entityID="101"/>
+    </onExit>
+  </state> 
+  
+  
+          <state name="관문_02_개방전">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000353_BF__MAIN__3$" arg3="2000"/>
+		<action name="타이머를설정한다" arg1="1" arg2="1" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_02_개방"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+  
+     <state name="관문_02_개방">
+	<onEnter>
+			<action name="이펙트를설정한다" arg1="5002" arg2="1" />
+			<action name="타이머를설정한다" arg1="2" arg2="2" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="관문_02_개방_이벤트_01"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>  
+  
+       <state name="관문_02_개방_이벤트_01">
+	<onEnter>
+		<action name="스킬을설정한다" arg1="2006" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+			<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_02_개방_이벤트_02"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+         <state name="관문_02_개방_이벤트_02">
+	<onEnter>
+		<action name="스킬을설정한다" arg1="2007" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+			<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_02_개방_이벤트_03"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+           <state name="관문_02_개방_이벤트_03">
+	<onEnter>
+		<action name="스킬을설정한다" arg1="2008" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+			<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_03_시작_01"/>
+		</condition>	
+    <onExit>
+
+    </onExit>
+  </state>
+  
+   
+  
+      <state name="관문_03_시작_01">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="103" textID="40011"/> <!--다음 지역으로 이동하세요-->
+		</onEnter>	
+			<condition name="여러명의유저를감지했으면" arg1="704" arg2="1">
+			<transition state="관문_03_시작_02"/>
+			</condition>	
+		<onExit>
+				<action name="HideGuideSummary" entityID="103"/>
+		</onExit>
+		</state>
+  
+     
+  
+      <state name="관문_03_시작_02">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="101" textID="40010"/> <!-- 적을 모두 처치하시오 -->
+			<action name="이펙트를설정한다" arg1 = "6301" arg2="1" />
+			<action name="이펙트를설정한다" arg1 = "6302" arg2="1" />
+			<action name="액터를설정한다" arg1 = "3301" arg2="0" arg3="Dmg_A" />
+			<action name="액터를설정한다" arg1 = "3302" arg2="0" arg3="Dmg_A" />
+			<action name="몬스터를생성한다" arg1="31,32,33" arg2="0" /> <!-- 기본 배치 될 몬스터 등장 -->
+		</onEnter>	
+		<condition name="몬스터가죽어있으면" arg1="31,32,33">
+			<transition state="관문_03_개방전"/>
+		</condition>
+    <onExit>
+				<action name="HideGuideSummary" entityID="101"/>
+    </onExit>
+  </state>
+  
+  
+            <state name="관문_03_개방전">
+    <onEnter>
+		<action name="이벤트UI를설정한다" arg1="1" arg2="$02000353_BF__MAIN__4$" arg3="2000"/>
+		<action name="타이머를설정한다" arg1="1" arg2="1" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_03_개방"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+       <state name="관문_03_개방">
+	<onEnter>
+			<action name="이펙트를설정한다" arg1="5003" arg2="1" />
+			<action name="타이머를설정한다" arg1="2" arg2="2" />
+    </onEnter>
+		<condition name="시간이경과했으면" arg1="2">
+		<transition state="관문_03_개방_이벤트_01"/>
+		</condition>		
+    <onExit>
+    </onExit>
+  </state>  
+  
+         <state name="관문_03_개방_이벤트_01">
+	<onEnter>
+		<action name="스킬을설정한다" arg1="2009" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+			<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_03_개방_이벤트_02"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+           <state name="관문_03_개방_이벤트_02">
+	<onEnter>
+		<action name="스킬을설정한다" arg1="2010" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+			<condition name="시간이경과했으면" arg1="1">
+		<transition state="관문_03_개방_이벤트_03"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+  
+
+           <state name="관문_03_개방_이벤트_03">
+	<onEnter>
+		<action name="스킬을설정한다" arg1="2011" arg2="1" /> <!--벽 날리는 스킬-->
+		<action name="타이머를설정한다" arg1="1" arg2="1" />		
+    </onEnter>	
+			<condition name="시간이경과했으면" arg1="1">
+		<transition state="지역클리어"/>
+		</condition>	
+    <onExit>
+    </onExit>
+  </state>
+   
+  
+       <state name="지역클리어">
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_Space_PopUp_01"/>
+			<action name="ShowGuideSummary" entityID="103" textID="40009"/> <!--포탈로 이동하세요-->
+			<action name="메쉬를설정한다" arg1="6006" arg2="0" arg4="0" arg5="10" /> <!--벽 해제-->
+			<action name="메쉬를설정한다" arg1="6007" arg2="1" arg4="0" arg5="10" /> <!--화살표 표시-->	
+		     <action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+		</onEnter>	
+    <onExit>
+    </onExit>
+  </state>
+ 
+  
+</ms2>

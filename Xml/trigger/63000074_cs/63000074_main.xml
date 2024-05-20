@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 어지러운 거실. 프롤로그 연출 이후에는 npc 스폰되는 일반 맵이다. -->
+<ms2>
+	<state name="준비">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="101" />		
+			<action name="메쉬를설정한다" arg1="4001" arg2="1" arg3="0" arg4="0" arg5="0" />			<!-- 루돌프켜기 -->				
+			<action name="메쉬를설정한다" arg1="4002" arg2="1" arg3="0" arg4="0" arg5="0" />			<!-- 화분켜기 -->
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="9000" arg2="30000370" arg3="2">
+			<transition state="moveto63000072"/>  <!-- 해피빌리지(63000072)로 유저 강제이동 -->
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="9000" arg2="30000370" arg3="1">
+			<transition state="Diary_ready"/>  <!-- 프롤로그 연출 -->
+		</condition>
+		<condition name="!퀘스트유저를감지하면" arg1="9000" arg2="30000370" arg3="1">
+			<transition state="scene_fin"/> 	<!-- 연출 종료 -->
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="Diary_ready">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/> 	<!-- 불끄기 -->				
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="Diary_set"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="Diary_set">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="101" arg2="0" />
+			<action name="메쉬를설정한다" arg1="4001" arg2="0" arg3="0" arg4="0" arg5="0" />			<!-- 루돌프끄기 -->		
+			<action name="메쉬를설정한다" arg1="4002" arg2="0" arg3="0" arg4="0" arg5="0" />			<!-- 화분끄기 -->				
+			<action name="유저를이동시킨다" arg1="63000074" arg2="10"/>
+			<action name="카메라를선택한다" arg1="8000" arg2="1"/>			
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="Diary_start"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+	<state name="Diary_start">	<!-- 에블린의 일기 -->
+		<onEnter>
+			<action name="SetSceneSkip" arg1="sceneskip_1" arg2="exit"/> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set -->			
+			<action name="연출UI를설정한다" arg1="9" arg2="$63000074_CS__63000074_MAIN__0$"/>
+		</onEnter>	<!-- 일기1 --> <!-- &lt;FONT color='#ffd200'&gt;$npcName:11004345$의 일기&lt;/FONT&gt;\n\n오늘 &lt;FONT color='#ffd200'&gt;$npcName:11004346$&lt;/FONT&gt;$pp:는,은$ 맹수처럼 난폭했다. &lt;FONT color='#ffd200'&gt;책&lt;/FONT&gt; 하나 살짝 찢어졌다고 유난은…\n사람보다 책이 중요한가? &lt;FONT color='#ffd200'&gt;동생&lt;/FONT&gt;인 나보다도?\n책벌레 녀석. 그냥 &lt;FONT color='#ffd200'&gt;평생 책 속에나 파묻혀 살았으면 좋겠다.&lt;/FONT&gt;" -->
+		<condition name="WaitTick" waitTick="9000">
+			<transition state="Evelyn_monologue_00"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+	<state name="Evelyn_monologue_00">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="Evelyn_monologue_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="Evelyn_monologue_01">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>			
+			<action name="연출UI를설정한다" arg1="3"/>				
+			<action name="AddCinematicTalk" npcID="11004354" msg="$63000074_CS__63000074_MAIN__1$" duration="4000" illustID="Evelyn_normal" align="center" />  	<!-- 아~ 정말. 맘에 드는 게 하나도 없어.\n어릴 때가 편했는데… 그렇지, 보? -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="Evelyn_monologue_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="Evelyn_monologue_02"> 
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_halfsec.xml"/> 	<!-- 불켜기 -->				
+			<action name="카메라경로를선택한다" arg1="8000" arg2="0"/>			
+			<action name="AddCinematicTalk" npcID="11004354" msg="$63000074_CS__63000074_MAIN__2$" duration="4000" illustID="Evelyn_sad" align="right" /> 	<!-- …휴. 내가 이상해졌나 봐.\n어린애일 때 찾던 요정 이름이나 부르고. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="Evelyn_monologue_03"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	 
+
+	<state name="Evelyn_monologue_03">  
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8001" arg2="0"/>			
+			<action name="AddCinematicTalk" npcID="11004354" msg="$63000074_CS__63000074_MAIN__3$" duration="5000" illustID="Evelyn_sad" align="right" /> 	<!-- 하지만… 쓸쓸한걸.\n너라도 있으면, 크리스마스가 슬프진 않을 텐데. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="Evelyn_monologue_04"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+	<state name="Evelyn_monologue_04">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8005" arg2="0"/>					
+			<action name="AddCinematicTalk" npcID="11004354" msg="$63000074_CS__63000074_MAIN__4$" duration="3500" />	<!-- …그만 자야겠다. -->
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData" />		
+		</onEnter>
+		<condition name="WaitTick" waitTick="3500">
+			<transition state="bobos_ready"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+	<state name="bobos_ready">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 	<!-- 불끄기 -->				
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="bobos_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="bobos_01">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$63000074_CS__63000074_MAIN__5$"/>	<!-- 슬프면 안 돼, $npcName:11004345$…\n그런 건 싫어. -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="bobos_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+	<state name="bobos_02">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$63000074_CS__63000074_MAIN__6$"/>	<!-- $npcName:11004345$ &lt;FONT color='#ffd200'&gt;소원…&lt;/FONT&gt; 들어줄게.\n\n그럼 $npcName:11004345$, 행복해지고\n나는… &lt;FONT color='#ffd200'&gt;루돌프&lt;/FONT&gt;가 될 수 있다. -->
+			<action name="메쉬를설정한다" arg1="4001" arg2="1" arg3="0" arg4="0" arg5="0" />			<!-- 루돌프켜기 -->					
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/>		
+		</onEnter>
+		<condition name="WaitTick" waitTick="6000">
+			<transition state="rednose_01"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+	<state name="rednose_01">
+		<onEnter>		
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 	<!-- 불켜기 -->			
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="rednose_02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="rednose_02">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 	<!-- 불끄기 -->		
+			<action name="SetSceneSkip" arg1="" arg2=""/>		<!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> 						
+		</onEnter>
+		<condition name="WaitTick" waitTick="1500">
+			<transition state="rednose_03"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+
+	<state name="sceneskip_1">  <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> 
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="0.0"/>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="4"/>  
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="rednose_03"/>
+			</condition>
+		<onExit> 
+		</onExit> 	
+	</state>		
+	
+	<state name="rednose_03">
+		<onEnter>
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="LonelyEvelyn"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="moveto63000072"/> 
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	<state name="moveto63000072">
+		<onEnter>		
+			<action name="유저를이동시킨다" arg1="63000072" arg2="11"/>
+		</onEnter>		
+		<onExit>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="moveto63000072_2" />
+			</condition>		
+		</onExit>
+    </state>	
+
+	<state name="moveto63000072_2">
+		<onEnter>		
+			<action name="유저를이동시킨다" arg1="63000072" arg2="11"/>
+		</onEnter>		
+		<onExit>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="moveto63000072" />
+			</condition>		
+		</onExit>
+    </state>		
+	
+	<state name="scene_fin">
+        <onEnter>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="연출UI를설정한다" arg1="0"/>	
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>
+		<onExit>
+		</onExit>	
+    </state>		
+	
+</ms2>

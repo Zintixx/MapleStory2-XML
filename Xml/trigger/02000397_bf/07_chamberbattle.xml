@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="Wait" >
+        <onEnter> 					
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="0" arg4="0" /> 		<!-- ToNextMap -->
+			<action name="오브젝트반응설정한다" arg1="10001148" arg2="0" />	<!-- Chair -->	
+			<action name="몬스터소멸시킨다" arg1="940,941,942" />	<!--Mob -->		
+			<action name="움직이는발판을설정한다" arg1="6200" arg2="0" />	<!-- Rock -->
+			<action name="SetVisibleBreakableObject" arg1="6200" arg2="0" />	<!-- Rock -->		
+			<action name="메쉬를설정한다" arg1="3910" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- RockClosed -->		
+			<action name="메쉬를설정한다" arg1="3920" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- RockOpened -->				
+			<action name="이펙트를설정한다" arg1="5300" arg2="0"/> <!-- StoneGate-->					
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="9400">	<!-- 회랑 진입 -->	
+				<transition state="LoadingDelay" />
+			</condition>	
+        <onExit />
+    </state>	
+
+    <state name="LoadingDelay" >
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="10001148" arg2="1" />	<!-- Chair -->					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="GuideFindPortal"/>		
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+	
+    <state name="GuideFindPortal">	
+        <onEnter>				
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>       		
+			<action name="ShowGuideSummary" entityID="20039705" textID="20039705"/>  <!-- 가이드 : 다른 방으로 이동할 단서를 찾으세요 -->					
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="MobTrapOn"/>	
+				</condition>
+    <onExit> 		
+    </onExit>
+    </state>		
+
+    <state name="MobTrapOn">	
+        <onEnter>	
+			<action name="몬스터를생성한다" arg1="940,941,942" arg2="0" />	<!--Mob -->			
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10001148" arg2="0" >	<!-- Chair -->					
+					<transition state="RockMove01"/>	
+				</condition>
+    <onExit> 	
+    </onExit>
+    </state>		
+	
+    <state name="RockMove01">	
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3910" arg2="0" arg3="100" arg4="0" arg5="2" /> <!-- RockClosed -->				
+			<action name="움직이는발판을설정한다" arg1="6200" arg2="1" />	<!-- Rock -->
+			<action name="SetVisibleBreakableObject" arg1="6200" arg2="1" />	<!-- Rock -->		
+			<action name="이펙트를설정한다" arg1="5300" arg2="1"/> <!-- StoneGate-->				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="RockMove02"/>	
+				</condition>
+    <onExit> 		
+    </onExit>
+    </state>		
+	
+    <state name="RockMove02">	
+        <onEnter>		
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="0" /> 		<!-- ToNextMap --> 
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="RockMove03"/>	
+				</condition>
+    <onExit> 		
+    </onExit>
+    </state>		
+	
+    <state name="RockMove03">	
+        <onEnter>		
+			<action name="메쉬를설정한다" arg1="3920" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- RockOpened -->			
+			<action name="움직이는발판을설정한다" arg1="6200" arg2="0" />	<!-- Rock -->
+			<action name="SetVisibleBreakableObject" arg1="6200" arg2="0" />	<!-- Rock -->		
+				</onEnter>	
+    <onExit> 		
+    </onExit>
+    </state>		
+
+</ms2>

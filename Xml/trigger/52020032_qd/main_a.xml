@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 몽환의 극장 : 52020032 -->
+<!-- 이론보다는 실전 연출 -->
+
+<ms2>
+    <state name="Idle"> 
+        <onEnter>
+			<action name="액터를설정한다" arg1="8001" arg2="0" arg3="Damg_Idle_B"/>
+            <action name="오브젝트반응설정한다" arg1="10001281" arg2="0" />
+		 	<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastWhiteOut.xml"/>				
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60200100" arg3="3">
+				<transition state="Del_Npc"/> 
+			</condition>							
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60200095" arg3="1">
+				<transition state="Ready"/> 
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60200095" arg3="2">
+				<transition state="Exit"/> 
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60200095" arg3="3">
+				<transition state="Exit"/> 
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60200100" arg3="1">
+				<transition state="Exit"/> 
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60200100" arg3="2">
+				<transition state="Exit"/> 
+			</condition>										
+		<onExit>
+		</onExit>
+    </state>
+
+    <state name="Ready"> 
+        <onEnter>
+			<action name="액터를설정한다" arg1="8001" arg2="1" arg3="Damg_Idle_B"/>
+            <action name="몬스터를생성한다" arg1="102" arg2="1" /> <!-- 미카엘 -->
+            <action name="몬스터를생성한다" arg1="201" arg2="1" />
+            <action name="몬스터를생성한다" arg1="202" arg2="1" />
+            <action name="몬스터를생성한다" arg1="203" arg2="1" />
+            <action name="몬스터를생성한다" arg1="204" arg2="1" />
+            <action name="몬스터를생성한다" arg1="205" arg2="1" />
+            <action name="몬스터를생성한다" arg1="206" arg2="1" />
+            <action name="몬스터를생성한다" arg1="207" arg2="1" />
+            <action name="몬스터를생성한다" arg1="301" arg2="1" /> <!-- 폭주 마리오네트 -->
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2002" arg2="60200095" arg3="1">
+				<transition state="Battle_A"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="Battle_A"> 
+        <onEnter>
+			<action name="몬스터를변경한다" arg1="201" arg2="601" />
+			<action name="몬스터를변경한다" arg1="202" arg2="602" />
+			<action name="몬스터를변경한다" arg1="203" arg2="603" />
+			<action name="몬스터를변경한다" arg1="204" arg2="604" />
+			<action name="몬스터를변경한다" arg1="205" arg2="605" />
+			<action name="몬스터를변경한다" arg1="206" arg2="606" />
+			<action name="몬스터를변경한다" arg1="207" arg2="607" />			
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="601,602,603,604,605,606,607">
+				<transition state="Event_01" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Event_01"> 
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+			<action name="카메라경로를선택한다" arg1="4001" arg2="0"/> 
+			<action name="SetSceneSkip" arg1="Battle_B" arg2="nextState"/>				
+			
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="Event_02" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Event_02"> 
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="4002,4003" arg2="0"/> 			
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000" > 
+				<transition state="Event_03" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+    <state name="Event_03"> 
+        <onEnter>
+            <action name="NPC를이동시킨다" arg1="301" arg2="MS2PatrolData_3001" />
+			<action name="카메라경로를선택한다" arg1="4004" arg2="0"/> 			
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000" > 
+				<transition state="Event_04" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Event_04"> 
+        <onEnter>
+			<action name="SetNpcEmotionSequence" arg1="301" arg2="Attack_01_B"/>
+		 	<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastWhiteOut.xml"/>				
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="Battle_B" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Battle_B"> 
+        <onEnter>
+		 	<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastWhiteOut.xml"/>				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>			
+			<action name="카메라리셋" interpolationTime="0.5"/>	
+			<action name="몬스터를변경한다" arg1="301" arg2="701" />
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="701">
+				<transition state="Event_End" />
+			</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Event_End"> 
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="102"/>		
+            <action name="오브젝트반응설정한다" arg1="10001281" arg2="1" />
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60200095" arg3="2">
+				<transition state="Exit"/> 
+			</condition>		
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Exit"> 
+        <onEnter>
+            <action name="몬스터를생성한다" arg1="101" arg2="1" /> <!-- 미카엘 -->
+			<action name="액터를설정한다" arg1="8001" arg2="0" arg3="Damg_Idle_B"/>
+		</onEnter>
+		<onExit>
+		</onExit>
+    </state>			
+
+    <state name="Del_Npc"> 
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="101"/>
+			<action name="액터를설정한다" arg1="8001" arg2="0" arg3="Damg_Idle_B"/>
+		</onEnter>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	
+</ms2>

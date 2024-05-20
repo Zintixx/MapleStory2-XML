@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Wait">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>
+		</onEnter>
+			<condition name="CheckUser">
+				<transition state="룸체크"/>
+			</condition>
+		</state>
+
+	<state name="룸체크"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="던전시작" />	
+				</condition>		
+				<condition name="!IsDungeonRoom" > 
+					<transition state="퀘스트던전시작" />	
+				</condition>		
+	</state>  	   
+  
+    <state name="던전시작" >
+		<onEnter>		
+			<action name="몬스터를생성한다" arg1="900,901" arg2="0"/>		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="BossBattle01"/>	
+				</condition>				
+    </state>	
+
+				<state name="퀘스트던전시작" >
+					<onEnter>		
+						<action name="몬스터를생성한다" arg1="910,911" arg2="0"/>		
+					</onEnter>	
+							<condition name="WaitTick" waitTick="1000">	
+								<transition state="종료체크"/>	
+							</condition>				
+				</state>	
+
+				<state name="종료체크">
+							<condition name="몬스터가죽어있으면" arg1="910,911" >	
+								<transition state="QuestClear"/>
+							</condition>
+				</state>  				
+				
+	<state name="BossBattle01">
+		<onEnter>
+			<action name="SetUserValue" triggerID="100" key="CheckDualKill" value="1" /> 				
+		</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="900,901" >	
+			<transition state="BossBattle02"/>
+		</condition>
+		<onExit>
+		</onExit>
+	</state>  
+ 
+	<state name="BossBattle02">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="900,901"/>		
+			<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="Madracan02" />	
+			<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="Madracan_Q02" />
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">	 
+			<transition state="Quit"/>
+		</condition>
+		<onExit>	
+		</onExit>
+	</state>
+	
+	<state name="QuestClear">
+		<onEnter>	
+			<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="Madracan_Q02" />		
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">	 
+			<transition state="Quit"/>
+		</condition>
+		<onExit>	
+		</onExit>
+	</state> 
+	
+	<state name="Quit">
+		<onEnter>
+  			<action name="DungeonClear"/>					
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>		
+		</onEnter>
+		<onExit>
+		</onExit>
+	</state>
+</ms2>

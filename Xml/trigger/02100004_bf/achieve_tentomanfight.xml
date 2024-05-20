@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2> 
+	<state name="Wait"> 
+		<onEnter> 	
+			<action name="SetUserValue" key="LastRoundStart" value="0"/>			
+			<action name="SetUserValue" key="LastRoundEnd" value="0"/>					
+		</onEnter>		
+			<condition name="UserValue" key="LastRoundStart" value="1">						
+				<transition state="MobCheck01"/>
+			</condition>		
+	</state>    
+  
+	<state name="MobCheck01">
+		<onEnter>  
+		</onEnter>	
+			<condition name="NPC를감지했으면" arg1="102" arg2="2000">			<!-- 아마돈 등장 -->			
+				<transition state="MobCheck02"/>
+			</condition>		
+	</state>
+  
+	<state name="MobCheck02">	<!-- 엘리트 몬스터 모두 죽음 -->	
+		<onEnter>  
+		</onEnter>	
+		<condition name="AllOf">
+			<group>
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2001"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2002"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2003"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2004"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2005"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2006"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2008"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2009"/>		
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2010"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2011"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2012"/>	
+			<condition name="!NPC를감지했으면" arg1="102" arg2="2013"/>					
+			</group>
+			<transition state="CheckSuccess"/>	
+		</condition>		
+			<condition name="UserValue" key="LastRoundEnd" value="1">						
+				<transition state="Quit" />
+			</condition>				
+	</state>
+  
+	<state name="CheckSuccess">
+		<onEnter>  
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="2000">						
+				<transition state="MemberCheck" />
+			</condition>					
+			<condition name="UserValue" key="LastRoundEnd" value="1">						
+				<transition state="Quit" />
+			</condition>					
+	</state>
+	
+	<state name="MemberCheck">
+		<onEnter>  
+		</onEnter>	
+			<condition name="CountUsers" arg1="102" arg2="10" arg3="Equal">		<!-- 10명 체크 -->			
+				<transition state="Achieve" />
+			</condition>		
+			<condition name="UserValue" key="LastRoundEnd" value="1">						
+				<transition state="Quit" />
+			</condition>					
+	</state>
+
+
+    <state name="Achieve">	
+        <onEnter>	
+            <action name="업적이벤트를발생시킨다" arg1="102" arg2="trigger" arg3="TenToOneFight"/> 				
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000" > 					
+				<transition state="Quit" />
+			</condition>	
+    </state>	
+
+    <state name="Quit" >
+        <onEnter>
+        </onEnter>
+    </state>	
+	
+</ms2>

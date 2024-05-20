@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="대기">
+		<onEnter>	 
+			<action name="메쉬를설정한다" arg1="2000" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- Invisible -->
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0" />
+			<action name="CreateWidget" arg1="Guide"/> 
+		</onEnter>			
+		<condition name="유저를감지했으면" arg1="90001">				
+			<transition state="시작"/>
+		</condition>
+	</state>	  
+
+
+	<state name="시작"> 
+		<onEnter>		
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="90002">	   	
+			<transition state="환영"/>			
+		</condition>
+		<onExit> 
+		</onExit>	
+	</state>
+
+	<state name="환영"> 
+		<onEnter>
+			<action name="SetQuestAccept" questID="90000008"/> 
+			<action name="SideNpcTalk" npcID="29000403" illust="Mushking_normal" duration="4000" script="$52000187_QD__TUTORIAL__0$"/>				
+		</onEnter>
+		<condition name="오브젝트가반응했으면" arg1="11000071" arg2="0">	   	
+			<action name="SideNpcTalk" npcID="29000403" illust="Mushking_normal" duration="4000" script="$52000187_QD__TUTORIAL__1$"/>					
+			<action name="SetQuestComplete" questID="90000008"/> 			
+			<transition state="머쉬킹대화1"/>	
+		</condition>
+		<onExit> 
+		</onExit>	
+	</state>	
+	
+
+	<state name="머쉬킹대화1"> 
+		<onEnter>
+			<action name="메쉬를설정한다" arg1="2000" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Invisible -->		
+			<action name="몬스터를생성한다" arg1="103" arg2="0" />		
+		</onEnter>
+		<condition name="퀘스트유저를감지하면" arg1="99999" arg2="90000007" arg3="1">	
+			<transition state="머쉬킹대화2"/>	
+		</condition>
+		<condition name="퀘스트유저를감지하면" arg1="99999" arg2="90000007" arg3="2">	
+			<transition state="머쉬킹대화2"/>	
+		</condition>		
+		<condition name="퀘스트유저를감지하면" arg1="99999" arg2="90000007" arg3="3">	
+			<transition state="머쉬킹대화2"/>	
+		</condition>
+		<onExit> 
+		</onExit>	
+	</state>
+	
+	<state name="머쉬킹대화2" >
+        <onEnter>			
+			<action name="메쉬를설정한다" arg1="2001" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Invisible -->			
+        </onEnter>	
+		<condition name="유저를감지했으면" arg1="90003">	   						
+			<action name="SideNpcTalk" npcID="29000403" illust="Mushking_normal" duration="4000" script="$52000187_QD__TUTORIAL__2$"/>				
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_lazy_1" />
+			<transition state="머쉬킹대화3"/>
+		</condition>
+		<onExit> 
+		</onExit>
+    </state>
+
+	<state name="머쉬킹대화3" >
+        <onEnter>					
+        </onEnter>	
+		<condition name="유저를감지했으면" arg1="90004">	   					
+			<action name="SideNpcTalk" npcID="29000403" illust="Mushking_normal" duration="4000" script="$52000187_QD__TUTORIAL__3$"/>				
+			<transition state="머쉬킹대화4"/>
+		</condition>
+		<onExit> 
+		</onExit>
+    </state>	
+	
+	<state name="머쉬킹대화4" >
+        <onEnter>					
+        </onEnter>	
+		<condition name="유저를감지했으면" arg1="90005">	  										
+			<transition state="모쿰소환"/>
+		</condition>
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="모쿰소환">
+		<onEnter>				
+		    <action name="몬스터를생성한다" arg1="102" arg2="0" />
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$52000187_QD__TUTORIAL__4$" />
+
+		</onEnter>
+		<condition name="WaitTick" waitTick="500">
+			<transition state="모쿰이동"/>
+		</condition>
+	</state>
+	
+	<state name="모쿰이동">
+		<onEnter>			
+		    <action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_mokum_0" />
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$52000187_QD__TUTORIAL__5$" />
+			<action name="SideNpcTalk" npcID="29000403" illust="Mushking_normal" duration="4000" script="$52000187_QD__TUTORIAL__6$"/>		
+			<action name="버프를걸어준다" arg1="99999" arg2="71000077" arg3="1" arg4="0" arg5="0" />		
+			
+		</onEnter>
+		<condition name="WidgetCondition" arg1="Guide" arg2="IsTriggerEvent" arg3="551">    <!--가이드 To 트리거 -: 몬스터생성신호 -->	
+		    <action name="몬스터를생성한다" arg1="101" arg2="0" />			
+			<transition state="모쿰대사1"/>
+		</condition>
+	</state>	
+
+
+	<state name="모쿰대사1">
+		<onEnter>			
+		    <action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_mokum_1" />		
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$52000187_QD__TUTORIAL__7$" />
+			<action name="몬스터소멸시킨다" arg1="103" />			
+			
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="101">
+			<transition state="해제"/>
+		</condition>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="모쿰대사2"/>
+		</condition>		
+	</state>	
+	
+	<state name="모쿰대사2">
+		<onEnter>			
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$52000187_QD__TUTORIAL__8$" />	
+		</onEnter>
+		<condition name="몬스터가죽어있으면" arg1="101">
+			<transition state="해제"/>
+		</condition>
+		<condition name="WaitTick" waitTick="3000">	
+			<transition state="모쿰대사2"/>
+		</condition>		
+	</state>		
+	
+	
+	<state name="해제">
+		<onEnter>
+		    <action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_mokum_2" />		
+			<action name="GuideEvent" eventID="560"/>
+		</onEnter>	
+		<condition name="퀘스트유저를감지하면" arg1="99999" arg2="90000007" arg3="3">		
+				<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>
+			</condition>			
+	</state>
+	<state name="종료">
+	</state>
+
+</ms2>

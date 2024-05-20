@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 홀슈타트의 은신처 : 변절자를 쫓아서 퀘스트 진행 중인 상태-->
+
+<ms2>
+    <state name="idle"> 
+        <onEnter>
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>
+		    <action name="메쉬를설정한다" arg1="1003,1004" arg2="0" arg3="0" arg4="0" arg5="0" />
+		</onEnter>	
+<!--  		<condition name="유저를감지했으면" arg1="701">
+			<transition state="Event_01"/>
+		</condition> -->
+		<condition name="퀘스트유저를감지하면" arg1="701" arg2="10002797" arg3="1">
+            <transition state="Event_01" />
+        </condition>
+		<onExit>
+		</onExit>
+    </state> 
+	
+	
+    <state name="Event_01"> 
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="101,102,103,104,105"/> 
+        </onEnter>
+        <condition name="몬스터가죽어있으면" arg1="101,102,103,104,105">
+            <transition state="Event_02" />
+        </condition>
+		<onExit>
+		</onExit>
+	</state> 
+		
+			
+    <state name="Event_02"> 
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="106"/> 
+			<action name="NPC를이동시킨다" arg1="106" arg2="MS2PatrolData_1001" />
+			<action name="대화를설정한다" arg1="1" arg2="106" arg3="$52010012_QD__MAIN__0$" arg4="3" />
+			<action name="타이머를설정한다" arg1="3" arg2="3"/>
+        </onEnter>
+		     <condition name="시간이경과했으면" arg1="3">
+            <transition state="Event_03" />
+			</condition>	
+		<onExit>
+		</onExit>		
+    </state> 	
+	
+	    <state name="Event_03"> 
+        <onEnter>          
+		  	<action name="카메라를선택한다" arg1="8001" arg2="1"/>          
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="메쉬를설정한다" arg1="1003,1004" arg2="1" arg3="0" arg4="80" arg5="10" />
+			<action name="메쉬를설정한다" arg1="1001,1002" arg2="0" arg3="0" arg4="80" arg5="10" />
+			<action name="타이머를설정한다" arg1="2" arg2="2"/>
+        </onEnter>
+		     <condition name="시간이경과했으면" arg1="2">
+            <transition state="Event_04" />
+			</condition>	
+		<onExit>
+			<!-- 레터박스, 플레이어 조작 불가능 해제 -->	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="7"/>
+			<action name="카메라를선택한다" arg1="8001" arg2="0"/> 
+		</onExit>
+	</state> 
+			
+	
+	    <state name="Event_04"> 
+        <onEnter> 
+			<action name="NPC를이동시킨다" arg1="106" arg2="MS2PatrolData_1002" />
+
+        </onEnter>
+        <condition name="NPC를감지했으면" arg1="702" arg2="106">
+            <transition state="End" />
+        </condition>
+		<onExit>
+		</onExit>		
+    </state> 	
+	
+	<state name="End"> 
+        <onEnter>
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>
+            <action name="몬스터소멸시킨다" arg1="106" />  
+        </onEnter>
+		<onExit>
+		</onExit>		
+    </state> 
+	
+
+</ms2>

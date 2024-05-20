@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="Setting">
+		<onEnter>		
+			<action name="사다리를설정한다" arg1="501" arg2="0" arg3="0" arg4="0"/>	<!-- Ladder_Shortcut -->
+			<action name="사다리를설정한다" arg1="502" arg2="0" arg3="0" arg4="0"/>	<!-- Ladder_Shortcut -->
+			<action name="사다리를설정한다" arg1="503" arg2="0" arg3="0" arg4="0"/>	<!-- Ladder_Shortcut -->
+			<action name="사다리를설정한다" arg1="504" arg2="0" arg3="0" arg4="0"/>	<!-- Ladder_Shortcut -->		
+			<action name="사다리를설정한다" arg1="505" arg2="0" arg3="0" arg4="0"/>	<!-- Ladder_Shortcut -->						
+			<action name="오브젝트반응설정한다" arg1="10002026" arg2="0" arg4="0"/>	<!-- LeverForLadder -->	
+			<action name="SetUserValue" key="EnableLadder" value="0" />					
+		</onEnter>
+				<condition name="UserValue" key="EnableLadder" value="1" >		
+					<transition state="LeverOn"/>	
+				</condition>		
+		<onExit>
+		</onExit>
+  </state>
+
+  <state name="LeverOn">
+		<onEnter>						
+			<action name="오브젝트반응설정한다" arg1="10002026" arg2="1" />	<!-- LeverForLadder -->					
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10002026" arg2="0" >
+					<transition state="LadderOn"/>	
+				</condition>		
+		<onExit>
+		</onExit>
+  </state>
+  
+  <state name="LadderOn">
+		<onEnter>		
+			<action name="사다리를설정한다" arg1="501" arg2="1" arg3="1" arg4="2"/>	<!-- Ladder_Shortcut -->
+			<action name="사다리를설정한다" arg1="502" arg2="1" arg3="1" arg4="2"/>	<!-- Ladder_Shortcut -->
+			<action name="사다리를설정한다" arg1="503" arg2="1" arg3="1" arg4="2"/>	<!-- Ladder_Shortcut -->
+			<action name="사다리를설정한다" arg1="504" arg2="1" arg3="1" arg4="2"/>	<!-- Ladder_Shortcut -->		
+			<action name="사다리를설정한다" arg1="505" arg2="1" arg3="1" arg4="2"/>	<!-- Ladder_Shortcut -->										
+		</onEnter>	
+		<onExit>
+		</onExit>
+  </state>
+  
+  
+  
+  
+  
+  
+   <state name="CameraWalk01" >		
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="601,600" arg2="1"/>		
+			<action name="스킵을설정한다" arg1="" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="1stBattle" />	
+        </condition>
+        <onExit>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="사다리를설정한다" arg1="510" arg2="1" arg3="1" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="511" arg2="1" arg3="1" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="512" arg2="1" arg3="1" />	<!-- LadderEnterance -->
+			<action name="사다리를설정한다" arg1="513" arg2="1" arg3="1" />	<!-- LadderEnterance -->				
+			<action name="메쉬를설정한다" arg1="3000-3001" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- Invisible_Barrier -->					
+        </onExit>
+    </state>
+
+	<state name="1stBattle">	
+		<onEnter>
+			<action name="SetUserValue" triggerID="3" key="CameraWalkEnd" value="1" />			
+			<action name="몬스터를생성한다" arg1="901,902,903"  arg2="0"/>   	 		
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001043" arg2="0" >
+					<transition state="1stBridgeOn" />
+				</condition>		
+		<onExit>
+		</onExit>
+	</state>  
+
+	<state name="1stBridgeOn">	
+		<onEnter>	
+			<action name="AGENT를설정한다" arg1="8000" arg2="0"/>	
+			<action name="AGENT를설정한다" arg1="8001" arg2="0"/>			
+			<action name="몬스터소멸시킨다" arg1="901,902,903"/>		
+			<action name="메쉬를설정한다" arg1="3110" arg2="0" arg3="0" arg4="0" arg5="0" /> 	<!-- 1stBridgeBarrier -->				
+			<action name="메쉬를설정한다" arg1="3100-3109" arg2="1" arg3="0" arg4="100" arg5="10" /> 	<!-- 1stBridge -->		
+			<action name="SetUserValue" triggerID="101" key="BridgeOpen" value="1" /> 	
+			<action name="SetUserValue" triggerID="102" key="BridgeOpen" value="1" /> 			
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="504">	<!-- 두 번째 전투판 진입 --> 
+			<transition state="2ndBattle"/>
+		</condition>
+		<onExit>
+		</onExit>		
+	</state>
+	
+	<state name="2ndBattle">	
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="904,905,906"  arg2="0"/>   	 		
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001044" arg2="0" >
+					<transition state="2ndBridgeOn" />
+				</condition>		
+		<onExit>
+		</onExit>
+	</state>  
+
+	<state name="2ndBridgeOn">	
+		<onEnter>
+			<action name="AGENT를설정한다" arg1="8002" arg2="0"/>	
+			<action name="AGENT를설정한다" arg1="8003" arg2="0"/>			
+			<action name="몬스터소멸시킨다" arg1="904,905,906"/>		
+			<action name="메쉬를설정한다" arg1="3210" arg2="0" arg3="0" arg4="0" arg5="0" /> 	<!-- 2ndBridgeBarrier -->					
+			<action name="메쉬를설정한다" arg1="3200-3209" arg2="1" arg3="0" arg4="100" arg5="10" /> 	<!-- 2ndBridge -->		
+			<action name="SetUserValue" triggerID="101" key="BridgeOpen" value="2" /> 	
+			<action name="SetUserValue" triggerID="102" key="BridgeOpen" value="2" /> 		
+			<action name="SetUserValue" triggerID="103" key="BridgeOpen" value="2" /> 	
+			<action name="SetUserValue" triggerID="104" key="BridgeOpen" value="2" /> 	
+			<action name="SetUserValue" triggerID="105" key="BridgeOpen" value="2" /> 				
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="507">	<!-- 세 번째 전투판 진입 -->
+			<transition state="3rdBattle"/> 
+		</condition>
+		<onExit>
+		</onExit>		
+	</state>
+	
+	<state name="3rdBattle">	
+		<onEnter>		
+			<action name="몬스터를생성한다" arg1="907,908,909"  arg2="0"/>   	 		
+		</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001035" arg2="0" >
+					<transition state="3rdBridgeOn" />	
+				</condition>		
+		<onExit>
+		</onExit>
+	</state>  
+
+	<state name="3rdBridgeOn">	
+		<onEnter>
+			<action name="AGENT를설정한다" arg1="8004" arg2="0"/>	
+			<action name="AGENT를설정한다" arg1="8005" arg2="0"/>	
+			<action name="몬스터소멸시킨다" arg1="907,908,909"/>		
+			<action name="메쉬를설정한다" arg1="3310" arg2="0" arg3="0" arg4="0" arg5="0" /> 	<!-- 3rdBridgeBarrier -->				
+			<action name="메쉬를설정한다" arg1="3300-3309" arg2="1" arg3="0" arg4="100" arg5="10" /> 	<!-- 3rdBridge -->		
+			<action name="SetUserValue" triggerID="101" key="BridgeOpen" value="3" /> 	
+			<action name="SetUserValue" triggerID="102" key="BridgeOpen" value="3" /> 	
+			<action name="SetUserValue" triggerID="103" key="BridgeOpen" value="3" /> 	
+			<action name="SetUserValue" triggerID="104" key="BridgeOpen" value="3" /> 	
+			<action name="SetUserValue" triggerID="105" key="BridgeOpen" value="3" /> 			
+			<action name="SetUserValue" triggerID="106" key="BridgeOpen" value="3" /> 	
+			<action name="SetUserValue" triggerID="107" key="BridgeOpen" value="3" /> 				
+		</onEnter>
+        <condition name="유저를감지했으면" arg1="402">	
+			<transition state="BossBattle01"/>
+		</condition>
+		<onExit>	
+		</onExit>		
+	</state>	
+
+	<state name="BossBattle01">
+		<onEnter>	
+		</onEnter>
+        <condition name="몬스터가죽어있으면" arg1="99">	
+					<transition state="Success"/>	
+				</condition>	
+		<onExit>
+			<action name="몬스터소멸시킨다" arg1="99"/>		
+		</onExit>
+	</state>
+	
+	<state name="Success">
+		<onEnter>
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="Quit"/>	
+				</condition>			
+		<onExit>
+		</onExit>
+	</state>
+	
+    <state name="Quit"> 
+        <onEnter>
+  			<action name="DungeonClear"/>				
+  			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>  		
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+</ms2>

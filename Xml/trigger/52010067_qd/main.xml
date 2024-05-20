@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<ms2>
+
+	<state name="연출01">
+        <onEnter>
+			
+		</onEnter>
+		
+		<condition name="CheckUser" >
+			<action name="VisibleMyPC" isVisible="0"/>	<!-- 유저 투명 처리 -->					
+
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="이펙트를설정한다" arg1="9010" arg2="0" />				
+			<transition state="연출브릿지"/>			
+		</condition>	
+		
+    </state>
+	
+	<state name="연출브릿지">
+        <onEnter> 	
+					
+		</onEnter>
+		
+		<condition name="퀘스트유저를감지하면" arg1="700" arg2="20002290" arg3="2" > <!-- 몬스터 처치 수업을 다 끝내면 케이틀린 등장-->	
+			<transition state="조준씬01"/>
+		</condition>
+		
+		<condition name="퀘스트유저를감지하면" arg1="700" arg2="20002290" arg3="3" > <!-- 몬스터 처치 수업을 다 끝내면 케이틀린 등장-->	
+			<transition state="피격씬01"/>
+		</condition>			
+		
+    </state>
+
+<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@포신정렬씬@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->	
+	
+	<state name="조준씬01">
+        <onEnter> 	
+			<action name="몬스터를생성한다" arg1="200" arg2="0" /> <!-- 인페르녹-->				
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="연출02_b"/>
+			</condition>	
+		
+    </state>
+
+	<state name="연출02_b">
+        <onEnter> 	
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>					
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="1300">
+				<transition state="연출02_c"/>
+			</condition>	
+		
+    </state>	
+	
+	<state name="연출02_c">
+        <onEnter> 	
+		
+			<action name="카메라경로를선택한다" arg1="2000,2001,2002,2003,2004" arg2="0"/>
+			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="5300">
+				<transition state="연출03"/>
+			</condition>	
+		
+    </state>
+	
+	<state name="연출03">
+        <onEnter>
+		
+			<action name="카메라경로를선택한다" arg1="2005,2006,2007,2008,2009,2010,2011" arg2="0"/>			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3200">
+				<transition state="연출04"/>
+			</condition>	
+		
+    </state>
+	
+	<state name="연출04">
+        <onEnter>
+		
+			<action name="카메라경로를선택한다" arg1="2012" arg2="0"/>			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="연출05"/>
+			</condition>	
+		
+    </state>	
+	
+	<state name="연출05">
+        <onEnter> 	
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="quit"/>
+			</condition>	
+		
+    </state>	
+	
+    <state name="quit"> 
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="02000422" arg2="3"/>		
+		</onEnter>			
+    </state>
+	
+<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@피격씬@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+
+	<state name="피격씬01">
+        <onEnter> 	
+					
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="4000">
+				<transition state="피격씬01_a"/>
+			</condition>	
+		
+    </state>
+	
+	<state name="피격씬01_a">
+        <onEnter> 	
+				
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="1300">
+				<transition state="피격씬02"/>
+			</condition>	
+		
+    </state>	
+	
+	<state name="피격씬02">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="9010" arg2="1" />		
+			<action name="카메라경로를선택한다" arg1="3004,3005" arg2="0"/>		
+			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="피격씬03_a"/>
+			</condition>	
+		
+    </state>	
+
+	<state name="피격씬03_a">
+        <onEnter>
+		
+			<action name="카메라경로를선택한다" arg1="3000,3001" arg2="0"/>		
+
+			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3900">
+				<transition state="피격씬03"/>
+			</condition>	
+		
+    </state>
+	
+	<state name="피격씬03">
+        <onEnter>
+	
+			<action name="카메라경로를선택한다" arg1="3002,3003" arg2="0"/>			
+			<action name="SetTimeScale" enable="1" startScale="0.1" endScale="0.1" duration="3.5" interpolator="1" /> <!-- 2초간 느려지기 시작 -->
+			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3600">
+				<transition state="피격씬04"/>
+			</condition>	
+		
+    </state>
+
+	<state name="피격씬04">
+        <onEnter> 	
+			<action name="SetOnetimeEffect" id="4" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastWhiteOutFast.xml"/> 			
+			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="quit02"/>
+			</condition>	
+		
+    </state>	
+	
+    <state name="quit02"> 
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="02000422" arg2="3"/>		
+		</onEnter>			
+    </state>	
+  
+
+</ms2>

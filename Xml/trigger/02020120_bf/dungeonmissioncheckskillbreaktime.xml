@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  125, 이 트리거의 사용 목적은 던전미션랭크에서 이슈라 보스의 스킬브레이크 5~10초 이내 막으면 미션 달성 처리하기 위해서 설정하였습니다. , 이 트리거는 스킬브레이크 성공하면 초기화 필요 없음, 실패했을 경우 자체 초기화 함 -->
+
+<ms2>
+
+  <state name="시작대기중">
+    <onEnter> 
+    </onEnter>
+		<condition name="유저를감지했으면" arg1="199"> <!--   MS2TriggerBox   TriggerObjectID = 199, 이 트리거 박스 안에 플레이어가 한명이라도 체크 되면        199은 스타팅 포인트 지점만 커버하는 비교적 좁은 범위-->
+				<transition state="보스스킬브레이크시작_대기중"/>
+		</condition>
+  </state>
+
+  
+	<state name="보스스킬브레이크시작_대기중">
+		<onEnter>
+		</onEnter>
+		<condition name="CheckNpcAdditionalEffect" spawnPointID="99" additionalEffectID="50004546" level="1" > <!-- 이슈라는 스폰포인트ID : 99임 , 50004546 는 이슈라의 스킬 브레이크 일때 쉴드 HP수치 설정과 특정 스킬로 공격해야 쉴드HP가 줄어드는 설정이 적용된 애디셔널임-->
+			<transition state="던전미션_체크" />		
+		</condition>
+	</state>
+
+	<state name="던전미션_체크">	<!-- <스킬 브레이크 성공했을 때 보스한테 걸리는 애디셔널로 성공여부 체크> -->
+		<onEnter>
+		</onEnter>
+		<condition name="AllOf">
+      		<group>
+				<condition name="CheckNpcExtraData" spawnPointID="99" extraDataKey="brokenShieldRemainTick" extraDataValue="8000" operator="GreaterEqual" />	<!-- <쉴드가 깨지기까지 8초보다 많은 시간이 남은 경우 = 6초 이내로 파괴> -->
+				<condition name="CheckNpcAdditionalEffect" spawnPointID="99" additionalEffectID="70002171" level="1" /> <!-- 이슈라는 스폰포인트ID : 99임, 이 애디셔널은 이슈라가 스킬브레이크 공격이 플레이어한테 저지 당하면 실패 동작 출력때 이 70002171 애디셔널을 AI에서 인위적으로 적용시킴  -->
+      		</group>
+        		<transition state="던전미션_스킬브레이크저지_성공"/>
+		</condition>
+		<condition name="CheckNpcAdditionalEffect" spawnPointID="99" additionalEffectID="50000367" level="1" > <!-- 이슈라는 스폰포인트ID : 99임, 이 애디셔널은 플레이어가 이슈라 스킬브레이크 저지 실패하면 극 광역 공격떄  이 50000367 애디셔널을 스킬에서 적용시켜 발생함  -->
+			<transition state="던전미션_스킬브레이크저지_실패" />																	
+		</condition>
+	</state>
+	
+	<state name="던전미션_스킬브레이크저지_성공">	
+		<onEnter>
+			<action name="DungeonMissionComplete" missionID="23037004" />  <!--DungeonMission.xml 에 등록된 숫자 코드 미션 완료 처리하기-->
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000" > <!-- 스킬브레이크 성공했으니, 바로 종료 시켜도 괜찮음 -->
+			<transition state="종료" />
+		</condition>
+	</state>
+
+	<state name="던전미션_스킬브레이크저지_실패">	<!-- 스킬브레이크 실패했으면 자체 초기화 하는 부분 -->
+		
+		<condition name="!CheckNpcAdditionalEffect" spawnPointID="99" additionalEffectID="50004546" level="1" >	<!-- 이슈라는 스폰포인트ID : 99임 , 50004546 는 이슈라의 스킬 브레이크 일때 쉴드 HP수치 설정과 특정 스킬로 공격해야 쉴드HP가 줄어드는 설정이 적용된 애디셔널임-->
+			<transition state="시작대기중" />											<!--즉 50004546  애디셔널이 이슈라 몸에서 사라졌다는 것은 스킬브레이크 공격 패턴이 다 끝났다는 뜻임-->
+		</condition>
+	</state>
+
+	<state name="종료">
+		<onEnter>
+		</onEnter>
+	</state>
+
+</ms2>
+

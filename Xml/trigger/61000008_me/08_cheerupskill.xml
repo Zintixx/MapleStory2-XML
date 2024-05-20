@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 라운드 종료 4초 전 이속 200% 2초 증가 버프 -->
+<ms2>
+    <state name="Wait">
+        <onEnter>	
+        </onEnter>
+			<condition name="UserValue" key="CheerUpTimer" value="1">
+					<transition state="CheerUpTimer_30" />
+				</condition>
+			<condition name="UserValue" key="CheerUpTimer" value="2">
+					<transition state="CheerUpTimer_20" />
+				</condition>	
+			<condition name="UserValue" key="CheerUpTimer" value="3">
+					<transition state="CheerUpTimer_15" />
+				</condition>
+			<condition name="UserValue" key="CheerUpTimer" value="4">
+					<transition state="CheerUpTimer_10" />
+				</condition>								
+    </state>
+
+    <state name="CheerUpTimer_30">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="30" arg3="1" arg4="0" />  <!-- Round1 / 30sec  -->
+		</onEnter>
+				<condition name="WaitTick" waitTick="26000">
+					<transition state="GiveCheerUp" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>	
+    <state name="CheerUpTimer_20">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="20" arg3="1" arg4="0"/>  <!-- Round3 or Jackpot / 20sec  -->
+		</onEnter>
+				<condition name="WaitTick" waitTick="16000">
+					<transition state="GiveCheerUp" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>	
+    <state name="CheerUpTimer_15">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="15" arg3="1" arg4="0"/>  <!-- Gamble / 15sec  -->
+		</onEnter>
+				<condition name="WaitTick" waitTick="11000">
+					<transition state="GiveCheerUp" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>	
+    <state name="CheerUpTimer_10">
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="10" arg3="1" arg4="0"/>  <!-- Round4 or Round 5 / 10sec  -->
+		</onEnter>
+				<condition name="WaitTick" waitTick="6000">
+					<transition state="GiveCheerUp" />
+				</condition>	
+        <onExit>
+        </onExit>
+    </state>	
+	
+    <state name="GiveCheerUp"> 
+        <onEnter>
+			<action name="버프를걸어준다" arg1="9001" arg2="70000086" arg3="1" arg4="0" arg5="0" />  <!-- 할 수 있어 버프 -->
+        </onEnter>
+				<condition name="시간이경과했으면" arg1="1"> 
+					<transition state="Reset" />
+				</condition>						
+        <onExit>
+        </onExit>
+    </state>
+
+<!-- Reset -->			
+	<state name="Reset">
+		<onEnter>
+			<action name="SetUserValue" key="CheerUpTimer" value="0" />	
+			<action name="타이머를초기화한다" arg1="1"/> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Wait"/>
+				</condition>			
+		<onExit> 
+		</onExit> 
+	</state>			
+</ms2>

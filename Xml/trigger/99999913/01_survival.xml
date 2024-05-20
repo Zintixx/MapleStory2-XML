@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+    <state name="Setting" >
+        <onEnter>	
+			<action name="이펙트를설정한다" arg1="4000,4100,4200,4300,4400,4500,4600,4700,4800" arg2="0" />		<!-- SafeZone Barrier Effect -->
+			<action name="메쉬를설정한다" arg1="3000-3007" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier Center -->		
+			<action name="메쉬를설정한다" arg1="3100-3107" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier North -->	
+			<action name="메쉬를설정한다" arg1="3200-3207" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier South -->				
+			<action name="메쉬를설정한다" arg1="3300-3307" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier East -->				
+			<action name="메쉬를설정한다" arg1="3400-3407" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier West -->				
+			<action name="메쉬를설정한다" arg1="3500-3507" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier SouthEast -->			
+			<action name="메쉬를설정한다" arg1="3600-3607" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier SouthWest -->			
+			<action name="메쉬를설정한다" arg1="3700-3707" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier NorthEast -->			
+			<action name="메쉬를설정한다" arg1="3800-3807" arg2="1" arg3="0" arg4="0" arg5="0" />		<!-- Barrier NorthWest -->		
+			<action name="오브젝트반응설정한다" arg1="11000037" arg2="1" />	<!-- Normal Box -->			
+			<action name="오브젝트반응설정한다" arg1="11000039" arg2="1" />	<!-- Normal Box -->		
+			<action name="사운드를설정한다" arg1="20000" arg2="0" />	<!-- BGM Intro -->		
+			<action name="사운드를설정한다" arg1="20001" arg2="0" />	<!-- BGM Loop -->				
+			<action name="SightRange" enable="1" range="3"/>	
+        </onEnter>
+				<condition name="유저를감지했으면" arg1="9000">
+					<transition state="Wait01"/>	
+				</condition>	
+        <onExit>			
+			<action name="이펙트를설정한다" arg1="4000,4100,4200,4300,4400,4500,4600,4700,4800" arg2="1" />		<!-- SafeZone Barrier Effect -->		
+        </onExit>
+    </state>
+
+    <state name="Wait01" >
+        <onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="60" arg3="1" arg4="1" arg5="-80"/>			<!-- test용 수정 가능 지점 -->
+			<action name="이벤트UI를설정한다" arg1="1" arg2="잠시 기다려주세요.\n잠시 후 경기 시작점이 결정됩니다." arg3="4000" arg4="0" />	
+			<action name="로그를남긴다"  arg1="Survival" arg3="Waiting_Start" /> <!--서바이벌 대기 시작 -->			
+        </onEnter>
+				<condition name="WaitTick" waitTick="10000">    	
+					<transition state="Wait02"/>	      
+				</condition>	
+				 <condition name="시간이경과했으면" arg1="1" >	
+					<transition state="CheckTheNumberOfPlayers"/>			<!-- test용 수정 가능 지점 StartPositionRandomPick  / CheckTheNumberOfPlayers -->	
+				</condition>							
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="Wait02" >
+        <onEnter>
+        </onEnter>
+				<condition name="WaitTick" waitTick="10000">    	
+					<transition state="Wait01"/>	
+				</condition>	
+				 <condition name="시간이경과했으면" arg1="1" >	
+					<transition state="CheckTheNumberOfPlayers"/>			<!-- test용 수정 가능 지점 StartPositionRandomPick  / CheckTheNumberOfPlayers -->
+				</condition>					
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="CheckTheNumberOfPlayers" >
+        <onEnter>
+        </onEnter>
+				<condition name="여러명의유저를감지했으면" arg1="9000" arg2="20" arg3="Less">  	<!-- 20명 미만이면 게임 취소  --> 
+					<transition state="GameCancel01" />		
+				</condition>			
+				<condition name="여러명의유저를감지했으면" arg1="9000" arg2="20" arg3="GreaterEqual">  	<!-- 20명 이상이면 게임 시작  --> 
+					<transition state="StartPositionRandomPick" />		
+				</condition>						
+        <onExit>	
+        </onExit>	
+    </state>
+	
+	<state name="StartPositionRandomPick" >	
+		<onEnter>	
+			<action name="타이머를초기화한다" arg1="1"/>			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="시작점으로 이동합니다." arg3="3000" arg4="0" />		
+        </onEnter>
+			<condition name="랜덤조건" arg1="12.5">
+				<transition state="PCRemap01_North"/>
+			</condition>
+			<condition name="랜덤조건" arg1="12.5">
+				<transition state="PCRemap02_South"/>
+			</condition>	
+			
+			<condition name="랜덤조건" arg1="12.5">
+				<transition state="PCRemap03_East"/>
+			</condition> 
+			<condition name="랜덤조건" arg1="12.5">
+				<transition state="PCRemap04_West"/>
+			</condition>	
+			
+			<condition name="랜덤조건" arg1="12.5">
+				<transition state="PCRemap05_NorthWest"/>
+			</condition>	
+			<condition name="랜덤조건" arg1="12.5">
+				<transition state="PCRemap06_NorthEast"/>
+			</condition>	
+			<condition name="랜덤조건" arg1="12.5">
+				<transition state="PCRemap07_SouthWest"/>
+			</condition>	
+		<condition name="랜덤조건" arg1="12.5">
+				<transition state="PCRemap08_SouthEast"/>
+			</condition>	
+    </state>
+	
+	<state name="PCRemap01_North" >
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="82000001" arg2="101" arg3="9000"/>	
+			<action name="로그를남긴다"  arg1="Survival" arg3="Waiting_PositionPick" /> <!-- 위치 이동 시작-->			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="1" />				
+        </onExit>			
+    </state>	
+	
+	<state name="PCRemap02_South" >
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="82000001" arg2="102" arg3="9000"/>						
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="2" />			
+        </onExit>					
+    </state>	
+	
+	<state name="PCRemap03_East" >
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="82000001" arg2="103" arg3="9000"/>				
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="3" />		
+        </onExit>						
+    </state>	
+	
+	<state name="PCRemap04_West" >
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="82000001" arg2="104" arg3="9000"/>					
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="4" />	
+        </onExit>				
+    </state>	
+	
+	<state name="PCRemap05_NorthWest" >
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="82000001" arg2="105" arg3="9000"/>				
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="5" />	
+        </onExit>					
+    </state>	
+	
+	<state name="PCRemap06_NorthEast" >
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="82000001" arg2="106" arg3="9000"/>	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="6" />	
+        </onExit>					
+    </state>	
+	
+	<state name="PCRemap07_SouthWest" >
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="82000001" arg2="107" arg3="9000"/>		
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="PVPReady"/>
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="7" />			
+        </onExit>					
+    </state>	
+	
+	<state name="PCRemap08_SouthEast" >
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="82000001" arg2="108" arg3="9000"/>			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="PVPReady"/>	
+			</condition>
+        <onExit>		
+			<action name="SetUserValue" triggerID="2" key="SetRide" value="8" />		
+        </onExit>					
+    </state>	
+
+    <state name="PVPReady" >	<!-- 05_Ride 트리거에서 안내 -->
+        <onEnter>	
+			<action name="이벤트UI를설정한다" arg1="1" arg2="space 키를 누르면  수레에 탈 수 있습니다.\nspace 키를 다시 누르면 수레에서 내립니다." arg3="3000" arg4="0" />					
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">  
+            <transition state="PVPStart" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>	
+	
+    <state name="PVPStart" >
+        <onEnter>	
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>      			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="경기를 곧 시작합니다!\n경기 시작과 함께 수레가 출발합니다!" arg3="4000" arg4="0" />	
+			<action name="CreateFieldGame" type="MapleSurvive" />
+        </onEnter>
+				<condition name="WaitTick" waitTick="5000">  
+            <transition state="Countdown" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+	
+	<state name="Countdown" >
+		<onEnter>		
+			<action name="ShowCountUI" text="경기 시작!" count="3"  />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000" >
+				<transition state="AreaOpen"/> 
+			</condition>
+    </state>
+	
+    <state name="AreaOpen" >
+        <onEnter>
+			<action name="SetUserValue" triggerID="5" key="RareBoxOnCount" value="1" />						
+			<action name="SetUserValue" triggerID="2" key="StartPatrol" value="1" />				
+			<action name="사운드를설정한다" arg1="20000" arg2="1" />	<!-- BGM Intro -->				
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>      			
+			<action name="SetUserValue" triggerID="4" key="InvincibleOff" value="1" /> 				
+			<action name="버프를걸어준다" arg1="9000" arg2="71000053" arg3="1" arg4="0" arg5="0"/>		<!-- 31초 무적 -->		
+			<action name="이펙트를설정한다" arg1="4000,4100,4200,4300,4400,4500,4600,4700,4800" arg2="0" />		<!-- SafeZone Barrier Effect -->					
+			<action name="메쉬를설정한다" arg1="3000-3007" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier Center -->					
+			<action name="메쉬를설정한다" arg1="3100-3107" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier_North -->	
+			<action name="메쉬를설정한다" arg1="3200-3207" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier_South -->				
+			<action name="메쉬를설정한다" arg1="3300-3307" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier_East -->				
+			<action name="메쉬를설정한다" arg1="3400-3407" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier_West -->				
+			<action name="메쉬를설정한다" arg1="3500-3507" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier_SouthEast -->				
+			<action name="메쉬를설정한다" arg1="3600-3607" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier_SouthWest -->				
+			<action name="메쉬를설정한다" arg1="3700-3707" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier_NorthEast -->				
+			<action name="메쉬를설정한다" arg1="3800-3807" arg2="0" arg3="1000" arg4="0" arg5="2" />		<!-- Barrier_NorthWest -->				
+			
+			<action name="로그를남긴다" arg1="Survival" arg3="Start"/> <!--서바이벌 시작 로그 남김 -->
+        </onEnter>
+				<condition name="WaitTick" waitTick="30000">  
+            <transition state="GameStart" />	
+        </condition>
+        <onExit>			
+        </onExit>
+    </state>
+
+    <state name="GameStart" >
+        <onEnter>
+			<action name="사운드를설정한다" arg1="20000" arg2="0" />	<!-- BGM Intro -->		
+			<action name="사운드를설정한다" arg1="20001" arg2="1" />	<!-- BGM Loop -->			
+			<action name="SetUserValue" triggerID="3" key="StormStart" value="1" /> 		
+			<action name="로그를남긴다"  arg1="Survival" arg3="StormStart" /> <!--서바이벌 스톰 시작 로그 남김 -->
+        </onEnter>
+				<condition name="!유저를감지했으면" arg1="9000">
+            <transition state="Quit" />		
+        </condition>		 	
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="Quit" >
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="11000037" arg2="0" />	<!-- Normal Box -->				
+			<action name="오브젝트반응설정한다" arg1="11000039" arg2="0" />	<!-- Normal Box -->		
+			<action name="SetUserValue" triggerID="5" key="RareBoxOff" value="1" />							
+			<action name="로그를남긴다"  arg1="Survival" arg3="Trigger_End" /> <!--서바이벌 트리거 종료 로그 남김 -->			
+			<action name="몬스터소멸시킨다" arg1="all" />					
+        </onEnter>	
+        <onExit>
+        </onExit>
+    </state>
+	
+<!-- 인원 미만으로 인한 경기 취소 -->
+    <state name="GameCancel01" >
+        <onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="참가자 부족으로 인해 경기를 취소합니다." arg3="4000" arg4="0" />	
+        </onEnter>	
+				<condition name="WaitTick" waitTick="5000">  
+            <transition state="GameCancel02" />	
+        </condition>		
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="GameCancel02" >
+        <onEnter>
+			<action name="이벤트UI를설정한다" arg1="1" arg2="잠시 후 원래 있던 곳으로 돌아갑니다." arg3="4000" arg4="0" />			
+        </onEnter>	
+				<condition name="WaitTick" waitTick="6000">  
+            <transition state="GameCancel03" />	
+        </condition>				
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="GameCancel03" >
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="11000037" arg2="0" />	<!-- Normal Box -->				
+			<action name="오브젝트반응설정한다" arg1="11000039" arg2="0" />	<!-- Normal Box -->		
+			<action name="몬스터소멸시킨다" arg1="all" />					
+			<action name="유저를이동시킨다" arg1="0" arg2="0"/>					
+        </onEnter>		
+        <onExit>
+        </onExit>
+    </state>
+	
+</ms2>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="Wait">
+        <onEnter>			
+			<action name="오브젝트반응설정한다" arg1="10001088" arg2="0"/>	 <!-- Greeting-->				
+			<action name="SetUserValue" key="CustomerEnter" value="0" />	
+			<action name="SetUserValue" key="ItemNumber" value="0" />				
+        </onEnter>	
+				<condition name="UserValue" key="CustomerEnter" value="1" >	
+			<transition state="CustomerEnterDelay"/>
+		</condition>
+	</state>
+	
+    <state name="CustomerEnterDelay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="CustomerEnter"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="CustomerEnter" >	
+        <onEnter>		
+			<action name="몬스터를생성한다" arg1="1221" arg2="0" /> 		
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9110" arg2="0">		<!-- 대기열에 아무도 없으면 -->
+					<transition state="Patrol03"/>	
+				</condition>		
+				<condition name="!NPC를감지했으면" arg1="9111" arg2="0">		<!-- 세 번째 대기 손님이 없으면 -->	
+					<transition state="Patrol01"/>	
+				</condition>						
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="Patrol01">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="1221" arg2="MS2PatrolData_101" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9112" arg2="0">	<!-- 두 번째 대기 손님이 없으면 -->
+			<transition state="Patrol02Delay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Patrol02Delay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="Patrol02"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="Patrol02">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="1221" arg2="MS2PatrolData_102" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9113" arg2="0">	<!-- 첫 번째 대기 손님이 없으면 -->
+			<transition state="Patrol03Delay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="Patrol03Delay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="Patrol03"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="Patrol03">		
+        <onEnter>			
+			<action name="NPC를이동시킨다" arg1="1221" arg2="MS2PatrolData_103" />					
+				</onEnter>	
+				<condition name="!NPC를감지했으면" arg1="9113" arg2="0">	<!-- 첫 번째 대기 손님이 없으면 -->
+			<transition state="PatrolEndDelay"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="PatrolEndDelay">	
+        <onEnter>			
+				</onEnter>				
+				<condition name="WaitTick" waitTick="1000">		
+					<transition state="PatrolEnd"/>		
+				</condition>					
+    <onExit> 
+    </onExit>	
+    </state>		
+	
+    <state name="PatrolEnd">		
+        <onEnter>						
+				</onEnter>	
+				<condition name="NPC를감지했으면" arg1="9113" arg2="1221">	<!-- 카운터 앞에 도착했으면 -->
+			<transition state="WaitGreeting"/>		
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="WaitGreeting">	
+		<onEnter>
+			<action name="오브젝트반응설정한다" arg1="10001088" arg2="1"/>	 <!-- Greeting-->		
+			</onEnter>
+				<condition name="오브젝트가반응했으면" arg1="10001088" arg2="0"> 	 
+					<transition state="PickItem_30000621"/>
+				</condition>
+		<onExit>	
+			<action name="오브젝트반응설정한다" arg1="10001088" arg2="2"/>	 <!-- Greeting-->				
+		</onExit> 
+    </state>			
+	
+
+<!-- 	30000621 -->
+	<state name="PickItem_30000621">	
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5101" arg2="1" />	<!-- DownArrow -->							
+			<action name="SetUserValue" key="ItemNumber" value="30000621" />					
+			<action name="AddEffectNif" spawnPointID="1221" nifPath="Map/Royalcity/Indoor/ry_in_prop_sandbag_A01.nif" isOutline="1" scale="1.2"  rotateZ="225" />		
+		</onEnter>
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="0">  	
+					<transition state="DetectItem_30000621"/>	
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+
+	<state name="DetectItem_30000621">	
+		<onEnter>
+		</onEnter>	
+		<condition name="DetectLiftableObject" triggerBoxIDs="9201" itemID="30000621">  	<!-- 정답 -->
+					<transition state="RightItem"/>
+				</condition>	
+		<condition name="!DetectLiftableObject" triggerBoxIDs="9201" itemID="30000621">  	<!-- 오답 -->  	
+					<transition state="WrongItem"/>
+				</condition>					
+		<onExit>
+		</onExit>
+	</state>	
+
+	
+<!-- 미션 성공 -->	
+	<state name="RightItem">
+		<onEnter>		
+			<action name="이펙트를설정한다" arg1="5101" arg2="0" />	<!-- DownArrow -->							
+			<action name="PlaySystemSoundInBox" arg1="9900" arg2="System_PartTimeJob_Right_01"/>				
+			<action name="RemoveEffectNif" spawnPointID="1221" />	
+			<action name="대화를설정한다" arg1="1" arg2="1221" arg3="$02000387_BF__1221_CUSTOMER__0$" arg4="3" arg5="0" />		
+			<action name="버프를걸어준다" arg1="9900" arg2="70000112" arg3="1" arg4="0" arg5="0" />				
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="CustomerLeave"/>
+				</condition>	
+		<onExit>	
+		</onExit>
+	</state>	
+	<state name="CustomerLeave">	
+		<onEnter>	
+			<action name="NPC를이동시킨다" arg1="1221" arg2="MS2PatrolData_111" />		
+		</onEnter>
+				<condition name="NPC를감지했으면" arg1="9301" arg2="1221">	
+					<transition state="Quit"/>
+				</condition>	
+		<onExit>
+		</onExit>
+	</state>	
+	 
+    <state name="Quit">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="1221"/>					
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="Wait"/>
+				</condition>			
+    <onExit>
+    </onExit>
+    </state> 		
+
+<!-- 잘못된 아이템을 내려놓으면 -->	
+	<state name="WrongItem">
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5101" arg2="0" />	<!-- DownArrow -->					
+			<action name="PlaySystemSoundInBox" arg1="9900" arg2="System_PartTimeJob_Wrong_01"/>		
+			<action name="RemoveEffectNif" spawnPointID="1221" />		
+			<action name="대화를설정한다" arg1="1" arg2="1221" arg3="$02000387_BF__1221_CUSTOMER__1$" arg4="3" arg5="0" />		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3500">	
+					<transition state="WrongItemReturn"/>		
+				</condition>	
+		<onExit>	
+		</onExit>
+	</state>	
+	<state name="WrongItemReturn">
+		<onEnter>		
+		</onEnter>	
+				<condition name="UserValue" key="ItemNumber" value="30000621" >	
+					<transition state="PickItem_30000621"/>	
+				</condition>				
+		<onExit>	
+		</onExit>
+	</state>			
+</ms2>

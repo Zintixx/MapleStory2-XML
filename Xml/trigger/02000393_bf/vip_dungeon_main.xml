@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+
+	<state name="대기">
+		<onEnter> 
+			<action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0"/>		
+			<action name="이펙트를설정한다" arg1="601,602,603" arg2="0" />		
+		      <action name="유저를이동시킨다" arg1="02000393" arg2="1"/>				
+			<action name="오브젝트반응설정한다" arg1="10001083" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="10001084" arg2="1" />
+			<action name="오브젝트반응설정한다" arg1="10001085" arg2="1" />		
+			<action name="카메라를선택한다" arg1="299" arg2="1"/>
+			<!--action name="카메라리셋" interpolationTime="0.0"/-->	 	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="연출UI를설정한다" arg1="4"/>  
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 	
+		</onEnter>
+				<condition name="유저를감지했으면" arg1="199">
+					<transition state="이벤트시작"/> 
+				</condition> 
+	 </state>
+
+	 <state name="이벤트시작">
+				<condition name="WaitTick" waitTick="1000" > 
+					<action name="카메라를선택한다" arg1="300" arg2="1"/>				
+					<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/> 		
+					<transition state="캐릭터선택대기"/>
+				</condition>		
+      </state>		 
+  
+      <state name="캐릭터선택대기">
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+			<action name="ShowGuideSummary" entityID="20003851" textID="20003851"/> 					
+		</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10001083" arg2="0">
+					<transition state="천둥선택"/>
+				</condition>		
+				<condition name="오브젝트가반응했으면" arg1="10001084" arg2="0">
+					<transition state="알론선택"/>
+				</condition>	
+				<condition name="오브젝트가반응했으면" arg1="10001085" arg2="0">
+					<transition state="오스칼선택"/>
+				</condition>		
+        <onExit>
+		    <action name="HideGuideSummary" entityID="20003851"/>		
+		    <action name="유저를이동시킨다" arg1="02000393" arg2="2"/>				
+        </onExit>					
+    </state>
+
+    <state name="천둥선택">
+        <onEnter>	
+		    <action name="이펙트를설정한다" arg1="601" arg2="1" />				
+		    <action name="버프를걸어준다" arg1="199" arg2="99910090" arg3="1" arg4="0" arg5="0" />	
+		    <action name="카메라를선택한다" arg1="311" arg2="1"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="게임준비"/>
+				</condition>		
+    </state>	
+ 
+    <state name="알론선택">
+        <onEnter>	
+		    <action name="이펙트를설정한다" arg1="602" arg2="1" />					
+		    <action name="버프를걸어준다" arg1="199" arg2="99910100" arg3="1" arg4="0" arg5="0" />						
+		    <action name="카메라를선택한다" arg1="312" arg2="1"/>
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000" > 
+
+					<transition state="게임준비"/>
+				</condition>		
+    </state>	
+	
+    <state name="오스칼선택">
+        <onEnter>	
+		    <action name="이펙트를설정한다" arg1="603" arg2="1" />					
+		    <action name="버프를걸어준다" arg1="199" arg2="99910110" arg3="1" arg4="0" arg5="0" />						
+		    <action name="카메라를선택한다" arg1="313" arg2="1"/> 
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="게임준비"/>
+				</condition>		
+    </state>
+
+    <state name="게임준비">
+        <onEnter>
+		    <action name="PlaySystemSoundInBox" arg2="System_UI_Start_01"/>  		
+			<action name="CreateWidget" arg1="ScoreBoard"/>
+			<action name="WidgetAction" arg1="ScoreBoard" arg2="OpenBoard" arg3="1"/><!--스코어 창 열기  arg3는 위치 (1:중앙:다크스트림, 2:우상단:아케이드)-->
+		    <action name="카메라를선택한다" arg1="301" arg2="1"/>			
+		</onEnter>	
+				<condition name="WaitTick" waitTick="2000" > 
+					<transition state="게임시작"/>
+				</condition>		
+    </state>	
+  
+     <state name="게임시작"> 
+        <onEnter>	
+		    <action name="WidgetAction" arg1="ScoreBoard" arg2="SetScore" arg3="0" desc="점수 강제 설정"/> 
+		    <!--action name="WidgetAction" arg1="ScoreBoard" arg2="AddScore" arg3="10" desc="점수 강제 추가"/-->
+			   <action name="ShowCountUI" text="$02000385_BF__VIP_DUNGEON_MAIN__0$" stage="1" count="3"  />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="1,5" />					   
+		    <action name="카메라를선택한다" arg1="302" arg2="1"/>			 
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000" > 
+					<transition state="1라운드시작"/>
+				</condition>		
+    </state>	
+
+    <state name="1라운드시작"> 
+        <onEnter>
+			<action name="SetUserValue" triggerID="9991001" key="round1start" value="1" /> 			
+			<action name="타이머를설정한다" arg1="30" arg2="30" arg3="0" arg4="1" arg5="80"/> 		
+        </onEnter>
+				<condition name="WaitTick" waitTick="30000" >			
+					<transition state="1라운드종료" />
+				</condition>
+    </state>			
+	
+    <state name="1라운드종료">
+        <onEnter>
+				<action name="ShowCountUI" text="$02000385_BF__VIP_DUNGEON_MAIN__1$" stage="2" count="3"  />
+				<action name="이벤트UI를설정한다" arg1="0" arg2="2,5" />				
+        </onEnter>	
+				<condition name="WaitTick" waitTick="3000" >		
+					<transition state="2라운드시작" />
+				</condition>
+    </state>	
+ 
+     <state name="2라운드시작"> 
+        <onEnter>
+			<action name="SetUserValue" triggerID="9991001" key="round2start" value="1" /> 			
+			<action name="타이머를설정한다" arg1="30" arg2="30" arg3="0" arg4="1" arg5="80"/> 		
+        </onEnter>
+				<condition name="WaitTick" waitTick="30000" >			
+					<transition state="2라운드종료" />
+				</condition>
+    </state>	
+
+    <state name="2라운드종료">
+        <onEnter>
+				<action name="ShowCountUI" text="$02000385_BF__VIP_DUNGEON_MAIN__2$" stage="3" count="3"  />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="3,5" />				
+        </onEnter>	
+				<condition name="WaitTick" waitTick="3000" >			
+					<transition state="3라운드시작" />
+				</condition>
+    </state>		
+
+    <state name="3라운드시작"> 
+        <onEnter>
+			<action name="SetUserValue" triggerID="9991001" key="round3start" value="1" /> 			
+			<action name="타이머를설정한다" arg1="30" arg2="30" arg3="0" arg4="1" arg5="80"/> 		
+        </onEnter>
+				<condition name="WaitTick" waitTick="30000" >			
+					<transition state="3라운드종료" />
+				</condition>
+    </state>		
+
+    <state name="3라운드종료">
+        <onEnter>
+				<action name="ShowCountUI" text="$02000385_BF__VIP_DUNGEON_MAIN__3$" stage="4" count="3"  />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="4,5" />				
+        </onEnter>	
+				<condition name="WaitTick" waitTick="3000" >			
+					<transition state="4라운드시작" />
+				</condition>
+    </state>		
+ 
+     <state name="4라운드시작">  
+        <onEnter>
+			<action name="SetUserValue" triggerID="9991001" key="round4start" value="1" /> 			
+			<action name="타이머를설정한다" arg1="30" arg2="30" arg3="0" arg4="1" arg5="80"/> 		
+        </onEnter>
+				<condition name="WaitTick" waitTick="30000" >			
+					<transition state="4라운드종료" />
+				</condition>
+    </state>
+
+    <state name="4라운드종료">
+        <onEnter>
+				<action name="ShowCountUI" text="$02000385_BF__VIP_DUNGEON_MAIN__4$" stage="5" count="3"  />
+			<action name="이벤트UI를설정한다" arg1="0" arg2="5,5" />				
+        </onEnter>	
+				<condition name="WaitTick" waitTick="3000" >	
+					<transition state="5라운드시작" />
+				</condition>
+    </state>	
+
+     <state name="5라운드시작"> 
+        <onEnter>
+			<action name="SetUserValue" triggerID="9991001" key="round5start" value="1" /> 			
+			<action name="타이머를설정한다" arg1="30" arg2="30" arg3="0" arg4="1" arg5="80"/> 		
+        </onEnter>
+				<condition name="WaitTick" waitTick="30000" >			
+					<transition state="게임종료" />
+				</condition>
+    </state>	
+
+    <state name="게임종료">
+        <onEnter>		
+		    <action name="카메라를선택한다" arg1="301" arg2="1"/>					
+		    <action name="이벤트UI를설정한다" arg1="0" arg2="0,0" />		
+		    <action name="유저를이동시킨다" arg1="02000393" arg2="2"/>							
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1500" >			
+					<transition state="정산" />
+				</condition>
+    </state>		
+  
+      <state name="정산">
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="0" />		
+			<action name="WidgetAction" arg1="ScoreBoard" arg2="CloseBoard"/>
+			<action name="버프를삭제한다" arg1="199" arg2="99910090" />
+			<action name="버프를삭제한다" arg1="199" arg2="99910100" />
+			<action name="버프를삭제한다" arg1="199" arg2="99910110" />			
+		</onEnter>	
+				<condition name="WidgetCondition" arg1="ScoreBoard" arg2="Compare" arg3=">=,1500" desc="비교 연산 (연산자,대상값)">
+					<action name="DebugString" value="1500점 이상" />
+					<transition state="보상" />
+				</condition>
+				<condition name="WidgetCondition" arg1="ScoreBoard" arg2="Compare" arg3=">=,1000" desc="비교 연산 (연산자,대상값)">
+					<action name="DebugString" value="1000점 이상" />
+					<transition state="보상" />
+				</condition>				
+				<condition name="WaitTick" waitTick="1000" > 		
+					<transition state="보상" />
+				</condition>					
+    </state>
+
+	<state name="보상">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/>
+			<action name="DungeonClear" /> 
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 		
+					<transition state="종료" />
+				</condition>		
+	</state>	
+ 
+      <state name="종료">
+	
+      </state>
+
+</ms2>

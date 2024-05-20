@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 52010063 오르비스 깊은 동굴 트리스탄 구출 연출 트리거 -->
+<ms2>
+
+    <state name="start" >
+        <onEnter>	
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> <!-- 트리스탄-->
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> <!-- 인페르녹 -->
+			<action name="몬스터를생성한다" arg1="111,112,113,114,115" arg2="0" /> <!-- npc 부하 크림슨 발록-->
+			<action name="몬스터소멸시킨다" arg1="211,212,213,214,215" /> <!-- 몬스터 부하 크림슨 발록-->			
+			<action name="이펙트를설정한다" arg1="6000,6001,6002,6003,6004,6010,6011" arg2="0" /> <!-- 기빨고기빨리는이펙트 -->		
+			<action name="메쉬를설정한다" arg1="4001,4002,4003,4004" arg2="0" />			
+		</onEnter>	
+			<condition name="CheckUser">	
+				<transition state="퀘스트조건체크"/> 	
+				<!-- <transition state="연출시작"/> -->	
+			</condition>			
+		<onExit> 
+		</onExit>
+    </state>
+	
+    <state name="퀘스트조건체크">	
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000066" arg3="3"> 
+				<transition state="맵이동_작전실로"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000066" arg3="2"> 
+				<transition state="처치후_대기"/>
+			</condition>			
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000066" arg3="1"> 
+				<transition state="처치후_대기"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000065" arg3="3"> 
+				<transition state="처치후_대기"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000065" arg3="2"> 
+				<transition state="처치후_대기"/>
+			</condition>			
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000065" arg3="1"> 
+				<transition state="처치후_대기"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000064" arg3="3"> 
+				<transition state="처치후_대기"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000064" arg3="2"> 
+				<transition state="처치후_대기"/>
+			</condition>				
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000064" arg3="1"> 
+				<transition state="연출시작"/>
+			</condition>		
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="처치후_대기">
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="몬스터소멸시킨다" arg1="101,102,111,112,113,114,115,211,212,213,214,215,221,222,223,224,225,226" /> <!-- 전체 npc -->			
+			<action name="유저를이동시킨다" arg1="52010063" arg2="20"/>	<!-- 유저 퀘 시작 위치로 -->				
+			<action name="몬스터를생성한다" arg1="103" arg2="0" /> <!-- 퀘스트용 트리스탄 -->			
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="처치후" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="처치후">
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="연출종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+
+	<state name="맵이동_작전실로">
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="101,102,111,112,113,114,115,211,212,213,214,215,221,222,223,224,225,226" /> <!-- 트리스탄 제외 전체 npc -->					
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="최종맵이동" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="최종맵이동">
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="유저를이동시킨다" arg1="52010052" arg2="1"/>	<!-- 스카이 포트리스 작전실로 -->	
+		</onEnter>	
+			<condition name="WaitTick" waitTick="1000" > 
+				<transition state="최종맵이동" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="연출시작">
+        <onEnter>	
+			<action name="SetSceneSkip" arg1="전투전스킵완료" arg2="nextState"/> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set --> <!-- setsceneskip 1 set -->				
+			<action name="연출UI를설정한다" arg1="1"/>			
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="SetNpcEmotionLoop" arg1="101" arg2="Dead_A" arg3="999999" />				
+			<!-- <action name="SetNpcEmotionLoop" arg1="101" arg2="Attack_02_B" arg3="999999" /> -->		<!-- 트리스탄 기빨림 모션 -->		
+			<action name="SetNpcEmotionLoop" arg1="102" arg2="Attack_02_D" arg3="17000" />		<!-- 인페르녹 기빨기 모션 -->	
+ 			<action name="이펙트를설정한다" arg1="6000,6003" arg2="1" />			<!-- 인페르녹 기빨기 이펙트 -->
+			<action name="이펙트를설정한다" arg1="6001" arg2="1" />			<!-- 트리스탄 바닥 이펙트 -->
+			<action name="이펙트를설정한다" arg1="6002" arg2="1" />			<!-- 트리스탄 기빨림 이펙트 -->			
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>			
+		</onEnter>		
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="인페르녹줌인00" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="인페르녹줌인00" >
+		<onEnter>		
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>	
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="인페르녹줌인01"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>
+	
+	<state name="인페르녹줌인01" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8000,8001,8002" arg2="0"/> 		
+		</onEnter>
+		<condition name="WaitTick" waitTick="7000">
+			<transition state="PC놀람01"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+
+	<state name="PC놀람01" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8003" arg2="0"/> 			
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="PC놀람02"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+
+	<state name="PC놀람02" >
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="0" msg="$52010063_QD__main__0$" duration="3000" align="right" />				
+						<!-- 트리스탄…? -->		<!-- pc -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="인페르녹줌인02"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>		
+	
+	<state name="인페르녹줌인02" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8004" arg2="0"/>			
+			<action name="AddCinematicTalk" npcID="11003832" illustID="infernog_nomal" msg="$52010063_QD__main__1$" duration="5000" align="right" />	
+ 			<action name="이펙트를설정한다" arg1="6000,6003" arg2="0" />			<!-- 인페르녹 기빨기 이펙트 -->			
+			<!-- 아니…? -->		<!-- 인페르녹 -->	
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Attack_03_D" />		<!-- 인페르녹 -->	
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="인페르녹줌인03"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+
+	<state name="인페르녹줌인03" >
+		<onEnter>
+			<!-- action name="카메라경로를선택한다" arg1="8004" arg2="0"/>	 -->				 
+			<action name="AddCinematicTalk" npcID="11003832" illustID="infernog_nomal" msg="$52010063_QD__main__2$" duration="5000" align="right" />		]
+			<!-- 네놈은 누구인가.\n대체 어떻게 이곳에 들어올 수 있었단 말인가. -->
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Attack_03_F" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="인페르녹줌인04"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>		
+
+	<state name="인페르녹줌인04" >
+		<onEnter>		 
+			<action name="카메라경로를선택한다" arg1="8002" arg2="0"/>		
+			<action name="AddCinematicTalk" npcID="11003832" illustID="infernog_nomal" msg="$52010063_QD__main__3$" duration="5000" align="right" />	
+<!-- 크르르… 너희는 대체 뭘 하고 있었던 것이냐!\n침입자가 들어오게 내버려두다니!			 -->
+			<action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_Infernog_goforward" />	 <!-- 인페르녹 전진-->					
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="부하대사01"/>
+		</condition>
+		<onExit> 
+		</onExit>
+	</state>	
+
+	<state name="부하대사01" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8011" arg2="0"/>					 
+			<action name="AddCinematicTalk" npcID="11003839" msg="$52010063_QD__main__4$" duration="3000" align="right" />				
+			<!-- 죄…죄송합니다! -->		<!-- 크림슨발록 -->	
+			<action name="SetNpcEmotionSequence" arg1="114" arg2="Attack_01_A" />		<!-- 크림슨발록 -->				
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="부하대사02"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+
+	<state name="부하대사02" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8012" arg2="0"/>					 
+			<action name="AddCinematicTalk" npcID="11003839" msg="$52010063_QD__main__5$" duration="3000" align="right" />		
+			<!-- 지금 당장 처단을…! /> -->			
+			<action name="SetNpcEmotionSequence" arg1="115" arg2="Attack_01_A" />		<!-- 크림슨발록 -->				
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="인페르녹대사01"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+	
+	<state name="인페르녹대사01" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8004" arg2="0"/>					 
+			<action name="AddCinematicTalk" npcID="11003832" illustID="infernog_nomal" msg="$52010063_QD__main__6$" duration="4000" align="right" />	
+			<!-- 멍청한 녀석들.\n침입자가 들어온 순간 이번 의식은 끝난 것이다. /> -->		<!-- 인페르녹 -->	
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Attack_02_F" />		<!-- 인페르녹 -->	
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000">
+			<transition state="인페르녹대사02"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+
+	<state name="인페르녹대사02" >
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="8003,8005" arg2="0"/>					 
+			<action name="AddCinematicTalk" npcID="11003832" illustID="infernog_nomal" msg="$52010063_QD__main__7$" duration="6000" align="right" />							
+		<!-- 이 가문의 버러지들은 사사건건 나를 성가시게 만드는구나….\n본래 내 것인데, 돌려받기 위해 이런 번거로운 일을 하게 만들다니 -->
+		</onEnter>
+		<condition name="WaitTick" waitTick="6000">
+			<transition state="인페르녹대사03"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>		
+
+	<state name="인페르녹대사03" >
+		<onEnter>		 
+			<!-- <action name="카메라경로를선택한다" arg1="8005" arg2="0"/>	 -->						
+			<action name="AddCinematicTalk" npcID="11003832" illustID="infernog_nomal" msg="$52010063_QD__main__8$" duration="5000" align="right" />				
+			<!-- 하지만… 다음 기회를 만드는 것은 아주 쉬운 일이지.\n내 혼을 먹은 이상, 이 녀석은 내 손바닥 안에 있는 것이나 마찬가지니까. -->
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Attack_02_E" />		
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="인페르녹대사04"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>		
+
+	<state name="인페르녹대사04" >
+		<onEnter> 
+			<action name="AddCinematicTalk" npcID="11003832" illustID="infernog_nomal" msg="$52010063_QD__main__9$" duration="5000" align="right" />		
+			<!-- <action name="SetNpcEmotionLoop" arg1="102" arg2="Attack_01_C, Attack_01_E" arg3="4000" /> -->		<!-- 인페르녹 -->	
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Attack_03_D" />				
+			<!-- 나의 충실한 종복들이여. 실수를 만회할 기회를 주겠노라.\n침입자를 깨끗하게 정리하라." /> -->	 <!-- 인페르녹 뒤로 -->					
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="인페르녹대사05"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>		
+
+	<state name="인페르녹대사05" >
+		<onEnter>		 
+			<action name="카메라경로를선택한다" arg1="8004,8000" arg2="0"/>		
+			<action name="AddCinematicTalk" npcID="11003832" illustID="infernog_nomal" msg="$52010063_QD__main__10$" duration="5000" align="right" />			
+			<!-- 내가 이번 의식을 마무리하러 떠나 있는 동안 임무를 끝내라.\n두 번의 실수는 없어야 할 것이야! -->
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Leave_01_A,Leave_02_A" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="부하들준비00"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+	
+	<state name="부하들준비00" >
+		<onEnter>		 
+			<action name="카메라경로를선택한다" arg1="8000" arg2="0"/>		
+			<action name="AddCinematicTalk" npcID="11003839" msg="$52010063_QD__main__11$" duration="3000" align="right" />			
+			<!-- 받들겠습니다…!	-->
+			<action name="이펙트를설정한다" arg1="6010" arg2="1" />			<!-- 인페르녹 붉은 안개 -->			
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Leave_02_A" />			
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000">
+			<transition state="부하들등장00"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+	
+	<state name="부하들등장00" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>			
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close --> <!-- setsceneskip 1 close -->			
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="부하들등장01"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>		
+
+	<state name="전투전스킵완료" > <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin --> <!-- setsceneskip 1 fin -->
+		<onEnter>		
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>			
+			<action name="몬스터소멸시킨다" arg1="102" /> <!-- 인페르녹 -->
+			<action name="몬스터소멸시킨다" arg1="111,112,113,114,115" /> <!-- npc 크림슨 발록-->
+			<action name="몬스터를생성한다" arg1="211" arg2="1"/> <!-- 몬스터 크림슨 발록-->		
+			<action name="유저를이동시킨다" arg1="52010063" arg2="11"/>	<!-- 유저 전투 시작 위치로 -->		
+ 			<action name="이펙트를설정한다" arg1="6000,6003" arg2="0" />			<!-- 인페르녹 기빨기 이펙트 -->		
+			<action name="이펙트를설정한다" arg1="6010" arg2="1" />			<!-- 인페르녹 붉은 안개 -->	
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="부하들등장02"/>
+		</condition>
+		<onExit> 
+		</onExit>		
+	</state>	
+	
+	<state name="부하들등장01" >
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="102" /> <!-- 인페르녹 -->
+			<action name="몬스터소멸시킨다" arg1="111,112,113,114,115" /> <!-- npc 크림슨 발록-->
+			<action name="몬스터를생성한다" arg1="211,221,222,223,224,225,226" arg2="0"/> <!-- 몬스터 크림슨 발록-->							
+			<action name="유저를이동시킨다" arg1="52010063" arg2="11"/>	<!-- 유저 전투 시작 위치로 -->				
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="부하들등장02"/>
+		</condition>
+		<onExit> 
+		</onExit>
+	</state>		
+
+	<state name="부하들등장02" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+			<action name="카메라리셋" interpolationTime="2.0"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="부하들등장211"/>
+		</condition>
+	</state>	
+	
+	<state name="부하들등장211" >
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="212" arg2="1"/>			
+		</onEnter>
+			<condition name="몬스터가죽어있으면" arg1="211">
+				<transition state="부하들등장212"/>
+			</condition>		
+		<onExit> 
+		</onExit>
+	</state>	
+
+	<state name="부하들등장212" >
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="213" arg2="1"/>			
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="212">
+				<transition state="부하들등장213"/>
+			</condition>		
+		<onExit> 
+		</onExit>
+	</state>		
+	
+	<state name="부하들등장213" >
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="214" arg2="1"/>			
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="213">
+				<transition state="부하들등장214215"/>
+			</condition>		
+		<onExit> 
+		</onExit>
+	</state>		
+	
+	<state name="부하들등장214215" >
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="215" arg2="1"/>			
+		</onEnter>	
+			<condition name="몬스터가죽어있으면" arg1="214,215">
+				<transition state="트리스탄구출00"/>
+			</condition>		
+
+	</state>	
+	
+    <state name="트리스탄구출00" >
+        <onEnter>	
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>	
+			<action name="몬스터소멸시킨다" arg1="111,112,113,114,115,211,212,213,214,215,221,222,223,224,225,226" /> <!-- 부하 몬스터 청소-->			
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="crimsonbalrogwipeout"/>			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  			
+			<action name="메쉬를설정한다" arg1="4001,4002,4003,4004" arg2="0" />							
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000"> 
+					<transition state="트리스탄구출01"/> 
+				</condition>			
+		<onExit> 
+		</onExit> 
+    </state>
+ 
+    <state name="트리스탄구출01" >
+        <onEnter>			
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>		
+			<action name="몬스터소멸시킨다" arg1="101" /> <!-- 트리스탄-->
+			<action name="몬스터를생성한다" arg1="103" arg2="0" /> <!-- 퀘스트용 트리스탄-->			
+			<action name="유저를이동시킨다" arg1="52010063" arg2="20"/>	<!-- 유저 전투 시작 위치로 -->				
+ 			<action name="이펙트를설정한다" arg1="6001,6002" arg2="0" />			<!-- 트리스탄 바닥 이펙트 -->				
+			<!--<action name="SetTimeScale" enable="1" startScale="1.0" endScale="0.1" duration="10.0" interpolator="1" />  10초간 느려지기 시작 -->	
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000"> 
+					<transition state="트리스탄구출02"/> 
+				</condition>			
+		<onExit> 
+		</onExit>
+    </state>	
+	
+	<state name="트리스탄구출02" >
+        <onEnter>	
+			<action name="SetSceneSkip" arg1="전투후스킵완료" arg2="nextState"/> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set --> <!-- setsceneskip 2 set -->			
+			<action name="카메라경로를선택한다" arg1="8003,8013,8014" arg2="0"/>		
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>				
+			<action name="SetNpcEmotionLoop" arg1="103" arg2="Dead_A" arg3="5000" />		<!-- 트리스탄				-->
+ 			<action name="이펙트를설정한다" arg1="6004" arg2="1" />			<!-- 트리스탄 잡힌 효과 꺼짐 -->		
+			<action name="AddCinematicTalk" npcID="11003825" illustID="Tristan_normal" msg="$52010063_QD__main__12$" duration="5000" align="right" />					
+		</onEnter>	
+				<condition name="WaitTick" waitTick="5000"> 
+					<transition state="트리스탄구출03"/> 
+				</condition>		
+		<onExit> 
+		</onExit>
+    </state> 
+
+	<state name="트리스탄구출03" >
+        <onEnter>			
+			<action name="이펙트를설정한다" arg1="6010" arg2="0" />			<!-- 인페르녹 붉은 안개 -->			
+			<action name="이펙트를설정한다" arg1="6011" arg2="1" />			<!-- 인페르녹 붉은 안개 꺼짐-->			
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_Tristan_walk" />	 <!-- 트리스탄 전진-->		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000"> 
+					<transition state="트리스탄구출04"/> 
+				</condition>		
+		<onExit> 
+		</onExit>  
+    </state>	 
+	 
+	<state name="트리스탄구출04" >
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="8022,8021" arg2="0"/>				
+			<action name="AddCinematicTalk" npcID="11003825" illustID="Tristan_normal" msg="$52010063_QD__main__13$" duration="3000" align="right" />		
+			<action name="SetNpcEmotionLoop" arg1="103" arg2="ChatUp_A" arg3="3000" />		<!-- 트리스탄 -->					
+			<action name="이펙트를설정한다" arg1="6004" arg2="0" />
+			<action name="이펙트를설정한다" arg1="6011" arg2="0" />			<!-- 인페르녹 붉은 안개 꺼짐-->		
+			<action name="SetSceneSkip" arg1="" arg2=""/> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close --> <!-- setsceneskip 2 close -->		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000"> 
+					<transition state="연출종료"/> 
+				</condition>		
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="전투후스킵완료" >
+        <onEnter>			
+			<action name="이펙트를설정한다" arg1="6000,6001,6002,6003,6004,6005,6010,6011" arg2="0" />	
+			<action name="유저를이동시킨다" arg1="52010063" arg2="20"/>	<!-- 유저 전투 시작 위치로 -->							
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_Tristan_walk" />	 <!-- 트리스탄 전진-->		
+		</onEnter>	
+				<condition name="WaitTick" waitTick="3000"> 
+					<transition state="연출종료"/> 
+				</condition>		
+		<onExit> 
+		</onExit>
+    </state>		
+	
+    <state name="연출종료" > 
+		<onEnter>
+			<action name="카메라리셋" interpolationTime="2.0"/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="메쉬를설정한다" arg1="4001,4002,4003,4004" arg2="0" />							
+			<action name="업적이벤트를발생시킨다" arg1="9000" arg2="trigger" arg3="tristanrescue"/>	<!-- 퀘스트 완료 업적 -->
+		</onEnter>
+				<!--<condition name="WaitTick" waitTick="15000"> 
+					<transition state="마지막체크"/> 
+				</condition>-->
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000065" arg3="3"> 
+				<transition state="콘대르_대사"/>
+			</condition>	
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="콘대르_대사" > 
+		<onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="11003534" illust="Conder_normal" script="$52010063_QD__main__15$" duration="12098" voice="ko/Npc/00002170"/>  		
+		</onEnter>	
+			<condition name="WaitTick" waitTick="12098"> 
+				<transition state="퀘스트유저감지_대사"/> 
+			</condition>			
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="퀘스트유저감지_대사" > 
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000066" arg3="3"> 
+				<transition state="블리체_대사"/>
+			</condition>		
+    </state>
+	
+	<state name="블리체_대사" > 
+		<onEnter>
+			<action name="SideNpcTalk" type="talk" npcID="11003533" illust="Bliche_nomal" script="$52010063_QD__main__14$" duration="13000" voice="ko/Npc/00002153"/>  		
+		</onEnter>	
+			<condition name="WaitTick" waitTick="13000"> 
+				<transition state="마지막체크"/> 
+			</condition>		
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="마지막체크">
+			<condition name="퀘스트유저를감지하면" arg1="9000" arg2="91000066" arg3="3"> 
+				<transition state="맵이동_작전실로"/>
+			</condition>				
+		<onExit> 
+		</onExit> 	
+    </state>	
+	
+	<state name="종료">
+    </state>	
+	
+</ms2>
+

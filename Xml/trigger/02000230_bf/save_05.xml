@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="대기">
+    <onEnter>
+           <action name="몬스터를생성한다" arg1="500" arg2="0" />
+            <action name="액터를설정한다" arg1="501" arg2="1" arg3="Emotion_Failure_Idle_A" />
+            <action name="액터를설정한다" arg1="50501" arg2="1" arg3="Attack_Idle_A" />
+            <action name="액터를설정한다" arg1="50502" arg2="1" arg3="Attack_02_A" />
+            <action name="액터를설정한다" arg1="50503" arg2="1" arg3="Attack_02_A" />
+            <action name="액터를설정한다" arg1="50504" arg2="1" arg3="Attack_Idle_A" />
+            <action name="액터를설정한다" arg1="50505" arg2="1" arg3="Attack_02_A" />
+    </onEnter>
+	<condition name="무조건" >
+			<transition state="주민구출"/>
+    </condition>
+  </state>
+  
+   <state name="주민구출">
+    <onEnter> 
+            <action name="오브젝트반응설정한다" arg1="10000357" arg2="1"/>
+    </onEnter>
+	<condition name="오브젝트가반응했으면" arg1="10000357" arg2="0">
+			<transition state="문열림"/>
+    </condition>
+    <onExit>
+    </onExit>
+  </state>  
+ 
+    <state name="문열림" posX="238" posY="108">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="10" arg2="3" />
+            <action name="대화를설정한다" arg1="1" arg2="500" arg3="$02000230_BF__SAVE_05__0$" arg4="2" arg5="0" />
+            <action name="액터를설정한다" arg1="50501" arg2="0" arg3="Attack_Idle_A" />
+           <action name="몬스터를생성한다" arg1="50511" arg2="1" />
+            <action name="액터를설정한다" arg1="50502" arg2="0" arg3="Attack_02_A" />
+           <action name="몬스터를생성한다" arg1="50512" arg2="1" />
+            <action name="액터를설정한다" arg1="50503" arg2="0" arg3="Attack_02_A" />
+           <action name="몬스터를생성한다" arg1="50513" arg2="1" />
+            <action name="액터를설정한다" arg1="50504" arg2="0" arg3="Attack_Idle_A" />
+           <action name="몬스터를생성한다" arg1="50514" arg2="1" />
+            <action name="액터를설정한다" arg1="50505" arg2="0" arg3="Attack_02_A" />
+           <action name="몬스터를생성한다" arg1="50515" arg2="1" />
+            <action name="대화를설정한다" arg1="1" arg2="50511" arg3="$02000230_BF__SAVE_05__1$" arg4="2" arg5="1" />
+            <action name="대화를설정한다" arg1="1" arg2="50513" arg3="$02000230_BF__SAVE_05__2$" arg4="2" arg5="2" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="10">
+            <transition state="도망과공격" /> 
+        </condition>
+    </state>
+
+    <state name="도망과공격" posX="238" posY="108"> 
+        <onEnter>
+           <action name="몬스터소멸시킨다" arg1="500"/>
+           <action name="액터를설정한다" arg1="501" arg2="0" arg3="Emotion_Failure_Idle_A" />
+           <action name="몬스터를생성한다" arg1="511" arg2="0" />
+            <action name="대화를설정한다" arg1="1" arg2="511" arg3="$02000230_BF__SAVE_05__3$" arg4="2" arg5="0" />
+           <action name="NPC를이동시킨다" arg1="511" arg2="MS2PatrolData_511_11000689" />
+            <action name="대화를설정한다" arg1="1" arg2="511" arg3="$02000230_BF__SAVE_05__4$" arg4="2" arg5="2" />
+        </onEnter>
+        <condition name="NPC를감지했으면" arg1="90511" arg2="511" > 
+            <transition state="도망완료" />
+        </condition>
+    </state>
+	
+    <state name="도망완료" posX="238" posY="108">
+        <onEnter> 
+           <action name="몬스터소멸시킨다" arg1="511"/>
+        </onEnter>
+        <condition name="몬스터가죽어있으면" arg1="50511,50512,50513,50514,50515">
+            <transition state="트리거초기화" />
+        </condition>
+        <condition name="!몬스터가전투상태면" arg1="50511,50512,50513,50514,50515">
+            <transition state="트리거초기화" />
+        </condition>
+    </state>
+
+    <state name="트리거초기화" posX="238" posY="108">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="11" arg2="10" />
+           <action name="몬스터소멸시킨다" arg1="50511,50512,50513,50514,50515"/>			
+        </onEnter>
+		<condition name="시간이경과했으면" arg1="11">
+            <transition state="대기" />
+        </condition>
+    </state>
+
+</ms2>

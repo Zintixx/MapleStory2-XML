@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="대기" > 
+        <onEnter>
+			<action name="액터를설정한다" arg1="3000" arg2="1" arg3="Closed" />
+			<action name="액터를설정한다" arg1="3010" arg2="1" arg3="Closed" />
+			<action name="액터를설정한다" arg1="3020" arg2="1" arg3="Closed" />
+			<action name="액터를설정한다" arg1="3040" arg2="1" arg3="Closed" />
+			<action name="메쉬를설정한다" arg1="3001" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3002-3008" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3011" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3012-3016" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3021" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3022-3033" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3041" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3042-3053" arg2="1" arg3="0" arg4="0" arg5="0" />
+			<action name="이펙트를설정한다" arg1="5000" arg2="0" />	<!-- GuideUI -->						
+			<action name="몬스터소멸시킨다" arg1="1001" />
+			<action name="몬스터소멸시킨다" arg1="1002" />
+			<action name="몬스터소멸시킨다" arg1="1003" />
+			<action name="몬스터소멸시킨다" arg1="1004" />
+			<action name="몬스터소멸시킨다" arg1="2001" />
+			<action name="몬스터소멸시킨다" arg1="2002" />		
+			<action name="EnableSpawnPointPC" spawnPointID="0" isEnable="1" />			
+			<action name="EnableSpawnPointPC" spawnPointID="9991" isEnable="0" />
+			<action name="EnableSpawnPointPC" spawnPointID="9992" isEnable="0" />							
+        </onEnter>
+			<condition name="CheckUser">
+				<transition state="로딩딜레이" />
+			</condition>	
+        <onExit />
+    </state>
+
+    <state name="로딩딜레이" > 
+        <onEnter>
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+				<transition state="CheckUserCount" />
+			</condition> 
+        <onExit />
+    </state>
+	
+    <import path="./Data/Xml/Trigger/Dungeon_Common/CheckUserCount.xml" />	
+
+   <state name="DungeonStart" >	
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="5000" arg2="1" />	<!-- GuideUI -->				
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			<action name="카메라경로를선택한다" arg1="802,800" arg2="0"/>				
+			<action name="스킵을설정한다" arg1="CameraWalk01" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="4000">	
+			<transition state="CameraWalk01" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+
+   <state name="CameraWalk01" >	
+        <onEnter>	
+			<action name="카메라경로를선택한다" arg1="800,802" arg2="1"/>				
+			<action name="스킵을설정한다" arg1="" />
+        </onEnter>
+		<condition name="WaitTick" waitTick="3000">	
+			<transition state="준비" />
+        </condition>
+        <onExit>	
+        </onExit>
+    </state>
+	
+    <state name="준비" >
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>			
+			<action name="이펙트를설정한다" arg1="5000" arg2="1" />	<!-- GuideUI -->					
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02000290_BF__MAIN__4$" arg3="5000" arg4="0" />	
+        </onEnter>	
+		<condition name="WaitTick" waitTick="3000">	
+				<transition state="트리거01시작" />
+			</condition>
+        <onExit />
+    </state>
+
+<!-- 첫 번째 문 열림 -->	
+    <state name="트리거01시작" >
+        <onEnter>	
+			<action name="액터를설정한다" arg1="3000" arg2="1" arg3="Opened" />
+			<action name="메쉬를설정한다" arg1="3001" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터를생성한다" arg1="1001" arg2="0" />	
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="트리거01진행" />
+			</condition>
+        <onExit />
+    </state>
+
+    <state name="트리거01진행" >
+        <onEnter>
+			<action name="액터를설정한다" arg1="3000" arg2="0" arg3="Opened" />
+			<action name="메쉬를설정한다" arg1="3002-3008" arg2="0" arg3="0" arg4="200" arg5="2" />
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="1001">
+				<transition state="트리거02시작" />
+			</condition> 		
+			<condition name="WaitTick" waitTick="7000">
+				<transition state="트리거02시작" />
+			</condition> 
+        <onExit />
+    </state>
+
+<!-- 두 번째 문 열림 -->		
+    <state name="트리거02시작" >
+        <onEnter>
+			<action name="액터를설정한다" arg1="3010" arg2="1" arg3="Opened" />
+			<action name="메쉬를설정한다" arg1="3011" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터를생성한다" arg1="1002" arg2="0" />
+			<action name="몬스터를생성한다" arg1="1003" arg2="0" />
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="트리거02진행" />
+			</condition>
+        <onExit />
+    </state>
+
+    <state name="트리거02진행" >
+        <onEnter>
+			<action name="액터를설정한다" arg1="3010" arg2="0" arg3="Opened" />
+			<action name="메쉬를설정한다" arg1="3012-3016" arg2="0" arg3="0" arg4="200" arg5="2" />
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="1002,1003">
+				<transition state="트리거03시작" />
+			</condition> 				
+			<condition name="WaitTick" waitTick="10000">	
+				<transition state="트리거03시작" />
+			</condition> 
+        <onExit />
+    </state>
+
+<!-- 세 번째 문 열림 -->		
+    <state name="트리거03시작" >
+        <onEnter>
+			<action name="액터를설정한다" arg1="3020" arg2="1" arg3="Opened" />
+			<action name="메쉬를설정한다" arg1="3021" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="몬스터를생성한다" arg1="1004" arg2="0" />
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="트리거03진행" />
+			</condition>
+        <onExit />
+    </state>
+
+    <state name="트리거03진행" >
+        <onEnter>
+			<action name="액터를설정한다" arg1="3020" arg2="0" arg3="Opened" />
+			<action name="메쉬를설정한다" arg1="3022-3033" arg2="0" arg3="0" arg4="200" arg5="2" />
+        </onEnter>
+			<condition name="몬스터가죽어있으면" arg1="1004">
+				<transition state="트리거04시작" />
+			</condition> 						
+			<condition name="WaitTick" waitTick="7000">	
+				<transition state="트리거04시작" />
+			</condition> 
+        <onExit />
+    </state>
+
+    <state name="트리거04시작" >
+        <onEnter>
+			<action name="액터를설정한다" arg1="3040" arg2="1" arg3="Opened" />
+			<action name="메쉬를설정한다" arg1="3041" arg2="0" arg3="0" arg4="0" arg5="0" />
+		</onEnter>	
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="트리거04진행" />
+			</condition>	
+        <onExit />
+    </state>
+
+    <state name="트리거04진행" >
+        <onEnter>
+			<action name="HideGuideSummary" entityID="20002902"/>
+			<action name="액터를설정한다" arg1="3040" arg2="0" arg3="Opened" />
+			<action name="메쉬를설정한다" arg1="3042-3053" arg2="0" arg3="0" arg4="200" arg5="2" />
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="종료" />
+			</condition> 
+        <onExit />
+    </state>
+
+    <state name="종료" >
+	    <onEnter>
+        </onEnter>	
+        <onExit />
+    </state>
+
+</ms2>

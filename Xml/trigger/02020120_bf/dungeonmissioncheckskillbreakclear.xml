@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--  MS2TriggerModel  TriggerModelID =  124, 이 트리거의 사용 목적은 던전미션랭크에서 이슈라 보스의 스킬브레이크 1회 막으면 미션 달성 처리하기 위해서 설정하였습니다. , 이 트리거는 스킬브레이크 실패해도 초기화 할 필요 없음 -->
+<ms2>    
+  <state name="Ready">
+    <onEnter>
+	</onEnter>	
+
+		<!-- 이슈라 보스 AI에게 변수 신호 받을때까지 대기하기  -->
+		<condition name="UserValue" key="SkillBreakSuccess" value="1">  <!--스킬브레이크 막기 공했으면, 이슈라 AI에서  SkillBreakSuccess = 1 신호를 보냄 -->
+			<transition state="스킬브레이크성공_던전미션랭크" />
+		</condition>		
+		
+    <onExit>			
+    </onExit> 
+  </state>	
+  
+  
+ <state name="스킬브레이크성공_던전미션랭크">
+    <onEnter>
+			<action name="DungeonMissionComplete" missionID="23037005"/>	<!--스킬브레이크 막기 성공하면 SkillBreakSuccess = 1 신호를 받아서, DungeonMission.xml 에 등록된 숫자 코드 미션 완료 처리하기-->
+    </onEnter>
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="종료" />
+		</condition>
+			
+  </state>    
+  
+	
+
+	<state name="종료">
+		<onEnter> 
+		</onEnter>		
+	</state>	
+	
+</ms2>

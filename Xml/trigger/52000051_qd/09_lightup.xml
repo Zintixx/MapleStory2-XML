@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 순례자의 뜰 맵 조명 제어--> 
+  
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 			
+				</onEnter>	
+			<condition name="UserValue" key="FindLotus" value="1">	
+			<transition state="LoadingDelay"/>	
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>
+	
+    <state name="LoadingDelay" > 
+        <onEnter>					
+				</onEnter>		
+				<condition name="WaitTick" waitTick="500">  
+			<transition state="LightOff01"/>	
+		</condition> 		
+    <onExit> 
+    </onExit>
+    </state>	
+	
+	<state name="LightOff01">   
+        <onEnter> 									
+				</onEnter>	
+				<condition name="NPC를감지했으면" arg1="9200" arg2="900"> 
+			<transition state="LightOff02"/>
+		</condition> 		
+				<condition name="!NPC를감지했으면" arg1="9200" arg2="900"> 
+			<transition state="RemoveTotem01"/>	
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>
+	
+    <state name="LightOff02" >
+        <onEnter>		
+			<action name="SetUserValue" triggerID="2" key="InnerLight" value="1" /> 			
+			<action name="SetUserValue" triggerID="3" key="ResetInnerLight" value="1" /> 			
+			<action name="SetAmbientLight" arg1="0, 0, 0"/>	
+			<action name="SetDirectionalLight" arg1="0, 0, 0" arg2="0,0,0"/>						
+				</onEnter>		
+				<condition name="WaitTick" waitTick="500">  
+					<transition state="LoadingDelay"/>	
+				</condition>			
+    <onExit> 
+    </onExit>	
+    </state>	
+
+    <state name="RemoveTotem01" > 
+        <onEnter>			
+			<action name="SetUserValue" triggerID="3" key="RemoveInnerLight" value="1" /> 		
+			<action name="SetUserValue" triggerID="2" key="InactivateLotus" value="1" /> 					
+			<action name="SetAmbientLight" arg1="96, 160, 157"/>	
+			<action name="SetDirectionalLight" arg1="193, 180, 137" arg2="100,100,100"/>				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="500">  
+			<transition state="LoadingDelay"/>	
+		</condition> 		
+    <onExit> 
+    </onExit>
+    </state>	
+
+</ms2>
+

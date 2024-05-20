@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  
+	<state name="대기">	
+			<condition name="UserValue" key="GaugeOpen" value="1">
+				<transition state="게이지시작" />
+			</condition>		
+	</state>
+  
+	<state name="게이지시작">
+		<onEnter>	 
+			<action name="스킬을설정한다" arg1="700" arg2="1"/>					
+			<action name="SetUserValue" triggerID="999002" key="GaugeStart" value="1" /> 
+			<action name="SetUserValue" triggerID="991001" key="GaugeStart" value="1" /> 						
+			<action name="SetUserValue" triggerID="991002" key="GaugeStart" value="1" /> 						
+			<action name="SetUserValue" triggerID="991003" key="GaugeStart" value="1" /> 						
+			<action name="SetUserValue" triggerID="991004" key="GaugeStart" value="1" /> 									
+			<action name="ShadowExpedition" type="OpenBossGauge" title="$52010038_QD__gauge__2$" maxGaugePoint="1000" /> 			
+		</onEnter>	
+			<condition name="ShadowExpeditionReachPoint" point="1000">
+				<transition state="성공" />
+			</condition>
+			<condition name="UserValue" key="CoreIsDead" value="1">
+				<transition state="실패" />
+			</condition>				
+			<condition name="UserValue" key="EngineIsDead" value="1">
+				<transition state="실패" />
+			</condition>		
+		<onExit>		
+			<action name="ShadowExpedition" type="CloseBossGauge" /> 		
+			<action name="SetUserValue" triggerID="991001" key="GaugeClosed" value="1" /> 						
+			<action name="SetUserValue" triggerID="991002" key="GaugeClosed" value="1" /> 						
+			<action name="SetUserValue" triggerID="991003" key="GaugeClosed" value="1" /> 						
+			<action name="SetUserValue" triggerID="991004" key="GaugeClosed" value="1" /> 					
+			<action name="SetUserValue" triggerID="999002" key="GaugeClosed" value="1" /> 						
+		</onExit>				
+	</state>	
+ 
+	<state name="성공">   
+		<onEnter> 
+			<action name="SideNpcTalk" npcID="11003536" illust="Neirin_normal" duration="6000" script="$52010038_QD__gauge__3$" voice="ko/Npc/00002107"/>
+			<action name="업적이벤트를발생시킨다" arg1="199" arg2="trigger" arg3="skyfortress_takeoff"/>			
+			<action name="이벤트UI를설정한다" arg1="7" arg2="$52010038_QD__GAUGE__0$" arg3="2500" />						
+		</onEnter>	
+			<condition name="WaitTick" waitTick="6000">			
+				<transition state="정리"/>	
+			</condition>						
+	</state>		
+
+	<state name="실패">   
+		<onEnter> 					
+			<action name="이벤트UI를설정한다" arg1="5" arg2="$52010038_QD__GAUGE__1$" arg3="2500" />						
+		</onEnter>	
+			<condition name="WaitTick" waitTick="2000">			
+				<action name="유저를이동시킨다" arg1="02000092" arg2="20"/>
+				<transition state="정리"/>	
+			</condition>						
+	</state>		
+	
+	<state name="정리">   
+		<onEnter> 
+			<action name="몬스터소멸시킨다" arg1="all" />	
+			<action name="SetUserValue" triggerID="992001" key="WaveEnd" value="1" /> 						
+			<action name="SetUserValue" triggerID="992002" key="WaveEnd" value="1" /> 	
+			<action name="SetUserValue" triggerID="993001" key="WoundEnd" value="1" /> 					
+			<action name="SetUserValue" triggerID="999004" key="AllertEnd" value="1" />
+			<action name="유저를이동시킨다" arg1="52010039" arg2="1"/>	 			
+		</onEnter>		
+			<condition name="WaitTick" waitTick="1000">	
+				<transition state="종료"/>	
+			</condition>						
+	</state>				
+	
+	<state name="종료">
+	</state>		
+	
+</ms2>
+

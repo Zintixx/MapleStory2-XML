@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+	<state name="대기"> 
+		<onEnter>
+		<action name="이펙트를설정한다" arg1="200031-200032" arg2="0" />			
+		</onEnter>
+		
+			<condition name="UserValue" key="Phase_5_Interect_01" value="1" >
+			<transition state="시작" />					
+			</condition>
+	</state>
+
+	<state name="시작"> 
+		<onEnter>
+      		<action name="이벤트UI를설정한다" arg1="1" arg2="$52100301_QD__3000061_PHASE_5_INTERECT_01__0$" arg3="4000"/> 			
+			<action name="몬스터를생성한다" arg1="999" arg2="0" />			 <!-- 탑승 아르케온 등장(연출용)-->	
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="4000" >
+			<transition state="탈것_등장" />					
+			</condition>	
+	</state>	
+
+	<state name="탈것_등장"> 
+		<onEnter>		
+			<action name="오브젝트반응설정한다" arg1="10003126" arg2="1" />		
+			<action name="몬스터소멸시킨다" arg1="999" />						
+		</onEnter>
+		
+			<condition name="오브젝트가반응했으면" arg1="10003126" arg2="0" >
+			<transition state="인터렉트_동작" />					
+			</condition>	
+			
+			<condition name="UserValue" key="Phase_5_Interect_01" value="0">
+			<transition state="대기" />					
+			</condition>				
+	</state>	
+	
+	<state name="인터렉트_동작"> 
+		<onEnter>			
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="1000" >
+			<transition state="인터렉트_리셋" />					
+			</condition>	
+			
+			<condition name="UserValue" key="Phase_5_Interect_01" value="0">
+			<transition state="대기" />					
+			</condition>				
+	</state>
+
+	<state name="인터렉트_리셋"> 
+		<onEnter>				
+		</onEnter>
+		
+			<condition name="CheckAnyUserAdditionalEffect" triggerBoxID="0" additionalEffectID="62100152" level="1" >    	 <!-- 아르케온 리셋 버프 조건 (62100152) -->	
+			<transition state="리셋_대기" />					
+			</condition>	
+			
+			<condition name="UserValue" key="Phase_5_Interect_01" value="0">
+			<transition state="대기" />					
+			</condition>				
+	</state>	
+	
+	<state name="리셋_대기"> 
+		<onEnter>				
+		</onEnter>
+		
+			<condition name="WaitTick" waitTick="3000" >
+			<transition state="시작" />					
+			</condition>	
+			
+			<condition name="UserValue" key="Phase_5_Interect_01" value="0">
+			<transition state="대기" />					
+			</condition>				
+	</state>		
+	
+</ms2>
+

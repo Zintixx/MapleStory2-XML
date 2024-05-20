@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+	
+<ms2>
+
+	<state name="대기">            
+		<onEnter>
+			<!-- <action name="SetUserValue" triggerID="900001" key="Reset" value="0" /> -->
+		</onEnter>
+
+		<condition name="UserValue" key="MainStart" value="1" >
+			<action name="SetUserValue" triggerID="900001" key="MainStart" value="0" />	
+			<action name="몬스터소멸시킨다" arg1="203" />			
+			<action name="몬스터를생성한다" arg1="202" agr2="0"/>
+			<transition state="WaitRound1"/>
+		</condition>
+		<condition name="UserValue" key="MainStart" value="2" >
+			<action name="SetUserValue" triggerID="900001" key="MainStart" value="0" />
+			<action name="몬스터소멸시킨다" arg1="203" />			
+			<action name="몬스터를생성한다" arg1="202" agr2="0"/>	
+			<transition state="ContinuePlayDelay"/>
+		</condition>
+	</state>
+			
+	<state name="WaitRound1">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<action name="SetUserValue" triggerID="910001" key="StartRound1" value="1" />		
+			<transition state="ResultRound1"/>
+		</condition>
+		<condition name="유저를감지했으면" arg1="902" >
+			<action name="MoveUserToPos" pos="300,-225,1500" rot="0,0,270" />
+			<transition state="WaitRound1"/>
+		</condition>
+	</state>
+	
+	<state name="ContinuePlayDelay">              
+		<onEnter>
+			<action name="LockMyPC" isLock="1" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<action name="MoveUserToPos" pos="300,-225,1500" rot="0,0,270" />
+			<transition state="ContinuePlayDelay2"/>
+		</condition>
+	</state>
+	
+	<state name="ContinuePlayDelay2">              
+		<onEnter> 
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_01" />
+			<transition state="ContinuePlay"/>
+		</condition>
+	</state>
+	
+	<state name="ContinuePlay">              
+		<onEnter>
+			<action name="SetUserValueFromDungeonRewardCount" key="ClearRound" dungeonRewardID="24096001" />
+		</onEnter>
+		<condition name="UserValue" key="ClearRound" value="1" >
+			<!-- <action name="DebugString" string="이어하기로 2스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910002" key="StartRound2" value="1" />
+			<transition state="ResultRound2" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="2" >
+			<!-- <action name="DebugString" string="이어하기로 3스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910003" key="StartRound3" value="1" />
+			<transition state="ResultRound3" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="3" >
+			<!-- <action name="DebugString" string="이어하기로 4스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910004" key="StartRound4" value="1" />
+			<transition state="ResultRound4" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="4" >
+			<!-- <action name="DebugString" string="이어하기로 5스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910005" key="StartRound5" value="1" />
+			<transition state="ResultRound5" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="5" >
+			<!-- <action name="DebugString" string="이어하기로 6스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910006" key="StartRound6" value="1" />
+			<transition state="ResultRound6" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="6" >
+			<!-- <action name="DebugString" string="이어하기로 7스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910007" key="StartRound7" value="1" />
+			<transition state="ResultRound7" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="7" >
+			<!-- <action name="DebugString" string="이어하기로 8스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910008" key="StartRound8" value="1" />
+			<transition state="ResultRound8" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="8" >
+			<!-- <action name="DebugString" string="이어하기로 9스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910009" key="StartRound9" value="1" />
+			<transition state="ResultRound9" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="9" >
+			<!-- <action name="DebugString" string="이어하기로 10스테이지 부터 시작합니다." /> -->
+			<action name="SetUserValue" triggerID="910010" key="StartRound10" value="1" />
+			<transition state="ResultRound10" />
+		</condition>
+		<condition name="UserValue" key="ClearRound" value="10" >
+			<!-- <action name="DebugString" string="이미 10 스테이지까지 완료 했습니다. 처음부터 시작합니다. " /> -->
+			<transition state="WaitRound1" />
+		</condition>
+	</state>
+
+	<state name="ResultRound1">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound1" value="2">
+			<action name="DungeonClearRound" round="1" />
+			<action name="SetUserValue" triggerID="910001" key="StartRound1" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound1" value="0" />			
+			<transition state="WaitRound2"/>
+		</condition>
+		<condition name="UserValue" key="StartRound1" value="3">
+			<action name="DungeonClearRound" round="0" />
+			<action name="SetUserValue" triggerID="910001" key="StartRound1" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound1" value="0" />			
+			<transition state="RoundFail"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound2">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910002" key="StartRound2" value="1" />			
+			<transition state="ResultRound2"/>
+		</condition>
+	</state>
+
+	<state name="ResultRound2">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound2" value="2">
+			<action name="DungeonClearRound" round="2" />
+			<action name="SetUserValue" triggerID="910002" key="StartRound2" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound2" value="0" />			
+			<transition state="WaitRound3"/>
+		</condition>
+		
+		<condition name="UserValue" key="StartRound2" value="3">
+			<action name="SetUserValue" triggerID="910002" key="StartRound2" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound2" value="0" />			
+			<transition state="1RoundClear"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound3">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910003" key="StartRound3" value="1" />		
+			<transition state="ResultRound3"/>
+		</condition>
+	</state>
+
+	<state name="ResultRound3">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound3" value="2">
+			<action name="DungeonClearRound" round="3" />
+			<action name="SetUserValue" triggerID="910003" key="StartRound3" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound3" value="0" />			
+			<transition state="WaitRound4"/>
+		</condition>
+		
+		<condition name="UserValue" key="StartRound3" value="3">
+			<action name="SetUserValue" triggerID="910003" key="StartRound3" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound3" value="0" />			
+			<transition state="2RoundClear"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound4">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910004" key="StartRound4" value="1" />		
+			<transition state="ResultRound4"/>
+		</condition>
+	</state>
+
+	<state name="ResultRound4">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound4" value="2">
+			<action name="DungeonClearRound" round="4" />
+			<action name="SetUserValue" triggerID="910004" key="StartRound4" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound4" value="0" />			
+			<transition state="WaitRound5"/>
+		</condition>
+		
+		<condition name="UserValue" key="StartRound4" value="3">
+			<action name="SetUserValue" triggerID="910004" key="StartRound4" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound4" value="0" />			
+			<transition state="3RoundClear"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound5">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910005" key="StartRound5" value="1" />		
+			<transition state="ResultRound5"/>
+		</condition>
+	</state>
+
+	<state name="ResultRound5">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound5" value="2">
+			<action name="DungeonClearRound" round="5" />
+			<action name="SetUserValue" triggerID="910005" key="StartRound5" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound5" value="0" />			
+			<transition state="WaitRound6"/>
+		</condition>
+		
+		<condition name="UserValue" key="StartRound5" value="3">
+			<action name="SetUserValue" triggerID="910005" key="StartRound5" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound5" value="0" />			
+			<transition state="4RoundClear"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound6">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910006" key="StartRound6" value="1" />		
+			<transition state="ResultRound6"/>
+		</condition>
+	</state>
+
+	<state name="ResultRound6">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound6" value="2">
+			<action name="DungeonClearRound" round="6" />
+			<action name="SetUserValue" triggerID="910006" key="StartRound6" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound6" value="0" />			
+			<transition state="WaitRound7"/>
+		</condition>
+		
+		<condition name="UserValue" key="StartRound6" value="3">
+			<action name="SetUserValue" triggerID="910006" key="StartRound6" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound6" value="0" />			
+			<transition state="5RoundClear"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound7">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910007" key="StartRound7" value="1" />		
+			<transition state="ResultRound7"/>
+		</condition>
+	</state>
+
+	<state name="ResultRound7">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound7" value="2">
+			<action name="DungeonClearRound" round="7" />
+			<action name="SetUserValue" triggerID="910007" key="StartRound7" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound7" value="0" />			
+			<transition state="WaitRound8"/>
+		</condition>
+		
+		<condition name="UserValue" key="StartRound7" value="3">
+			<action name="SetUserValue" triggerID="910007" key="StartRound7" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound7" value="0" />			
+			<transition state="6RoundClear"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound8">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910008" key="StartRound8" value="1" />		
+			<transition state="ResultRound8"/>
+		</condition>
+	</state>
+
+	<state name="ResultRound8">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound8" value="2">
+			<action name="DungeonClearRound" round="8" />
+			<action name="SetUserValue" triggerID="910008" key="StartRound8" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound8" value="0" />			
+			<transition state="WaitRound9"/>
+		</condition>
+		
+		<condition name="UserValue" key="StartRound8" value="3">
+			<action name="SetUserValue" triggerID="910008" key="StartRound8" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound8" value="0" />			
+			<transition state="7RoundClear"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound9">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910009" key="StartRound9" value="1" />		
+			<transition state="ResultRound9"/>
+		</condition>
+	</state>
+
+	<state name="ResultRound9">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound9" value="2">
+			<action name="DungeonClearRound" round="9" />
+			<action name="SetUserValue" triggerID="910009" key="StartRound9" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound9" value="0" />			
+			<transition state="WaitRound10"/>
+		</condition>
+		
+		<condition name="UserValue" key="StartRound9" value="3">
+			<action name="SetUserValue" triggerID="910009" key="StartRound9" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound9" value="0" />			
+			<transition state="8RoundClear"/>
+		</condition>
+	</state>
+
+	<state name="WaitRound10">              
+		<onEnter>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<action name="SetUserValue" triggerID="910010" key="StartRound10" value="1" />		
+			<transition state="ResultRound10"/>
+		</condition>
+	</state>
+ 
+	<state name="ResultRound10">            
+		<onEnter>
+		</onEnter>
+		<condition name="UserValue" key="StartRound10" value="2">
+			<action name="DungeonClearRound" round="10" />		
+			<action name="SetUserValue" triggerID="910010" key="StartRound10" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound10" value="0" />			
+			<transition state="AllRoundClear"/>
+		</condition> 
+		
+		<condition name="UserValue" key="StartRound10" value="3">
+			<action name="SetUserValue" triggerID="910010" key="StartRound10" value="0" />
+			<action name="SetUserValue" triggerID="900001" key="StartRound10" value="0" />			
+			<transition state="9RoundClear"/>
+		</condition>
+	</state>
+	
+	<state name="1RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="2RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="3RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="4RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="5RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="6RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="7RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="8RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+
+	<state name="9RoundClear">            
+		<onEnter>
+			<action name="DungeonClear" uiType="None"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state> 	
+	
+	<state name="AllRoundClear">            
+		<onEnter>
+			<action name="DungeonClear" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state> 
+	
+	<state name="RoundFail">            
+		<onEnter>
+			<action name="DungeonFail" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="3000" >
+			<transition state="대기"/>
+		</condition>
+	</state>
+	
+<!-- =================================================================	 -->
+
+
+</ms2>
+

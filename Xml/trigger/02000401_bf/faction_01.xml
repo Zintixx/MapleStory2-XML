@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+  
+<ms2>
+	<state name="대기">
+		<onEnter>		
+		      <action name="버프를삭제한다" arg1="199" arg2="99910150" /> 		
+			<action name="오브젝트반응설정한다" arg1="12000021" arg2="2" />		
+			<action name="오브젝트반응설정한다" arg1="12000022" arg2="2" />			
+			<action name="오브젝트반응설정한다" arg1="12000037" arg2="2" />						
+		</onEnter>
+			<condition name="UserValue" key="faction01" value="1">
+				<transition state="석궁준비" />
+			</condition>	
+	</state>
+ 
+	<state name="석궁준비">
+		<onEnter>							
+			<action name="대화를설정한다" arg1="1" arg2="1001" arg3="$02000401_BF__FACTION_01__0$" arg4="5" arg5="0"/>
+			<action name="대화를설정한다" arg1="1" arg2="1001" arg3="$02000401_BF__FACTION_01__1$" arg4="5" arg5="5"/>			
+		</onEnter>	
+			<condition name="WaitTick" waitTick="2000" > 
+				<transition state="룸체크" />
+			</condition>			
+	</state>
+
+	<state name="룸체크"> 
+				<condition name="IsDungeonRoom" > 
+					<transition state="던전" />	
+				</condition>		
+				<condition name="!IsDungeonRoom" > 
+					<transition state="퀘스트" />	
+				</condition>		
+	</state>  	 	
+
+	<state name="던전">
+		<onEnter>		
+			<action name="ShowGuideSummary" entityID="20040101" textID="20040101" durationTime="3500" /> 
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>  		
+			<action name="오브젝트반응설정한다" arg1="12000021" arg2="1" />		
+			<action name="오브젝트반응설정한다" arg1="12000022" arg2="1" />					
+		</onEnter>
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="종료체크" />
+			</condition>		
+	</state>	
+
+		<state name="퀘스트">
+			<onEnter>		
+				<action name="ShowGuideSummary" entityID="20040101" textID="20040101" durationTime="3500" /> 
+				<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>  		
+				<action name="오브젝트반응설정한다" arg1="12000037" arg2="1" />					
+			</onEnter>
+				<condition name="WaitTick" waitTick="100" > 
+					<transition state="종료체크" />
+				</condition>		
+		</state>		
+ 
+	<state name="종료체크">
+			<condition name="몬스터가죽어있으면" arg1="2901">
+				<action name="오브젝트반응설정한다" arg1="12000021" arg2="0" />		
+				<action name="오브젝트반응설정한다" arg1="12000022" arg2="0" />			
+				<action name="오브젝트반응설정한다" arg1="12000037" arg2="0" />					
+				<action name="대화를설정한다" arg1="1" arg2="1001" arg3="$02000401_BF__FACTION_01__2$" arg4="5" arg5="0"/>			
+				<action name="버프를삭제한다" arg1="199" arg2="99910150" /> 					
+				<transition state="NPC삭제대기" />
+			</condition>
+	</state>		
+  
+	<state name="NPC삭제대기">	
+			<condition name="UserValue" key="DungeonClear" value="1">	
+				<action name="몬스터소멸시킨다" arg1="1001,1002,1003,1004,1005" arg2="0" />			
+				<transition state="종료" />
+			</condition>
+	</state>		
+  
+	<state name="종료">
+
+	</state> 	
+	
+</ms2>
+

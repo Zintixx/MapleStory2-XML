@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 어둠의회랑 : 52000035 챕터4/5/6 에필로그 연출 -->
+<ms2>
+
+	<state name="Wait">   
+		<onEnter> 	
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="2001" arg2="0" >
+				<transition state="이동"/>
+			</condition>
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="이동">   
+        <onEnter> 	
+			<action name="유저를이동시킨다" arg1="52000199" arg2="5001" />
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003416" arg3="2" > <!--또 하나의 진실 퀘스트 수락 유저는 영상을 보거라-->
+						<transition state="CameraEffect01"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003417" arg3="1" > <!--또 하나의 진실 퀘스트 수락 유저는 영상을 보거라-->
+						<transition state="Wait_02"/>
+			</condition>
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="CameraEffect01" >
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="CameraEffect02"/>
+			</condition>
+	</state>
+
+	<state name="CameraEffect02" >
+		<onEnter>		
+		 <action name="카메라경로를선택한다" arg1="4001" arg2="0"/>	
+		 <action name="연출UI를설정한다" arg1="1"/>						
+		 
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="CameraEffect03"/>
+		</condition>
+	</state>
+	
+	 <state name="CameraEffect03">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="3" enable="0" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/> 
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="CameraEffect03_3"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="CameraEffect03_3">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="4002" arg2="0"/>
+			<action name="ShowCaption" type="VerticalCaption" title="$52000199_QD__52000199__0$" desc="" align="bottomLeft" offsetRateX="0" offsetRateY="0" duration="5000" scale="2.5"/>				
+		</onEnter>
+			<condition name="WaitTick" waitTick="6000">
+				<transition state="CameraEffect04"/>
+			</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="CameraEffect04" >
+        <onEnter>		
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+        </onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="CameraEffect05"/>
+				</condition>		
+        <onExit />
+    </state>
+	
+	<state name="CameraEffect05">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>
+			<action name="카메라리셋" interpolationTime="0.0"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+		</onEnter>	
+		<condition name="퀘스트유저를감지하면" arg1="2001" arg2="10003417" arg3="1" > <!--또 하나의 진실 퀘스트 수락 유저는 영상을 보거라-->
+					<transition state="Wait_02"/>
+		</condition>	
+		<onExit> 
+		</onExit>
+    </state>
+	
+	<state name="Wait_02">   
+        <onEnter> 	
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastFadeIn.xml"/>							
+			<action name="연출UI를설정한다" arg1="1"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000">
+					<transition state="영상재생"/>
+		</condition>	
+		<onExit> 
+		</onExit>
+    </state>
+	
+    <state name="영상재생">
+		<onEnter>
+			<action name="CreateWidget" arg1="SceneMovie"/>
+			<action name="PlaySceneMovie" fileName="common\KiliansTruth.usm" movieID="1" />
+			</onEnter>
+			<condition name="WidgetCondition" arg1="SceneMovie" arg2="IsStop" arg3="1">
+				<transition state="바깥으로"/>
+			</condition>				
+			<condition name="WaitTick" waitTick="203000">
+				<transition state="바깥으로"/>
+			</condition>		
+		<onExit> 
+		</onExit>
+    </state>	
+	
+    <state name="바깥으로">
+		<onEnter>
+			<action name="SetOnetimeEffect" id="30" enable="1" path="BG/Common/ScreenMask/Eff_CameraMasking_FastWhiteOutFast.xml"/> 		
+			<action name="업적이벤트를발생시킨다" arg1="2001" arg2="" arg3="KiliansTruth" /> 
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="바깥으로_02"/>
+				</condition>	
+		<onExit>
+		</onExit>
+    </state>
+	
+	<state name="바깥으로_02">
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="02000146" arg2="12"/> 
+		</onEnter>	
+		<onExit>
+		</onExit>
+    </state>
+	
+</ms2>
+

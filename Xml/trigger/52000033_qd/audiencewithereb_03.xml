@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 특별 알현실 : 60100010 -->
+
+<ms2>
+
+    <state name="idle"> 
+        <onEnter>						
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="60100245" arg3="2">
+				<transition state="ready"/>
+			</condition>
+		<onExit>
+		</onExit> 
+	</state> 			
+
+    <state name="ready">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>	
+		<action name="SetSceneSkip" arg1="end" arg2="exit"/>	
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">	
+				<transition state="pcmove"/>
+			</condition> 	
+		<onExit>
+		</onExit> 	
+	</state> 		
+
+    <state name="pcmove"> 
+        <onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1007" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="9000">	
+				<transition state="ErebTalk_01"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>
+	
+    <state name="ErebTalk_01"> 
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>						
+			<action name="카메라경로를선택한다" arg1="700" arg2="0"/> <!-- 에레브 얼굴로 클로즈업 -->			
+			<action name="AddCinematicTalk" npcID="11001663" illustID="Ereb_normal" msg="$52000033_QD__AUDIENCEWITHEREB_03__0$" duration="3000" delayTick="0" align="left" /> <!-- 에레브 -->						
+		</onEnter>
+			<condition name="WaitTick" waitTick="5000">	
+				<transition state="ErebTalk_02"/>
+			</condition> 
+		<onExit>
+		</onExit> 			
+    </state>	
+
+    <state name="ErebTalk_02"> 
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="901" arg2="0"/> <!-- 에레브 얼굴로 클로즈업 -->	
+			<action name="AddCinematicTalk" npcID="11001663" msg="$52000033_QD__AUDIENCEWITHEREB_03__1$" duration="3000" delayTick="0" align="left" /> <!-- 에레브 -->							
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="ErebTalk_03"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>
+
+    <state name="ErebTalk_03"> 
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="601" arg2="0"/> <!-- 뒷 뷰 -->
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">	
+				<transition state="fadeout"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>
+
+    <state name="fadeout"> 
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+            <action name="몬스터를생성한다" arg1="601" arg2="1" />				
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">	
+				<transition state="story_01"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>	
+	
+    <state name="story_01"> 
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$52000033_QD__AUDIENCEWITHEREB_03__2$" arg3="0"/>
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">	
+				<transition state="story_02"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>		
+
+    <state name="story_02"> 
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$52000033_QD__AUDIENCEWITHEREB_03__3$" arg3="0"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">	
+				<transition state="story_03"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>	
+
+    <state name="story_03"> 
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="9" arg2="$52000033_QD__AUDIENCEWITHEREB_03__4$" arg3="0"/>				
+            <action name="NPC를이동시킨다" arg1="601" arg2="MS2PatrolData_1005" />			
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">	
+				<transition state="fadein"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>	
+	
+    <state name="fadein"> 
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>		
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>		
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">	
+				<transition state="ErebTalk_04"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>		
+	
+    <state name="ErebTalk_04"> 
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11001663" illustID="Ereb_surprise" msg="$52000033_QD__AUDIENCEWITHEREB_03__5$" duration="3000" delayTick="0" align="left" /> <!-- 에레브 -->			
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">	
+				<transition state="ErebTalk_05"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>		
+	
+    <state name="ErebTalk_05"> 
+        <onEnter>
+			<action name="사운드를설정한다" arg1="7001" arg2="1"/>		
+			<action name="AddCinematicTalk" npcID="11001663" illustID="Ereb_closeEye" msg="$52000033_QD__AUDIENCEWITHEREB_03__6$" duration="3000" delayTick="0" align="left" /> <!-- 에레브 -->			
+			<action name="AddBalloonTalk" spawnPointID="401" msg="$52000033_QD__AUDIENCEWITHEREB_03__7$" duration="3000" />	
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="ErebTalk_06"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>		
+	
+    <state name="ErebTalk_06"> 
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11001663" illustID="Ereb_serious" msg="$52000033_QD__AUDIENCEWITHEREB_03__8$" duration="3000" delayTick="0" align="left" /> <!-- 에레브 -->			
+            <action name="NPC를이동시킨다" arg1="601" arg2="MS2PatrolData_1006" />
+		</onEnter>
+			<condition name="WaitTick" waitTick="4000">	
+				<transition state="ErebTalk_07"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>		
+	
+    <state name="ErebTalk_07"> 
+        <onEnter>
+			<action name="AddCinematicTalk" npcID="11001663" illustID="Ereb_closeEye" msg="$52000033_QD__AUDIENCEWITHEREB_03__9$" duration="3000" delayTick="0" align="left" /> <!-- 에레브 -->			
+			<action name="몬스터소멸시킨다" arg1="601"/>	
+		<action name="SetSceneSkip" arg1="" arg2=""/>	
+		</onEnter>
+			<condition name="WaitTick" waitTick="3000">	
+				<transition state="end"/>
+			</condition> 	
+		<onExit>
+		</onExit> 			
+    </state>			
+	
+    <state name="end"> 
+        <onEnter>
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>			
+			<action name="몬스터소멸시킨다" arg1="601"/>		
+			<action name="카메라리셋" interpolationTime="1.0"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+		</onEnter>
+		<onExit>
+		</onExit> 			
+    </state>			
+	
+	
+</ms2>

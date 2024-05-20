@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  카보회랑 06 to boss -->
+
+<ms2>
+    <state name="대기" posX="300" posY="199"> 
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="6000" arg2="0" /> <!-- DoorOpen vibrate-->
+			<action name="이펙트를설정한다" arg1="6001" arg2="0" /> <!-- DoorOpen vibrate-->
+			<action name="이펙트를설정한다" arg1="6002" arg2="0" /> <!-- DoorOpen vibrate-->
+			<action name="이펙트를설정한다" arg1="6003" arg2="0" /> <!-- DoorOpen vibrate-->
+			<action name="포탈을설정한다" arg1="50" arg2="0" arg3="0" arg4="0" />  
+			<action name="이펙트를설정한다" arg1="837" arg2="0" /> <!-- light-->
+			<action name="메쉬를설정한다" arg1="2000-2003" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- invisible barrier-->
+			<action name="메쉬를설정한다" arg1="2100-2105" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- invisible barrier-->
+			<action name="메쉬를설정한다" arg1="2200" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- fence-->
+			<action name="메쉬를설정한다" arg1="5000-5009" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- stairs-->
+			<action name="메쉬를설정한다" arg1="13001-13039" arg2="1" arg3="0" arg4="0" arg5="0" />					
+			<action name="오브젝트반응설정한다" arg1="10000837" arg2="1" />  
+			</onEnter>
+				<condition name="유저를감지했으면" arg1="9012">
+					<transition state="입장딜레이01" />
+				</condition>
+		<onExit>
+		</onExit>
+    </state> 
+
+    <state name="입장딜레이01" posX="300" posY="199">
+		<onEnter>
+			<action name="타이머를설정한다" arg1="1" arg2="2"/>
+			<action name="메쉬를설정한다" arg1="2000-2003" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- invisible barrier-->
+			<action name="메쉬를설정한다" arg1="2100-2105" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- invisible barrier-->
+			</onEnter>
+				<condition name="시간이경과했으면" arg1="1"> 
+					<transition state="가이드준비01"/>  
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		 
+	
+  <state name="가이드준비01">
+    <onEnter>
+			<action name="ShowGuideSummary" entityID="20105101" textID="20105101" durationTime="4000" /> <!-- 길 찾기-->
+    </onEnter>
+			<condition name="오브젝트가반응했으면" arg1="10000837" arg2="0">
+				<transition state="포털개방01"/>
+			</condition>
+  </state>
+  
+    <state name="포털개방01"> 
+        <onEnter>
+			<action name="SetUserValue" triggerID="7" key="timercheck" value="1" /> 			
+			<action name="타이머를설정한다" arg1="10" arg2="2"/> 
+			<action name="포탈을설정한다" arg1="50" arg2="1" arg3="1" arg4="1" />  
+			<action name="이펙트를설정한다" arg1="6003" arg2="1" /> <!-- vibrate-->
+			<action name="이펙트를설정한다" arg1="837" arg2="1" /> <!-- light-->
+			<action name="랜덤메쉬를설정한다" arg1="5000-5009" arg2="1" arg3="10" arg4="50" arg5="50" /> <!-- stairs-->
+			<action name="메쉬를설정한다" arg1="13001-13039" arg2="0" arg3="0" arg4="0" arg5="0" />				
+			<action name="메쉬를설정한다" arg1="2200" arg2="0" arg3="0" arg4="0" arg5="10" /> <!-- fence-->
+			</onEnter>
+		<condition name="시간이경과했으면" arg1="10">
+			<transition state="대화연출준비01"/>
+		</condition>
+    </state> 
+	
+    <state name="대화연출준비01" posX="300" posY="199">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="연출대화01"/>  
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="연출대화01" posX="300" posY="199">
+		<onEnter>
+			<action name="타이머를설정한다" arg1="20" arg2="3"/>
+			<action name="대화를설정한다" arg1="2" arg2="11001319" arg3="$02010051_BF__PORTAL03__0$" arg4="3" />	
+			<action name="스킵을설정한다" arg1="대화연출종료01"/>	
+			</onEnter>
+				<condition name="시간이경과했으면" arg1="20">
+					<transition state="대화연출종료01"/>  
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+			
+    <state name="대화연출종료01" posX="300" posY="199">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			</onEnter>
+				<condition name="무조건" >
+					<transition state="종료"/> 
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	 
+	
+    <state name="종료" posX="300" posY="199"> 
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="6003" arg2="0" /> <!-- vibrate-->
+			</onEnter>
+		<onExit>
+		</onExit>
+    </state> 
+	
+</ms2>

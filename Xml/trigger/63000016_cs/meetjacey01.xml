@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 90000431 지하 통로의 안내자 퀘스트 시작-->
+<ms2>
+	<state name="Wait">   
+        <onEnter> 
+			<action name="CreateWidget" arg1="Guide"/> 
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="0" arg4="1" /> 			
+			<action name="메쉬를설정한다" arg1="3000" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- MonitorOff -->
+			<action name="메쉬를설정한다" arg1="3001" arg2="0" arg3="0" arg4="0" arg5="0" /> <!-- MonitorOn -->			
+			<action name="이펙트를설정한다" arg1="5000" arg2="0"/> <!-- 가이드 서머리 사운드 이펙트-->
+			<action name="이펙트를설정한다" arg1="6000" arg2="0"/> <!-- RadioInterference -->			
+				</onEnter>	
+		<condition name="유저를감지했으면" arg1="9000">	
+			<transition state="WalkIn01"/>
+		</condition> 
+    <onExit> 
+    </onExit>
+    </state>
+
+<!--  이미 퀘스트 수락한 상태 제이시 가까이로 강제 이동-->
+    <state name="MoveToJacey01" posX="300" posY="199">
+        <onEnter>	
+			<action name="유저를이동시킨다" arg1="63000016" arg2="10" arg3="9000" />				
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> 				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="MoveToJacey02"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>			
+    <state name="MoveToJacey02" posX="300" posY="199">
+        <onEnter>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="JaceyQuest02"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>		
+	
+    <state name="WalkIn01" posX="300" posY="199">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  
+			<action name="연출UI를설정한다" arg1="4"/>	
+				</onEnter>	
+				<condition name="퀘스트유저를감지하면" arg1="9000" arg2="90000431" arg3="2" > <!--  퀘스트 완료 가능 상태 -->
+					<transition state="MoveToJacey01"/>
+				</condition>		
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="WalkIn02"/>
+				</condition>
+    <onExit> 
+    </onExit>
+    </state>			
+
+    <state name="WalkIn02">
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="카메라를선택한다" arg1="600" arg2="1"/>		
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1000" />			
+				</onEnter>	
+				<condition name="WaitTick" waitTick="3000">
+			<transition state="WalkIn03"/>
+		</condition> 
+    <onExit>  
+    </onExit>
+    </state>			
+	
+    <state name="WalkIn03">
+        <onEnter>
+			<action name="카메라를선택한다" arg1="601" arg2="1"/>				
+				</onEnter>	
+				<condition name="WaitTick" waitTick="6000">
+			<transition state="MeetJacey01"/>
+		</condition> 
+    <onExit>  
+    </onExit>
+    </state>		
+	
+    <state name="MeetJacey01">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="101" arg2="0" /> 						
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__0$" arg4="4" /> 
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="MeetJacey02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="MeetJacey02">
+		<onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>					
+			<action name="카메라를선택한다" arg1="602" arg2="1"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="MeetJacey03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>			
+
+    <state name="MeetJacey03">
+		<onEnter>			
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1001" />		
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_101" />		
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="JaceyTalk01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>			
+
+    <state name="JaceyTalk01">
+		<onEnter>
+			<action name="SetNpcEmotionSequence" arg1="101" arg2="Talk_A" />					
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__1$" arg4="5" /> 
+			<action name="스킵을설정한다" arg1="JaceyTalk02"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="JaceyTalk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="JaceyTalk02">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="JaceyTalk03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="JaceyTalk03">
+		<onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_1002" />		
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_102" />			
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__2$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="JaceyTalk04"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="JaceyTalk04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="JaceyTalk04">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="JaceyTalk05"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="JaceyTalk05">
+		<onEnter>
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__3$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="JaceyTalk06"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="JaceyTalk06"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="JaceyTalk06">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="카메라를선택한다" arg1="602" arg2="0"/>					
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="MinimapGuide01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>			
+	
+<!-- 트리거 To가이드  가이드에서 이동 불가능하게 막기-->	
+     <state name="MinimapGuide01">
+		<onEnter>
+			<action name="GuideEvent" eventID="10021010"/>  <!-- 트리거 To가이드 : 탭키 눌러서 미니맵 크게 보기  -->	
+		</onEnter>
+		<condition name="WidgetCondition" arg1="Guide" arg2="IsTriggerEvent" arg3="10021013">    <!--가이드 To 트리거 -: 미니맵 크게 보기 완료 -->	
+			<transition state="MinimapGuide02"/>
+		</condition>
+		<onExit>
+		</onExit>
+    </state>					
+
+    <state name="MinimapGuide02">
+		<onEnter>	
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="JaceyTalk10"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>			
+
+    <state name="JaceyTalk10">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>				
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__4$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="JaceyTalk11"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="JaceyTalk11"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="JaceyTalk11">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>		
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="JaceyTalk12"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>			
+
+    <state name="JaceyTalk12">
+		<onEnter>			
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__5$" arg4="4" /> 
+			<action name="스킵을설정한다" arg1="JaceyTalk13"/>
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="JaceyTalk13"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="JaceyTalk13">
+        <onEnter>		
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>				
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="PatrolWithJacey01"/>
+				</condition>
+    <onExit>
+    </onExit>  
+    </state> 
+	
+    <state name="PatrolWithJacey01">
+        <onEnter>					
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->	
+			<action name="ShowGuideSummary" entityID="10021020" textID="10021020"/>  <!-- 가이드 : 제이시를 따라 이동하기-->
+			<action name="NPC를이동시킨다" arg1="101" arg2="MS2PatrolData_103" />					
+        </onEnter>
+				<condition name="NPC를감지했으면" arg1="9100" arg2="101"> 
+					<transition state="PatrolWithJacey02"/>
+				</condition>
+    <onExit>
+    </onExit>  
+    </state> 
+
+    <state name="PatrolWithJacey02">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="$63000016_CS__MEETJACEY01__6$" arg4="3" arg5="0" />		
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="$63000016_CS__MEETJACEY01__7$" arg4="3" arg5="3" />		
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="$63000016_CS__MEETJACEY01__8$" arg4="3" arg5="6" />				
+			</onEnter>
+				<condition name="NPC를감지했으면" arg1="9101" arg2="101"> 
+					<transition state="PatrolWithJacey03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="PatrolWithJacey03">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="$63000016_CS__MEETJACEY01__9$" arg4="3" arg5="0" />		
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="$63000016_CS__MEETJACEY01__10$" arg4="3" arg5="3" />				
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="$63000016_CS__MEETJACEY01__11$" arg4="3" arg5="6" />				
+			</onEnter>
+				<condition name="NPC를감지했으면" arg1="9102" arg2="101"> 
+					<transition state="PatrolWithJacey04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="PatrolWithJacey04">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="1" arg2="101" arg3="$63000016_CS__MEETJACEY01__12$" arg4="3" /> 	
+			<action name="HideGuideSummary" entityID="10021020"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="CallNextRoom01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="CallNextRoom01">
+		<onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="카메라를선택한다" arg1="700" arg2="1"/>						
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="CallNextRoom02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="CallNextRoom02">
+		<onEnter>	
+			<action name="메쉬를설정한다" arg1="3000" arg2="0" arg3="100" arg4="0" arg5="0" /> <!-- MonitorOff -->		
+			<action name="메쉬를설정한다" arg1="3001" arg2="1" arg3="0" arg4="0" arg5="0" /> <!-- MonitorOn -->			
+			<action name="이펙트를설정한다" arg1="6000" arg2="1"/> <!-- RadioInterference -->						
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="CallNextRoom03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="CallNextRoom03">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__13$" arg4="4" /> 			
+			<action name="스킵을설정한다" arg1="CallNextRoom04"/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="CallNextRoom04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="CallNextRoom04">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+			<action name="몬스터소멸시킨다" arg1="101"  />
+			<action name="몬스터를생성한다" arg1="102" arg2="0" /> 					
+			<action name="카메라를선택한다" arg1="700" arg2="0"/>		
+			<action name="이펙트를설정한다" arg1="6000" arg2="0"/> <!-- RadioInterference -->				
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="JaceyQuest00"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>			
+
+<!-- 90000431 퀘스트 수락한 유저를 감지하면 -->	
+    <state name="JaceyQuest00">
+		<onEnter>	
+			<action name="이펙트를설정한다" arg1="5000" arg2="1"/> <!-- 가이드 서머리 사운드 이펙트-->		
+			<action name="ShowGuideSummary" entityID="10021030" textID="10021030"/>  <!-- 가이드 : 제이시와 대화하기-->		
+			</onEnter>
+				<condition name="퀘스트유저를감지하면" arg1="9002" arg2="90000431" arg3="2" > <!--  퀘스트 진행 중 상태 -->
+					<transition state="JaceyQuest01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="JaceyQuest01">
+		<onEnter>		
+			<action name="HideGuideSummary" entityID="10021030"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="JaceyQuest02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+	
+    <state name="JaceyQuest02">
+		<onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>			
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__14$" arg4="4" /> 		
+			<action name="스킵을설정한다" arg1="JaceyQuest03"/>					
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="JaceyQuest03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+    <state name="JaceyQuest03">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>		
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="JaceyQuest04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>			
+	
+    <state name="JaceyQuest04">
+		<onEnter>				
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__15$" arg4="4" /> 		
+			<action name="몬스터소멸시킨다" arg1="102"  />
+			<action name="몬스터를생성한다" arg1="103" arg2="0" /> 						
+			<action name="스킵을설정한다" arg1="JaceyQuest05"/>					
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="JaceyQuest05"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="JaceyQuest05">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>					
+			</onEnter>
+				<condition name="WaitTick" waitTick="1500">
+					<transition state="AboutPotion01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>				
+
+    <state name="AboutPotion01">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__16$" arg4="4" /> 				
+			<action name="스킵을설정한다" arg1="AboutPotion02"/>					
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="AboutPotion02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+
+    <state name="AboutPotion02">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>					
+			</onEnter>
+				<condition name="WaitTick" waitTick="500">
+					<transition state="AboutPotion03"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="AboutPotion03">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="2" arg2="11001620" arg3="$63000016_CS__MEETJACEY01__17$" arg4="4" /> 		
+			<action name="스킵을설정한다" arg1="AboutPotion04"/>				
+			</onEnter>
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="AboutPotion04"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+
+    <state name="AboutPotion04">
+		<onEnter>
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>		
+			<action name="NPC를이동시킨다" arg1="103" arg2="MS2PatrolData_301" />						
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="JaceyLeve01"/>
+				</condition>
+		<onExit>
+			<action name="GuideEvent" eventID="10021120"/>  <!-- 트리거 To가이드 : PC 컨트롤 불가  -->			
+		</onExit>
+    </state>				
+	
+    <state name="JaceyLeve01">
+		<onEnter>		
+			<action name="대화를설정한다" arg1="1" arg2="103" arg3="$63000016_CS__MEETJACEY01__18$" arg4="2" /> 						
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="JaceyLeve02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="JaceyLeve02">
+        <onEnter>			
+			<action name="RemoveCinematicTalk" />			
+			<action name="몬스터소멸시킨다" arg1="103"  />		
+        </onEnter>
+				<condition name="WaitTick" waitTick="1000">
+					<transition state="SendSignalToGuide01"/>	
+				</condition>
+    <onExit>
+    </onExit>  
+    </state> 	
+	
+<!-- 트리거 To가이드  -->	
+     <state name="SendSignalToGuide01">
+		<onEnter>	
+			<action name="GuideEvent" eventID="10021050"/>  <!-- 트리거 To가이드 : 약초 퀵슬롯에 장착하기  -->	
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="PortalOpen01"/>
+				</condition>		
+		<onExit>
+		</onExit>
+    </state>					
+	
+     <state name="PortalOpen01">
+		<onEnter>
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" /> 			
+		</onEnter>
+		<condition name="!유저를감지했으면" arg1="9002">
+					<transition state="Quit"/>
+				</condition>		
+		<onExit>
+		</onExit>
+    </state>		
+	
+    <state name="Quit"> 
+        <onEnter>
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+ 
+</ms2>
+

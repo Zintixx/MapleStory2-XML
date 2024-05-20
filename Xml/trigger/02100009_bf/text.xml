@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+ <state name="유저감지">   
+         <onEnter>
+			
+			</onEnter>	
+		<condition name="유저를감지했으면" arg1="101" >
+            <transition state="알림" />
+				</condition> 
+    <onExit> 
+    </onExit>
+ </state>
+ 
+	<state name="알림">   
+		<condition name="AnyOne">
+			<group>
+	            <condition name="CheckNpcHp" spawnPointId="100000001" compare="lowerEqual" value="5" isRelative="true" />
+	            <condition name="CheckNpcHp" spawnPointId="100000002" compare="lowerEqual" value="5" isRelative="true" />
+			</group>
+			<transition state="알림_2"/>
+		</condition>
+		<condition name="AllOf">
+			<group>
+				<condition name="몬스터가죽어있으면" arg1="100000001" />
+				<condition name="몬스터가죽어있으면" arg1="100000002" /> 
+			</group>
+			<transition state="완료알림"/>
+		</condition>	
+		<onExit> 
+			<action name="타이머를초기화한다" arg1="10000"/>  	
+			</onExit>
+	</state>
+
+<state name="알림_2" > 
+        <onEnter>
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000">	
+			  <transition state="알림_3"/>
+				</condition> 
+    <onExit> 
+ 		      <action name="이벤트UI를설정한다" arg1="1" arg2="$02100009_BF__resurrection_2__0$" arg3="4000"/> 	
+    </onExit>
+    </state> 	
+	
+<state name="알림_3" > 
+        <onEnter>
+		</onEnter>
+				<condition name="WaitTick" waitTick="7000">	
+			  <transition state="알림"/>
+				</condition> 
+		<condition name="AllOf">
+			<group>
+				<condition name="몬스터가죽어있으면" arg1="100000001" />
+				<condition name="몬스터가죽어있으면" arg1="100000002" /> 
+			</group>
+			<transition state="완료알림"/>
+		</condition>	
+		<onExit> 
+			</onExit>			
+    <onExit> 
+    </onExit>
+    </state> 	
+
+	<state name="완료알림">		
+		<onEnter> 					
+			</onEnter>		
+				<condition name="WaitTick" waitTick="5500">							
+				</condition>			
+    <onExit> 
+    </onExit>
+				</state>	
+	
+</ms2>
+

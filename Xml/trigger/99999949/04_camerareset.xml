@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	  <state name="Wait">
+		<onEnter>				
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9031">
+					<transition state="Guide"/>	
+			</condition>	
+	  </state>
+	  
+	  <state name="Guide">	
+		<onEnter>
+			<action name="DebugString" string="4번 영역에 들어가면 CameraReset 트리거가 발동됩니다." /> 
+		</onEnter>
+			<condition name="유저를감지했으면" arg1="9030">	
+					<transition state="CameraReady"/>
+			</condition>	
+	  </state>
+	  
+	<state name="CameraReady">
+		<onEnter>
+			<action name="DebugString" string="SetOnetimeEffect 1초 후에 시작됩니다." /> 		
+		</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="CameraWalk01"/>
+				</condition>
+	</state>
+	
+	  <state name="CameraWalk01">
+		<onEnter>	
+			<action name="DebugString" string="600번 카메라 선택" /> 		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  						
+			<action name="카메라를선택한다" arg1="603" arg2="1"/>							
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000" > 	
+					<transition state="CameraWalk03"/>
+			</condition>
+	  </state>
+	
+	  <!--state name="CameraWalk02">
+		<onEnter>	
+			<action name="DebugString" string="601번 카메라 선택" /> 						
+			<action name="카메라를선택한다" arg1="601" arg2="1"/>							
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000" > 	
+					<transition state="CameraWalk03"/>
+			</condition>
+	  </state-->
+	
+	  <state name="CameraWalk03">
+		<onEnter>	
+			<action name="DebugString" string="602번 카메라 선택" /> 		
+			<action name="카메라를선택한다" arg1="604" arg2="1"/>							
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000" > 	
+					<transition state="CameraReset"/>
+			</condition>
+	  </state>
+	
+	  <state name="CameraReset">
+		<onEnter>	
+			<action name="DebugString" string="모든 카메라 리셋" /> 		
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+			<action name="카메라를선택한다" arg1="604" arg2="0"/>				
+			<!--action name="카메라리셋" interpolationTime="3.0"/-->	
+		</onEnter>
+				<condition name="WaitTick" waitTick="2000" > 	
+					<transition state="Quit"/>
+			</condition>	
+	  </state>
+	  
+	  <state name="Quit">
+		<onEnter>		
+					<action name="DebugString" string="5초 후에 트리거가 리셋됩니다. 4번 영역 밖으로 나가세요." /> 			
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000" > 	
+					<transition state="Wait"/>	
+			</condition>
+        <onExit>				
+        </onExit>			
+	  </state>
+</ms2>

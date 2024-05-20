@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+
+	<!-- 여기서 부터 시작 -->
+    <state name="Idle">
+	    <onEnter>
+			<action name="이펙트를설정한다" arg1="7999" arg2="0" /> <!-- 카메라 사운드 -->
+			<action name="포탈을설정한다" arg1="8" arg2="0" arg3="0" arg4="0" />
+			<action name="메쉬를설정한다" arg1="6001-6100" arg2="0" arg3="0" arg4="0" arg5="0" /> <!--일반 존 투명 블록-->
+			<!-- <action name="메쉬를설정한다" arg1="6101-6200" arg2="1" arg3="0" arg4="0" arg5="0" /> --> <!--벽 설정-->
+			<action name="메쉬를설정한다" arg1="6201-6300" arg2="0" arg3="0" arg4="0" arg5="0" /> <!--히든 존 투명 블록-->	
+	    </onEnter>
+		<condition name="여러명의유저를감지했으면" arg1="701" arg2="1">
+			<transition state="Tutorial" />
+		</condition>	
+		<onExit>
+			<action name="몬스터를생성한다" arg1="501,502,503,504,505,506,507,508,509" arg2="1" arg3="0"/>	
+		</onExit>		
+    </state>
+	
+		
+		 <state name="Tutorial">
+	    <onEnter>
+			<action name="이펙트를설정한다" arg1="7998" arg2="1" /> <!-- 컷신 사운드 AMB -->
+			<action name="연출UI를설정한다" arg1="1"/> 
+			<action name="연출UI를설정한다" arg1="3" />				
+			<action name="카메라경로를선택한다" arg1="8100,8101,8104,8106,8103,8105,8107,8108" arg2="0"/> <!-- 카메라 뒤로 당김 -->
+	    </onEnter>
+			<condition name="WaitTick" waitTick="8000" > 
+			<transition state="Tutorial_01" />
+			</condition>
+		<onExit>
+		</onExit>	
+    </state>
+	
+	<state name="Tutorial_01">
+	    <onEnter>
+			<action name="스킵을설정한다" arg1="Tutorial_02" />	
+	    </onEnter>
+			<condition name="WaitTick" waitTick="9500" > 
+			<transition state="Tutorial_02" />
+			</condition> 
+		<onExit>
+		</onExit>	
+    </state>
+	
+	 <state name="Tutorial_02">
+	    <onEnter>
+			<action name="유저를이동시킨다" arg1="51000003" arg2="1" arg3="701"/>
+			<action name="이펙트를설정한다" arg1="7998" arg2="0" /> <!-- 컷신 사운드 AMB OFF -->
+			<action name="카메라경로를선택한다" arg1="8005,8001,8002" arg2="0"/> <!-- 카메라 뒤로 당김 -->	
+			<action name="SetUserValue" triggerID="991109" key="Tutorial" value="0" /> <!-- 튜토리얼 동안 무적 버프 -->
+
+			<!-- 레터박스, 플레이어 조작 불가능 해제 -->
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>
+			<action name="연출UI를설정한다" arg1="7"/>
+
+			<!-- 라이프 카운트 정의 -->
+			<action name="ArcadeBoomBoomOcean" type="StartGame" lifeCount="20" />
+			
+			<action name="ShowCountUI" text="$51000003_DG__MAIN__0$" stage="0" count="5"  />
+			<action name="SetUserValue" triggerID="991103" key="Fail" value="1" /> <!-- Fail Event on -->
+			<action name="버프를걸어준다" arg1="701" arg2="70000087" arg3="1" arg5="0" /> <!-- 아케이드 포커스 -->
+	    </onEnter>
+			<condition name="WaitTick" waitTick="5000" > 
+			<transition state="Start" />
+			</condition>
+		<onExit>
+					<action name="몬스터소멸시킨다" arg1="501,502,503,504,505,506,507,508,509"/>	
+		</onExit>
+    </state>
+	 
+	
+    <state name="Start">
+	        <onEnter>
+				<action name="PlaySystemSoundInBox" arg2="System_Monkey_01"/> <!-- [02100226] System_Monkey_01 ~ 06 (원숭이 간헐적으로 우키키, 우카카) -->
+				<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="boomocean_start"/>	<!-- 붐붐오션 시작하기 (트로피) -->	
+				<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="arcade_startcheck"/>	<!-- 아케이드 참여 일괄 체크용-->	
+				<action name="메쉬를설정한다" arg1="6101-6200" arg2="0" arg3="0" arg4="0" arg5="0" /> <!--벽 설정-->
+				<action name="버프를삭제한다" arg1="49179004" arg2="0" />
+
+				<!-- 발사체 피격 감점 점수 정의 -->
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="49210001" score="-500" /> <!-- 일반 발사체 -->
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="49210011" score="-500" /> <!-- 일반 발사체 -->				
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="49210021" score="-500" /> <!-- 일반 발사체 -->					
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="49210031" score="-500" /> <!-- 일반 발사체 -->	
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="49200021" score="-500" /> <!-- 파도 발사체 -->	
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="49200001" score="-500" /> <!-- 튜브 발사체 -->			
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="49190012" score="-500" /> <!-- 대포 발사체 -->		
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="49190022" score="-500" /> <!-- 대포 발사체 -->		
+				<!-- 알쏭달쏭 큐브 점수 정의-->	
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="70000080" score="1000" /> 	
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="70000081" score="1000" /> 				
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="70000082" score="1000" /> 					
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="70000083" score="1000" /> 				
+				<action name="ArcadeBoomBoomOcean" type="SetSkillScore" id="70000085" score="1000" /> 								
+			</onEnter>
+				<condition name="WaitTick" waitTick="1000" > 
+					<transition state="Step_01" />
+				</condition>
+				
+			<onExit>			
+			</onExit>
+    </state>	
+	
+	<state name="Step_01"> <!-- 0~15 -->
+        <onEnter>
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="1,25" arg3="0" arg4="0" />  --><!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991107" key="Round_01" value="1" /> <!-- normal LV1 -->
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="1" roundDuration="1500" timeScoreRate="1033" /> <!-- 20초 -->
+			<action name="PlaySystemSoundInBox" arg2="System_Fruit_Throw_Loop_01"/>  <!-- [02100216] System_Fruit_Throw_Loop_01 (과일 날라 다니는 효과음, 루핑) -->
+        </onEnter>
+		<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_02" />
+		</condition>
+		<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	
+	<state name="Step_02"> 
+        <onEnter>
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="2,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991107" key="Round_02" value="1" /> <!-- normal LV2  -->
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="1" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="2" roundDuration="20000" timeScoreRate="1033" />			
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_03" />
+		</condition>
+				<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+		</onExit>
+    </state>
+	
+	
+		<state name="Step_03"> 
+        <onEnter>
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="3,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991111" key="Round_01" value="1" />  <!-- item_01 -->
+			<action name="SetUserValue" triggerID="991107" key="Round_03" value="1" /> <!-- normal LV3 -->
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="2" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="3" roundDuration="20000" timeScoreRate="1033" />	
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_04" />
+		</condition>
+				<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+			<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="boomocean_1min"/> <!-- 붐붐오션 1분 버티기 트로피 -->
+		</onExit>
+    </state>		
+	
+	
+	
+	<state name="Step_04"> <!-- 45~60 -->
+        <onEnter>
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="4,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="카메라경로를선택한다" arg1="8002,8003" arg2="0"/> <!-- 카메라 뒤로 당김 -->
+			<action name="이펙트를설정한다" arg1="7999" arg2="1" /> <!-- 카메라 사운드 -->
+			<action name="SetUserValue" triggerID="991120" key="Round_01" value="1" /> <!-- wave3 LV1 -->
+			<action name="SetUserValue" triggerID="991107" key="Round_04" value="1" /> <!-- normal LV4  -->
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="3" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="4" roundDuration="20000" timeScoreRate="1550" />	
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_05" />
+		</condition>
+				<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+			<action name="이펙트를설정한다" arg1="7999" arg2="0" /> <!-- 카메라 사운드 -->
+		</onExit>
+    </state>	
+	
+	<state name="Step_05"> <!-- 60~75 -->
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="4" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="5" roundDuration="20000" timeScoreRate="1550" />	
+		<!-- 	<action name="이벤트UI를설정한다" arg1="0" arg2="5,25" arg3="0" arg4="0" />  --><!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991104" key="Round_01" value="1" />	<!-- wave LV1 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_06" />
+		</condition>
+				<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	
+	<state name="Step_06"> <!-- 75~90 -->
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="5" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="6" roundDuration="20000" timeScoreRate="1550" />	
+		<!-- 	<action name="이벤트UI를설정한다" arg1="0" arg2="6,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_07" />
+		</condition>
+				<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+		<state name="Step_07"> <!-- 90~105 -->
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="6" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="7" roundDuration="20000" timeScoreRate="2067" />	
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="7,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991105" key="Round_00" value="1" /> <!-- wave2 LV0 -->
+			<action name="SetUserValue" triggerID="991102" key="Treasure_box" value="1" /> <!-- 보물상자 스폰 스위치 ON -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_08" />
+		</condition>
+				<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+		</onExit>
+	    </state>	
+		
+		<state name="Step_08"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="7" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="8" roundDuration="20000" timeScoreRate="2067" />	
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="8,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991121" key="Round_01" value="1" /> <!-- wave4 LV1 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_09" />
+		</condition>
+				<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	   
+
+	   
+	<state name="Step_09"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="8" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="9" roundDuration="20000" timeScoreRate="2067" />	
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="9,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991122" key="Round_01" value="1" /> <!-- wave5 LV1 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_10" />
+		</condition>
+				<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+			<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="boomocean_3min"/> <!-- 붐붐오션 3분 버티기 트로피 -->
+		</onExit>
+	   </state>	
+		
+		<state name="Step_10"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="9" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="10" roundDuration="20000" timeScoreRate="2583" />	
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="10,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="이펙트를설정한다" arg1="7999" arg2="1" /> <!-- 카메라 사운드 -->
+			<action name="카메라경로를선택한다" arg1="8003,8004" arg2="0"/> <!-- 카메라 뒤로 당김 -->
+			<action name="SetUserValue" triggerID="991106" key="Round_01" value="1" /> <!-- cannon LV 1-->
+	    </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_11" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	
+	<state name="Step_11"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="10" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="11" roundDuration="20000" timeScoreRate="2583" />	
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="11,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991106" key="Round_02" value="1" /> <!-- cannon LV 2-->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_12" />
+			</condition>
+					<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+		</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+
+	
+	<state name="Step_12"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="11" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="12" roundDuration="20000" timeScoreRate="2583" />	
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="12,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991106" key="Round_03" value="1" /> <!-- cannon LV 3-->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_13" />
+			</condition>
+			<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	
+		<state name="Step_13"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="12" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="13" roundDuration="20000" timeScoreRate="3100" />	
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="13,25" arg3="0" arg4="0" />  --><!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991106" key="Round_04" value="1" /> <!-- cannon LV 4-->
+			<action name="SetUserValue" triggerID="991105" key="Round_01" value="1" /> <!-- wave2 LV1 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_14" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>		   
+	   
+	   
+	<state name="Step_14"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="13" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="14" roundDuration="20000" timeScoreRate="3100" />	
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="14,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991123" key="Round_01" value="1" /> <!-- normal2 LV1 -->
+			<action name="SetUserValue" triggerID="991108" key="Round_03" value="1" /> <!-- fog -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_15" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	
+	<state name="Step_15"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="14" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="15" roundDuration="20000" timeScoreRate="3100" />
+<!-- 			<action name="이벤트UI를설정한다" arg1="0" arg2="15,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_16" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+			<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="boomocean_5min"/> <!-- 붐붐오션 5분 버티기 트로피 -->
+		</onExit>
+	   </state>		
+	
+	
+	<state name="Step_16"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="15" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="16" roundDuration="20000" timeScoreRate="1350" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="16,25" arg3="0" arg4="0" />  --><!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991123" key="Round_02" value="1" /> <!-- normal2 LV2 -->
+			<action name="SetUserValue" triggerID="991105" key="Round_02" value="1" /> <!-- wave2 LV2 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_17" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	   
+	 <state name="Step_17"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="16" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="17" roundDuration="20000" timeScoreRate="1350" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="17,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991106" key="Round_05" value="1" /> <!-- cannon LV 5-->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_18" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	   
+	<state name="Step_18"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="17" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="18" roundDuration="20000" timeScoreRate="1350" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="18,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991123" key="Round_03" value="1" /> <!-- normal2 LV3 -->
+			<action name="SetUserValue" triggerID="991122" key="Round_02" value="1" /> <!-- wave5 LV1 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_19" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	
+	<state name="Step_19"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="18" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="19" roundDuration="20000" timeScoreRate="1125" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="18,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+	   			<action name="SetUserValue" triggerID="991107" key="Round_06" value="1" /> <!-- normal LV4  -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_20" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	   
+	 <state name="Step_20"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="19" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="20" roundDuration="20000" timeScoreRate="1125" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="20,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+			<action name="SetUserValue" triggerID="991123" key="Round_04" value="1" /> <!-- normal2 LV4 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_21" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	   
+	   	<state name="Step_21"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="20" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="21" roundDuration="20000" timeScoreRate="1125" />
+		<!-- 	<action name="이벤트UI를설정한다" arg1="0" arg2="21,25" arg3="0" arg4="0" />  --><!-- 라운드 표기 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_22" />
+			</condition>
+						<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	   
+	
+	<state name="Step_22"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="21" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="22" roundDuration="20000" timeScoreRate="900" />
+		<!-- 	<action name="이벤트UI를설정한다" arg1="0" arg2="22,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_23" />
+			</condition>
+			<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	    
+	<state name="Step_23"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="22" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="23" roundDuration="20000" timeScoreRate="900" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="23,25" arg3="0" arg4="0" /> --> <!-- 라운드 표기 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_24" />
+			</condition>
+			<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	
+	  
+	<state name="Step_24"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="23" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="24" roundDuration="20000" timeScoreRate="900" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="24,25" arg3="0" arg4="0" />  --><!-- 라운드 표기 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000" > 
+			<transition state="Step_25" />
+			</condition>
+			<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>	   
+	   
+	<state name="Step_25"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="ClearRound" round="24" />
+			<action name="ArcadeBoomBoomOcean" type="StartRound" round="25" roundDuration="20000" timeScoreRate="562" />
+			<!-- <action name="이벤트UI를설정한다" arg1="0" arg2="25,25" arg3="0" arg4="0" />  --><!-- 라운드 표기 -->
+        </onEnter>
+			<condition name="WaitTick" waitTick="120000" > 
+			<transition state="Step_26" />
+			</condition>
+			<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		
+		</onExit>
+	   </state>
+	   
+	   
+	<state name="Step_26"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="EndGame" />
+			<action name="업적이벤트를발생시킨다" arg1="701" arg2="trigger" arg3="boomocean_10min"/> <!-- 붐붐오션 10분 버티기 트로피 -->
+        </onEnter>
+			<condition name="여러명의유저를감지했으면" arg1="705" arg2="1">
+				<transition state="End" />
+			</condition>
+		<onExit>
+		</onExit>
+	   </state>
+	
+		<state name="End"> 
+        <onEnter>
+			<action name="ArcadeBoomBoomOcean" type="EndGame" />
+        </onEnter>
+		<onExit>
+		</onExit>
+	   </state>
+</ms2>

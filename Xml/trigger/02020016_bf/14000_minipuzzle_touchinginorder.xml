@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 공중에 나타난 발판 추적하기 -->
+<ms2>	
+    <state name="Wait" >
+        <onEnter>
+			<action name="타이머를초기화한다" arg1="1"/> 
+			<action name="타이머를초기화한다" arg1="10"/> 		
+			<action name="오브젝트반응설정한다" arg1="12000243" arg2="2" />	<!-- RareBox / 기믹 종료 오브젝트 / Additional Effect 71001141 걸어서 71001041 제거 -->	
+			<action name="오브젝트반응설정한다" arg1="12000077" arg2="2" />	<!-- AntiqueMap / 기믹 시작 오브젝트 / Additional Effect 71001041 부여 -->	
+			<action name="오브젝트반응설정한다" arg1="12000088" arg2="0"/> <!-- CheckPosition_Tree01 -->	
+			<action name="오브젝트반응설정한다" arg1="12000089" arg2="0"/> <!-- CheckPosition_Tree02 -->	
+			<action name="오브젝트반응설정한다" arg1="12000090" arg2="0"/> <!-- CheckPosition_Tree03 -->
+			<action name="오브젝트반응설정한다" arg1="12000091" arg2="0"/> <!-- CheckPosition_Tree04 -->	
+			<action name="오브젝트반응설정한다" arg1="12000092" arg2="0"/> <!-- CheckPosition_Tree05 -->			
+			<action name="액터를설정한다" arg1="14011" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree01 --> 
+			<action name="액터를설정한다" arg1="14021" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree02 --> 
+			<action name="액터를설정한다" arg1="14022" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree02 --> 
+			<action name="액터를설정한다" arg1="14031" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree03 --> 
+			<action name="액터를설정한다" arg1="14032" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree03 --> 
+			<action name="액터를설정한다" arg1="14033" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree03 --> 
+			<action name="액터를설정한다" arg1="14041" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree04 --> 
+			<action name="액터를설정한다" arg1="14042" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree04 --> 
+			<action name="액터를설정한다" arg1="14043" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree04 --> 	
+			<action name="액터를설정한다" arg1="14044" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree04 --> 	
+			<action name="액터를설정한다" arg1="14051" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree05 --> 
+			<action name="액터를설정한다" arg1="14052" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree05 --> 
+			<action name="액터를설정한다" arg1="14053" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree05 --> 	
+			<action name="액터를설정한다" arg1="14054" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower04_Of_Tree05 --> 	
+			<action name="액터를설정한다" arg1="14055" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower05_Of_Tree05 --> 		
+			<action name="이펙트를설정한다" arg1="14200" arg2="0"/> <!-- Success Sound Effect --> 	
+			<action name="이펙트를설정한다" arg1="14201" arg2="0"/> <!-- Right Sound Effect --> 	
+			<action name="이펙트를설정한다" arg1="14202" arg2="0"/> <!-- Wrong Sound Effect --> 			
+        </onEnter>
+		<condition name="UserValue" key="TimeEventOn" value="1">	
+			<transition state="SettingDelay"/>
+		</condition> 	
+        <onExit> 			 
+        </onExit>  
+    </state>
+
+    <state name="SettingDelay"> <!-- 임시 스테이트 테스트용 -->
+        <onEnter>		
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="Setting"/>	
+		</condition>
+		<condition name="UserValue" key="TimeEventOn" value="0">	
+			<transition state="Wait"/>
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+	
+	<state name="Setting" >
+        <onEnter>	
+			<action name="오브젝트반응설정한다" arg1="12000077" arg2="1" />	<!-- AntiqueMap / 기믹 시작 오브젝트 / Additional Effect 71001041 부여 -->		
+        </onEnter>	
+		<condition name="오브젝트가반응했으면" arg1="12000077" arg2="0">
+			<action name="타이머를설정한다" arg1="1" arg2="120" arg3="1" arg4="0" arg5="0" />  <!-- UI 표시 안함 / 황금 상자 소유권 Additional Effect 71001041 지속시간 동일 -->		
+			<transition state="TouchingInNumericalOrder_Start_Delay"/>
+		</condition>
+		<condition name="UserValue" key="TimeEventOn" value="0">	
+			<transition state="Wait"/>
+		</condition>
+        <onExit>				
+        </onExit>			
+    </state>	
+
+	
+    <state name="TouchingInNumericalOrder_Start_Delay" >
+        <onEnter>		
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="TouchingInNumericalOrder_Play01"/>
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="TouchingInNumericalOrder_Play01" >
+        <onEnter>	
+		<action name="이펙트를설정한다" arg1="14201" arg2="1"/> <!-- Right Sound Effect --> 			
+		<action name="오브젝트반응설정한다" arg1="12000088" arg2="1"/> <!-- CheckPosition_Tree01 -->	
+		<action name="오브젝트반응설정한다" arg1="12000089" arg2="1"/> <!-- CheckPosition_Tree02 -->	
+		<action name="오브젝트반응설정한다" arg1="12000090" arg2="1"/> <!-- CheckPosition_Tree03 -->
+		<action name="오브젝트반응설정한다" arg1="12000091" arg2="1"/> <!-- CheckPosition_Tree04 -->	
+		<action name="오브젝트반응설정한다" arg1="12000092" arg2="1"/> <!-- CheckPosition_Tree05 -->			
+		<action name="액터를설정한다" arg1="14011" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree01 --> 
+		<action name="액터를설정한다" arg1="14021" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree02 --> 
+		<action name="액터를설정한다" arg1="14022" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree02 --> 
+		<action name="액터를설정한다" arg1="14031" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree03 --> 
+		<action name="액터를설정한다" arg1="14032" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree03 --> 
+		<action name="액터를설정한다" arg1="14033" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree03 --> 
+		<action name="액터를설정한다" arg1="14041" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree04 --> 
+		<action name="액터를설정한다" arg1="14042" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree04 --> 
+		<action name="액터를설정한다" arg1="14043" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree04 --> 	
+		<action name="액터를설정한다" arg1="14044" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree04 --> 	
+		<action name="액터를설정한다" arg1="14051" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree05 --> 
+		<action name="액터를설정한다" arg1="14052" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree05 --> 
+		<action name="액터를설정한다" arg1="14053" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree05 --> 	
+		<action name="액터를설정한다" arg1="14054" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower04_Of_Tree05 --> 	
+		<action name="액터를설정한다" arg1="14055" arg2="1" arg3="Interaction_luminous_A02_off" /> <!-- Flower05_Of_Tree05 --> 	
+        </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="ResetTimer"/>
+		</condition>		
+		<condition name="오브젝트가반응했으면" arg1="12000088" arg2="0">
+			<transition state="TouchingInNumericalOrder_Play02"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000089" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000090" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000091" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000092" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>				
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="TouchingInNumericalOrder_Play02" >
+        <onEnter>	
+		<action name="오브젝트반응설정한다" arg1="12000088" arg2="0"/> <!-- CheckPosition_Tree01 -->				
+		<action name="이펙트를설정한다" arg1="14201" arg2="1"/> <!-- Right Sound Effect --> 						
+		<action name="액터를설정한다" arg1="14011" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower01_Of_Tree01 --> 				
+        </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="ResetTimer"/>
+		</condition>
+		<condition name="오브젝트가반응했으면" arg1="12000089" arg2="0">
+			<transition state="TouchingInNumericalOrder_Play03"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000090" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000091" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000092" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>			
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="TouchingInNumericalOrder_Play03" >
+        <onEnter>	
+		<action name="오브젝트반응설정한다" arg1="12000089" arg2="0"/> <!-- CheckPosition_Tree02 -->			
+		<action name="이펙트를설정한다" arg1="14201" arg2="1"/> <!-- Right Sound Effect --> 			
+		<action name="액터를설정한다" arg1="14021" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower01_Of_Tree02 --> 
+		<action name="액터를설정한다" arg1="14022" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower02_Of_Tree02 --> 				
+        </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="ResetTimer"/>
+		</condition>
+		<condition name="오브젝트가반응했으면" arg1="12000090" arg2="0">
+			<transition state="TouchingInNumericalOrder_Play04"/>
+		</condition>		
+		<condition name="오브젝트가반응했으면" arg1="12000091" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000092" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>
+		</condition>			
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="TouchingInNumericalOrder_Play04" >
+        <onEnter>
+		<action name="오브젝트반응설정한다" arg1="12000090" arg2="0"/> <!-- CheckPosition_Tree03 -->	
+		<action name="이펙트를설정한다" arg1="14201" arg2="1"/> <!-- Right Sound Effect --> 			
+		<action name="액터를설정한다" arg1="14031" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower01_Of_Tree03 --> 
+		<action name="액터를설정한다" arg1="14032" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower02_Of_Tree03 --> 
+		<action name="액터를설정한다" arg1="14033" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower03_Of_Tree03 --> 	
+        </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="ResetTimer"/>
+		</condition>
+		<condition name="오브젝트가반응했으면" arg1="12000091" arg2="0">
+			<transition state="TouchingInNumericalOrder_Play05"/>
+		</condition>	
+		<condition name="오브젝트가반응했으면" arg1="12000092" arg2="0">
+			<transition state="TouchingInNumericalOrder_FailDelay"/>	
+		</condition>				
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="TouchingInNumericalOrder_Play05" >
+        <onEnter>
+		<action name="오브젝트반응설정한다" arg1="12000091" arg2="0"/> <!-- CheckPosition_Tree04 -->	
+		<action name="이펙트를설정한다" arg1="14201" arg2="1"/> <!-- Right Sound Effect --> 			
+		<action name="액터를설정한다" arg1="14041" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower01_Of_Tree04 --> 
+		<action name="액터를설정한다" arg1="14042" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower02_Of_Tree04 --> 
+		<action name="액터를설정한다" arg1="14043" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower03_Of_Tree04 --> 	
+		<action name="액터를설정한다" arg1="14044" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower03_Of_Tree04 --> 			
+        </onEnter>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="ResetTimer"/>
+		</condition>
+		<condition name="오브젝트가반응했으면" arg1="12000092" arg2="0">
+			<transition state="TouchingInNumericalOrder_End"/>
+		</condition>					
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="TouchingInNumericalOrder_End" >
+        <onEnter>
+			<action name="오브젝트반응설정한다" arg1="12000092" arg2="0"/> <!-- CheckPosition_Tree05 -->	
+			<action name="이펙트를설정한다" arg1="14201" arg2="1"/> <!-- Right Sound Effect --> 			
+			<action name="액터를설정한다" arg1="14051" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower01_Of_Tree05 --> 
+			<action name="액터를설정한다" arg1="14052" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower02_Of_Tree05 --> 
+			<action name="액터를설정한다" arg1="14053" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower03_Of_Tree05 --> 	
+			<action name="액터를설정한다" arg1="14054" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower04_Of_Tree05 --> 	
+			<action name="액터를설정한다" arg1="14055" arg2="1" arg3="Interaction_luminous_A02_on" /> <!-- Flower05_Of_Tree05 --> 	
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="TouchingInNumericalOrder_Success"/>
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+
+	
+<!-- 퍼즐 성공 후 종료 -->  	
+    <state name="TouchingInNumericalOrder_Success" >
+        <onEnter>
+			<action name="타이머를설정한다" arg1="10" arg2="61" arg3="1" arg4="0" arg5="0" />		
+			<action name="버프를걸어준다" arg1="140001" arg2="71001042" arg3="1" arg4="0" arg5="0"/>			
+			<action name="이펙트를설정한다" arg1="14200" arg2="1"/> <!-- Success Sound Effect --> 	
+			<action name="오브젝트반응설정한다" arg1="12000243" arg2="1" />	<!-- RareBox / 기믹 종료 오브젝트 / Additional Effect 71001141 걸어서 71001041 제거 -->					
+        </onEnter>
+		<condition name="오브젝트가반응했으면" arg1="12000243" arg2="0">
+			<transition state="TouchingInNumericalOrder_SuccessDelay"/>	 
+		</condition>
+		<condition name="시간이경과했으면" arg1="10">
+			<transition state="ResetTimer"/>
+		</condition>		
+        <onExit>
+        </onExit>
+    </state>	
+
+    <state name="TouchingInNumericalOrder_SuccessDelay" >
+        <onEnter>		
+        </onEnter>
+		<condition name="WaitTick" waitTick="5000">
+			<transition state="TouchingInNumericalOrder_Quit"/>
+		</condition>			
+        <onExit>	
+        </onExit>
+    </state>	
+	
+    <state name="TouchingInNumericalOrder_Quit" >
+        <onEnter>
+			<action name="SetUserValue" triggerID="14000" key="TimeEventOn" value="0"/>
+			<action name="타이머를초기화한다" arg1="1"/> 
+			<action name="타이머를초기화한다" arg1="10"/>  			
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="Wait"/>
+		</condition>	
+        <onExit>	
+        </onExit>
+    </state>	
+		
+<!-- 오답 터치 --> 
+    <state name="TouchingInNumericalOrder_FailDelay" >	
+        <onEnter>		
+			<action name="이펙트를설정한다" arg1="14202" arg2="1"/> <!-- Wrong Sound Effect --> 			
+        </onEnter>	
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="TouchingInNumericalOrder_Fail"/>
+		</condition>
+		<condition name="시간이경과했으면" arg1="1">
+			<transition state="ResetTimer"/>
+		</condition>
+		<condition name="UserValue" key="TimeEventOn" value="0">	
+			<transition state="ResetTimer"/>
+		</condition>		
+        <onExit>	
+        </onExit>
+    </state>	
+ 
+    <state name="TouchingInNumericalOrder_Fail" >	
+        <onEnter>	
+		<action name="오브젝트반응설정한다" arg1="12000088" arg2="0"/> <!-- CheckPosition_Tree01 -->	
+		<action name="오브젝트반응설정한다" arg1="12000089" arg2="0"/> <!-- CheckPosition_Tree02 -->	
+		<action name="오브젝트반응설정한다" arg1="12000090" arg2="0"/> <!-- CheckPosition_Tree03 -->
+		<action name="오브젝트반응설정한다" arg1="12000091" arg2="0"/> <!-- CheckPosition_Tree04 -->	
+		<action name="오브젝트반응설정한다" arg1="12000092" arg2="0"/> <!-- CheckPosition_Tree05 -->			
+		<action name="액터를설정한다" arg1="14011" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree01 --> 
+		<action name="액터를설정한다" arg1="14021" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree02 --> 
+		<action name="액터를설정한다" arg1="14022" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree02 --> 
+		<action name="액터를설정한다" arg1="14031" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree03 --> 
+		<action name="액터를설정한다" arg1="14032" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree03 --> 
+		<action name="액터를설정한다" arg1="14033" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree03 --> 
+		<action name="액터를설정한다" arg1="14041" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree04 --> 
+		<action name="액터를설정한다" arg1="14042" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree04 --> 
+		<action name="액터를설정한다" arg1="14043" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree04 --> 	
+		<action name="액터를설정한다" arg1="14044" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree04 --> 	
+		<action name="액터를설정한다" arg1="14051" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower01_Of_Tree05 --> 
+		<action name="액터를설정한다" arg1="14052" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower02_Of_Tree05 --> 
+		<action name="액터를설정한다" arg1="14053" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower03_Of_Tree05 --> 	
+		<action name="액터를설정한다" arg1="14054" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower04_Of_Tree05 --> 	
+		<action name="액터를설정한다" arg1="14055" arg2="0" arg3="Interaction_luminous_A02_off" /> <!-- Flower05_Of_Tree05 --> 			
+        </onEnter>	
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="TouchingInNumericalOrder_Play01"/>
+		</condition>			
+		<condition name="시간이경과했으면" arg1="1">  <!-- 타임 이벤트가 종료했으면 -->
+			<transition state="ResetTimer"/>
+		</condition>
+		<condition name="UserValue" key="TimeEventOn" value="0">	
+			<transition state="ResetTimer"/>
+		</condition>		
+        <onExit>	
+        </onExit> 
+    </state>	
+	
+    <state name="ResetTimer" >
+        <onEnter>
+		<action name="타이머를초기화한다" arg1="1"/> 			
+        </onEnter>
+		<condition name="WaitTick" waitTick="1000">
+			<transition state="Wait"/>
+		</condition>	
+        <onExit>	
+        </onExit>
+    </state>	
+	
+<!-- 제한 시간 종료 --> 	
+	
+</ms2>

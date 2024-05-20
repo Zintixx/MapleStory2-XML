@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 순례자의 뜰 : 내면의 빛 버프 획득 가능 상태 활성화 및 비활성화-->
+   
+<ms2>	
+	<state name="Wait">   
+        <onEnter> 	
+			<action name="오브젝트반응설정한다" arg1="10001022" arg2="0" />	<!-- Lotus -->					
+			<action name="SetUserValue" key="InnerLight" value="0" />		
+			<action name="SetUserValue" key="InactivateLotus" value="0" />						
+				</onEnter>	
+			<condition name="UserValue" key="InnerLight" value="1">	
+			<transition state="Delay01"/>	
+		</condition> 	
+    <onExit> 
+    </onExit>
+    </state>
+
+    <state name="Delay01" >
+        <onEnter>		
+			<action name="오브젝트반응설정한다" arg1="10001022" arg2="1" />	<!-- Lotus -->				
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10001022" arg2="0" >
+					<transition state="GiveLight01"/>	
+				</condition>		
+			<condition name="UserValue" key="InactivateLotus" value="1">	
+			<transition state="Wait"/>	
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>	
+	
+    <state name="GiveLight01" >	
+        <onEnter>					
+			<action name="버프를걸어준다" arg1="9100" arg2="70000102" arg3="1" />	  				
+				</onEnter>		
+				<condition name="WaitTick" waitTick="2000">
+					<transition state="Delay01"/>	
+				</condition>		
+			<condition name="UserValue" key="InactivateLotus" value="1">
+			<transition state="Wait"/>	
+		</condition> 				
+    <onExit> 
+    </onExit>
+    </state>	
+ 
+</ms2>
+

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ms2>
+
+	<state name="입장"> 
+		<onEnter>
+			<action name="AGENT를설정한다" arg1="9001" arg2="1" />
+			<action name="AGENT를설정한다" arg1="9002" arg2="1" />
+			<action name="AGENT를설정한다" arg1="9003" arg2="1" />
+			<action name="AGENT를설정한다" arg1="9004" arg2="1" />
+			<action name="AGENT를설정한다" arg1="9005" arg2="1" />
+			<action name="AGENT를설정한다" arg1="9006" arg2="1" />
+			<action name="AGENT를설정한다" arg1="9007" arg2="1" />
+			<action name="AGENT를설정한다" arg1="9008" arg2="1" />
+			<action name="몬스터소멸시킨다" arg1="all" />	
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>
+			<action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0"/>
+			<action name="SetUserValue" triggerID="99990004" key="Timer" value="0"/>	<!-- <일반 5분 타이머> -->
+			<action name="SetUserValue" triggerID="99990006" key="SpecialTimer" value="0"/>	<!-- <3분내 클리어 특별 타이머> -->
+			<action name="SetUserValue" triggerID="99990002" key="battlesetting" value="0" />
+		</onEnter>
+		<condition name="유저를감지했으면" arg1="901">
+			<transition state="카메라_시작" />
+		</condition>
+	</state>
+
+	<state name="카메라_시작"> 
+		<onEnter>
+			<action name="SetSceneSkip" arg1="카메라_종료" arg2="exit" />
+			<action name="유저를이동시킨다" arg1="02020025" arg2="1" />
+			<action name="연출UI를설정한다" arg1="1" />
+			<action name="연출UI를설정한다" arg1="3" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="카메라_캡션"/>
+		</condition> 
+	</state>
+
+	<state name="카메라_캡션">
+		<onEnter>
+			<action name="카메라경로를선택한다" arg1="5001, 5002" arg2="1" />
+			<action name="ShowCaption" type="VerticalCaption" title="$02020025_BF__main__3$" desc="$02020025_BF__main__4$" align="centerLeft" offsetRateX="0" offsetRateY="0" duration="5000" scale="2"/>
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000" >
+			<transition state="유저연출"/>
+		</condition> 
+	</state>	
+
+	<state name="유저연출">
+		<onEnter>	
+			<action name="몬스터를생성한다" arg1="202" />		
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="$02020025_BF__main__5$" arg4="5" arg5="0" />	
+			<action name="카메라를선택한다" arg1="503" arg2="1" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000" >
+			<transition state="카메라_콘대르설명1"/>
+		</condition> 
+	</state>
+
+	<state name="카메라_콘대르설명1">
+		<onEnter>
+			<action name="SetNpcEmotionLoop" arg1="202" arg2="Talk_B" arg3="18430" />					
+			<action name="AddCinematicTalk" npcID="24110001" msg="$02020025_BF__main__0$" duration="4000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="유저연출_2"/>
+		</condition> 
+	</state>	
+
+	<state name="유저연출_2">
+		<onEnter>
+			<action name="대화를설정한다" arg1="1" arg2="0" arg3="$02020025_BF__main__6$" arg4="3" arg5="0" />	
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000" >
+			<transition state="유저연출_3"/>
+		</condition> 
+	</state>		
+
+	<state name="유저연출_3">
+		<onEnter>	
+			<action name="카메라를선택한다" arg1="504" arg2="1" />		
+		</onEnter>
+		<condition name="WaitTick" waitTick="1000" >
+			<transition state="카메라_콘대르설명2"/>
+		</condition> 
+	</state>		
+
+	<state name="카메라_콘대르설명2">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="24110001" illustID="Conder_normal" msg="$02020025_BF__main__1$" duration="4000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000" >
+			<transition state="카메라_콘대르설명3"/>
+		</condition> 
+	</state>
+
+	<state name="카메라_콘대르설명3">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="24110001" illustID="Conder_normal" msg="$02020025_BF__main__2$" duration="4000" align="left" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000" >
+			<transition state="카메라_콘대르설명4"/>
+		</condition> 
+	</state>
+	
+	<state name="카메라_콘대르설명4">
+		<onEnter>
+			<action name="AddCinematicTalk" npcID="24110001" illustID="Conder_normal" msg="$02020025_BF__main__7$" duration="4000" align="left" />
+			<action name="SetSceneSkip" arg1="" arg2="" />
+		</onEnter>
+		<condition name="WaitTick" waitTick="4000" >
+			<transition state="카메라_종료"/>
+		</condition> 
+	</state>
+
+	<state name="카메라_종료">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="0" />
+			<action name="연출UI를설정한다" arg1="2" />	
+			<action name="카메라리셋" interpolationTime="0.1" />
+			<action name="몬스터소멸시킨다" arg1="202" />		
+		</onEnter>
+		<condition name="무조건" >
+			<transition state="준비"/>
+		</condition>
+	</state>	
+
+	<state name="준비">
+		<onEnter>
+			<action name="몬스터를생성한다" arg1="201" arg2="0" arg3="3000" />
+		</onEnter>
+		<condition name="AllOf">
+			<group>
+				<condition name="NPC를감지했으면" arg1="902" arg2="201" />
+				<condition name="WaitTick" waitTick="2000" />
+			</group>
+			<transition state="전투_진행"/>
+		</condition>
+	</state>	
+
+	<state name="전투_진행">
+		<onEnter>
+			<action name="AGENT를설정한다" arg1="9001" arg2="0" />
+			<action name="AGENT를설정한다" arg1="9002" arg2="0" />
+			<action name="AGENT를설정한다" arg1="9003" arg2="0" />
+			<action name="AGENT를설정한다" arg1="9004" arg2="0" />
+			<action name="AGENT를설정한다" arg1="9005" arg2="0" />
+			<action name="AGENT를설정한다" arg1="9006" arg2="0" />
+			<action name="AGENT를설정한다" arg1="9007" arg2="0" />
+			<action name="AGENT를설정한다" arg1="9008" arg2="0" />
+			<action name="SetUserValue" triggerID="99990002" key="battlesetting" value="1" />
+			<!-- <action name="SetUserValue" triggerID="99990004" key="Timer" value="1"/>
+			<action name="SetUserValue" triggerID="99990002" key="SpecialTimer" value="1"/>
+			<action name="SetUserValue" triggerID="99990006" key="SpecialTimer" value="1"/> -->
+		</onEnter>
+		<condition name="UserValue" key="End" value="1" >
+			<transition state="랭크체크대사"/>
+		</condition>				
+	</state> 
+ 	
+	<state name="랭크체크대사">
+		<condition name="DungeonFirstUserMissionScore" score="1500" operator="GreaterEqual">
+			<action name="SideNpcTalk" npcID="24110001" illust="Conder_normal" duration="5000" script="$02020025_BF__main__8$" voice="ko/Npc/00002146" />
+			<transition state="던전종료_A랭크이상"/>
+		</condition>
+		<condition name="DungeonFirstUserMissionScore" score="1500" operator="Less">
+			<action name="SideNpcTalk" npcID="24110001" illust="Conder_smile" duration="5000" script="$02020025_BF__main__9$" voice="ko/Npc/00002145" />
+			<transition state="던전종료_A랭크미만"/>
+		</condition>
+	</state>
+
+	<state name="던전종료_A랭크이상">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="201"/>
+			<action name="DungeonClear" />
+		</onEnter>
+	</state>
+
+	<state name="던전종료_A랭크미만">
+		<onEnter>
+			<action name="몬스터소멸시킨다" arg1="201"/>
+			<action name="DungeonFail" />
+		</onEnter>
+	</state>
+
+</ms2>
+

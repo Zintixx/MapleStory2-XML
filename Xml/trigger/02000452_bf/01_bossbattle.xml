@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+  <state name="Wait"> 
+    <onEnter>
+			<action name="몬스터소멸시킨다" arg1="901,902,903" />		
+			<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0" /> 		<!-- ExitTop -->
+			<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0" /> 		<!-- ExitUnder -->	
+			<action name="EnableSpawnPointPC" spawnPointID="10000" isEnable="1" /> 	<!-- PC스포너 제어 -->
+			<action name="EnableSpawnPointPC" spawnPointID="10001" isEnable="0" /> 
+			<action name="EnableSpawnPointPC" spawnPointID="10002" isEnable="0" /> 
+			<action name="EnableSpawnPointPC" spawnPointID="10003" isEnable="0" /> 			
+    </onEnter>	
+				<condition name="유저를감지했으면" arg1="9001">   
+				<transition state="Boss01SpawnDelay"/>	
+			</condition>	
+				<condition name="유저를감지했으면" arg1="9002">
+				<transition state="Boss02SpawnDelay"/>	
+			</condition>	
+				<condition name="유저를감지했으면" arg1="9003"> 
+				<transition state="Boss03SpawnDelay"/>	
+			</condition>				
+    <onExit>			
+    </onExit>
+  </state>	
+
+<!-- 오른쪽 -->  
+    <state name="Boss01SpawnDelay" >
+        <onEnter>		
+			<action name="EnableSpawnPointPC" spawnPointID="10000" isEnable="0" /> 	<!-- 기본 스포너 -->
+			<action name="EnableSpawnPointPC" spawnPointID="10001" isEnable="1" /> 
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="Boss01Spawn"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+   <state name="Boss01Spawn" >	
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="901" arg2="0"/>  <!-- 23100084 -->		
+			<action name="SetUserValue" triggerID="1122330" key="AgentOff" value="1" /> 	
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="카메라를선택한다" arg1="501" arg2="1"/>					
+        </onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="Boss01Talk01"/>	
+				</condition>	
+        <onExit>
+        </onExit> 
+    </state>
+	
+    <state name="Boss01Talk01">
+        <onEnter>				
+			<action name="대화를설정한다" arg1="2" arg2="11003068" arg3="$02000452_BF__01_BOSSBATTLE__0$" arg4="4" />  <!-- 설눈이 --> 		
+			<action name="스킵을설정한다" arg1="Boss01Talk01Skip"/>	
+				</onEnter>						
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="Boss01Talk01Skip"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+    <state name="Boss01Talk01Skip"> 
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="502" arg2="1"/>				
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="Boss01Talk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Boss01Talk02">
+        <onEnter>				
+			<action name="대화를설정한다" arg1="2" arg2="11003069" arg3="$02000452_BF__01_BOSSBATTLE__1$" arg4="5" />  <!-- 에르다 --> 		
+			<action name="스킵을설정한다" arg1="Boss01Talk02Skip"/>	
+				</onEnter>						
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="Boss01Talk02Skip"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+    <state name="Boss01Talk02Skip">
+		<onEnter>		
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			<action name="카메라리셋" interpolationTime="1.0"/>		
+			</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="901" >		
+					<transition state="LeavePortalOn"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+
+	
+<!-- 중앙 -->  
+    <state name="Boss02SpawnDelay" >
+        <onEnter>		
+			<action name="EnableSpawnPointPC" spawnPointID="10000" isEnable="0" /> 	<!-- 기본 스포너 -->
+			<action name="EnableSpawnPointPC" spawnPointID="10002" isEnable="1" /> 			
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="Boss02Spawn"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+   <state name="Boss02Spawn" >	
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="902" arg2="0"/>  <!-- 23000086 -->				
+        </onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+			<transition state="Boss02CameraSet" />		
+        </condition>	
+        <onExit>
+        </onExit> 
+    </state>
+	
+   <state name="Boss02CameraSet" >	
+        <onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="카메라를선택한다" arg1="511" arg2="1"/>				
+        </onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+			<transition state="Boss02Talk01" />		
+        </condition>	
+        <onExit>
+        </onExit> 
+    </state>
+	
+    <state name="Boss02Talk01">
+        <onEnter>				
+			<action name="대화를설정한다" arg1="2" arg2="11003068" arg3="$02000452_BF__01_BOSSBATTLE__0$" arg4="3" />  <!-- 설눈이 --> 		
+			<action name="스킵을설정한다" arg1="Boss02Talk01Skip"/>	
+				</onEnter>						
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="Boss02Talk01Skip"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+    <state name="Boss02Talk01Skip">
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="512" arg2="1"/>				
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="Boss02Talk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="Boss02Talk02">
+        <onEnter>				
+			<action name="대화를설정한다" arg1="2" arg2="11003069" arg3="$02000452_BF__01_BOSSBATTLE__1$" arg4="4" />  <!-- 에르다 --> 		
+			<action name="스킵을설정한다" arg1="Boss02Talk02Skip"/>	
+				</onEnter>						
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="Boss02Talk02Skip"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+    <state name="Boss02Talk02Skip">
+		<onEnter>		
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			<action name="카메라리셋" interpolationTime="1.0"/>		
+			</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="902" >	
+					<transition state="LeavePortalOn"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+<!-- 왼쪽 -->  
+    <state name="Boss03SpawnDelay" >
+        <onEnter>		
+			<action name="EnableSpawnPointPC" spawnPointID="10000" isEnable="0" /> 	<!-- 기본 스포너 -->
+			<action name="EnableSpawnPointPC" spawnPointID="10003" isEnable="1" /> 			
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="Boss03Spawn"/>	
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+   <state name="Boss03Spawn" >	
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="903" arg2="0"/>  <!-- 23000087 -->		
+			<action name="SetUserValue" triggerID="1122330" key="AgentOff" value="1" />
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  	
+			<action name="카메라를선택한다" arg1="521" arg2="1"/>							
+        </onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+			<transition state="Boss03Talk01" />		
+        </condition>
+        <onExit>
+        </onExit> 
+    </state>
+    <state name="Boss03Talk01">
+        <onEnter>				
+			<action name="대화를설정한다" arg1="2" arg2="11003068" arg3="$02000452_BF__01_BOSSBATTLE__0$" arg4="4" />  <!-- 설눈이 --> 		
+			<action name="스킵을설정한다" arg1="Boss03Talk01Skip"/>	
+				</onEnter>						
+				<condition name="WaitTick" waitTick="4000">
+					<transition state="Boss03Talk01Skip"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+    <state name="Boss03Talk01Skip">
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="522" arg2="1"/>				
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>			
+			</onEnter>
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="Boss03Talk02"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+    <state name="Boss03Talk02">
+        <onEnter>				
+			<action name="대화를설정한다" arg1="2" arg2="11003069" arg3="$02000452_BF__01_BOSSBATTLE__1$" arg4="5" />  <!-- 에르다 --> 		
+			<action name="스킵을설정한다" arg1="Boss03Talk02Skip"/>	
+				</onEnter>						
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="Boss03Talk02Skip"/>
+				</condition>					
+    <onExit> 
+    </onExit>
+    </state>	
+    <state name="Boss03Talk02Skip">
+		<onEnter>		
+			<action name="RemoveCinematicTalk" />	
+			<action name="스킵을설정한다" arg1=""/>				
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  			
+			<action name="카메라리셋" interpolationTime="1.0"/>		
+			</onEnter>
+				<condition name="몬스터가죽어있으면" arg1="903" >		
+					<transition state="LeavePortalOn"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+	
+<!-- 종료 -->	
+	<state name="LeavePortalOn">
+		<onEnter>	
+			<action name="SetUserValue" triggerID="4" key="BossKill" value="1" /> 				
+			<action name="몬스터소멸시킨다" arg1="901,902,903" />				
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000">
+			<transition state="Quit" />	
+        </condition>		
+		<onExit>
+		</onExit>
+	</state>  
+	 
+    <state name="Quit"> 	
+        <onEnter>
+  			<action name="DungeonClear"/>				
+			<action name="업적이벤트를발생시킨다" arg1="9900" arg2="trigger" arg3="ClearSnowQueen"/> 	
+			<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="1" /> 		<!-- ExitTop -->	
+			<action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1" /> 		<!-- ExitUnder -->			
+        </onEnter>
+    <onExit>
+    </onExit>
+    </state> 
+</ms2>

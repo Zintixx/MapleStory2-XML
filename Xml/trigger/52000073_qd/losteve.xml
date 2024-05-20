@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 다크윈드 본부 대장실 -->
+<ms2>
+<!--     <state name="idle">	
+		<onEnter>			
+		</onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001681" arg3="2">
+				<transition state="대원등장"/>
+			</condition>	
+		<onExit> 	 
+		</onExit>
+    </state>	 -->
+	
+    <state name="대기">	
+		<onEnter>			
+		</onEnter>	
+		<condition name="유저를감지했으면" arg1="9900" >   
+			<transition state="퀘스트조건체크"/>
+		</condition>
+		<onExit> 
+		</onExit>
+    </state>	
+
+    <state name="퀘스트조건체크">	
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001683" arg3="3"> 
+				<transition state="기본상태"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001683" arg3="2"> 
+				<transition state="대원있음"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001683" arg3="1"> 
+				<transition state="대원있음"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001682" arg3="3"> 
+				<transition state="대원있음"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001682" arg3="2"> 
+				<transition state="대원있음"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001682" arg3="1"> 
+				<transition state="대원있음"/>
+			</condition>			
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001681" arg3="3"> 
+				<transition state="대원있음"/>
+			</condition>	
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001681" arg3="2"> 
+				<transition state="대원등장"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001681" arg3="1"> 
+				<transition state="대원등장"/>
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001680" arg3="3"> 
+				<transition state="기본상태"/> 
+			</condition>
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001680" arg3="2"> 
+				<transition state="기본상태"/>
+			</condition>			
+			<condition name="퀘스트유저를감지하면" arg1="9900" arg2="50001680" arg3="1"> 
+				<transition state="기본상태"/>
+			</condition>	
+		<onExit> 
+		</onExit>
+    </state>	
+
+	<state name="기본상태">
+        <onEnter>
+			<action name="몬스터소멸시킨다" arg1="401"/>
+		</onEnter>				
+			<condition name="유저를감지했으면" arg1="9900" >   
+				<transition state="퀘스트조건체크"/>
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+	<state name="대원있음">
+        <onEnter>
+			<action name="몬스터를생성한다" arg1="401" arg2="0"/>
+        </onEnter>	
+			<condition name="WaitTick" waitTick="100" > 
+				<transition state="종료" />
+			</condition>
+		<onExit> 
+		</onExit> 
+	</state>	
+	
+	<state name="대원등장">
+		<onEnter>
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/> 
+			<action name="몬스터를생성한다" arg1="401"/> <!-- 윈 스틸던의 시체 -->
+		</onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="대원대사"/> 
+			</condition>
+		<onExit> 	
+		</onExit>
+	</state>
+
+	<state name="대원대사">
+		<onEnter>
+			<action name="유저를경로이동시킨다" arg1="MS2PatrolData_pcTurn" />		
+			<action name="카메라경로를선택한다" arg1="8003,8004" arg2="0"/> 
+			<action name="NPC를이동시킨다" arg1="401" arg2="MS2PatrolData_2001"/>
+			<action name="AddCinematicTalk" npcID="11003446" illustID="0" msg="$52000073_QD__LOSTEVE__0$" duration="4000" align="right" />	<!--호르헤 대사-->			
+			<action name="FaceEmotion" spawnPointID="101" emotionName="Upset"/>
+			<action name="SetSceneSkip" arg1="연출종료" arg2="exit"/>
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="카트반대사"/>		
+				</condition>
+		<onExit> 	
+		</onExit> 
+	</state>
+	
+	<state name="카트반대사">
+		<onEnter>
+				
+			<action name="AddCinematicTalk" npcID="11000044" illustID="0" msg="$52000073_QD__LOSTEVE__1$" duration="4000" align="right" />	<!--호르헤 대사-->			
+
+		</onEnter>
+				<condition name="WaitTick" waitTick="5000">
+					<transition state="연출종료"/>		
+				</condition>
+		<onExit> 	
+		</onExit> 
+	</state>	
+	
+    <state name="연출종료" > 
+		<onEnter>
+			<action name="SetSceneSkip" arg1="" arg2=""/>
+			<action name="카메라리셋" interpolationTime="1.0"/>	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  	
+		</onEnter>
+				<condition name="WaitTick" waitTick="3000">
+					<transition state="종료"/>
+				</condition>
+		<onExit> 
+		</onExit> 
+	</state>
+
+</ms2>
+

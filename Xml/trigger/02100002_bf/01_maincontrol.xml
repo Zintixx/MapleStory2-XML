@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 무지개 슬라임 공장 -->
+<ms2>
+	<state name="Wait">    
+		<onEnter> 
+			<action name="이펙트를설정한다" arg1="5001" arg2="0"/> <!-- RainbowSlime_Sound -->		
+			<action name="이펙트를설정한다" arg1="5002" arg2="0"/> <!-- PoopSlime_Sound -->			
+			<action name="LimitSpawnNpcCount" limitCount="0" desc="몬스터 스폰 제한을 끕니다."/>	
+			<!-- 공장 가동하기 반응 오브젝트-->				
+			<action name="오브젝트반응설정한다" arg1="10001239" arg2="0" />
+			<!-- 결과 출력하기 반응 오브젝트-->				
+			<action name="오브젝트반응설정한다" arg1="10001240" arg2="0" />	
+			<!-- 용광로 바닥 TOK always off -->				
+			<action name="메쉬를설정한다" arg1="3000" arg2="0" arg3="0" arg4="0" arg5="0" />		
+			<action name="메쉬를설정한다" arg1="3100-3123" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3200-3223" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3300-3323" arg2="0" arg3="0" arg4="0" arg5="0" />
+			<action name="메쉬를설정한다" arg1="3400-3423" arg2="0" arg3="0" arg4="0" arg5="0" />		
+			<action name="메쉬를설정한다" arg1="3500-3523" arg2="0" arg3="0" arg4="0" arg5="0" />					
+			<!-- 용광로 더미 몬스터 : 슬라임 죽이기-->
+			<action name="몬스터소멸시킨다" arg1="900" />
+			<!-- 결과 몬스터 -->						
+			<action name="몬스터소멸시킨다" arg1="1000,2000" />					
+			<!-- 무지개 슬라임 공장 전용 위젯-->					
+			<action name="CreateWidget" arg1="RainbowMonster"/>	
+			<!-- 입구 포탈 -->							
+			<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1" />	
+			<!-- 출구 포탈 -->			
+			<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0" />				
+			<!-- 아래층에서 위 층으로 올라갈 수 있는 일방 포탈 -->			
+			<action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0" />						
+		</onEnter>	
+		<condition name="CheckUser">	
+			<transition state="LoadingDelay"/>	
+		</condition>		
+		<onExit> 
+		</onExit>
+	</state>	
+
+	<state name="LoadingDelay" >
+		<onEnter>
+			<!-- 컬러 게이지 샘플 -->
+			<action name="메쉬를설정한다" arg1="3700-3799" arg2="1" arg3="0" arg4="0" arg5="0" />			
+			<!-- 빨강 게이지 샘플 -->
+			<action name="메쉬를설정한다" arg1="3800-3819" arg2="1" arg3="0" arg4="0" arg5="0" />				
+			<!-- 용광로 더미 몬스터 : 슬라임 죽이기-->		
+			<action name="몬스터를생성한다" arg1="900" arg2="0" />		
+			<!-- 해당 필드에 몬스터의 수가  limitCount를 넘어가면 스폰을 중단한다.-->		
+			<action name="LimitSpawnNpcCount" limitCount="200"/>		
+			<!-- 정상 슬라임 몬스터 id 그룹 할당-->
+			<!-- Group 1 : yellowgreen -->				
+			<!-- Group 2 : skyblue -->			
+			<!-- Group 3 : orange -->			
+			<!-- Group 4 : pink -->		
+			<!-- Group 5 : purple -->					
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="CreateGroup" widgetArgNum="1" arg3="34000122,34000123,34000124,34000142"/>
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="CreateGroup" widgetArgNum="2" arg3="34000128,34000129,34000130,34000143"/>
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="CreateGroup" widgetArgNum="3" arg3="34000125,34000126,34000127,34000144"/>
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="CreateGroup" widgetArgNum="4" arg3="34000131,34000132,34000133,34000145"/>
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="CreateGroup" widgetArgNum="5" arg3="34000134,34000135,34000136,34000146"/>			
+			<!-- 용광로 더미 몬스터에게 죽임을 당한 정상 슬라임만 점수로 체크 -->					
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="SetKillerNpc" arg3="34000141" desc="34000141 npc가 죽인 몬스터만 스코어에 반영"/>					
+			<!-- 일정 시간 동안 용광로에 유입된 정상 슬라임이 없으면 게이지 감소 패널티 -->				
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="SetLoseScoreTick" widgetArgNum="60000" desc="60초마다 감점"/>	
+			<!-- 용광로에 불량 슬라임이 들어가면 전체 게이지 랜덤 감소 패널티 / 34000138,34000139 두 종류 몬스터 미구현항목으로 제외 시킴(기획상 BigMom과 소환된 꼬마) -->		
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="SetBadNpc" arg3="34000121,34000137" desc="해당 NPC가 킬러에게 죽으면 모든 게이지 감소"/>
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="SetBadNpcScore" arg3="2-5" desc="2~5칸 게이지가 떨어진다" />
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="SetBadNpcSoundKey" arg3="GuildRaid_RainbowSlimeFactory_ScreenWarning_01" desc="게이지가 떨어질때 플레이할 사운드" />
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="MaxGaugePattern_Random"/>				
+		</condition>			
+		<onExit> 	
+		</onExit>
+	</state>	 
+
+	<!--MaxGaugePatter_RandomPick -->
+	<!-- 5개의 그룹에서 100, 120, 140, 160, 180, 200 값 중 중복 없이 5개  Pick : 조합 -->	
+	<state name="MaxGaugePattern_Random">		
+		<onEnter>
+			<!--n번째 그룹에 100퍼센트를 X마리로 설정 : (N/20)값이 게이지 한 칸에 해당됨 
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitMaxScore" widgetArgNum="1" arg3="100"/>		
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitMaxScore" widgetArgNum="2" arg3="120"/>		
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitMaxScore" widgetArgNum="3" arg3="140"/>		
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitMaxScore" widgetArgNum="4" arg3="100"/>		
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitMaxScore" widgetArgNum="5" arg3="120"/>	-->
+			
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitRandomMaxScore" arg3="120,120,140,140,160,160"/>
+			<!--
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="ShowMaxScore" />
+			-->
+			
+			<!-- 점수를 게이지로 변환하여 매쉬 제어 : 1번 그룹에 3100부터 24번까지 메시를 스코어와 연결 -->				
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitScoreMesh" widgetArgNum="1" arg3="3100"/>		
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitScoreMesh" widgetArgNum="2" arg3="3200"/>			
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitScoreMesh" widgetArgNum="3" arg3="3300"/>			
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitScoreMesh" widgetArgNum="4" arg3="3500"/>			
+			<action name="WidgetAction" arg1="RainbowMonster" arg2="InitScoreMesh" widgetArgNum="5" arg3="3400"/>						
+		</onEnter>
+		<condition name="무조건">	
+			<transition state="CheckUser10_GuildRaid"/>			<!-- 임시 테스트용 데이터 세팅 가능 지점 CheckUser10_GuildRaid / DungeonStart / CloseCaptionSetting / BadEndingStart / HappyEndingStart -->
+		</condition>				
+		<onExit> 
+		</onExit> 
+	</state>		
+	
+	<import path="./Data/Xml/Trigger/Dungeon_Common/CheckUser10_GuildRaid.xml" />		
+
+	<state name="DungeonStart">   
+		<onEnter>		
+			<action name="SetCinematicIntro"/>						
+		</onEnter>	
+		<condition name="WaitTick" waitTick="2000">    
+			<transition state="ShowCaption01"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+
+	<!-- 설명문 출력 -->
+	<state name="ShowCaption01" >	  
+		<onEnter> 
+			<action name="SetCinematicIntro" text="$02100002_BF__01_MAINCONTROL__0$"/>	
+			<action name="스킵을설정한다" arg1="ShowCaption01Skip"/>					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="20000">  
+			<transition state="ShowCaption01Skip"/>   
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>		
+	<state name="ShowCaption01Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>						
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="ShowCaption02"/>
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+
+	<state name="ShowCaption02" >	  
+		<onEnter> 
+			<action name="SetCinematicIntro" text="$02100002_BF__01_MAINCONTROL__1$"/>	
+			<action name="스킵을설정한다" arg1="ShowCaption02Skip"/>					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="20000">  
+			<transition state="ShowCaption02Skip"/>   
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>		
+	<state name="ShowCaption02Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>				
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="ShowCaption03"/>
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+	
+	<state name="ShowCaption03" >	  
+		<onEnter> 
+			<action name="카메라를선택한다" arg1="900" arg2="1"/>				
+			<action name="SetCinematicIntro" text="$02100002_BF__01_MAINCONTROL__2$"/>	
+			<action name="스킵을설정한다" arg1="ShowCaption03Skip"/>					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="20000">  
+			<transition state="ShowCaption03Skip"/>  
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>		
+	<state name="ShowCaption03Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>						
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">  
+			<transition state="ShowCaption04"/>
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+	
+	<state name="ShowCaption04" >
+		<onEnter>		
+			<action name="카메라를선택한다" arg1="901" arg2="1"/>			
+			<action name="SetCinematicIntro" text="$02100002_BF__01_MAINCONTROL__3$"/>			
+			<action name="스킵을설정한다" arg1="ShowCaption04Skip"/>	 				
+		</onEnter>	
+		<condition name="WaitTick" waitTick="20000">  
+			<transition state="ShowCaption04Skip"/>  
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>	
+	<state name="ShowCaption04Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>								
+		</onEnter>	
+		<condition name="무조건">  
+			<transition state="ShowCaption05"/> 
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+	
+	<state name="ShowCaption05" >	
+		<onEnter>	
+			<action name="카메라를선택한다" arg1="902" arg2="1"/>					
+			<action name="SetCinematicIntro" text="$02100002_BF__01_MAINCONTROL__4$"/>	
+			<action name="스킵을설정한다" arg1="ShowCaption05Skip"/>	 			
+		</onEnter>	
+		<condition name="WaitTick" waitTick="20000">  
+			<transition state="ShowCaption05Skip"/>  
+		</condition>	
+		<onExit> 
+		</onExit>
+	</state>	
+	<state name="ShowCaption05Skip">	
+		<onEnter>		
+			<action name="스킵을설정한다" arg1=""/>	
+			<action name="카메라리셋" interpolationTime="1"/>		
+			<action name="SetUserValue" triggerID="2" key="GuideNpcSpawn" value="1" /> 							
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="CloseCaptionSetting"/> 
+		</condition>
+		<onExit>
+		</onExit> 
+	</state>	
+
+	<state name="CloseCaptionSetting">   
+		<onEnter> 					
+			<action name="CloseCinematic" />			
+			<!-- 컬러 게이지 샘플 -->
+			<action name="메쉬를설정한다" arg1="3700-3799" arg2="0" arg3="0" arg4="0" arg5="0" />			
+			<!-- 빨강 게이지 샘플 -->
+			<action name="메쉬를설정한다" arg1="3800-3819" arg2="0" arg3="0" arg4="0" arg5="0" />			
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="Guide01"/>		
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+
+	<state name="Guide01">   
+		<onEnter> 				
+			<action name="SetUserValue" triggerID="99" key="PortalOn" value="1" /> 					
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>     			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02100002_BF__01_MAINCONTROL__5$" arg3="5000" />						
+		</onEnter>	
+		<condition name="WaitTick" waitTick="5000">  		<!-- 5000 임시 테스트용 데이터 세팅 가능 지점 Guide02 / BadEndingStart / HappyEndingStart -->
+			<transition state="Guide02"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+	
+	<state name="Guide02">   
+		<onEnter> 		
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>     			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02100002_BF__01_MAINCONTROL__6$" arg3="3000" />			
+			<!-- 공장 가동하기 -->			
+			<action name="오브젝트반응설정한다" arg1="10001239" arg2="1" />					
+		</onEnter>	
+		<condition name="오브젝트가반응했으면" arg1="10001239" arg2="0" >	
+			<transition state="Guide03"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+
+	<state name="Guide03">   
+		<onEnter>
+			<action name="PlaySystemSoundInBox" arg2="GuildRaid_RainbowSlimeFactory_MachineOn_01"/>      		    			
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02100002_BF__01_MAINCONTROL__7$" arg3="2000" />					
+			<action name="오브젝트반응설정한다" arg1="10001239" arg2="0" />		
+			<!-- 슬라임 생성 신호 -->
+		 	<action name="SetUserValue" triggerID="11" key="ActivateTank" value="1" /> 		
+			<action name="SetUserValue" triggerID="12" key="ActivateTank" value="1" /> 		
+			<action name="SetUserValue" triggerID="13" key="ActivateTank" value="1" /> 		
+			<action name="SetUserValue" triggerID="14" key="ActivateTank" value="1" /> 		
+			<action name="SetUserValue" triggerID="15" key="ActivateTank" value="1" /> 		
+			<!-- 홀더 활성화 신호 -->
+			<action name="SetUserValue" triggerID="21" key="ActivateHolder" value="1" /> 		
+			<action name="SetUserValue" triggerID="22" key="ActivateHolder" value="1" /> 		
+			<action name="SetUserValue" triggerID="23" key="ActivateHolder" value="1" /> 		
+			<action name="SetUserValue" triggerID="24" key="ActivateHolder" value="1" /> 		
+			<action name="SetUserValue" triggerID="25" key="ActivateHolder" value="1" /> 					
+		</onEnter>
+		<condition name="WaitTick" waitTick="2000" > 
+			<transition state="TimmerStart"/>
+		</condition>
+		<onExit> 
+		</onExit>
+	</state>	
+	
+	<state name="TimmerStart">   
+		<onEnter> 	
+			<action name="SetUserValue" triggerID="99" key="MissionStart" value="1" /> 				
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>      
+			<!-- 제한 시간 10분 -->	<!-- 임시 테스트용 데이터 세팅 가능 지점 -->
+			<action name="타이머를설정한다" arg1="10000" arg2="600" arg3="1" arg4="1" arg5="0"/>  		
+		</onEnter>	
+		<condition name="WaitTick" waitTick="60000" > 		
+			<transition state="EnableCheckOutput"/>
+		</condition>
+		<onExit> 		
+		</onExit>	
+	</state>		
+		
+	<state name="EnableCheckOutput">   
+		<onEnter> 	
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>      
+			<action name="이벤트UI를설정한다" arg1="1" arg2="$02100002_BF__01_MAINCONTROL__8$" arg3="3000" />		
+			<!-- 결과 출력하기 반응 오브젝트-->				
+			<action name="오브젝트반응설정한다" arg1="10001240" arg2="1" />				
+		</onEnter>	
+		<condition name="오브젝트가반응했으면" arg1="10001240" arg2="0" >	
+			<transition state="CheckSuccess"/>	
+		</condition>				
+		<condition name="시간이경과했으면" arg1="10000">	
+			<transition state="MissionFail"/>	
+		</condition>		
+		<onExit> 	
+			<action name="SetUserValue" triggerID="11" key="DungeonQuit" value="1" /> 		
+			<action name="SetUserValue" triggerID="12" key="DungeonQuit" value="1" /> 		
+			<action name="SetUserValue" triggerID="13" key="DungeonQuit" value="1" /> 		
+			<action name="SetUserValue" triggerID="14" key="DungeonQuit" value="1" /> 		
+			<action name="SetUserValue" triggerID="15" key="DungeonQuit" value="1" /> 	
+			<action name="SetUserValue" triggerID="21" key="DungeonQuit" value="1" /> 		
+			<action name="SetUserValue" triggerID="22" key="DungeonQuit" value="1" /> 		
+			<action name="SetUserValue" triggerID="23" key="DungeonQuit" value="1" /> 		
+			<action name="SetUserValue" triggerID="24" key="DungeonQuit" value="1" /> 		
+			<action name="SetUserValue" triggerID="25" key="DungeonQuit" value="1" /> 				
+			<!-- 용광로 소멸 -->						
+			<action name="몬스터소멸시킨다" arg1="900" />		
+			<!-- 입구 포탈 -->							
+			<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0" />		
+			<action name="오브젝트반응설정한다" arg1="10001234" arg2="0" />					
+		</onExit>	
+	</state>		
+
+	
+	<state name="CheckSuccess">   
+		<onEnter>
+			<!-- 아래층에서 위 층으로 올라갈 수 있는 일방 포탈 -->
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1" />		 			
+		</onEnter>
+		<condition name="WidgetCondition" arg1="RainbowMonster" arg2="IsMissionSuccess" arg3="19-21" > 
+			<transition state="HappyEndingStart"/>
+		</condition>
+		<condition name="!WidgetCondition" arg1="RainbowMonster" arg2="IsMissionSuccess" arg3="19-21" > 
+			<transition state="BadEndingStart"/>
+		</condition>
+		<onExit> 
+		</onExit>
+	</state>
+
+
+	<!-- BadEnding 연출 -->	
+	<state name="BadEndingStart">   
+		<onEnter> 
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  		
+			<action name="카메라를선택한다" arg1="909" arg2="1"/>	
+			<action name="PlaySystemSoundInBox" arg2="GuildRaid_RainbowSlimeFactory_Result_01"/>    
+			<action name="유저를이동시킨다" arg1="02100002" arg2="2" arg3="9901"/>		<!-- 용광로 안에 있는 PC 안전한 곳으로 이동-->		
+		</onEnter>	
+		<condition name="WaitTick" waitTick="3000">	
+			<transition state="BadEndingSpawn"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+	<state name="BadEndingSpawn">   
+		<onEnter> 
+			<action name="카메라를선택한다" arg1="908" arg2="1"/>			
+			<action name="이펙트를설정한다" arg1="5002" arg2="1"/> <!-- PoopSlime_Sound -->			
+			<!-- 돌연변이 킹슬라임 -->		
+			<action name="몬스터를생성한다" arg1="2000" arg2="0" />		
+		</onEnter>	
+		<condition name="WaitTick" waitTick="4000">	
+			<transition state="BadEndingEnd"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+	<state name="BadEndingEnd">   
+		<onEnter> 
+			<action name="연출UI를설정한다" arg1="0"/>  
+			<action name="연출UI를설정한다" arg1="2"/>  		
+			<action name="카메라리셋" interpolationTime="1"/>		
+		</onEnter>	
+		<condition name="WaitTick" waitTick="2000"> 	
+			<transition state="MissionFail"/>	
+		</condition>		
+		<onExit> 
+            <action name="업적이벤트를발생시킨다" arg1="9902" arg2="trigger" arg3="MakeMutantKingSlime"/> 			
+		</onExit>	
+	</state>	
+
+	<!-- HappyEnding 연출 -->	
+	<state name="HappyEndingStart">   
+		<onEnter> 			
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>  		
+			<action name="카메라를선택한다" arg1="909" arg2="1"/>	
+			<action name="PlaySystemSoundInBox" arg2="GuildRaid_RainbowSlimeFactory_Result_01"/>    		
+			<action name="유저를이동시킨다" arg1="02100002" arg2="2" arg3="9901"/>		<!-- 용광로 안에 있는 PC 안전한 곳으로 이동-->					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="3000">	 
+			<transition state="HappyEndingSpawn"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+	<state name="HappyEndingSpawn">   
+		<onEnter> 
+			<action name="카메라를선택한다" arg1="908" arg2="1"/>						
+			<action name="이펙트를설정한다" arg1="5001" arg2="1"/> <!-- RainbowSlime_Sound -->				
+			<!-- 무지개 킹슬라임 -->		
+			<action name="몬스터를생성한다" arg1="1000" arg2="0" />		
+		</onEnter>	
+		<condition name="WaitTick" waitTick="4000">	
+			<transition state="HappyEndingEnd"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+	<state name="HappyEndingEnd">   
+		<onEnter> 	
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>  		
+			<action name="카메라리셋" interpolationTime="1"/>
+		</onEnter>	
+		<condition name="WaitTick" waitTick="2000">	
+			<transition state="DungeonSuccess"/>	
+		</condition>		
+		<onExit> 
+            <action name="업적이벤트를발생시킨다" arg1="9902" arg2="trigger" arg3="MakeRainbowKingSlime"/> 				
+		</onExit>	
+	</state>	
+	
+	<!-- 던전 클리어 선언 -->	
+	<state name="DungeonSuccess">   
+		<onEnter> 		
+			<action name="DungeonClear"/>		
+            <action name="업적이벤트를발생시킨다" arg1="9902" arg2="trigger" arg3="Find02100002"/> 				
+			<action name="이벤트UI를설정한다" arg1="7" arg2="$02100002_BF__01_MAINCONTROL__10$" arg3="3000" />		
+			</onEnter>	
+		<condition name="WaitTick" waitTick="2000">	
+			<transition state="ExitPortalOn"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+	
+	<state name="MissionFail">   
+		<onEnter> 			
+			<action name="타이머를초기화한다" arg1="10000"/>  	
+			<action name="이벤트UI를설정한다" arg1="5" arg2="$02100002_BF__01_MAINCONTROL__9$" arg3="3000" />					
+		</onEnter>	
+		<condition name="WaitTick" waitTick="3500">	
+			<transition state="DungeonFail"/>	
+		</condition>					
+		<onExit> 
+		</onExit>
+	</state>		
+	
+	<!-- 던전 실패 선언 -->		
+	<state name="DungeonFail">   
+		<onEnter> 
+			<action name="DungeonFail"/>	
+			<!-- 아래층에서 위 층으로 올라갈 수 있는 일방 포탈 -->
+			<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1" />		 						
+		</onEnter>	
+		<condition name="WaitTick" waitTick="2000">	
+			<transition state="ExitPortalOn"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+	
+	<state name="ExitPortalOn">   
+		<onEnter> 
+			<!-- 출구 포탈 -->			
+			<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1" />				
+			<action name="SetUserValue" triggerID="99" key="DungeonClear" value="1" /> 			
+		</onEnter>	
+		<condition name="WaitTick" waitTick="1000">	
+			<transition state="Quit"/>	
+		</condition>		
+		<onExit> 
+		</onExit>	
+	</state>	
+
+	<state name="Quit">   
+		<onEnter> 
+		</onEnter>			
+		<onExit> 	
+		</onExit>
+	</state>	
+</ms2>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+  <state name="시작대기중">
+    <onEnter> 
+ 
+    </onEnter>
+
+	   <condition name="무조건">
+				<transition state="기본셋팅시작"/>
+		</condition>  
+		
+	<onExit> 
+    </onExit>
+  </state>  
+  
+  
+ <state name="기본셋팅시작">
+    <onEnter>
+
+    </onEnter>
+	
+		 <!--머쉬킹이 죽거나 사라지면, 이 변수 PortalHidden = 1 신호를 보냄-->
+		<condition name="UserValue" key="PortalHidden" value="1"> 
+		
+            <transition state="보스사냥후포탈생성" />
+			
+        </condition>		
+	
+		<!--100번 MS2RegionSpawn 에서 등장한 몬스터가 101번 트리거영역에 감지 되었으면-->
+        <condition name="NPC를감지했으면" arg1="101" arg2="100"> 
+		
+            <transition state="포탈감추기" />
+			
+        </condition>	
+		
+		<!--100번 MS2RegionSpawn 에서 등장한 몬스터가 101번 트리거영역에 없으면-->
+        <condition name="!NPC를감지했으면" arg1="101" arg2="100"> 
+		
+            <transition state="디폴트포탈생성" />
+			
+        </condition>
+		
+    <onExit>
+    </onExit>
+  </state>
+  
+ <state name="디폴트포탈생성">
+    <onEnter>
+		<!--머쉬킹이 없을 때는 편한 빠른 이동을 위해 존재하는 순간이동 포탈을 생성시킴-->
+		<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="5" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="6" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="7" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="8" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="9" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="12" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="13" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="14" arg2="1" arg3="1" arg4="1"/>  
+    </onEnter>
+	
+		<condition name="WaitTick" waitTick="1000" > 
+		
+				<transition state="포탈다시체크대기" />
+				
+		</condition>		
+		
+
+    <onExit>
+    </onExit>
+  </state>
+  
+  
+ <state name="보스사냥후포탈생성">
+    <onEnter>
+		<!--머쉬킹이 없을 때는 편한 빠른 이동을 위해 존재하는 순간이동 포탈을 생성시킴-->
+		<action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="2" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="3" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="4" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="5" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="6" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="7" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="8" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="9" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="10" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="11" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="12" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="13" arg2="1" arg3="1" arg4="1"/>  
+		<action name="포탈을설정한다" arg1="14" arg2="1" arg3="1" arg4="1"/>  
+		<action name="SetUserValue" key="PortalHidden" value="0" />		<!-- PortalHidden 변수 0으로 초기하 하여 무한루프 도는 상황을 방지 -->
+		<action name="ShowGuideSummary" entityID="20043001" textID="20043001"/> <!-- 포탈이 생성되었고, 머쉬킹이 등장하면 곧 사라진다는 메시지를 보여줌 -->
+
+    </onEnter>
+	
+		<condition name="WaitTick" waitTick="6000" > 
+		
+				<transition state="포탈다시체크대기이전" /> <!--메시지 6초 뒤에 제거해야 하기 때문에 어쩔수 없이 "포탈다시체크대기이전" 스테이트를 더 끼워 넣음 -->
+				
+		</condition>		
+
+    <onExit>
+		<action name="HideGuideSummary" entityID="20043001"/>
+    </onExit>
+  </state>
+  
+  
+ 
+   <state name="포탈감추기">
+    <onEnter>
+		<!-- 머쉬킹 보스와 전투를 하게 되면 순간이동 포탈 감추기-->
+		<action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="2" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="3" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="4" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="5" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="6" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="7" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="8" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="9" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="10" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="11" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="12" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="13" arg2="0" arg3="0" arg4="0"/>  
+		<action name="포탈을설정한다" arg1="14" arg2="0" arg3="0" arg4="0"/>  
+	
+    </onEnter>
+	
+		<condition name="무조건">
+		
+				<transition state="포탈다시체크대기" />
+				
+		</condition>		
+	
+    <onExit>
+    </onExit>
+  </state>
+  
+
+   <state name="포탈다시체크대기이전">
+    <onEnter>
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="11000" > 
+		
+				<transition state="시작대기중" />
+				
+		</condition>		
+	
+    <onExit>
+    </onExit>
+  </state>
+  
+   <state name="포탈다시체크대기">
+    <onEnter>
+    </onEnter>
+
+		<condition name="WaitTick" waitTick="1000" > 
+		
+				<transition state="시작대기중" />
+				
+		</condition>		
+	
+    <onExit>
+    </onExit>
+  </state>
+
+</ms2>

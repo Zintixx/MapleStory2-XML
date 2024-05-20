@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+	<state name="gameset">
+		<onEnter>
+			<action name="카메라를선택한다" arg1="8011" arg2="0"/> <!-- 카메라 옆으로 보냄, 줌인 -->				
+        </onEnter>
+		   	<condition name="UserValue" key="Fail" value="1">
+				<transition state="Fail_condition" />
+			</condition>		
+		<onExit>
+        </onExit>
+    </state>
+
+	<state name="Fail_condition"> 
+		<onEnter>
+        </onEnter>
+			<condition name="유저를감지했으면" arg1="9001">
+				<transition state="Fail" />
+			</condition>
+		<onExit>
+        </onExit>
+    </state>
+	
+
+    <state name="Fail">
+	    <onEnter>
+			<action name="PlaySystemSoundInBox" arg2="System_PinkBeans_Arcade_Result_01"/>	
+			<action name="로그를남긴다" arg1="ThreeTwoOne_log" arg2="9001" arg3="char_event" arg5="BlackbeanThreeTwoOnegameover" />		 <!-- 로그를 남기기 위한 행 : arg5가 트리거 전체에서 유니크한 값이 들어가야 하며, arg1은 코드에 남고 있지 않음(서바이벌일 때만 서바이벌 로그 불러옴) -->			
+			<action name="타이머를설정한다" arg1="10" arg2="10" arg4="1" />
+			<action name="카메라경로를선택한다" arg1="8011,8010" arg2="0"/> <!-- 카메라 뒤로 당김 -->	
+			<action name="ArcadeThreeTwoOne" type="EndGame" />			
+        </onEnter>
+			<condition name="시간이경과했으면" arg1="10">
+				<transition state="End"/>
+			</condition>		
+		<onExit>
+        </onExit>
+    </state>
+	
+		<state name="End">
+		<onEnter>
+			<action name="유저를이동시킨다" arg1="0" arg2="0" /> <!-- 게임에 들어오기 전에 있던 맵으로 강제이동 -->	
+        </onEnter>
+		<onExit>
+        </onExit>
+    </state>
+	
+</ms2>

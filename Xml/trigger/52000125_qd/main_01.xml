@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+
+   <state name="idle">
+        <onEnter>	
+        </onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60100190-60100195" arg3="2-2">
+				<transition state="ready"/> 
+			</condition>		
+		<onExit>
+        </onExit>
+    </state> 
+
+   <state name="ready">
+        <onEnter>
+            <action name="포탈을설정한다" arg1="1" arg2="0" arg3="0" arg4="0"/>					
+			<action name="SetOnetimeEffect" id="1" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>				
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="scene_01"/> 
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 
+	
+<!-- 씬 진행 -->		
+	
+   <state name="scene_01">
+        <onEnter>		
+			<action name="연출UI를설정한다" arg1="1"/>
+			<action name="연출UI를설정한다" arg1="3"/>					
+			<action name="SetOnetimeEffect" id="1" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>			
+			<action name="카메라경로를선택한다" arg1="4006" arg2="0"/>				
+			<action name="몬스터를생성한다" arg1="201" arg2="1" /> <!-- 연출 제타 (11003207) -->	
+			<action name="유저를이동시킨다" arg1="52000125" arg2="6001"/>				
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Clap_A" />	 	
+			<action name="AddCinematicTalk" npcID="11003205" msg="$52000125_QD__MAIN_01__0$" duration="3000" align="center" />	
+			<action name="SetSceneSkip" arg1="scene_08" arg2="exit"/>					
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="scene_02"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 	
+	
+   <state name="scene_02">
+        <onEnter>		
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="ChatUp" />	 	
+			<action name="AddCinematicTalk" npcID="11003205" msg="$52000125_QD__MAIN_01__1$" duration="1000" align="center" />	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="scene_03"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 		
+	
+   <state name="scene_03">
+        <onEnter>		
+			<action name="AddCinematicTalk" npcID="11003208" msg="$52000125_QD__MAIN_01__2$" duration="2000" align="center" />	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="scene_04"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 	
+	
+   <state name="scene_04">
+        <onEnter>		
+			<action name="카메라경로를선택한다" arg1="4003" arg2="0"/>			
+			<action name="AddCinematicTalk" npcID="11003205" msg="$52000125_QD__MAIN_01__3$" duration="3000" align="center" />	
+        </onEnter>	
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="scene_05"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state>
+	
+   <state name="scene_05">
+        <onEnter>
+			<action name="카메라경로를선택한다" arg1="4003,4004,4005" arg2="0"/>			
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="scene_06"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 			
+	
+   <state name="scene_06">
+        <onEnter>		
+            <action name="NPC를이동시킨다" arg1="201" arg2="MS2PatrolData_3001" />		
+        </onEnter>	
+			<condition name="WaitTick" waitTick="5000">
+				<transition state="scene_07"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 		
+	
+   <state name="scene_07">
+        <onEnter>		
+			<action name="SetOnetimeEffect" id="2" enable="1" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>	
+			<action name="SetSceneSkip" arg1="" arg2=""/>								
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="scene_08"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 		
+	
+   <state name="scene_08">
+        <onEnter>		
+			<action name="몬스터소멸시킨다" arg1="201"/> <!-- 연출용 제타() -->			
+			<action name="몬스터를생성한다" arg1="202" arg2="1" /> <!-- 퀘스트용 제타 () -->		
+        </onEnter>	
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="end"/>
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 					
+	
+   <state name="end">
+        <onEnter>		
+            <action name="포탈을설정한다" arg1="1" arg2="1" arg3="1" arg4="1"/>			
+			<action name="SetOnetimeEffect" id="2" enable="0" path="BG/Common/ScreenMask/Eff_fadein_1sec.xml"/>			
+			<action name="카메라리셋" interpolationTime="1.0"/>
+			<action name="연출UI를설정한다" arg1="0"/>
+			<action name="연출UI를설정한다" arg1="2"/>					
+        </onEnter>
+			<condition name="퀘스트유저를감지하면" arg1="2001" arg2="60100195" arg3="2">
+				<transition state="eventtalk_start"/> 
+			</condition>				
+		<onExit>
+        </onExit>
+    </state> 	
+	
+	
+<!-- 마크&제타 재회 -->	
+		
+   <state name="eventtalk_start">
+        <onEnter>
+        </onEnter>
+			<condition name="WaitTick" waitTick="1000">
+				<transition state="eventtalk_01"/>
+			</condition>						
+		<onExit>
+        </onExit>
+    </state> 	
+	
+   <state name="eventtalk_01">
+        <onEnter>
+            <action name="NPC를이동시킨다" arg1="102" arg2="MS2PatrolData_3003" />		
+            <action name="NPC를이동시킨다" arg1="202" arg2="MS2PatrolData_3004" />						
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$52000125_QD__MAIN_01__4$" duration="2000" delayTick="0"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="eventtalk_02"/>
+			</condition>						
+		<onExit>
+        </onExit>
+    </state> 	
+
+   <state name="eventtalk_02">
+        <onEnter>
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="ChatUp_A" />					
+			<action name="AddBalloonTalk" spawnPointID="202" msg="$52000125_QD__MAIN_01__5$" duration="2000" delayTick="0"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="eventtalk_03"/>
+			</condition>						
+		<onExit>
+        </onExit>
+    </state> 	
+
+   <state name="eventtalk_03">
+        <onEnter>
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Talk_A" />				
+			<action name="AddBalloonTalk" spawnPointID="202" msg="$52000125_QD__MAIN_01__6$" duration="2000" delayTick="0"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="2000">
+				<transition state="eventtalk_04"/>
+			</condition>						
+		<onExit>
+        </onExit>
+    </state> 		
+	
+   <state name="eventtalk_04">
+        <onEnter>		
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="ChatUp_A" />			
+			<action name="AddBalloonTalk" spawnPointID="202" msg="$52000125_QD__MAIN_01__7$" duration="2000" delayTick="0"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="eventtalk_05"/>
+			</condition>						
+		<onExit>
+        </onExit>
+    </state> 	
+
+   <state name="eventtalk_05">
+        <onEnter>
+			<action name="SetNpcEmotionSequence" arg1="102" arg2="Idle_A" />			
+			<action name="AddBalloonTalk" spawnPointID="102" msg="$52000125_QD__MAIN_01__8$" duration="2000" delayTick="0"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="3000">
+				<transition state="eventtalk_06"/>
+			</condition>						
+		<onExit>
+        </onExit>
+    </state> 		
+	
+   <state name="eventtalk_06">
+        <onEnter>				
+			<action name="SetNpcEmotionSequence" arg1="202" arg2="Idle_A" />			
+			<action name="AddBalloonTalk" spawnPointID="202" msg="$52000125_QD__MAIN_01__9$" duration="2000" delayTick="0"/>	
+        </onEnter>
+			<condition name="WaitTick" waitTick="20000">
+				<transition state="eventtalk_02"/>
+			</condition>						
+		<onExit>
+        </onExit>
+    </state> 			
+		
+</ms2>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="Wait" >
+        <onEnter> 			
+			<action name="몬스터소멸시킨다" arg1="100" />	<!--Tire -->			
+			<action name="SetUserValue" key="TireSpawn" value="0" /> 		
+			<action name="오브젝트반응설정한다" arg1="10002100" arg2="0" />	<!-- MakeTireZipTrack -->					
+        </onEnter>
+			<condition name="UserValue" key="TireSpawn" value="1">
+				<transition state="GuideInteract"/>
+			</condition>	
+        <onExit />
+    </state>	
+
+    <state name="GuideInteract">
+        <onEnter>				
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>       		
+			<action name="ShowGuideSummary" entityID="20039903" textID="20039903"/>  <!-- 가이드 : 건너편 탑으로 이동할 수 있는 장치를 찾으세요 -->		
+			<action name="오브젝트반응설정한다" arg1="10002100" arg2="1" />	<!-- MakeTireZipTrack -->					
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10002100" arg2="0" >		
+					<transition state="TireSpawn"/>		
+				</condition>				
+    <onExit> 	
+			<action name="HideGuideSummary" entityID="20039903"/>			
+    </onExit>
+    </state>	
+	
+    <state name="TireSpawn" >	
+        <onEnter> 					
+			<action name="몬스터를생성한다" arg1="100" arg2="0" />	<!--Tire -->		
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>       		
+			<action name="ShowGuideSummary" entityID="20039904" textID="20039904" durationTime="3000"/>  <!-- 가이드 : 타이어에 매달리세요!-->					
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="GuideTireHold"/>	
+				</condition>		
+    <onExit> 		
+    </onExit>
+    </state>	
+
+    <state name="GuideTireHold">
+        <onEnter>				
+			<action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>       		
+			<action name="ShowGuideSummary" entityID="20039905" textID="20039905" durationTime="2000"/>  <!-- 가이드 : 출발합니다!-->			
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">			
+					<transition state="TireMove"/>		
+				</condition>				
+    <onExit> 	
+    </onExit>
+    </state>	
+
+    <state name="TireMove">
+		<onEnter>			
+			<action name="NPC를이동시킨다" arg1="100" arg2="MS2PatrolData_100" />			
+			</onEnter>
+				<condition name="WaitTick" waitTick="7000">	
+					<transition state="TireRemove01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+	
+    <state name="TireRemove01">	
+        <onEnter>	
+			<action name="몬스터소멸시킨다" arg1="100" />	
+				</onEnter>	
+				<condition name="WaitTick" waitTick="1000">	
+					<transition state="TireResetDelay"/>	
+				</condition>
+    <onExit> 	
+    </onExit>
+    </state>		
+	
+    <state name="TireResetDelay">	
+        <onEnter>						
+				</onEnter>	
+				<condition name="WaitTick" waitTick="2000">	
+					<transition state="TireReset"/>	
+				</condition>
+    <onExit> 		
+    </onExit>
+    </state>		
+	
+    <state name="TireReset">	 
+        <onEnter>			
+			<action name="오브젝트반응설정한다" arg1="10002100" arg2="1" />	<!-- MakeTireZipTrack -->				
+				</onEnter>	
+				<condition name="오브젝트가반응했으면" arg1="10002100" arg2="0" >		
+					<transition state="TireSpawnAgain"/>	
+				</condition>
+    <onExit> 		
+    </onExit>
+    </state>		
+	
+    <state name="TireSpawnAgain" >	
+        <onEnter> 					
+			<action name="몬스터를생성한다" arg1="100" arg2="0" />	<!--Tire -->						
+        </onEnter>
+				<condition name="WaitTick" waitTick="3000">	
+					<transition state="TireMoveAgain"/>	
+				</condition>		
+    <onExit> 		
+    </onExit>
+    </state>	
+
+    <state name="TireMoveAgain">
+		<onEnter>			
+			<action name="NPC를이동시킨다" arg1="100" arg2="MS2PatrolData_100" />			
+			</onEnter>
+				<condition name="WaitTick" waitTick="6000">	
+					<transition state="TireRemove01"/>
+				</condition>
+		<onExit>
+		</onExit>
+    </state>	
+</ms2>

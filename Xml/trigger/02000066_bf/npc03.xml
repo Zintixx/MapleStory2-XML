@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ms2>
+    <state name="시작" posX="300" posY="199">
+        <onEnter>
+			<action name="이펙트를설정한다" arg1="605" arg2="0" />
+			<action name="액터를설정한다" arg1="203" arg2="0" arg3="Dead_A" />
+            <action name="오브젝트반응설정한다" arg1="10000343" arg2="0" />
+        </onEnter>
+        <condition name="유저를감지했으면" arg1="103">
+            <transition state="NPC생성" />
+        </condition>
+        <onExit />
+    </state>
+
+    <state name="NPC생성" posX="595" posY="150">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="1"/>
+            <action name="몬스터를생성한다" arg1="2003" arg2="0" />
+            <action name="오브젝트반응설정한다" arg1="10000343" arg2="0" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="NPC생성조건" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="NPC생성조건" posX="362" posY="145">
+        <onEnter>
+        </onEnter>
+        <condition name="몬스터가죽어있으면" arg1="2003">
+			<action name="이펙트를설정한다" arg1="605" arg2="1" />
+			<action name="ShowGuideSummary" entityID="20000663" textID="20000663"/> 
+		    <action name="PlaySystemSoundInBox" arg2="System_ShowGuideSummary_01"/>  
+            <transition state="NPC소멸" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+
+	    <state name="NPC소멸" posX="585" posY="271">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="3" arg2="3"/>
+            <action name="몬스터소멸시킨다" arg1="2003" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="3">
+			<action name="HideGuideSummary" entityID="20000663"/>
+            <transition state="오브젝트반응" />
+        </condition>
+        <onExit />
+    </state>
+
+    <state name="오브젝트반응" posX="595" posY="150">
+        <onEnter>
+			<action name="액터를설정한다" arg1="203" arg2="1" arg3="Dead_A" />
+            <action name="오브젝트반응설정한다" arg1="10000343" arg2="1" />
+        </onEnter>
+        <condition name="오브젝트가반응했으면" arg1="10000343" arg2="0">
+            <transition state="부활" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="부활" posX="595" posY="150">
+        <onEnter>
+            <action name="타이머를설정한다" arg1="1" arg2="1"/>
+            <action name="몬스터를생성한다" arg1="2003" arg2="0" />
+        </onEnter>
+        <condition name="시간이경과했으면" arg1="1">
+            <transition state="NPC대사" />
+        </condition>
+        <onExit>
+        </onExit>
+    </state>
+
+    <state name="NPC대사" posX="836" posY="144">
+        <onEnter>
+			<action name="액터를설정한다" arg1="203" arg2="0" arg3="Dead_A" />
+            <action name="대화를설정한다" arg1="1" arg2="2003" arg3="$02000066_BF__NPC03__1$" arg4="2" />
+        </onEnter>
+        <condition name="몬스터가죽어있으면" arg1="2003">
+            <transition state="NPC생성조건" />
+        </condition>
+        <onExit />
+    </state>
+
+
+</ms2>
