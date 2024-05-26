@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<!--이 몬스터는 죽을 때  MonsterNumber 변수 -1 을 하지 않음-->
+			<node name="SetValue" cooltime="999999" key="CloseRange" value="0" />
+			<!--원거리 몬스터에게 가까이 다가가면 이후 쫓아오는 행동을 하도록 하기 위해 이 변수 필요 -->
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="2000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="3" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="58,40,40">
+								<!--같은 영역의 전투판 내에 있어야만 전투 행위를 하도록 함-->
+								<node name="skill" cooltime="4200" idx="2" />
+								<!--원거리 약공격 투척 공격 -->
+								<node name="standby" limit="2100" faceTarget="1" cooltime="9400">
+									<node name="skill" idx="2" />
+									<!--원거리 약공격 투척 공격 -->
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+								<!--플레이가 가까이 붙으면 바로바로 추척하도록 하기 위해 모든 스킬에 쿨타임 넣고 standby 시간 짧게 함 -->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

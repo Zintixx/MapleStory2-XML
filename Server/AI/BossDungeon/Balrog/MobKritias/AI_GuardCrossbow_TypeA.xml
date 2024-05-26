@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 3페이지 전투판에서 캐논 레이저포 설치하는 우호적 NPC 석궁병,   !!BossBuffOkCheck 변수 관리 중요!!-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<!--이 CannonWeaponLive 변수는 캐논 레이저포 AI에서 신호 받아서만 변하게 되는 변수임-->
+				<node name="SetValue" key="CannonWeaponLive" value="0" />
+				<!--이 변수가 0이면 레이저포 없는 상태, 1이면 레이저포 설치 된 상태-->
+				<node name="SetValue" key="CannonWeaponInstallStep" value="0" />
+				<!--이 변수를 통해 레이저포 설치 몇단계 상태인지를 알수 있게 함 -->
+				<!--참고로  CannonWeaponInstallStep  변수는  캐논포 설치 더미 NPC가 파괴되면 AI_CannonWeaponAssemble_01.xml, AI_CannonWeaponAssemble_02.xml 에 의해서 0 초기화 될 수 있음-->
+				<node name="SetValue" key="MoveCheck" value="0" />
+				<!--캐논포 레이저 설치나, 설치 이후 특정 지점으로 이동하는 행위 필요 유무를 판단하기 위해 사용하는 변수, 즉 이 변수가 0이면 특정 장소로 이동해야 한다고 판단하고, 이 변수가 1이면 이미 특정 장소로 이동했다고 판단함 -->
+				<!-- !!중요정보:  BossBuffOkCheck 변수는   AI_CannonWeaponLaser_TypeB.xml   AI_GuardSpear_TypeA.xml   AI_Balrog.xml 3곳 AI에서 서로 간접을 부여하면사 사용하는 중요하고 복잡한 변수임 -->
+				<node name="SetValue" key="BossBuffOkCheck" value="0" />
+				<!--  이 변수 평소에 0이 였다가, 발록이 마지막 페이즈에서 공방업 상태가 되면 BossBuffOkCheck = 1 신호를 보내서 캐논포 설치 행위를 하도록 함-->
+				<!-- 주요: 그리고 이 BossBuffOkCheck 변수는 캐논포가 파괴되면 캐논포 AI에서 무조건 BossBuffOkCheck = 0 신호를 보냄, 캐논포가 발사후 파괴되어 발록의 버프가 없어졌는데도, 캐논포 설치 NPC가 무조건 설치행동을 하는 문제가 있어서 이렇게 설정함-->
+				<!-- 즉 이 변수는  캐논포 AI 인  AI_CannonWeaponLaser_TypeB.xml 쪽 신호에 의해서도 0 초기화 됨-->
+				<!--전투상태로 넘어가자마자 바로 캐논레이저포 설치하는 행위를 하면 상황이 꼬일 수 있기 때문에, 발록 졸병이 먼저 충분이 전투 상태로 넘어가도록 대기 시간이 필요해서 이 부분을 넣음-->
+				<node name="standby" limit="1500" faceTarget="1" />
+				<node name="target" type="near" from="10" to="1500" />
+				<node name="standby" limit="3000" faceTarget="1" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="BattleEnd" value="1">
+				<!--  전투가 완전 끝났음을 발록AI에게 부터 신호 받음-->
+				<node name="standby" limit="3400" facePos="4650, 3880, 5720" />
+				<!-- 끝나기 연출 하기-->
+			</condition>
+			<condition name="extraData" key="CannonWeaponLive" value="1">
+				<!--  NPC의 담당 레이저 무기가 파괴되지 않고 잘 작동되고 있는 상태라면, 평상시 공격 행위를 함  -->
+				<!-- ###  똑같은 설정 ### -->
+				<node name="conditions">
+					<condition name="extraData" key="MoveCheck" value="0">
+						<!-- 캐논 레이저포 다 설치 다 하면 이 변수 0 초기화 시킴 -->
+						<node name="move" destination="5250, 4050, 5720" limit="12700">
+							<!-- 캐논 레이저포 다 설치하고 전투 대기 지점으로 이동하기 -->
+							<node name="SetValue" key="MoveCheck" value="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="9999,0">
+							<!--  MoveCheck = 1 인 경우 -->
+							<node name="target" type="near" center="5250, 4220, 5720" cooltime="5000" />
+							<!--중요:  캐논 레이저포 다 설치 한 이후에는 발록을 타겟팅하고 주변에 방해 소환몹 등장하면, 이 소환몹을 타겟팅 하도록 타겟팅 좌표 설정을 잘 해야함 -->
+							<!--  !특히 이 4220 숫자 중요! 그리고 발록 위치  졸몹 위치 이 NPC 위치 전부 관련있기 때문에 이 모든 것들 함부로 변경하면 안됨 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<!--  레벨2가 사정거리 1100  -->
+									<aiPreset name="Normal_Attack" />
+								</condition>
+								<condition name="true">
+									<node name="select" prob="999,1">
+										<!-- 주변에 싸울 대상이 없으면, 전투 대기 지점으로 이동하기 -->
+										<node name="standby" limit="1800" faceTarget="0" cooltime="15000">
+											<node name="move" destination="5250, 4050, 5720" limit="12700" />
+											<!-- 캐논 레이저포 다 설치하고 대기 장소로 이동하기 -->
+										</node>
+										<node name="standby" limit="800" facePos="4650, 3880, 5720" />
+										<!--  발록이 주로 서있는 지점의 좌표 설정, 즉 대기 상태일 때 발록을 더 자주 바라보도록 설정함-->
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+				</node>
+				<!-- ###  똑같은 설정 ### -->
+			</condition>
+			<condition name="extraData" key="BossBuffOkCheck" value="0">
+				<!--  NPC의 담당 레이저 무기가 파괴된 상태라도 발록이 공방업 버프 상태가 아니라면, 평상시 공격 행위를 함  -->
+				<!-- ###  똑같은 설정 ### -->
+				<node name="conditions">
+					<condition name="extraData" key="MoveCheck" value="0">
+						<!-- 캐논 레이저포 다 설치 다 하면 이 변수 0 초기화 시킴 -->
+						<node name="move" destination="5250, 4050, 5720" limit="12700">
+							<!-- 캐논 레이저포 다 설치하고 전투 대기 지점으로 이동하기 -->
+							<node name="SetValue" key="MoveCheck" value="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="9999,0">
+							<!--  MoveCheck = 1 인 경우 -->
+							<node name="target" type="near" center="5250, 4220, 5720" cooltime="5000" />
+							<!--중요:  캐논 레이저포 다 설치 한 이후에는 발록을 타겟팅하고 주변에 방해 소환몹 등장하면, 이 소환몹을 타겟팅 하도록 타겟팅 좌표 설정을 잘 해야함 -->
+							<!--  !특히 이 4220 숫자 중요! 그리고 발록 위치  졸몹 위치 이 NPC 위치 전부 관련있기 때문에 이 모든 것들 함부로 변경하면 안됨 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<!--  레벨2가 사정거리 1100  -->
+									<aiPreset name="Normal_Attack" />
+								</condition>
+								<condition name="true">
+									<node name="select" prob="999,1">
+										<!-- 주변에 싸울 대상이 없으면, 전투 대기 지점으로 이동하기 -->
+										<node name="standby" limit="1800" faceTarget="0" cooltime="15000">
+											<node name="move" destination="5250, 4050, 5720" limit="12700" />
+											<!-- 캐논 레이저포 다 설치하고 대기 장소로 이동하기 -->
+										</node>
+										<node name="standby" limit="800" facePos="4650, 3880, 5720" />
+										<!--  발록이 주로 서있는 지점의 좌표 설정, 즉 대기 상태일 때 발록을 더 자주 바라보도록 설정함-->
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+				</node>
+				<!-- ###  똑같은 설정 ### -->
+			</condition>
+			<condition name="true">
+				<node name="select" prob="99999,0">
+					<!-- 즉 CannonWeaponLive = 0 와 BossBuffOkCheck = 1 인 경우,  NPC의 담당 레이저 무기가 파괴된 상태이고 발록이 공방업 버프 상태라면, 레이저포 설치하기 -->
+					<node name="target" type="near" from="2" to="2400" cooltime="5000" />
+					<!-- 레이저포 설치 단계에서 수시로 제일 가까운 대상 타겟팅 하기 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="999,100">
+								<!--  반경 650 이내에 적대적 몬스터가 있다면,  레벨4가 공격 행동 기준 650, 이것만 레벨3이 아닌 레벨4 사용함  -->
+								<!--레이저포 설치 행위 하는데 주변에 적대적 몬스터가 있으면 방해 받도록 하기 위해 이렇게 설정함 -->
+								<node name="say" message="$MapleGuardSpearKritias_InstallInterruption03$" durationTick="9000" cooltime="4000" />
+								<node name="SetValue" key="MoveCheck" value="0">
+									<!-- 레이저포 설치해야 하는데, 방해 받아서 공격 행위를 하는 경우 이 변수를 0으로 초기화 셋팅하여 공격 행위 끝나면 캐논레이저 설치 장소로 이동하도록 설정함 -->
+									<aiPreset name="Normal_Attack" />
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="MoveCheck" value="0">
+							<!--이 단계에서 이 변수 MoveCheck = 0 이 되는 경우는 대포 설치 행위 도중에 공격 행동을 하거나 레이저 캐논포가 파괴되어 이쪽 AI에서 0 초기화 신호를 받을 때임-->
+							<node name="standby" limit="1900" faceTarget="0" isKeepBattle="true">
+								<node name="say" message="$MapleGuardSpearKritias_InstallStart$" durationTick="9000" />
+								<node name="move" destination="5275, 3900, 5710" limit="12700" />
+								<!-- 캐논 레이저포 설치 장소로 이동하기  -->
+								<node name="SetValue" key="MoveCheck" value="1" />
+								<!-- 이 변수를 1로 설정해서  -->
+							</node>
+						</condition>
+						<condition name="extraData" key="CannonWeaponInstallStep" value="-1" op="lessEqual">
+							<!--이 변수가 -1보다 작은 경우는 캐논포 설치 도중에 파괴 되었을 경우에 이 부분을 실행함 -->
+							<node name="standby" limit="600" facePos="5400, 3900, 5710" isKeepBattle="true">
+								<node name="say" message="$MapleGuardSpearKritias_InstallBroken$" durationTick="9000" />
+								<node name="standby" limit="1600" facePos="5400, 3900, 5710" />
+								<node name="SetValue" key="CannonWeaponInstallStep" value="0" />
+							</node>
+						</condition>
+						<condition name="extraData" key="CannonWeaponInstallStep" value="0">
+							<node name="move" destination="5275, 3900, 5710" limit="12700">
+								<!--상황이 꼬여서 간혹 설치 지점 장소로 가지 않는 경우가 있어서, 설치 작업 최초 시작때 다시한번 설치 장소로 이동시킴  -->
+								<node name="standby" limit="244" facePos="5400, 3900, 5710">
+									<node name="SetValue" key="CannonWeaponInstallStep" value="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="CannonWeaponInstallStep" value="1">
+							<node name="standby" limit="1334" facePos="5400, 3900, 5710" animation="Object_React_A">
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="5400, 3900, 5710" summonRot="0,0,180">
+									<node name="SetValue" key="CannonWeaponInstallStep" value="1" isModify="1" />
+									<!-- 이 변수에 1 더하기-->
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="CannonWeaponInstallStep" value="3" op="lessEqual">
+							<node name="standby" limit="1334" facePos="5400, 3900, 5710" animation="Object_React_A">
+								<node name="SetValue" key="CannonWeaponInstallStep" value="1" isModify="1" />
+								<!-- 이 변수에 1 더하기-->
+							</node>
+						</condition>
+						<condition name="extraData" key="CannonWeaponInstallStep" value="4">
+							<node name="standby" limit="1334" facePos="5400, 3900, 5710" animation="Object_React_A" isKeepBattle="true">
+								<node name="RemoveSlaves" />
+								<!-- 대포 조립 1단계 NPC 제거, 이 NPC의 target="Slaves" 로 소환한 몬스터 전부 제거하기-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="5400, 3900, 5710" summonRot="0,0,180" />
+								<!-- 대포 조립 2단계 호출하기-->
+								<node name="say" message="$MapleGuardSpearKritias_InstallAction$" durationTick="9000" />
+								<node name="SetValue" key="CannonWeaponInstallStep" value="1" isModify="1" />
+								<!-- 이 변수에 1 더하기-->
+							</node>
+						</condition>
+						<condition name="extraData" key="CannonWeaponInstallStep" value="9" op="lessEqual">
+							<node name="standby" limit="1334" facePos="5400, 3900, 5710" animation="Object_React_A">
+								<node name="SetValue" key="CannonWeaponInstallStep" value="1" isModify="1" />
+								<!-- 이 변수에 1 더하기-->
+							</node>
+						</condition>
+						<condition name="extraData" key="CannonWeaponInstallStep" value="10">
+							<!-- 캐논 레이저포 설치 완료 단계임-->
+							<node name="standby" limit="1334" facePos="5400, 3900, 5710" animation="Object_React_A" isKeepBattle="true">
+								<node name="RemoveSlaves" />
+								<!-- 대포 조립 2단계 NPC 제거, 이 NPC의 target="Slaves" 로 소환한 몬스터 전부 제거하기-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="5400, 3900, 5710" summonRot="0,0,180" />
+								<!-- 완성된 대포 생성하기, 8시 지점 캐논포 레이저 설치 완료-->
+								<node name="SetValue" key="CannonWeaponInstallStep" value="0" />
+								<!-- 이 변수 꼭 초기화 하기-->
+								<node name="SetValue" key="MoveCheck" value="0" />
+								<!-- 대포 설치 완료하면 이 변수 0으로 초기화 하여 다음 단계에서 바로 사용할 때 초기화 값으로 시작할 수 있도록 함  -->
+								<node name="say" message="$MapleGuardSpearKritias_InstallComplete$" durationTick="9000" />
+								<node name="standby" limit="400" facePos="5400, 3900, 5710" animation="Object_React_A" />
+								<node name="standby" limit="1700" facePos="5400, 3900, 5710" />
+								<!-- 대포AI로 부터 CannonWeaponLive = 1 신호를 받을때까지 충분히 standby 대기 상태로 있는 것이 좋음-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 이론적으로 이부분 실행할 일 없음-->
+							<node name="standby" limit="560" faceTarget="0" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="60,40">
+						<!--50000223 레벨2, 사정거리 1100-->
+						<node name="skill" idx="1">
+							<node name="select" prob="33,34,33">
+								<!--약공격 , 50000222 -->
+								<node name="standby" limit="300" faceTarget="1" />
+								<node name="standby" limit="600" faceTarget="1" />
+								<node name="standby" limit="1100" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="2" cooltime="12000" initialCooltime="15000">
+							<node name="select" prob="33,34,33">
+								<!--강공격, 50000223 레벨2-->
+								<node name="standby" limit="800" faceTarget="1" />
+								<node name="standby" limit="900" faceTarget="1" />
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="500" faceTarget="1">
+						<node name="target" type="near" from="10" to="3500" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="BattleMode" value="1">
+				<!-- 쫄 소환 배틀 모드 -->
+				<aiPreset name="NormalMode" />
+			</condition>
+			<condition name="true">
+				<!-- 일반 배틀 모드 -->
+				<aiPreset name="NormalMode" />
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<!--일반적인 상태-->
+		<aiPreset name="NormalMode">
+			<node name="select" prob="9999,9999,9999,9999,9999,9999,50,50">
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+					<node name="target" type="rand" from="10" to="1300" />
+				</node>
+				<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+				<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="20000">
+					<node name="target" type="far" from="10" to="1500">
+						<node name="trace" limit="2000" skillIdx="1" />
+						<!--distance 200짜리 가짜 스킬 데이터-->
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="15000">
+					<node name="target" type="far" from="10" to="1500">
+						<node name="skill" idx="5">
+							<node name="standby" limit="1500" faceTarget="0" />
+						</node>
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="35000">
+					<node name="skill" idx="6">
+						<node name="target" type="far" from="10" to="1500">
+							<node name="select" prob="100,100">
+								<node name="trace" limit="2000" skillIdx="1" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1" cooltime="30000" initialCooltime="10000">
+					<node name="skill" idx="7">
+						<node name="standby" limit="1500" faceTarget="0" />
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1" cooltime="90000" initialCooltime="30000">
+					<node name="skill" idx="4">
+						<node name="target" type="rand" from="10" to="1500">
+							<node name="skill" idx="4">
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="skill" idx="4">
+										<node name="standby" limit="1500" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="100,100">
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="skill" idx="2">
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+								<node name="skill" idx="3">
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+							<node name="skill" idx="2" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="100,100,100">
+							<node name="trace" limit="2000" skillIdx="2" />
+							<node name="standby" limit="1500" faceTarget="0" />
+							<node name="skill" idx="7" />
+						</node>
+					</condition>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="3">
+						<node name="select" prob="100,100">
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="skill" idx="3">
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+								<node name="skill" idx="2">
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="0" />
+							</node>
+							<node name="skill" idx="3" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="100,100,100">
+							<node name="trace" limit="2000" skillIdx="2" />
+							<node name="standby" limit="1500" faceTarget="0" />
+							<node name="skill" idx="7" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<!--주위에 주기적으로 쫄 소환-->
+		<aiPreset name="ZakoMode">
+			<node name="select" prob="99999,99999,99999,9999,9999,9999,9999,9999,9999,50,50">
+				<node name="summon" npcId="1" npcCount="8" npcCountMax="8" group="101" summonRadius="600, 600, 0" summonPosOffset="0,0,0" cooltime="10000" />
+				<!-- <10초마다 근처에 쫄몹 소환 체크> -->
+				<node name="summon" npcId="2" npcCount="8" npcCountMax="8" group="102" summonRadius="600, 600, 0" summonPosOffset="0,0,0" cooltime="10000" />
+				<node name="summon" npcId="3" npcCount="4" npcCountMax="4" group="103" summonRadius="600, 600, 0" summonPosOffset="0,0,0" cooltime="10000" />
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+					<node name="target" type="rand" from="10" to="1300" />
+				</node>
+				<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+				<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="20000">
+					<node name="target" type="far" from="10" to="1500">
+						<node name="trace" limit="2000" skillIdx="1" />
+						<!--distance 200짜리 가짜 스킬 데이터-->
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="15000">
+					<node name="target" type="far" from="10" to="1500">
+						<node name="skill" idx="5">
+							<node name="standby" limit="1500" faceTarget="0" />
+						</node>
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="35000">
+					<node name="skill" idx="6">
+						<node name="target" type="far" from="10" to="1500">
+							<node name="select" prob="100,100">
+								<node name="trace" limit="2000" skillIdx="1" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1" cooltime="30000" initialCooltime="10000">
+					<node name="skill" idx="7">
+						<node name="standby" limit="1500" faceTarget="0" />
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1" cooltime="90000" initialCooltime="30000">
+					<node name="skill" idx="4">
+						<node name="target" type="rand" from="10" to="1500">
+							<node name="skill" idx="4">
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="skill" idx="4">
+										<node name="standby" limit="1500" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="100,100">
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="skill" idx="2">
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+								<node name="skill" idx="3">
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+							<node name="skill" idx="2" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="100,100,100">
+							<node name="trace" limit="2000" skillIdx="2" />
+							<node name="standby" limit="1500" faceTarget="0" />
+							<node name="skill" idx="7" />
+						</node>
+					</condition>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="3">
+						<node name="select" prob="100,100">
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="skill" idx="3">
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+								<node name="skill" idx="2">
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="0" />
+							</node>
+							<node name="skill" idx="3" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="100,100,100">
+							<node name="trace" limit="2000" skillIdx="2" />
+							<node name="standby" limit="1500" faceTarget="0" />
+							<node name="skill" idx="7" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

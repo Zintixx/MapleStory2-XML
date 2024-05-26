@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,0">
+			<!--시스템 메시지 출력 그리고 각종 변수 초기화 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="BossZone" value="0" />
+				<!-- 이 변수를 1로 받아 보스 전투판으로 순간이동 하라고 알림-->
+				<node name="SetValue" key="Purify" value="0" />
+				<node name="SetValue" key="SnowKingDead" value="0" />
+				<!--비에른한테 신호 받는 변수로 이 변수가 보스가 죽으면 1 신호를 받아서 이 후 버프 행위 안함-->
+				<node name="say" message="$SnowFairy_Greeting$" durationTick="5000" />
+				<!--처음 등장할때 나오는 대사 -->
+				<node name="announce" message="$SnowFairy_Appearance$" durationTick="5000" />
+				<!--설콩이 등장을 알리는 시스템 메시지 출력-->
+				<node name="buff" type="add" id="50001045" />
+				<!-- 몸에 바디 이펙트 붙이기-->
+				<node name="buff" type="add" id="50001103" />
+				<!-- 타겟팅 예외 처리 에디셔널 붙이기-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SnowKingDead" value="1">
+					<node name="select" prob="15,15,10,15,15,10,10,10">
+						<!--보스 죽으면, 특별한 행동 안하고 가만히 있기-->
+						<node name="trace" limit="2000" skillIdx="1" />
+						<node name="trace" limit="4500" skillIdx="1" />
+						<node name="standby" limit="800" faceTarget="1" />
+						<node name="standby" limit="1530" faceTarget="1" />
+						<node name="standby" limit="1320" faceTarget="1" />
+						<node name="runaway" till="50" limit="2000" />
+						<node name="runaway" till="78" limit="2000" />
+						<node name="runaway" till="110" limit="2000" />
+					</node>
+				</condition>
+				<condition name="extraData" key="BossZone" value="1">
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="buff" type="add" id="50001103">
+							<!-- 타겟팅 예외 처리 에디셔널 붙이기-->
+							<node name="SetValue" key="BossZone" value="0">
+								<node name="select" prob="33,33,33">
+									<node name="teleport" pos="5700, 3750, 5300" />
+									<!--  보스전투판  위로 순간이동, 2시-->
+									<node name="teleport" pos="5550, 3900, 5300" />
+									<!--  보스전투판  위로 순간이동, 2시-->
+									<node name="teleport" pos="5550, 4050, 5300" />
+									<!--  보스전투판  위로 순간이동, 2시-->
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="Purify" value="1">
+					<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+						<node name="say" message="$SnowFairy_Purify$" durationTick="8000" />
+						<!--타락한 신전의 석상을 정화하기 위해 나오는 대사 -->
+						<node name="SetValueRangeTarget" key="Rebirth" value="1" radius="930" height="1400" />
+						<node name="standby" limit="300" faceTarget="1" />
+						<node name="skill" idx="4" />
+						<!--정화 행동하기 -->
+						<node name="SetValue" key="Purify" value="0" />
+						<!-- 이 변수 0으로 초기화 하여 평소 행동 하도록 함-->
+						<node name="standby" limit="2000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="94,1,1,1,1,1,1">
+						<!--250 사정거리 안에 있으면-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+							<node name="select" prob="65,35">
+								<!--버프 유지 시간이 대략 10초 정도 됨 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="27000">
+									<node name="say" message="$SnowFairy_Buff$" durationTick="4000">
+										<!--버프 걸때 나오는 대사 -->
+										<aiPreset name="BuffAction" />
+										<!--버프 주는 행위-->
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<aiPreset name="BuffAction" />
+									<!--버프 주는 행위-->
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="800" faceTarget="1" />
+						<node name="standby" limit="530" faceTarget="1" />
+						<node name="standby" limit="320" faceTarget="1" />
+						<node name="runaway" till="50" limit="2000" />
+						<node name="runaway" till="78" limit="2000" />
+						<node name="runaway" till="110" limit="2000" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="27,27,27,19">
+						<node name="trace" limit="2000" skillIdx="1" />
+						<node name="trace" limit="4500" skillIdx="1" />
+						<node name="trace" limit="9000" skillIdx="1" />
+						<node name="standby" limit="350" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="select" prob="50,50">
+			<node name="say" message="$SnowFairy_Dead01$" durationTick="8000" />
+			<node name="say" message="$SnowFairy_Dead02$" durationTick="8000" />
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="BuffAction">
+			<!--버프 주는 행위-->
+			<node name="standby" limit="100" faceTarget="1">
+				<node name="select" prob="33,33,33">
+					<node name="skill" idx="1" />
+					<!--공업 버프 걸기-->
+					<node name="skill" idx="2" />
+					<!--방업 버프 걸기-->
+					<node name="skill" idx="3" />
+					<!--이속업 버프 걸기-->
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

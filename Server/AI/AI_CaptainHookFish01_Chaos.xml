@@ -1,0 +1,1534 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,0">
+			<!--보스 AI 로직을 위해 필요한 변수를 여기서 전부 선언함-->
+			<node name="standby" limit="500" faceTarget="0" cooltime="999999" isKeepBattle="true">
+				<node name="SetValue" key="FirstJumpMoveOn" value="0" />
+				<!--FirstJumpMoveOn 이 변수에 의해 최초에 보스가 점프로 배 위로 올라갔는지를 판담함, 전투 중 의도치 않게 전투가 풀렸다 다시 전투에 돌입할 경우,  AI가 꼬여 배 위로 점프 뛸수 있기 때문에 만일의 사태를 대비함-->
+				<node name="SetValue" key="CheckSummonMany" value="1" />
+				<!--  소환몹이 전부 죽었는지 체크하는 변수 선언 부분, 최초 딱 한번 선언함-->
+				<node name="SetSlaveValue" key="DeathCrossbowShot" value="0" />
+				<!--소환몹 대포와 그린후드 석궁 자살 명령 OFF 상태로 놓기-->
+				<node name="SetValue" key="JumpMoveOn" value="0" />
+				<!--JumpMoveOn 이 변수에 의해 보스가 점프로 배 아래로 내려왔는지 판단함, 보스 HP  89~84%를 그냥 훅 넘길경우 점프 이동을 안하여 AI가 꼬일수 있어서 만일의 사태를 대비함 -->
+				<node name="SetValue" key="HPRecoveryOn" value="0" />
+				<!--HPRecoveryOn 이 변수에 의해 보스가 스스로 회복하는 공격패턴을 사용할지 말지를 결정함-->
+				<node name="SetValue" key="JumpCombackOn" value="0" />
+				<!--HP회복 패턴때 회복한 다음에 다시 원래 전투판으로 돌아오게 하기위해 사용하는 변수-->
+				<node name="SetValue" key="JumpCombackReady" value="0" />
+				<!--HP회복 패턴때 건너편 전투판으로 넘어간 후에 이 변수가 3이 되면 다시 돌아오도록 설정하기 위해 값을 선언함-->
+				<!--던전시간 늘리기 테스트용 나중에 삭제해야 함     -->
+				<!--	<event eventName="ModifyRoomTime" param1="900000"/>  -->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 넣지 않는다. 넣으면 HP회복 패턴때 꼬일 수 있기 때문에 절대 넣지 않는다 -->
+			<node name="conditions">
+				<condition name="hpOver" value="97">
+					<!--#1-1페이즈 - 최초 배 위로 점프 이동 후 졸병 소환          100~97    3%-->
+					<node name="conditions">
+						<condition name="extraData" key="FirstJumpMoveOn" value="0">
+							<node name="select" prob="9999,1">
+								<!-- HP 100~97%구간에서 최초 딱 한번 배 위로 점프 올라기기를 해야햐기 때문에 이 조건을 설정함 -->
+								<node name="skill" facePos="900, 1050, 4850" cooltime="999999" isKeepBattle="true" idx="12">
+									<!--배 위로 점프뛰기 -->
+									<node name="jump" pos="900, 1050, 4850" speed="2000" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="13" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="FirstJumpMoveOn" value="1" />
+									<!--보스가 전투 돌입하자마자 최초에 배위로 점프 뛰었는지를 알리기 위해  FirstJumpMoveOn 변수에 1로 설정함  -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" idx="23" />
+								<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99,0">
+								<!--HP 100~97%구간에서 이미 점프 올라기기를 했으면, 이 부분을 실행함-->
+								<node name="standby" limit="1000" faceTarget="1" cooltime="999999" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="17" />
+									<!--졸병 호출하는 동작-->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="-300, -300, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="107" summonPos="-150, 1200, 4550" summonRot="0,0,-50" />
+									<!--5시 건너편 지형에서 기절 시키는 대포해골, 이것은 소환몹 Kill카운트에 포함 안됨-->
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="130" summonPos="300, -1050, 5000" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="131" summonPos="0, -1200, 5000" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="132" summonPos="-450, -1650, 4550" summonRot="0,0,-50" />
+									<node name="SetValue" key="CheckSummonMany" value="7" />
+									<node name="standby" limit="8000" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="25" />
+									<!--도발하면서 성우 대사 나오기-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="extraData" key="CheckSummonMany" value="1" op="greaterEqual">
+										<node name="select" prob="75,35">
+											<!-- 소환몹이 한마리라도 남아있으면 -->
+											<node name="skill" faceTarget="0" idx="23">
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="skill" faceTarget="0" cooltime="5000" idx="1">
+												<node name="select" prob="60,40">
+													<!-- 갈고리 손 대포 가끔 사용, 2층 지형에서 사용 -->
+													<node name="skill" faceTarget="0" cooltime="8000" idx="24" />
+													<!-- 도발 행동 -->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<!-- 소환몹이 모두 죽으면 -->
+											<node name="standby" limit="1500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+												<node name="skill" faceTarget="0" idx="17" />
+												<!--졸병 호출하는 동작-->
+												<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="150, 900, 4550" summonRot="0,0,80" />
+												<!--왼쪽 지점 대포-->
+												<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="112" summonPos="450, 1200, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+												<node name="standby" limit="2500" faceTarget="1" />
+												<node name="skill" faceTarget="0" idx="1" />
+												<!-- 갈고리 손 대포, 2층 지형에서 사용 -->
+											</node>
+											<node name="skill" faceTarget="0" idx="23" />
+											<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="91">
+					<node name="select" prob="9999,0">
+						<!--#1-2페이즈 - 대포 맞고 아래로 떨어짐                      97~91     6%-->
+						<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" isKeepBattle="true">
+							<!--배 아래로 떨어지기-->
+							<node name="skill" faceTarget="0" idx="14" />
+							<!--대포 맞고 배 아래로 떨어지기-->
+							<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="15" />
+							<!--점프 착지 -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+							<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="59,40,1">
+									<node name="skill" idx="4">
+										<!-- 휘두르기-->
+										<node name="target" type="rand" from="10" to="1300" />
+									</node>
+									<node name="skill" idx="5">
+										<!-- 대쉬 휘두르기-->
+										<node name="standby" limit="500" faceTarget="0" />
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="9">
+										<node name="select" prob="50,25,25">
+											<node name="trace" limit="2500" skillIdx="4" />
+											<node name="skill" idx="9">
+												<!-- 점프 쾅!~-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="6">
+												<!-- 돌진 공격-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1300" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="54,45,1">
+											<node name="trace" limit="2000" cooltime="5000" skillIdx="4" />
+											<node name="skill" idx="3">
+												<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1400" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="88">
+					<node name="select" prob="9999,99,0">
+						<!--#1-3페이즈 - 다시  배 위로 올라기 졸병 소환             91~88     3%-->
+						<node name="skill" facePos="900, 1050, 4850" cooltime="999999" isKeepBattle="true" idx="12">
+							<!--배 위로 점프뛰기 -->
+							<node name="jump" pos="900, 1050, 4850" speed="2000" heightMultiplier="0.5" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="13" />
+							<!--점프 착지 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="standby" limit="1000" faceTarget="1" cooltime="999999" isKeepBattle="true">
+							<node name="skill" faceTarget="0" idx="17" />
+							<!--졸병 호출하는 동작-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="-300, -300, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="107" summonPos="-150, 1200, 4550" summonRot="0,0,-50" />
+							<!--8시 건너편 지형에서 기절 시키는 대포해골,  소환몹 Kill카운트에 포함 안됨-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="133" summonPos="-1500, 1800, 5000" summonRot="0,0,-50" />
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="134" summonPos="-1650, 1500, 5000" summonRot="0,0,-50" />
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="135" summonPos="-2100, 1050, 4550" summonRot="0,0,-50" />
+							<node name="SetValue" key="CheckSummonMany" value="7" />
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="CheckSummonMany" value="1" op="greaterEqual">
+								<node name="select" prob="10,90">
+									<!-- 소환몹이 한마리라도 남아있으면 -->
+									<node name="skill" faceTarget="0" idx="23">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" faceTarget="0" cooltime="4000" idx="1">
+										<node name="select" prob="60,40">
+											<!-- 갈고리 손 대포 가끔 사용, 2층 지형에서 사용 -->
+											<node name="skill" faceTarget="0" cooltime="8000" idx="24" />
+											<!-- 도발 행동 -->
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<!-- 소환몹이 모두 죽으면 -->
+									<node name="standby" limit="1500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+										<node name="skill" faceTarget="0" idx="17" />
+										<!--졸병 호출하는 동작-->
+										<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="450, 300, 4550" summonRot="0,0,150" />
+										<!--오른쪽 지점 대포-->
+										<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="112" summonPos="750, 300, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+										<!--1시 2층 지형에서 기절 시키는 대포해골 우선 2마리만 등장,  소환몹 Kill카운트에 포함 안됨-->
+										<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="140" summonPos="750, -150, 4850" summonRot="0,0,-50" />
+										<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="142" summonPos="900, -600, 4850" summonRot="0,0,-50" />
+										<node name="standby" limit="2500" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="1" />
+										<!-- 갈고리 손 대포, 2층 지형에서 사용 -->
+									</node>
+									<node name="skill" faceTarget="0" idx="23" />
+									<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="80">
+					<node name="select" prob="9999,0">
+						<!--#1-4페이즈 - 대포 맞고 아래로 떨어짐(한방 킬 발동)   88~80     8%-->
+						<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" isKeepBattle="true">
+							<!--배 아래로 떨어지기-->
+							<node name="skill" faceTarget="0" idx="14" />
+							<!--대포 맞고 배 아래로 떨어지기-->
+							<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+							<!--점프중    type ="2" 를 넣으면 Jump_B 셋의 애니메이션을 사용하게 됨 -->
+							<node name="skill" faceTarget="0" idx="15" />
+							<!--점프 착지 -->
+							<node name="SetValue" key="JumpMoveOn" value="1" />
+							<!--보스 HP  89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+							<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+							<node name="announce" message="$CaptainHookFish01_Warning$" durationTick="9000" />
+							<!--한방 킬!~ 발동 패턴    (HP 50% 때도 한방 킬 방동하는데 88% -> 50% 깍는데 나이트의 전사의 보호 쿨타임 2분 충분히 지날 것으로 판단하여 이때 한방 킬 사용하도록 함)-->
+							<node name="move" destination="0, 600, 4550" limit="2000" />
+							<!--맵 중앙 쪽으로 이동-->
+							<node name="skill" facePos="-450, 0, 4550" idx="10" />
+							<!--기절시키기, 레벨3이 준비기간이 길어서 이때 나이트의 전사의 보호 꼭 사용해야 함-->
+							<node name="standby" limit="1500" faceTarget="1" />
+							<node name="target" type="mid" from="10" to="3000" />
+							<!--중간에 위치한 플레이어로 타겟팅 잡기-->
+							<node name="trace" limit="3000" skillIdx="22" />
+							<!--모든 플레이어가 멀리 도망갈 경우를 대비해 3초 정도 추척 하는 단계를 넣음-->
+							<node name="skill" faceTarget="1" idx="22" />
+							<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="59,40,1">
+									<node name="skill" idx="4">
+										<!-- 휘두르기-->
+										<node name="target" type="rand" from="10" to="1300" />
+									</node>
+									<node name="skill" idx="5">
+										<!-- 대쉬 휘두르기-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="9">
+										<node name="select" prob="50,25,25">
+											<node name="trace" limit="2500" skillIdx="4" />
+											<node name="skill" idx="9">
+												<!-- 점프 쾅!~-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="6">
+												<!-- 돌진 공격-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1300" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="54,45,1">
+											<node name="trace" limit="2000" cooltime="5000" skillIdx="4" />
+											<node name="skill" idx="3">
+												<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1400" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="74">
+					<!--#2페이즈	- 1시 2층 지형의 소환 대포 최초 등장          80~74     6%   (HP 88~82%를 그냥 훅 넘길경우를 대비한 점프이동관련 로직이 들어가 있음)-->
+					<node name="conditions">
+						<condition name="extraData" key="JumpMoveOn" value="1">
+							<node name="select" prob="9999,50,0">
+								<!--보스 HP   89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<!--1시 2층 지형에서 기절 시키는 대포해골-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="17" />
+									<!--졸병 호출하는 동작-->
+									<!--1시 2층 지형에서 기절 시키는 대포해골-->
+									<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="140" summonPos="750, -150, 4850" summonRot="0,0,-50" />
+									<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="141" summonPos="750, -450, 4850" summonRot="0,0,-50" />
+									<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="142" summonPos="900, -600, 4850" summonRot="0,0,-50" />
+									<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="143" summonPos="900, -750, 4850" summonRot="0,0,-50" />
+								</node>
+								<node name="skill" cooltime="22000" initialCooltime="10000" idx="6">
+									<!--돌진 공격 후 왼손 대포 바닥 폭발-->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="skill" idx="2">
+											<!-- 왼손 대포 발사-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="33,33,33,1">
+											<node name="skill" cooltime="5000" idx="4" />
+											<!-- 휘두르기-->
+											<node name="skill" cooltime="5000" idx="5">
+												<!-- 대쉬 휘두르기-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1400" />
+												</node>
+											</node>
+											<node name="skill" cooltime="5000" idx="6">
+												<!-- 돌진 공격-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1400" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="9">
+												<node name="select" prob="26,37,37">
+													<node name="trace" limit="2500" skillIdx="4" />
+													<node name="skill" idx="9">
+														<!-- 점프 쾅!~-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+													<node name="skill" idx="6">
+														<!-- 돌진 공격-->
+														<node name="standby" limit="500" faceTarget="0" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="54,45,1">
+													<node name="trace" limit="2000" cooltime="5000" skillIdx="4" />
+													<node name="skill" idx="3">
+														<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,1">
+								<!--보스 HP  89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" isKeepBattle="true">
+									<!--배 아래로 떨어지기-->
+									<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+									<!--점프중    type ="2" 를 넣으면 Jump_B 셋의 애니메이션을 사용하게 됨 -->
+									<node name="skill" faceTarget="0" idx="15" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="JumpMoveOn" value="1" />
+									<!--보스 HP  89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+									<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+								</node>
+								<node name="skill" faceTarget="0" idx="23" />
+								<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="64">
+					<!--#3-1페이즈 (회전 돌진공격 큰소환병 2마리 등장)       74~64     10%   (HP 89~84%를 그냥 훅 넘길경우를 대비한 점프이동관련 로직이 들어가 있음)-->
+					<node name="conditions">
+						<condition name="extraData" key="JumpMoveOn" value="1">
+							<node name="select" prob="999,50,99,0">
+								<!--보스 HP 89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<node name="standby" limit="1000" faceTarget="1" cooltime="32000" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--휠윈드 소환병 호출때의 성우 대사-->
+									<!--휠윈드 큰  소환병 2마리 호출-->
+									<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="111" summonPos="-900, 450, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="114" summonPos="-450, -450, 4550" summonRot="0,0,-50" />
+									<!--5시 건너편 지형에서 기절 시키는 대포해골-->
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="130" summonPos="300, -1050, 5000" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="131" summonPos="0, -1200, 5000" summonRot="0,0,-50" />
+									<!--8시 건너편 지형에서 기절 시키는 대포해골-->
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="133" summonPos="-1500, 1800, 5000" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="134" summonPos="-1650, 1500, 5000" summonRot="0,0,-50" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="23000" initialCooltime="10000" idx="6">
+									<!--돌진 공격 후 왼손 대포 바닥 폭발-->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="skill" idx="2">
+											<!-- 왼손 대포 발사-->
+											<node name="standby" limit="1000" faceTarget="0">
+												<node name="target" type="rand" from="10" to="1400" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="16000" initialCooltime="16000" idx="11">
+									<!--더듬이 유도탄-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="35,64,1">
+											<node name="skill" idx="4">
+												<!-- 휘두르기-->
+												<node name="target" type="rand" from="10" to="1400" />
+												<!--소환몹 처리를 위해 전투판 이탈한 플레이어를 타겟팅 잡는 상황을 최소화 하기 위해 이렇게 설정함-->
+											</node>
+											<node name="skill" cooltime="3000" idx="5">
+												<!-- 대쉬 휘두르기-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1400" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="9">
+												<node name="select" prob="26,37,37">
+													<node name="trace" limit="2500" skillIdx="4" />
+													<node name="skill" idx="9">
+														<!-- 점프 쾅!~-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+													<node name="skill" idx="6">
+														<!-- 돌진 공격-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="54,45,1">
+													<node name="trace" limit="2000" cooltime="5000" skillIdx="4" />
+													<node name="skill" idx="3">
+														<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,1">
+								<!--보스 HP 84~77%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" initialCooltime="10" isKeepBattle="true">
+									<!--배 아래로 떨어지기-->
+									<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+									<!--점프중    type ="2" 를 넣으면 Jump_B 셋의 애니메이션을 사용하게 됨 -->
+									<node name="skill" faceTarget="0" idx="15" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="JumpMoveOn" value="1" />
+									<!--보스 HP 89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+									<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+								</node>
+								<node name="skill" faceTarget="0" idx="23" />
+								<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="54">
+					<!--#3-2페이즈 (회전 돌진공격 큰소환병 2마리 등장)        64~54    10%   ( 아래 HP 54~40% 구간에서 HP회복 해서 이 구간으로 다시 올 경우에 대한 예외처리가 들어가 있음 )  -->
+					<node name="conditions">
+						<condition name="extraData" key="JumpCombackOn" value="1">
+							<!--equal="1" : 아래 50~40% 구간에서 HP회복되어서  62~50% 구간으로 넘어왔으면 메인 전투판으로 돌아오돌고 함-->
+							<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+								<node name="move" destination="-750, -150, 4550" limit="1000" />
+								<node name="skill" facePos="-750, -150, 4550" idx="12" />
+								<node name="jump" pos="-750, -150, 4550" speed="2000" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="13" />
+								<!--점프 착지 -->
+								<node name="SetValue" key="JumpCombackOn" value="0" />
+								<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+								<node name="SetValue" key="JumpCombackReady" value="0" />
+								<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="999,99,0">
+								<!--**이 페이즈에서의 평소 상황**-->
+								<node name="standby" limit="1000" faceTarget="1" cooltime="32000" initialCooltime="11" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--휠윈드 소환병 호출때의 성우 대사-->
+									<!--휠윈드 큰  소환병 2마리 호출-->
+									<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="111" summonPos="-900, 450, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="114" summonPos="-450, -450, 4550" summonRot="0,0,-50" />
+									<!--5시 건너편 지형에서 기절 시키는 대포해골-->
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="130" summonPos="300, -1050, 5000" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="131" summonPos="0, -1200, 5000" summonRot="0,0,-50" />
+									<!--8시 건너편 지형에서 기절 시키는 대포해골-->
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="133" summonPos="-1500, 1800, 5000" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="134" summonPos="-1650, 1500, 5000" summonRot="0,0,-50" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="13000" initialCooltime="13000" idx="11">
+									<!--더듬이 유도탄-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="35,64,1">
+											<node name="skill" idx="4">
+												<!-- 휘두르기-->
+												<node name="target" type="rand" from="10" to="1400" />
+											</node>
+											<node name="skill" cooltime="3000" idx="5">
+												<!-- 대쉬 휘두르기-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1400" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="9">
+												<node name="select" prob="26,37,37">
+													<node name="trace" limit="2500" skillIdx="4" />
+													<node name="skill" idx="9">
+														<!-- 점프 쾅!~-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+													<node name="skill" idx="6">
+														<!-- 돌진 공격-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="54,45,1">
+													<node name="trace" limit="2000" cooltime="5000" skillIdx="4" />
+													<node name="skill" idx="3">
+														<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+					<!--**이 페이즈에서의 평소 상황**-->
+				</condition>
+				<condition name="hpOver" value="40">
+					<node name="select" prob="9999,0">
+						<!--#4페이즈  (점프 도망후 HP 회복 행위하기)                 54~40   14%  -->
+						<!--전원 기절시킨 후 한방 킬 공격 이 페이즈때 한번만 사용,  나이트의 전사의 보호 꼭 필요-->
+						<node name="standby" limit="500" faceTarget="1" cooltime="999999" initialCooltime="11" isKeepBattle="true">
+							<node name="announce" message="$CaptainHookFish01_Warning$" durationTick="9000" />
+							<node name="move" destination="0, 600, 4550" limit="2000" />
+							<!--맵 중앙 쪽으로 이동-->
+							<node name="skill" facePos="-450, 0, 4550" idx="10" />
+							<!--기절시키기, 레벨3이 준비기간이 길어서 이때 나이트의 전사의 보호 꼭 사용해야 함-->
+							<!--1시 2층 지형에서 기절 시키는 대포해골-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="141" summonPos="750, -450, 4850" summonRot="0,0,-50" />
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="143" summonPos="900, -750, 4850" summonRot="0,0,-50" />
+							<node name="standby" limit="1500" faceTarget="1" />
+							<node name="target" type="mid" from="10" to="3000" />
+							<!--중간에 위치한 플레이어로 타겟팅 잡기-->
+							<node name="trace" limit="3000" skillIdx="22" />
+							<!--모든 플레이어가 멀리 도망갈 경우를 대비해 3초 정도 추척 하는 단계를 넣음-->
+							<node name="skill" faceTarget="1" idx="22" />
+							<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+							<node name="standby" limit="2000" faceTarget="1" />
+							<node name="SetValue" key="HPRecoveryOn" value="1" />
+							<!--위 즉사 패턴 공격 사용 후에 여기서 HP 회복 패턴 사용해도 좋다는 승인 내리기-->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="HPRecoveryOn" value="1">
+								<node name="select" prob="9999,100">
+									<!--위 즉사 패턴 공격 사용 후에 HP 회복 패턴 사용 승인이 떨어졌으면-->
+									<!--## 작은 전투판으로 점프 이동하는 부분##-->
+									<node name="standby" limit="1000" faceTarget="0" cooltime="54000">
+										<node name="select" prob="50,50">
+											<!--5시 방향으로 점프뛰기 위한 작업-->
+											<node name="move" destination="-450, -450, 4550" limit="2500" cooltime="75000" isKeepBattle="true">
+												<node name="skill" facePos="-150, -1950, 4550" idx="12" />
+												<node name="jump" pos="-150, -1950, 4550" speed="2000" heightMultiplier="0.3" />
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="13" />
+												<!--점프 착지 -->
+												<!--점프 도망가면서 졸병 소환하기 -->
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="-300, -300, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="107" summonPos="-150, 1200, 4550" summonRot="0,0,-50" />
+												<node name="SetValue" key="JumpCombackOn" value="1" />
+												<!--이 변수를 1로 설정해서, 작은 전투판으로 점프로 넘어갔음을 알림 그래서 다음 행동때 메인 점프판으로 다시 오게 할 수 있도록 함 -->
+												<node name="SetValue" key="JumpCombackReady" value="0" />
+												<!--이 변수를 0으로 초기화해서, 작은 전투판에서 큰 전투판으로 넘어오게 하기 위한 기준 수치로 사용함-->
+												<node name="standby" limit="2000" faceTarget="1" />
+												<node name="target" type="near" from="5" to="2300" />
+												<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함, 꼭 점프 이동 후 맨 마지막에서 부분에서 실행해야 함 그래야 막 도착한 가까운 대상을 타겟팅 잡음-->
+											</node>
+											<!--7시 방향으로 점프뛰기 위한 작업-->
+											<node name="move" destination="-900, 750, 4550" limit="2500" cooltime="75000" isKeepBattle="true">
+												<node name="skill" facePos="-2400, 1500, 4550" idx="12" />
+												<node name="jump" pos="-2400, 1500, 4550" speed="2000" heightMultiplier="0.3" />
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="13" />
+												<!--점프 착지 -->
+												<!--점프 도망가면서 졸병 소환하기 -->
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="-300, -300, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="107" summonPos="-150, 1200, 4550" summonRot="0,0,-50" />
+												<node name="SetValue" key="JumpCombackOn" value="1" />
+												<!--이 변수를 1로 설정해서, 직은 전투판으로 점프로 넘어갔음을 알림 그래서 다음 행동때 메인 점프판으로 다시 오게 할 수 있도록 함 -->
+												<node name="SetValue" key="JumpCombackReady" value="0" />
+												<!--이 변수를 0으로 초기화해서, 작은 전투판에서 큰 전투판으로 넘어오게 하기 위한 기준 수치로 사용함-->
+												<node name="standby" limit="2000" faceTarget="1" />
+												<node name="target" type="near" from="5" to="2300" />
+												<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함, 꼭 점프 이동 후 맨 마지막에서 부분에서 실행해야 함 그래야 막 도착한 가까운 대상을 타겟팅 잡음-->
+											</node>
+										</node>
+									</node>
+									<!--## 이 페이즈에서 평소에 공격 행동을 하는 부분##-->
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="conditions">
+											<condition name="extraData" key="JumpCombackReady" value="3" op="greaterEqual">
+												<!--## JumpCombackReady 값이3이 되어 작은 전투판에 있다면  중앙 전투판으로 돌아오게 하고, 이미 중앙 넓은 전투판에 있다면 평범한 행동 하도록 하기-->
+												<node name="conditions">
+													<condition name="extraData" key="JumpCombackOn" value="1">
+														<!--작은 전투판에 넘어가 있는 상태라면-->
+														<!--JumpCombackReady 변수가 3이 되었으니 중앙 전투판으로 돌아오기-->
+														<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+															<node name="move" destination="-750, -150, 4550" limit="1000" />
+															<node name="skill" facePos="-750, -150, 4550" idx="12" />
+															<node name="jump" pos="-750, -150, 4550" speed="2000" heightMultiplier="0.3" />
+															<!--점프중 -->
+															<node name="skill" faceTarget="0" idx="13" />
+															<!--점프 착지 -->
+															<node name="SetValue" key="JumpCombackOn" value="0" />
+															<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+															<node name="SetValue" key="JumpCombackReady" value="0" />
+															<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+															<node name="target" type="near" from="10" to="1500" />
+															<!--전투판을 옮겼으니 가까운 대상 타겟팅 잡도록 함-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</condition>
+													<condition name="true">
+														<!--넓은 중앙 전투판에  있는 상태라면-->
+														<!--JumpCombackReady 변수가 3이 되어도 이미 중앙 전투판에 있기 때문에, 일반적인 공격 행위를 하도록 함-->
+														<node name="skill" isKeepBattle="true" idx="6">
+															<!-- 돌진 공격-->
+															<node name="standby" limit="500" faceTarget="0" />
+															<node name="target" type="near" from="5" to="2300" />
+															<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+															<node name="SetValue" key="JumpCombackReady" value="0" />
+															<!--메인 전투판에 이미 있으니  이 변수를 0으로 초기화 함 -->
+														</node>
+													</condition>
+												</node>
+											</condition>
+											<condition name="true">
+												<!--## 이 페이즈에서 평소 일반 공격 스킬 사용하는 부분-->
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="26">
+														<node name="select" prob="999,0">
+															<!--공격 대상이  900 범위 안에 있으면, 이 900 데이터는 HP회복 스킬 Distance 값에 입력되어있음-->
+															<node name="skill" cooltime="24000" initialCooltime="24000" idx="6">
+																<!--돌진 공격 후 왼손 대포 바닥 폭발-->
+																<node name="standby" limit="500" faceTarget="1">
+																	<node name="skill" isKeepBattle="true" idx="2">
+																		<!-- 왼손 대포 발사-->
+																		<node name="standby" limit="500" faceTarget="0" />
+																		<node name="target" type="near" from="5" to="2300" />
+																		<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+																		<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+																		<!--JumpCombackReady 값이 쌓이게 하여 3 이상이 되면 메인 전투판으로 돌아오게 함, 작은 전투판으로 넘어갈 때 0으로 초기화 하기 때문에 넓은 전투판에 있을 떄  값을 더해도 상관없음-->
+																	</node>
+																</node>
+															</node>
+															<node name="conditions">
+																<condition name="skillRange" skillIdx="4">
+																	<node name="select" prob="33,33,33,1">
+																		<node name="skill" cooltime="5000" idx="4">
+																			<!-- 휘두르기-->
+																			<node name="standby" limit="500" faceTarget="0">
+																				<node name="target" type="near" from="5" to="2300" />
+																				<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+																			</node>
+																		</node>
+																		<node name="skill" cooltime="5000" isKeepBattle="true" idx="5">
+																			<!-- 대쉬 휘두르기-->
+																			<node name="standby" limit="500" faceTarget="0" />
+																			<node name="target" type="near" from="5" to="2300" />
+																			<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+																			<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+																			<!--JumpCombackReady 값이 쌓이게 하여 3 이상이 되면 메인 전투판으로 돌아오게 함, 작은 전투판으로 넘어갈 때 0으로 초기화 하기 때문에 넓은 전투판에 있을 떄  값을 더해도 상관없음-->
+																		</node>
+																		<node name="skill" cooltime="5000" isKeepBattle="true" idx="6">
+																			<!-- 돌진 공격-->
+																			<node name="standby" limit="500" faceTarget="0" />
+																			<node name="target" type="near" from="5" to="2300" />
+																			<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+																			<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+																			<!--JumpCombackReady 값이 쌓이게 하여 3 이상이 되면 메인 전투판으로 돌아오게 함, 작은 전투판으로 넘어갈 때 0으로 초기화 하기 때문에 넓은 전투판에 있을 떄  값을 더해도 상관없음-->
+																		</node>
+																		<node name="standby" limit="500" faceTarget="0" />
+																	</node>
+																</condition>
+																<condition name="true">
+																	<node name="select" prob="26,37,37">
+																		<node name="trace" limit="2500" skillIdx="4" />
+																		<node name="skill" isKeepBattle="true" idx="9">
+																			<!-- 점프 쾅!~-->
+																			<node name="standby" limit="500" faceTarget="0" />
+																			<node name="target" type="near" from="5" to="2300" />
+																			<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+																			<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+																			<!--JumpCombackReady 값이 쌓이게 하여 3 이상이 되면 메인 전투판으로 돌아오게 함, 작은 전투판으로 넘어갈 때 0으로 초기화 하기 때문에 넓은 전투판에 있을 떄  값을 더해도 상관없음-->
+																		</node>
+																		<node name="skill" idx="6">
+																			<!-- 돌진 공격-->
+																			<node name="standby" limit="500" faceTarget="0">
+																				<node name="target" type="near" from="5" to="2300" />
+																				<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+																			</node>
+																		</node>
+																	</node>
+																</condition>
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<!--## 공격 대상이  900 범위 밖에  있는 상태에서 작은 전투판에 넘어간 상태라면 HP회복 행위를 하고, 중앙 넓은 전투판에 있다면 평범한 행동 하도록 함-->
+														<node name="conditions">
+															<condition name="extraData" key="JumpCombackOn" value="1">
+																<!--작은 전투판에 넘어가 있는 상태라면-->
+																<node name="skill" faceTarget="0" isKeepBattle="true" idx="26">
+																	<!--HP 회복하기 -->
+																	<node name="standby" limit="1000" faceTarget="0" />
+																	<node name="target" type="near" from="5" to="2300" />
+																	<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+																	<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+																	<!--JumpCombackReady 값이 쌓이게 하여 3 이상이 되면 메인 전투판으로 돌아오게 함-->
+																</node>
+															</condition>
+															<condition name="true">
+																<node name="select" prob="54,45,1">
+																	<!--넓은 중앙 전투판에  있는 상태라면-->
+																	<!--공격 대상이 800 범위 밖에 있어도 이미 중앙 전투판에 있기 때문에, 일반적인 공격 행위를 하도록 함-->
+																	<node name="trace" limit="2000" cooltime="5000" skillIdx="4" />
+																	<node name="skill" idx="3">
+																		<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+																		<node name="standby" limit="500" faceTarget="1">
+																			<node name="target" type="rand" from="10" to="1400" />
+																		</node>
+																	</node>
+																	<node name="standby" limit="500" faceTarget="1" />
+																</node>
+															</condition>
+														</node>
+													</condition>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--HP 회복 패턴 사용 승인이 안나왔으면-->
+								<node name="skill" faceTarget="0" idx="23">
+									<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+									<node name="standby" limit="1000" faceTarget="0">
+										<node name="target" type="near" from="5" to="2300" />
+										<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="36">
+					<!--#5-1페이즈  공업방업상태, 그린후드 석궁으로 HP깍아야 함, 36%까지 깍으면 버프 풀림-->
+					<node name="conditions">
+						<condition name="extraData" key="JumpCombackOn" value="1">
+							<!--equal="1" :  앞의  50~40% 구간에서 작은 전투판으로 넘어간 상태에서 극딜 당해서   40~36% 구간으로 넘어왔으면 메인 전투판으로 돌아오도록 함-->
+							<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+								<node name="move" destination="-750, -150, 4550" limit="1000" />
+								<node name="skill" facePos="-750, -150, 4550" idx="12" />
+								<node name="jump" pos="-750, -150, 4550" speed="2000" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="13" />
+								<!--점프 착지 -->
+								<node name="SetValue" key="JumpCombackOn" value="0" />
+								<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+								<node name="SetValue" key="JumpCombackReady" value="0" />
+								<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99999,999,0">
+								<!--**이 페이즈에서의 평소 상황**-->
+								<!--거의 무적 강력 상태, 그리고 연속 공격 후 그린후드 석궁  소환-->
+								<node name="skill" cooltime="999999" initialCooltime="10" isKeepBattle="true" idx="19">
+									<!--거의 무적 강력 상태(레벨3: 카오스 전용)-->
+									<node name="skill" idx="6" />
+									<!-- 돌진 공격-->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="skill" idx="6" />
+									<!-- 돌진 공격-->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="skill" idx="5" />
+									<!-- 대쉬 휘두르기-->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="skill" idx="6" />
+									<!-- 돌진 공격-->
+									<node name="skill" facePos="-150, 1150, 4550" idx="12" />
+									<!--점프뛰기 -->
+									<node name="jump" pos="-150, 1150, 4550" speed="2000" heightMultiplier="0.3" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="13" />
+									<!--점프 착지 -->
+									<node name="standby" limit="500" facePos="-450, -900, 4550 " />
+									<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="121" lifeTime="80" summonPos="-300, -1350, 4550" />
+									<!--석궁 소환-->
+									<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="122" lifeTime="80" summonPos="-600, -1500, 4550" />
+									<!--석궁 소환-->
+									<node name="skill" facePos="-450, -1950, 4550" idx="21" />
+									<node name="standby" limit="1500" facePos="-450, -900, 4550" />
+								</node>
+								<!--석궁에 있는 대상 공격하기 위한 부분-->
+								<node name="standby" limit="300" faceTarget="0" cooltime="9000">
+									<node name="move" destination="-450, -150, 4550" limit="3000">
+										<!--석궁에 있는 대상 공격하기 좋도록 위치 이동-->
+										<node name="target" type="far" from="10" to="1480">
+											<node name="select" prob="45,55">
+												<!--제일 멀리 있는 대상 타겟팅 잡기, 즉 현재 석궁 조작하고 있는 대상이 제일 멀리 있는 대상일 가능성이 높음-->
+												<node name="skill" idx="3">
+													<!--왼손 대포발사 바닥 폭발-->
+													<node name="target" type="rand" from="10" to="1800">
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" cooltime="15000" idx="22">
+													<!--광역 대포 즉사 공격, 정해진 좌표로 발사하도록 하려면 이 좌표 넣기 facePos = "-450, -2250, 4550" -->
+													<node name="target" type="rand" from="10" to="1800">
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="5">
+										<node name="select" prob="50,49,100">
+											<node name="skill" cooltime="3000" idx="5">
+												<!-- 대쉬 휘두르기-->
+												<node name="target" type="rand" from="10" to="1800" />
+												<!-- 카오스모드 캡틴모크는 타겟팅 계속 변경해 주는 부분이 없어서 스킬 사용할 때마다 타겟팅 설정을 넣음-->
+											</node>
+											<node name="skill" cooltime="3000" idx="6" />
+											<!-- 돌진 공격-->
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="9">
+												<node name="select" prob="50,50">
+													<node name="skill" idx="9" />
+													<!-- 점프 쾅!~-->
+													<node name="skill" idx="6">
+														<!-- 돌진 공격-->
+														<node name="target" type="rand" from="10" to="1800" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="54,45,1">
+													<node name="trace" limit="2000" cooltime="5000" skillIdx="5" />
+													<node name="skill" idx="3">
+														<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1800" />
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+					<!--**이 페이즈에서의 평소 상황**-->
+				</condition>
+				<condition name="hpOver" value="30">
+					<node name="select" prob="9999,99,99,0">
+						<!--#5-1페이즈  공업방업상태 풀림, 그린후드 석궁 자살 명령 내리기-->
+						<node name="SetSlaveValue" cooltime="999999" key="DeathCrossbowShot" value="1" />
+						<!--그린후드 석궁 자살 명령 내리기-->
+						<node name="skill" cooltime="13000" initialCooltime="13000" idx="11">
+							<!--더듬이 유도탄-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" initialCooltime="15000" idx="22">
+							<!--초강력 대포 발사 레벨2(큐브 파괴 안함)-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="50,49,100">
+									<node name="skill" cooltime="3000" idx="5">
+										<!-- 대쉬 휘두르기-->
+										<node name="target" type="rand" from="10" to="1400" />
+										<!-- 카오스모드 캡틴모크는 타겟팅 계속 변경해 주는 부분이 없어서 스킬 사용할 때마다 타겟팅 설정을 넣음-->
+									</node>
+									<node name="skill" cooltime="3000" idx="6" />
+									<!-- 돌진 공격-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="9">
+										<node name="select" prob="50,50">
+											<node name="skill" idx="9" />
+											<!-- 점프 쾅!~-->
+											<node name="skill" idx="6">
+												<!-- 돌진 공격-->
+												<node name="target" type="rand" from="10" to="1400" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="54,45,1">
+											<node name="trace" limit="2000" cooltime="5000" skillIdx="5" />
+											<node name="skill" idx="3">
+												<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1400" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="26">
+					<node name="select" prob="99999,999,0">
+						<!--#5-2페이즈  공업방업상태, 그린후드 석궁으로 HP깍아야 함, 26%까지 깍으면 버프 풀림-->
+						<!--거의 무적 강력 상태, 그리고 연속 공격 후 그린후드 석궁  소환-->
+						<node name="skill" cooltime="999999" initialCooltime="10" isKeepBattle="true" idx="20">
+							<!--거의 무적 강력 상태(레벨4: 카오스 전용)-->
+							<node name="skill" idx="6" />
+							<!-- 돌진 공격-->
+							<node name="target" type="rand" from="10" to="1300" />
+							<node name="skill" idx="6" />
+							<!-- 돌진 공격-->
+							<node name="target" type="rand" from="10" to="1300" />
+							<node name="skill" idx="5" />
+							<!-- 대쉬 휘두르기-->
+							<node name="target" type="rand" from="10" to="1300" />
+							<node name="skill" idx="6" />
+							<!-- 돌진 공격-->
+							<node name="skill" facePos="450, -450, 4550" idx="12" />
+							<!--점프뛰기  -->
+							<node name="jump" pos="450, -450, 4550" speed="2000" heightMultiplier="0.3" />
+							<!--점프중 600 입력하면 제대로 착지 못한 꼭 550 입력해야 함-->
+							<node name="skill" faceTarget="0" idx="13" />
+							<!--점프 착지  -->
+							<node name="standby" limit="500" facePos="-1200, 0, 4550" />
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="123" lifeTime="80" summonPos="-1800, 1200, 4550" />
+							<!--석궁 소환-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="124" lifeTime="80" summonPos="-1950, 900, 4550" />
+							<!--석궁 소환-->
+							<node name="skill" facePos="-2250, 1200, 4550" idx="21" />
+							<node name="standby" limit="1500" facePos="-1200, 0, 4550" />
+						</node>
+						<!--석궁에 있는 대상 공격하기 위한 부분-->
+						<node name="standby" limit="300" faceTarget="0" cooltime="9000">
+							<node name="move" destination="-750, 150, 4550" limit="3000">
+								<!--석궁에 있는 대상 공격하기 좋도록 위치 이동-->
+								<node name="target" type="far" from="10" to="1550">
+									<node name="select" prob="45,55">
+										<!--제일 멀리 있는 대상 타겟팅 잡기, 즉 현재 석궁 조작하고 있는 대상이 제일 멀리 있는 대상일 가능성이 높음-->
+										<node name="skill" idx="3">
+											<!--왼손 대포발사 바닥 폭발-->
+											<node name="target" type="rand" from="10" to="1800">
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" cooltime="15000" idx="22">
+											<!--광역 대포 즉사 공격, 정해진 장소로 쏘도록 하고 싶으면 이 좌표를 넣기 facePos = "-2400, 1500, 4550" -->
+											<node name="target" type="rand" from="10" to="1800">
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="50,49,100">
+									<node name="skill" cooltime="3000" idx="5">
+										<!-- 대쉬 휘두르기-->
+										<node name="target" type="rand" from="10" to="1800" />
+										<!-- 카오스모드 캡틴모크는 타겟팅 계속 변경해 주는 부분이 없어서 스킬 사용할 때마다 타겟팅 설정을 넣음-->
+									</node>
+									<node name="skill" cooltime="3000" idx="6" />
+									<!-- 돌진 공격-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="9">
+										<node name="select" prob="50,50">
+											<node name="skill" idx="9" />
+											<!-- 점프 쾅!~-->
+											<node name="skill" idx="6">
+												<!-- 돌진 공격-->
+												<node name="target" type="rand" from="10" to="1800" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="54,45,1">
+											<node name="trace" limit="2000" cooltime="5000" skillIdx="5" />
+											<node name="skill" idx="3">
+												<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1800" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="20">
+					<node name="select" prob="9999,99,99,0">
+						<!--#5-2페이즈  페이즈  공업방업상태 풀림, 그린후드 석궁 자살 명령 내리기-->
+						<node name="SetSlaveValue" cooltime="999999" key="DeathCrossbowShot" value="1" />
+						<!--그린후드 석궁 자살 명령 내리기-->
+						<node name="skill" cooltime="13000" initialCooltime="13000" idx="11">
+							<!--더듬이 유도탄-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" initialCooltime="15000" idx="22">
+							<!--초강력 대포 발사 레벨2(큐브 파괴 안함)-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="50,49,100">
+									<node name="skill" cooltime="3000" idx="5">
+										<!-- 대쉬 휘두르기-->
+										<node name="target" type="rand" from="10" to="1400" />
+										<!-- 카오스모드 캡틴모크는 타겟팅 계속 변경해 주는 부분이 없어서 스킬 사용할 때마다 타겟팅 설정을 넣음-->
+									</node>
+									<node name="skill" cooltime="3000" idx="6" />
+									<!-- 돌진 공격-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="9">
+										<node name="select" prob="50,50">
+											<node name="skill" idx="9" />
+											<!-- 점프 쾅!~-->
+											<node name="skill" idx="6">
+												<!-- 돌진 공격-->
+												<node name="target" type="rand" from="10" to="1400" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="54,45,1">
+											<node name="trace" limit="2000" cooltime="5000" skillIdx="5" />
+											<node name="skill" idx="3">
+												<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1400" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="14">
+					<!--#6-1 페이즈  바닥 독깔기   														20~14   6% -->
+					<node name="conditions">
+						<condition name="extraData" key="JumpCombackOn" value="1">
+							<!--equal="1" :  뒤  14~5% 구간에서 작은 전투판으로 넘어간 상태에서 HP 회복하여   20~14% 구간으로 넘어왔으면 메인 전투판으로 돌아오도록 함-->
+							<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+								<!--이 곳에서는 move 단계 없이 바로 점프 뛰도록 설정함 -->
+								<node name="skill" facePos="-750, -150, 4550" idx="16" />
+								<!--레벨11은 뛰기 동작때 무적 처리 되어있음-->
+								<node name="jump" pos="-750, -150, 4550" speed="2000" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="13" />
+								<!--점프 착지 -->
+								<node name="SetValue" key="JumpCombackOn" value="0" />
+								<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+								<node name="SetValue" key="JumpCombackReady" value="0" />
+								<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,99,0">
+								<!-- 중앙 전투판에 있는 상태라면-->
+								<!--바닥 전체 독안개 깔기-->
+								<node name="standby" limit="1500" faceTarget="1" cooltime="999999" initialCooltime="11" isKeepBattle="true">
+									<node name="move" destination="-450, 300, 4550" limit="2000" />
+									<!--맵 중앙 쪽으로 이동-->
+									<node name="skill" facePos="750, 800, 4600" idx="7" />
+									<!--배 측면에 대포 발사-->
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--배 측면에 대포 발사-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="18000" initialCooltime="18000" idx="11">
+									<!--더듬이 유도탄-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="35,64,1">
+											<node name="skill" idx="4">
+												<!-- 휘두르기-->
+												<node name="target" type="near" from="10" to="1000">
+													<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" cooltime="3000" idx="5">
+												<!-- 대쉬 휘두르기-->
+												<node name="target" type="near" from="10" to="1000">
+													<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="9">
+												<node name="select" prob="60,20,20">
+													<node name="trace" limit="2500" skillIdx="4" />
+													<node name="skill" idx="9">
+														<!-- 점프 쾅!~-->
+														<node name="standby" limit="1500" faceTarget="0" />
+													</node>
+													<node name="skill" idx="6">
+														<!-- 돌진 공격-->
+														<node name="target" type="near" from="10" to="1000">
+															<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="54,45,1">
+													<node name="trace" limit="2000" cooltime="5000" skillIdx="4" />
+													<node name="skill" idx="3">
+														<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="5">
+					<node name="select" prob="99999,199,0">
+						<!--#6-2 페이즈  작은 전투판으로 점프이동하여 HP회복 행위하는 부분  	14~5     9% -->
+						<!--전원 기절시킨 후 한방 킬 공격 이 페이즈때 한번만 사용,  폭탄으로 끊을 수 있음-->
+						<node name="standby" limit="500" faceTarget="1" cooltime="999999" initialCooltime="11" isKeepBattle="true">
+							<!--1시 2층 지형에서 기절 시키는 대포해골-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="141" summonPos="750, -450, 4850" summonRot="0,0,-50" />
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="143" summonPos="900, -750, 4850" summonRot="0,0,-50" />
+							<node name="skill" facePos="-450, 0, 4550" idx="27" />
+							<!--이 스킬코드는 태양권 + 초강력 즉사킬 대포 2개 스킬이 합쳐있는 것임, 폭탄으로 끊을 경우 이 두 행동이 연이어 나오는 것을 막기 위해-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="1000" faceTarget="0" cooltime="40000">
+							<node name="select" prob="50,50">
+								<!--5시 방향으로 점프뛰기 위한 작업-->
+								<!--       <move destination="-450, -450, 4550" limit="2500" prob="50" cooltime = "65000">  점프 뛰기전 이동하는 부분은 어차피 폭탄에 맞아 끊기기  때문에 빼기로 했음   -->
+								<node name="skill" facePos="-150, -1950, 4550" isKeepBattle="true" idx="16">
+									<!--레벨11은 뛰기 동작때 무적 처리 되어있음-->
+									<node name="jump" pos="-150, -1950, 4550" speed="2000" heightMultiplier="0.3" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="13" />
+									<!--점프 착지 -->
+									<!--휠윈드 큰  소환병 2마리 호출-->
+									<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="111" summonPos="-150, -300,  4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="114" summonPos="-600, 600, 4550" summonRot="0,0,-50" />
+									<node name="SetValue" key="JumpCombackOn" value="1" />
+									<!--이 변수를 1로 설정해서, 작은 전투판으로 점프로 넘어갔음을 알림 그래서 다음 행동때 메인 점프판으로 다시 오게 할 수 있도록 함 -->
+									<node name="SetValue" key="JumpCombackReady" value="0" />
+									<!--이 변수를 0으로 초기화해서, 작은 전투판에서 큰 전투판으로 넘어오게 하기 위한 기준 수치로 사용함-->
+									<node name="target" type="near" from="5" to="2300" />
+									<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<!--7시 방향으로 점프뛰기 위한 작업-->
+								<!--       <move destination="-900, 750, 4550" limit="2500" prob="50" cooltime = "65000">  점프 뛰기전 이동하는 부분은 어차피 폭탄에 맞아 끊기기 때문에 빼기로 했음   -->
+								<node name="skill" facePos="-2400, 1500, 4550" isKeepBattle="true" idx="16">
+									<!--레벨11은 뛰기 동작때 무적 처리 되어있음-->
+									<node name="jump" pos="-2400, 1500, 4550" speed="2000" heightMultiplier="0.3" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="13" />
+									<!--점프 착지 -->
+									<!--휠윈드 큰  소환병 2마리 호출-->
+									<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="111" summonPos="-150, -300,  4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="114" summonPos="-600, 600, 4550" summonRot="0,0,-50" />
+									<node name="SetValue" key="JumpCombackOn" value="1" />
+									<!--이 변수를 1로 설정해서, 직은 전투판으로 점프로 넘어갔음을 알림 그래서 다음 행동때 메인 점프판으로 다시 오게 할 수 있도록 함 -->
+									<node name="SetValue" key="JumpCombackReady" value="0" />
+									<!--이 변수를 0으로 초기화해서, 작은 전투판에서 큰 전투판으로 넘어오게 하기 위한 기준 수치로 사용함-->
+									<node name="target" type="near" from="5" to="2300" />
+									<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="JumpCombackOn" value="1">
+								<!--작은 전투판에 넘어가 있는 상태라면-->
+								<node name="conditions">
+									<condition name="extraData" key="JumpCombackReady" value="2" op="greaterEqual">
+										<!--보스가 작은 전투판에서 어느정도 행동을 하고  greaterEqual="2" 가 되었으면 중앙 전투판으로 점프 이동함-->
+										<!--JumpCombackReady 변수가 3이 되었으니 중앙 전투판으로 돌아오기-->
+										<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+											<!--이 곳에서는 move 단계 없이 바로 점프 뛰도록 설정함 -->
+											<node name="skill" facePos="-750, -150, 4550" idx="16" />
+											<!--레벨11은 뛰기 동작때 무적 처리 되어있음-->
+											<node name="jump" pos="-750, -150, 4550" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="13" />
+											<!--점프 착지 -->
+											<node name="SetValue" key="JumpCombackOn" value="0" />
+											<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+											<node name="SetValue" key="JumpCombackReady" value="0" />
+											<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+											<node name="target" type="near" from="10" to="1500" />
+											<!--전투판을 옮겼으니 가까운 대상 타겟팅 잡도록 함-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="26">
+												<node name="select" prob="32,36,32">
+													<!--공격 대상이  900 범위 안에 있으면, 이 900 데이터는 HP회복 스킬 Distance 값에 입력되어있음-->
+													<node name="skill" cooltime="15000" isKeepBattle="true" idx="5">
+														<!--대쉬 검 휘두르기 -->
+														<node name="standby" limit="700" faceTarget="1" />
+														<node name="skill" idx="5" />
+														<!--대쉬 검 휘두르기 -->
+														<node name="target" type="near" from="10" to="1500" />
+														<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+														<node name="standby" limit="700" faceTarget="1" />
+														<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+														<!--JumpCombackReady 값이 쌓이게 하여 2이상이 되면 메인 전투판으로 돌아오게 함-->
+													</node>
+													<node name="skill" cooltime="15000" isKeepBattle="true" idx="6">
+														<!--몸통 돌진-->
+														<node name="standby" limit="700" faceTarget="1" />
+														<node name="skill" idx="9" />
+														<!--점프 쾅 공격-->
+														<node name="target" type="near" from="10" to="1500" />
+														<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+														<node name="standby" limit="700" faceTarget="1" />
+														<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+														<!--JumpCombackReady 값이 쌓이게 하여 2이상이 되면 메인 전투판으로 돌아오게 함-->
+													</node>
+													<node name="skill" cooltime="15000" isKeepBattle="true" idx="6">
+														<!--몸통 돌진-->
+														<node name="standby" limit="700" faceTarget="1" />
+														<node name="skill" idx="6" />
+														<!--몸통 돌진-->
+														<node name="standby" limit="700" faceTarget="1" />
+														<node name="skill" idx="6" />
+														<!--몸통 돌진-->
+														<node name="target" type="near" from="10" to="1500" />
+														<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+														<node name="standby" limit="700" faceTarget="1" />
+														<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+														<!--JumpCombackReady 값이 쌓이게 하여 2이상이 되면 메인 전투판으로 돌아오게 함-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" faceTarget="0" isKeepBattle="true" idx="26">
+													<!--HP 회복하기 -->
+													<node name="standby" limit="1000" faceTarget="0" />
+													<node name="target" type="near" from="5" to="2300" />
+													<!--이거 꼭 중요 제일 가까운 대상을 타겟팅하게 하여, 계속 HP회복 행위를 하게 할지, 그만 멈출지를 결정함-->
+													<node name="SetValue" key="JumpCombackReady" value="1" isModify="1" />
+													<!--JumpCombackReady 값이 쌓이게 하여 2이상이 되면 메인 전투판으로 돌아오게 함-->
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--중앙 넓은 전투판에 있는 상태라면-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="35,64,1">
+											<node name="skill" idx="4">
+												<!-- 휘두르기-->
+												<node name="target" type="near" from="10" to="1000">
+													<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제일 가까운 대상 타겟팅 잡도록 함-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" cooltime="3000" idx="5">
+												<!-- 대쉬 휘두르기-->
+												<node name="target" type="near" from="10" to="1000">
+													<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제일 가까운 대상 타겟팅 잡도록 함-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="9">
+												<node name="select" prob="60,20,20">
+													<node name="trace" limit="2500" skillIdx="4" />
+													<node name="skill" idx="9">
+														<!-- 점프 쾅!~-->
+														<node name="standby" limit="1500" faceTarget="0" />
+													</node>
+													<node name="skill" idx="6">
+														<!-- 돌진 공격-->
+														<node name="standby" limit="1500" faceTarget="0" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="54,45,1">
+													<node name="trace" limit="2000" cooltime="5000" skillIdx="4" />
+													<node name="skill" idx="3">
+														<!--끊어진 길 건너편 지형에 짱박혀 있는 대상 공격하기 위해 원거리 공격 꼭 넣어야 함-->
+														<node name="standby" limit="500" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1400" />
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--#6-3 페이즈   -->
+					<node name="conditions">
+						<condition name="extraData" key="JumpCombackOn" value="1">
+							<!--equal="1" :  앞의  12~4% 구간에서 작은 전투판으로 넘어간 상태에서 극딜 당해서   4~0% 구간으로 넘어왔으면 메인 전투판으로 돌아오도록 함-->
+							<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+								<!--이 곳에서는 move 단계 없이 바로 점프 뛰도록 설정함 -->
+								<node name="skill" facePos="-750, -150, 4550" idx="16" />
+								<!--레벨11은 뛰기 동작때 무적 처리 되어있음-->
+								<node name="jump" pos="-750, -150, 4550" speed="2000" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="13" />
+								<!--점프 착지 -->
+								<node name="SetValue" key="JumpCombackOn" value="0" />
+								<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+								<node name="SetValue" key="JumpCombackReady" value="0" />
+								<!--메인 전투판으로 돌아왔으니 이 변수를 0으로 초기화 함 -->
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="97,1,1,1">
+								<!-- 중앙 넓은 전투판에 있는 상태라면 -->
+								<node name="standby" limit="500" faceTarget="1" cooltime="22000" initialCooltime="11" isKeepBattle="true">
+									<node name="skill" faceTarget="1" idx="10" />
+									<!--기절시키기, 레벨3이 준비기간이 긴거, 폭탄으로 끊을 수 있음-->
+									<node name="standby" limit="1500" faceTarget="1" />
+									<node name="target" type="mid" from="10" to="3000" />
+									<!--중간에 위치한 플레이어로 타겟팅 잡기-->
+									<!-- 이 단계에서는 trace 필요 없음 -->
+									<node name="skill" faceTarget="1" idx="22" />
+									<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="4000" idx="5">
+									<!-- 대쉬 검 휘두르기~-->
+									<node name="target" type="near" from="10" to="1000">
+										<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" cooltime="4000" idx="6">
+									<!-- 돌진 공격-->
+									<node name="target" type="near" from="10" to="1000">
+										<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

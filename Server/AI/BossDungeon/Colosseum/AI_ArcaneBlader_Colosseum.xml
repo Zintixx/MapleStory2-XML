@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<!-- 어떤 강력한 공격을 받더라도 다음 체력 페이즈만큼만 피해를 입고 추가 피해를 한동안 방지 한다. -->
+			<node name="standby" limit="10" faceTarget="1" initialCooltime="0">
+				<node name="MinimumHp" hpPercent="49" />
+				<node name="buff" type="add" id="69000501" />
+				<node name="standby" limit="3000" faceTarget="0" />
+				<node name="buff" type="remove" id="69000501" />
+				<node name="standby" limit="1000" faceTarget="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="80">
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="trace" skillIdx="4" limit="2000" />
+				<node name="buff" type="add" id="49289064" />
+				<node name="say" message="$COLOSSEUM__AI_ARCANEBLADER_COLOSSEUM__0$" durationTick="4000" delayTick="0" />
+				<node name="skill" faceTarget="1" idx="4" />
+				<node name="skill" faceTarget="1" idx="4" />
+				<node name="skill" faceTarget="1" idx="4" />
+				<node name="skill" faceTarget="1" idx="4" />
+				<node name="skill" faceTarget="1" idx="4" />
+				<node name="skill" faceTarget="1" idx="4" />
+				<node name="skill" faceTarget="1" idx="2" />
+				<node name="buff" type="remove" id="49289064" />
+				<node name="standby" limit="2000" faceTarget="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="buff" type="add" id="49289011" />
+				<node name="say" message="$COLOSSEUM__AI_ARCANEBLADER_COLOSSEUM__1$" durationTick="4000" delayTick="0" />
+				<node name="skill" faceTarget="0" facePos="-75, -225, 1351" idx="9" />
+				<node name="teleport" pos="-75,-225,1351" />
+				<node name="skill" faceTarget="0" idx="10" />
+				<node name="standby" limit="1000" faceTarget="0" />
+				<node name="skill" faceTarget="1" idx="8" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" summonPos="-75, -214, 1501" lifeTime="30" />
+				<node name="MinimumHp" />
+				<node name="MinimumHp" hpPercent="29" />
+				<node name="skill" faceTarget="0" idx="6" />
+				<node name="buff" type="remove" id="49289011" />
+				<node name="standby" limit="2000" faceTarget="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="30">
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="buff" type="add" id="49289011" />
+				<node name="say" message="$COLOSSEUM__AI_ARCANEBLADER_COLOSSEUM__2$" durationTick="4000" delayTick="0" />
+				<node name="skill" faceTarget="0" facePos="-75, -225, 1351" idx="9" />
+				<node name="teleport" pos="-75,-225,1351" />
+				<node name="skill" faceTarget="0" idx="10" />
+				<node name="standby" limit="1000" faceTarget="0" />
+				<node name="skill" faceTarget="1" idx="8" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" summonPos="-75, -214, 1501" lifeTime="30" />
+				<node name="MinimumHp" />
+				<node name="MinimumHp" hpPercent="14" />
+				<node name="skill" faceTarget="0" idx="7" />
+				<node name="buff" type="remove" id="49289011" />
+				<node name="standby" limit="2000" faceTarget="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="15">
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="buff" type="add" id="49289011" />
+				<node name="say" message="$COLOSSEUM__AI_ARCANEBLADER_COLOSSEUM__3$" durationTick="4000" delayTick="0" />
+				<node name="skill" faceTarget="0" facePos="-75, -225, 1351" idx="9" />
+				<node name="teleport" pos="-75,-225,1351" />
+				<node name="skill" faceTarget="0" idx="10" />
+				<node name="standby" limit="1000" faceTarget="0" />
+				<node name="skill" faceTarget="1" idx="8" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" summonPos="-75, -214, 1501" lifeTime="30" />
+				<node name="MinimumHp" />
+				<node name="skill" faceTarget="0" idx="6" />
+				<node name="skill" faceTarget="0" idx="7" />
+				<node name="buff" type="remove" id="49289011" />
+				<node name="standby" limit="2000" faceTarget="0" />
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="100,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--체력80%이상**************************************************************************************************************************** -->
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<!--100% ~ 80%-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="100,100">
+								<!-- 해당 스킬 범위에 들어오면 전투 진행 -->
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="1" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,100,100,100">
+								<node name="trace" limit="3000" skillIdx="1" />
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="1">
+										<node name="skill" idx="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" cooltime="15000" skillIdx="2">
+										<node name="skill" idx="2" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4">
+										<node name="skill" idx="4" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- ========================================================================================================================================		 -->
+				<condition name="hpOver" value="60">
+					<!--80% ~ 60%-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="100,100,300,500">
+								<!-- 해당 스킬 범위에 들어오면 전투 진행 -->
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="1" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+									<node name="trace" limit="1500" skillIdx="2" />
+									<node name="skill" idx="2" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,100,100,300,500">
+								<node name="trace" limit="3000" skillIdx="1" />
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="1">
+										<node name="skill" idx="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4">
+										<node name="skill" idx="4" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+									<node name="trace" limit="1500" skillIdx="2" />
+									<node name="skill" idx="2" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="trace" limit="1500" skillIdx="5" />
+									<node name="skill" idx="5" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- ========================================================================================================================================		 -->
+				<condition name="hpOver" value="30">
+					<!--60% ~ 30%-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="100,100,100,300,300,500,500">
+								<!-- 해당 스킬 범위에 들어오면 전투 진행 -->
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="1" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+									<node name="trace" limit="1500" skillIdx="3" />
+									<node name="skill" idx="3" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+									<node name="trace" limit="1500" skillIdx="5" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="say" message="$COLOSSEUM__AI_ARCANEBLADER_COLOSSEUM__4$" durationTick="4000" delayTick="0" />
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,100,100,300,300,500,500">
+								<node name="trace" limit="3000" skillIdx="1" />
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="1">
+										<node name="skill" idx="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4">
+										<node name="skill" idx="4" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+									<node name="trace" limit="1500" skillIdx="3" />
+									<node name="skill" idx="3" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+									<node name="trace" limit="1500" skillIdx="5" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="trace" limit="1500" skillIdx="5" />
+									<node name="skill" idx="5" />
+									<node name="skill" idx="5" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- ========================================================================================================================================		 -->
+				<condition name="true">
+					<!--30% ~ 0%-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="100,100,100,300,300,500,500,300">
+								<!-- 해당 스킬 범위에 들어오면 전투 진행 -->
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="1" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+									<node name="trace" limit="1500" skillIdx="3" />
+									<node name="skill" idx="3" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+									<node name="trace" limit="1500" skillIdx="5" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="say" message="$COLOSSEUM__AI_ARCANEBLADER_COLOSSEUM__5$" durationTick="4000" delayTick="0" />
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="say" message="$COLOSSEUM__AI_ARCANEBLADER_COLOSSEUM__6$" durationTick="4000" delayTick="0" />
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="25000">
+									<node name="skill" idx="6" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,100,100,100,300,300,500,500">
+								<node name="trace" limit="3000" skillIdx="1" />
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="1">
+										<node name="skill" idx="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="200" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4">
+										<node name="skill" idx="4" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+									<node name="trace" limit="1500" skillIdx="3" />
+									<node name="skill" idx="3" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+									<node name="trace" limit="1500" skillIdx="5" />
+									<node name="skill" idx="5" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="1" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="40000">
+									<node name="trace" limit="1500" skillIdx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="4" />
+									<node name="skill" idx="3" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<!--ai프리셋 모음 **************************************************************************************************************************************************************-->
+	<aiPresets>
+		<!--기본 평타 프리셋 -->
+		<aiPreset name="Normal_Attack_1">
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<!-- 평타페이즈-->
+						<!--기본공격 패턴-->
+						<node name="standby" limit="10" faceTarget="1">
+							<node name="skill" idx="1">
+								<node name="standby" limit="200" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+							<node name="trace" limit="100" skillIdx="1" />
+							<!--빠른 추적-->
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

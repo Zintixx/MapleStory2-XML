@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<!-- 1페이즈 -->
+			<node name="buff" type="add" id="69000501" level="1" />
+			<node name="standby" limit="4500" faceTarget="0" />
+			<node name="buff" type="remove" id="69000501" level="1" />
+			<node name="standby" limit="1000" faceTarget="0" />
+			<node name="SetValue" key="phase" value="1" />
+			<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPosOffset="100, 0, 0" />
+			<!-- 루체 소환 -->
+			<node name="target" type="rand" />
+		</condition>
+		<condition name="hpLess" value="80">
+			<!-- 2페이즈 -->
+			<node name="say" message="$COLOSSEUM__AI_MIEL_COLOSSEUM__0$" durationTick="3000" delayTick="0" />
+			<node name="SetValue" key="phase" value="2" />
+		</condition>
+		<condition name="hpLess" value="50">
+			<!-- 3페이즈 -->
+			<node name="say" message="$COLOSSEUM__AI_MIEL_COLOSSEUM__1$" durationTick="3000" delayTick="0" />
+			<node name="SetValue" key="phase" value="3" />
+			<node name="SetSlaveValue" key="Rphase" value="2" />
+			<!-- 루체에게 페이즈 변경 요청 -->
+		</condition>
+	</reserved>
+	<aiPresets>
+		<aiPreset name="BaseAttack">
+			<!-- 기본공격-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="25,65,10">
+						<!-- 별빛검 사거리(근접) 일 경우 -->
+						<node name="skill" idx="1" />
+						<!-- 별빛검만 사용 -->
+						<node name="skill" idx="2">
+							<node name="select" prob="30,70">
+								<!-- 별빛검 이후 연계 -->
+								<node name="skill" idx="3" />
+								<!-- 별빛검 이후 별빛 베기만 사용 -->
+								<node name="skill" idx="4">
+									<node name="select" prob="30,40,10,10,10">
+										<!-- 별빛검 이후 별빛 베기 사용 후 연계 -->
+										<node name="skill" idx="7" />
+										<!-- 별빛베기 이후 별빛 날리기 사용 -->
+										<node name="skill" idx="8">
+											<node name="select" prob="40,20,20,20">
+												<!-- 별빛베기 이후 별빛 날리기 사용 후 연계 -->
+												<node name="skill" cooltime="7000" initialCooltime="1000" idx="14">
+													<node name="select" prob="50,50">
+														<!-- 별빛 날리기 이후 별똥별 사용 -->
+														<node name="standby" limit="500" faceTarget="1" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" idx="10" />
+												<!-- 별빛날리기 이후 순간이동 사용 -->
+												<node name="skill" idx="11" />
+												<node name="skill" idx="12" />
+											</node>
+										</node>
+										<node name="skill" idx="10" />
+										<!-- 별빛베기 이후 순간이동 사용 -->
+										<node name="skill" idx="11" />
+										<node name="skill" idx="12" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" idx="9" />
+						<!-- 공격 하지 않고 뒤로 순간이동으로 거리 벌리기 -->
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="20,30,30,10,10">
+						<!-- 근접 사거리는 벗어나고 원거리(별빛날리기) 사거리 일 경우 -->
+						<node name="skill" idx="5" />
+						<!-- 별빛 날리기 사용 -->
+						<node name="skill" idx="6">
+							<node name="select" prob="40,20,20,20">
+								<!-- 별빛 날리기 이후 연계 -->
+								<node name="skill" cooltime="7000" initialCooltime="1000" idx="14">
+									<node name="select" prob="50,50">
+										<!-- 연계로 별똥별 -->
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" idx="10" />
+								<!-- 연계로 순간이동 -->
+								<node name="skill" idx="11" />
+								<node name="skill" idx="12" />
+							</node>
+						</node>
+						<node name="trace" till="200" limit="2000" />
+						<!-- 공격하지 않고 뛰어서 혹은 순간이동으로 접근 -->
+						<node name="skill" idx="11" />
+						<node name="skill" idx="12" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="50,25,25">
+						<!-- 모든 사거리 밖 일 경우 -->
+						<node name="trace" till="200" limit="2000" />
+						<!-- 뛰어서 혹은 순간이동으로 접근 -->
+						<node name="skill" idx="11" />
+						<node name="skill" idx="12" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Meteor">
+			<!-- 별똥별 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="13">
+					<node name="select" prob="60,40">
+						<node name="skill" idx="13">
+							<node name="select" prob="50,50">
+								<!-- 별똥별만 사용 -->
+								<node name="standby" limit="500" faceTarget="1" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="6">
+							<!-- 별빛날리기 후 별똥별 사용 -->
+							<node name="skill" idx="14">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 사거리 밖일 경우 -->
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="select" prob="50,25,25">
+							<!-- 일단 추적 부터 함 -->
+							<node name="trace" till="200" limit="2000" />
+							<node name="skill" idx="11" />
+							<node name="skill" idx="12" />
+						</node>
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<!-- 사거리 체크 후 스킬 사용 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="13">
+								<node name="select" prob="60,40">
+									<node name="skill" idx="13">
+										<node name="select" prob="50,50">
+											<!-- 별똥별 사용 -->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" idx="6">
+										<!-- 별빛날리기 후 별똥별 사용 -->
+										<node name="skill" idx="14">
+											<node name="select" prob="50,50">
+												<node name="standby" limit="500" faceTarget="1" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,25,25">
+									<!-- 거리가 안되서 한번 더 추적 -->
+									<node name="trace" till="200" limit="2000" />
+									<node name="skill" idx="11" />
+									<node name="skill" idx="12" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Refraction">
+			<!-- 빛의 굴절 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="15">
+					<!-- 빛의 굴절 사거리 안 일때 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!-- 근접일 경우 -->
+							<node name="skill" idx="9" />
+							<!-- 뒤로 순간이동 이후 빛의굴절 사용 -->
+							<node name="skill" idx="15">
+								<node name="select" prob="30,70">
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 근접이 아니면 빛의굴절 사용 -->
+							<node name="skill" idx="15">
+								<node name="select" prob="30,70">
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 사거리 밖이면 추적 후 한번더 스킬 사용 시도 -->
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="select" prob="50,25,25">
+							<node name="trace" till="200" limit="2000" />
+							<node name="skill" idx="11" />
+							<node name="skill" idx="12" />
+						</node>
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="15">
+								<node name="skill" idx="15">
+									<node name="select" prob="30,70">
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,25,25">
+									<node name="trace" till="200" limit="2000" />
+									<node name="skill" idx="11" />
+									<node name="skill" idx="12" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Singular">
+			<!-- 특이점 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="17">
+					<node name="skill" idx="17">
+						<node name="select" prob="30,70">
+							<!-- 사거리 안이면 특이점 사용 -->
+							<node name="standby" limit="800" faceTarget="1" />
+							<node name="standby" limit="1300" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 사거리 밖이면 추적 후 특이점 시도 -->
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="select" prob="50,25,25">
+							<node name="trace" till="200" limit="2000" />
+							<node name="skill" idx="11" />
+							<node name="skill" idx="12" />
+						</node>
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="17">
+								<node name="skill" idx="17">
+									<node name="select" prob="30,70">
+										<node name="standby" limit="800" faceTarget="1" />
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,25,25">
+									<node name="trace" till="200" limit="2000" />
+									<node name="skill" idx="11" />
+									<node name="skill" idx="12" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="SingularHorizon">
+			<!-- 특이점 + 이벤트호라이즌 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="17">
+					<!-- 특이점 사거리 안이면 특이점 이후 연계로 이벤트호라이즌 사용 -->
+					<node name="skill" idx="18" />
+					<node name="skill" idx="20">
+						<node name="select" prob="30,70">
+							<node name="standby" limit="1000" faceTarget="1" />
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 사거리 밖이면 추적 후 사용 -->
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="select" prob="50,25,25">
+							<node name="trace" till="200" limit="2000" />
+							<node name="skill" idx="11" />
+							<node name="skill" idx="12" />
+						</node>
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="17">
+								<node name="skill" idx="18" />
+								<node name="skill" idx="20">
+									<node name="select" prob="30,70">
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,25,25">
+									<node name="trace" till="200" limit="2000" />
+									<node name="skill" idx="11" />
+									<node name="skill" idx="12" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Horizon">
+			<!-- 이벤트호라이즌 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="19">
+					<!-- 사거리 안이면 사용 -->
+					<node name="skill" idx="19">
+						<node name="select" prob="30,70">
+							<node name="standby" limit="1000" faceTarget="1" />
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 사거리 밖이면 추적 후 한번 더 시도 -->
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="select" prob="50,25,25">
+							<node name="trace" till="200" limit="2000" />
+							<node name="skill" idx="11" />
+							<node name="skill" idx="12" />
+						</node>
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="19">
+								<node name="skill" idx="19">
+									<node name="select" prob="30,70">
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,25,25">
+									<node name="trace" till="200" limit="2000" />
+									<node name="skill" idx="11" />
+									<node name="skill" idx="12" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="phase" value="1">
+				<!-- 페이즈1 -->
+				<aiPreset name="BaseAttack" />
+				<!-- 일단 기본공격 프리셋 시도 -->
+				<node name="standby" limit="10" faceTarget="1">
+					<node name="select" prob="30,70">
+						<!-- 기본공격 이후 별똥별 혹은 기본공격 한번 더 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="1000">
+							<aiPreset name="Meteor" />
+						</node>
+						<node name="standby" limit="100" faceTarget="1">
+							<aiPreset name="BaseAttack" />
+						</node>
+					</node>
+				</node>
+				<node name="standby" limit="10" faceTarget="1">
+					<node name="select" prob="30,70">
+						<!-- 두번의 공격 이후 추가로 더 쉬는 구간 -->
+						<node name="standby" limit="10" faceTarget="1" />
+						<node name="standby" limit="200" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="phase" value="2">
+				<!-- 페이즈2 -->
+				<node name="conditions">
+					<condition name="additional" id="49289092" overlapCount="1">
+						<!-- 루체가 쏜 빛의굴절에 미엘이 적중 시 미엘은 최우선으로 강화된 빛의굴절 사용 -->
+						<node name="sidePopup" type="cutin" illust="LittlePrince1_normal" duration="2000" />
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="skill" idx="16" />
+						<node name="buff" type="remove" id="49289092" level="1" />
+						<!-- 강화 빛의굴절 사용 여부 버프를 삭제 -->
+						<node name="standby" limit="1500" faceTarget="1" />
+					</condition>
+					<condition name="true">
+						<aiPreset name="BaseAttack" />
+						<node name="standby" limit="10" faceTarget="1">
+							<node name="select" prob="20,25,15,40">
+								<!-- 1페이즈와 흐름은 같으나, 빛의굴절과 특이점 추가 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="1000">
+									<aiPreset name="Meteor" />
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="1000">
+									<aiPreset name="Refraction" />
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="15000" initialCooltime="1000">
+									<aiPreset name="Singular" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<aiPreset name="BaseAttack" />
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="10" faceTarget="1">
+							<node name="select" prob="40,60">
+								<node name="standby" limit="10" faceTarget="1" />
+								<node name="standby" limit="200" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="true">
+				<!-- 페이즈3 -->
+				<node name="conditions">
+					<condition name="additional" id="49289092" overlapCount="1">
+						<!-- 2페이즈와 마찬가지로 강화된 빛의굴절 우선 순위 -->
+						<node name="sidePopup" type="cutin" illust="LittlePrince1_normal" duration="2000" />
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="skill" idx="16" />
+						<node name="buff" type="remove" id="49289092" level="1" />
+						<node name="standby" limit="2000" faceTarget="1" />
+					</condition>
+					<condition name="true">
+						<aiPreset name="BaseAttack" />
+						<node name="standby" limit="10" faceTarget="1">
+							<node name="select" prob="25,30,15,30">
+								<!-- 1,2페이즈 공격흐름이 같으며 특이점은 특이점+호라이즌 콤보로 바뀌며 이벤트호라이즌 추가 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="1000">
+									<aiPreset name="Meteor" />
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="1000">
+									<aiPreset name="Refraction" />
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="15000" initialCooltime="1000">
+									<node name="select" prob="70,30">
+										<aiPreset name="SingularHorizon" />
+										<aiPreset name="Horizon" />
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<aiPreset name="BaseAttack" />
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="10" faceTarget="1">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="10" faceTarget="1" />
+								<node name="standby" limit="200" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

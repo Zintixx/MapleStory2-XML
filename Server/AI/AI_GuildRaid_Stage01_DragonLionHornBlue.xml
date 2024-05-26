@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="70">
+			<!--몬스터 소환 -->
+			<node name="standby" limit="500" faceTarget="1" cooltime="9999999" initialCooltime="15" isKeepBattle="true">
+				<node name="standby" limit="1500" faceTarget="0" />
+				<node name="TriggerSetUserValue" triggerID="6" key="MonsterSpawn" value="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="55">
+			<!--3페이즈 끝나면 무조건 언덕 아래로 내려오게 하기 위한 예약 설정, 이거 없으면 AI꼬임 -->
+			<node name="conditions">
+				<condition name="extraData" key="JumpCRL" value="1" op="greaterEqual">
+					<!--JumpCRL  변수가 1  2 일때 즉 언덕위에 있을 때의 행동 패턴 -->
+					<!--전투판 중앙으로 점프 이동하기 -->
+					<node name="skill" facePos="9150, 4950, 6300" isKeepBattle="true" idx="11">
+						<node name="jump" pos="9150, 4950, 6300" speed="3500" heightMultiplier="0.4" />
+						<!--전투판 중앙으로 점프 이동하기 -->
+						<node name="skill" faceTarget="0" idx="12" />
+						<node name="SetValue" key="JumpCRL" value="0" />
+						<!--JumpCRL  변수가 0을 넣어 전투판 중앙에 있음을 알림-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!--JumpCRL  변수가 0, 즉 언덕 아래에 있을 때의 행동 패턴 -->
+					<node name="move" destination="9150, 4950, 6300" limit="5000" />
+				</condition>
+			</node>
+		</condition>
+		<condition name="hpLess" value="13">
+			<!--5페이즈 끝나면 무조건 언덕 아래로 내려오게 하기 위한 예약 설정, 이거 없으면 AI꼬임 -->
+			<node name="conditions">
+				<condition name="extraData" key="JumpCRL" value="1" op="greaterEqual">
+					<!--JumpCRL  변수가 1  2 일때 즉 언덕위에 있을 때의 행동 패턴 -->
+					<!--전투판 중앙으로 점프 이동하기 -->
+					<node name="skill" facePos="9150, 4950, 6300" isKeepBattle="true" idx="11">
+						<node name="jump" pos="9150, 4950, 6300" speed="3500" heightMultiplier="0.4" />
+						<!--전투판 중앙으로 점프 이동하기 -->
+						<node name="skill" faceTarget="0" idx="12" />
+						<node name="SetValue" key="JumpCRL" value="0" />
+						<!--JumpCRL  변수가 0을 넣어 전투판 중앙에 있음을 알림-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!--JumpCRL  변수가 0, 즉 언덕 아래에 있을 때의 행동 패턴 -->
+					<node name="move" destination="9150, 4950, 6300" limit="5000" />
+				</condition>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,9999,0">
+			<!--보스 AI 로직을 위해 필요한 변수를 여기서 전부 선언함-->
+			<node name="standby" limit="500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+				<node name="SetValue" key="JumpCRL" value="0" />
+				<!--JumpCRL  변수가 0이면 맵 중앙에, 1이면 오른쪽 언덕 지점에, 2면 왼쪽 언덕 지점에 -->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<!--얼음 떨구기 -->
+			<!--	<skill id="50101252" level="1" faceTarget="0" prob="9999" cooltime="4000" /> 	-->
+			<node name="conditions">
+				<condition name="hpOver" value="92">
+					<!--1페이즈 -->
+					<node name="conditions">
+						<condition name="state" targetState="holdme">
+							<!-- 타겟팅 된 대상이 매달려 있다면 -->
+							<node name="skill" idx="9" />
+							<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="60,40,50,20,40">
+										<node name="skill" idx="1">
+											<!-- 입에서 충격파 발사-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="9000" idx="1">
+											<!-- 입에서 충격파 발사-->
+											<node name="skill" idx="1">
+												<!-- 입에서 충격파 발사-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+										<!-- 뿔에서 번개 발사-->
+										<node name="skill" faceTarget="1" cooltime="32000" isKeepBattle="true" idx="4">
+											<node name="target" type="far" from="10" to="1500" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="1" idx="6" />
+											<!-- 대기-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!-- 마무리-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="28000" idx="3">
+											<!-- 꼬리쾅 공격 낮은 확률로 발동-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<!-- 공격 대상 300까지 쫓아가기-->
+										<node name="standby" limit="500" faceTarget="1" cooltime="35000" isKeepBattle="true">
+											<node name="trace" limit="2000" skillIdx="13" />
+											<!-- 300 거리까지 가까이 다가가기-->
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="60,40">
+										<node name="trace" limit="1500" skillIdx="1" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="82">
+					<!--2페이즈 -->
+					<node name="conditions">
+						<condition name="state" targetState="holdme">
+							<!-- 타겟팅 된 대상이 매달려 있다면 -->
+							<node name="skill" idx="9" />
+							<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="99,99,60,40,50,50">
+										<node name="skill" cooltime="25000" idx="10">
+											<!-- 기폭발 밀치기-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="20000" idx="2">
+											<!-- 물줄기 발사-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" idx="1">
+											<!-- 입에서 충격파 발사-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="15000" idx="1">
+											<!-- 입에서 충격파 발사-->
+											<node name="skill" idx="1">
+												<!-- 입에서 충격파 발사-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+										<!-- 뿔에서 번개 발사-->
+										<node name="skill" faceTarget="1" cooltime="23000" isKeepBattle="true" idx="4">
+											<node name="target" type="far" from="10" to="1500" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="1" idx="6" />
+											<!-- 대기-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!-- 마무리-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<!-- 공격 대상 300까지 쫓아가기-->
+										<node name="standby" limit="500" faceTarget="1" cooltime="35000" isKeepBattle="true">
+											<node name="trace" limit="2000" skillIdx="13" />
+											<!-- 300 거리까지 가까이 다가가기-->
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="60,40">
+										<node name="trace" limit="1500" skillIdx="1" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="55">
+					<node name="select" prob="99999,0">
+						<!--3페이즈  언덕 점프 패턴-->
+						<!--	<move destination="3600, 8400, 4950" prob="99999" limit="5000" cooltime = "999999"/>	 언덕에서 멀리 떨어진 곳에서 점프 뛸 경우 globalSplit 설정에 의해서 동작이 안나오는 상황이 생기기 때문에 이 페이즈 최소 시작때 언덕 근처로 이동하도록 설정한다. -->
+						<node name="setData" key="aiBattleTime" value="0" cooltime="999999" />
+						<!--3페이즈 시작시 battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="80000" battleTimeLoop="120000">
+								<node name="select" prob="9999,100">
+									<!--언덕 점프 행동 패턴 부분 -->
+									<!--점프 이동하는 부분 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="25000">
+										<node name="conditions">
+											<condition name="extraData" key="JumpCRL" value="1">
+												<node name="select" prob="80,20">
+													<!--JumpCRL  변수가 1, 오른쪽 언덕에 있는 상태 -->
+													<!--왼쪽 언덕으로 점프 이동하기 -->
+													<node name="skill" facePos="7800, 5400, 6750" isKeepBattle="true" idx="11">
+														<node name="jump" pos="7800, 5400, 6750" speed="3500" heightMultiplier="0.4" />
+														<!--왼쪽 언덕으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="2" />
+														<!--JumpCRL  변수에 2를 넣어 왼쪽 언덕에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+													<!--전투판 중앙으로 점프 이동하기 -->
+													<node name="skill" facePos="9150, 4950, 6300" cooltime="210000" isKeepBattle="true" idx="11">
+														<node name="jump" pos="9150, 4950, 6300" speed="3500" heightMultiplier="0.4" />
+														<!--전투판 중앙으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="0" />
+														<!--JumpCRL  변수에 0을 넣어 전투판 중앙에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="extraData" key="JumpCRL" value="2">
+												<node name="select" prob="80,20">
+													<!--JumpCRL  변수가 2, 왼쪽 언덕에 있는 상태 -->
+													<!--오른쪽 언덕으로 점프 이동하기 -->
+													<node name="skill" facePos="10650, 5550, 6750" isKeepBattle="true" idx="11">
+														<node name="jump" pos="10650, 5550, 6750" speed="3500" heightMultiplier="0.4" />
+														<!--오른쪽 언덕으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="1" />
+														<!--JumpCRL  변수에 1을 넣어 오른쪽 언덕에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+													<!--전투판 중앙으로 점프 이동하기 -->
+													<node name="skill" facePos="9150, 4950, 6300" cooltime="210000" isKeepBattle="true" idx="11">
+														<node name="jump" pos="9150, 4950, 6300" speed="3500" heightMultiplier="0.4" />
+														<!--전투판 중앙으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="0" />
+														<!--JumpCRL  변수에 0을 넣어 전투판 중앙에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="50,50">
+													<!--JumpCRL  변수가 0, 전투판 바닥 중앙에 있는 상태 -->
+													<!--왼쪽 언덕으로 점프 이동하기 -->
+													<node name="skill" facePos="7800, 5400, 6750" isKeepBattle="true" idx="11">
+														<node name="jump" pos="7800, 5400, 6750" speed="3500" heightMultiplier="0.4" />
+														<!--왼쪽 언덕으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="2" />
+														<!--JumpCRL  변수에 2를 넣어 왼쪽 언덕에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+													<!--오른쪽 언덕으로 점프 이동하기 -->
+													<node name="skill" facePos="10650, 5550, 6750" isKeepBattle="true" idx="11">
+														<node name="jump" pos="10650, 5550, 6750" speed="3500" heightMultiplier="0.4" />
+														<!--오른쪽 언덕으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="1" />
+														<!--JumpCRL  변수에 1을 넣어 오른쪽 언덕에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+									<!--평상시 행동 패턴 -->
+									<node name="standby" limit="100" faceTarget="0">
+										<node name="conditions">
+											<condition name="extraData" key="JumpCRL" value="1" op="greaterEqual">
+												<!--JumpCRL  변수가 1  2 일때 즉 언덕위에 있을 때의 행동 패턴 -->
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="14">
+														<node name="select" prob="50,50">
+															<!-- 타겟팅 대상이 언덕 위에 있으면-->
+															<node name="skill" idx="1">
+																<!-- 입에서 충격파 발사-->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+															<node name="skill" cooltime="11000" idx="10">
+																<!-- 기폭발 밀치기-->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<!-- 타겟팅 대상이 언덕 아래에 있으면-->
+														<!-- 뿔에서 번개 발사-->
+														<node name="skill" faceTarget="1" isKeepBattle="true" idx="4">
+															<node name="target" type="far" from="10" to="1500" />
+															<node name="skill" faceTarget="0" idx="8" />
+															<!-- 언덕위 발사 레벨22 가 언던위 발사 전용-->
+															<node name="skill" faceTarget="0" idx="8" />
+															<!-- 언덕위 발사 레벨22 가 언던위 발사 전용-->
+															<node name="skill" faceTarget="0" idx="8" />
+															<!-- 언덕위 발사 레벨22 가 언던위 발사 전용-->
+															<node name="skill" faceTarget="0" idx="7" />
+															<!-- 마무리-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</condition>
+												</node>
+											</condition>
+											<condition name="true">
+												<!--JumpCRL  변수가 0, 즉 전투판 중앙에 있을 때의 행동 패턴 -->
+												<node name="conditions">
+													<condition name="state" targetState="holdme">
+														<!-- 타겟팅 된 대상이 매달려 있다면 -->
+														<node name="skill" idx="9" />
+														<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+													</condition>
+													<condition name="true">
+														<node name="select" prob="25,25,25,25">
+															<node name="skill" cooltime="32000" idx="3">
+																<!-- 꼬리쾅 공격 낮은 확률로 발동-->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+															<node name="skill" idx="1">
+																<!-- 입에서 충격파 발사-->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+															<node name="skill" cooltime="9000" idx="1">
+																<!-- 입에서 충격파 발사-->
+																<node name="skill" idx="1">
+																	<!-- 입에서 충격파 발사-->
+																	<node name="standby" limit="1500" faceTarget="1" />
+																</node>
+															</node>
+															<!-- 공격 대상 300까지 쫓아가기-->
+															<node name="standby" limit="500" faceTarget="1" cooltime="35000" isKeepBattle="true">
+																<node name="trace" limit="2000" skillIdx="13" />
+																<!-- 300 거리까지 가까이 다가가기-->
+															</node>
+														</node>
+													</condition>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--언던 점프 패턴 잠시 쉬고 바닥에서 진행-->
+								<node name="conditions">
+									<condition name="extraData" key="JumpCRL" value="1" op="greaterEqual">
+										<!--JumpCRL  변수가 1  2 일때 즉 언덕위에 있을 때의 행동 패턴 -->
+										<!--앞쪽 시간 페이즈에서 언덕 위에 있던 상태라면, 언덕 아래로 내려오도록 함 -->
+										<node name="skill" facePos="9150, 4950, 6300" isKeepBattle="true" idx="11">
+											<node name="jump" pos="9150, 4950, 6300" speed="3500" heightMultiplier="0.4" />
+											<!--전투판 중앙으로 점프 이동하기 -->
+											<node name="skill" faceTarget="0" idx="12" />
+											<node name="SetValue" key="JumpCRL" value="0" />
+											<!--JumpCRL  변수에 0을 넣어 전투판 중앙에 있음을 알림-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<!--JumpCRL  변수가 0, 즉 언덕 아래에 있을 때의 행동 패턴 -->
+										<node name="conditions">
+											<condition name="state" targetState="holdme">
+												<!-- 타겟팅 된 대상이 매달려 있다면 -->
+												<node name="skill" idx="9" />
+												<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+											</condition>
+											<condition name="true">
+												<node name="select" prob="25,25,25,25">
+													<node name="skill" idx="1">
+														<!-- 입에서 충격파 발사-->
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+													<node name="skill" cooltime="15000" idx="2">
+														<!-- 물줄기 발사-->
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+													<node name="skill" cooltime="23000" idx="1">
+														<!-- 입에서 충격파 발사-->
+														<node name="skill" idx="1">
+															<!-- 입에서 충격파 발사-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<!-- 공격 대상 300까지 쫓아가기-->
+													<node name="standby" limit="500" faceTarget="0" cooltime="35000" isKeepBattle="true">
+														<node name="trace" limit="2000" skillIdx="13" />
+														<!-- 300 거리까지 가까이 다가가기-->
+													</node>
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="40">
+					<!--4페이즈, 물 브래스 난사 패턴 -->
+					<node name="conditions">
+						<condition name="state" targetState="holdme">
+							<!-- 타겟팅 된 대상이 매달려 있다면 -->
+							<node name="skill" idx="9" />
+							<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="99,40,89,60,40,50">
+										<node name="skill" cooltime="20000" idx="2">
+											<!-- 물줄기 발사-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="20000" idx="2">
+											<!-- 물줄기 발사-->
+											<node name="skill" faceTarget="1" idx="3">
+												<!--  꼬리 쾅 전기 공격-->
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+										<!-- 꼬리 쾅 전기 공격-->
+										<node name="skill" faceTarget="1" cooltime="35000" idx="3">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" idx="1">
+											<!-- 입에서 충격파 발사-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="27000" idx="1">
+											<!-- 입에서 충격파 발사-->
+											<node name="skill" idx="1">
+												<!-- 입에서 충격파 발사-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+										<!-- 공격 대상 300까지 쫓아가기-->
+										<node name="standby" limit="500" faceTarget="0" cooltime="35000" isKeepBattle="true">
+											<node name="trace" limit="2000" skillIdx="13" />
+											<!-- 300 거리까지 가까이 다가가기-->
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="60,40">
+										<node name="trace" limit="1500" skillIdx="1" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="13">
+					<node name="select" prob="99999,0">
+						<!--4페이즈 언덕 점프 패턴 -->
+						<!--	<move destination="3600, 8400, 4950" prob="99999" limit="5000" cooltime = "999999"/>	 언덕에서 멀리 떨어진 곳에서 점프 뛸 경우 globalSplit 설정에 의해서 동작이 안나오는 상황이 생기기 때문에 이 페이즈 최소 시작때 언덕 근처로 이동하도록 설정한다. -->
+						<node name="setData" key="aiBattleTime" value="0" cooltime="999999" />
+						<!--4페이즈 시작시 battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="80000" battleTimeLoop="120000">
+								<node name="select" prob="9999,100">
+									<!--언덕 점프 행동 패턴 부분 -->
+									<!--점프 이동하는 부분 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="25000">
+										<node name="conditions">
+											<condition name="extraData" key="JumpCRL" value="1">
+												<node name="select" prob="80,20">
+													<!--JumpCRL  변수가 1, 오른쪽 언덕에 있는 상태 -->
+													<!--왼쪽 언덕으로 점프 이동하기 -->
+													<node name="skill" facePos="7800, 5400, 6750" isKeepBattle="true" idx="11">
+														<node name="jump" pos="7800, 5400, 6750" speed="3500" heightMultiplier="0.4" />
+														<!--왼쪽 언덕으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="2" />
+														<!--JumpCRL  변수에 2를 넣어 왼쪽 언덕에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+													<!--전투판 중앙으로 점프 이동하기 -->
+													<node name="skill" facePos="9150, 4950, 6300" cooltime="210000" isKeepBattle="true" idx="11">
+														<node name="jump" pos="9150, 4950, 6300" speed="3500" heightMultiplier="0.4" />
+														<!--전투판 중앙으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="0" />
+														<!--JumpCRL  변수에 0을 넣어 전투판 중앙에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="extraData" key="JumpCRL" value="2">
+												<node name="select" prob="80,20">
+													<!--JumpCRL  변수가 2, 왼쪽 언덕에 있는 상태 -->
+													<!--오른쪽 언덕으로 점프 이동하기 -->
+													<node name="skill" facePos="10650, 5550, 6750" isKeepBattle="true" idx="11">
+														<node name="jump" pos="10650, 5550, 6750" speed="3500" heightMultiplier="0.4" />
+														<!--오른쪽 언덕으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="1" />
+														<!--JumpCRL  변수에 1을 넣어 오른쪽 언덕에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+													<!--전투판 중앙으로 점프 이동하기 -->
+													<node name="skill" facePos="9150, 4950, 6300" cooltime="210000" isKeepBattle="true" idx="11">
+														<node name="jump" pos="9150, 4950, 6300" speed="3500" heightMultiplier="0.4" />
+														<!--전투판 중앙으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="0" />
+														<!--JumpCRL  변수에 0을 넣어 전투판 중앙에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1 " />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="50,50">
+													<!--JumpCRL  변수가 0, 전투판 중앙에 있는 상태 -->
+													<!--왼쪽 언덕으로 점프 이동하기 -->
+													<node name="skill" facePos="7800, 5400, 6750" isKeepBattle="true" idx="11">
+														<node name="jump" pos="7800, 5400, 6750" speed="3500" heightMultiplier="0.4" />
+														<!--왼쪽 언덕으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="2" />
+														<!--JumpCRL  변수에 2를 넣어 왼쪽 언덕에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+													<!--오른쪽 언덕으로 점프 이동하기 -->
+													<node name="skill" facePos="10650, 5550, 6750" isKeepBattle="true" idx="11">
+														<node name="jump" pos="10650, 5550, 6750" speed="3500" heightMultiplier="0.4" />
+														<!--오른쪽 언덕으로 점프 이동하기 -->
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="SetValue" key="JumpCRL" value="1" />
+														<!--JumpCRL  변수에 1을 넣어 오른쪽 언덕에 있음을 알림-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+									<!--평상시 행동 패턴 -->
+									<node name="standby" limit="100" faceTarget="0">
+										<node name="conditions">
+											<condition name="extraData" key="JumpCRL" value="1" op="greaterEqual">
+												<!--JumpCRL  변수가 1  2 일때 즉 언덕위에 있을 때의 행동 패턴 -->
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="14">
+														<node name="select" prob="50,50">
+															<!-- 타겟팅 대상이 언덕 위에 있으면-->
+															<node name="skill" idx="1">
+																<!-- 입에서 충격파 발사-->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+															<node name="skill" cooltime="11000" idx="10">
+																<!-- 기폭발 밀치기-->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<!-- 타겟팅 대상이 언덕 아래에 있으면-->
+														<!-- 뿔에서 번개 발사-->
+														<node name="skill" faceTarget="1" isKeepBattle="true" idx="4">
+															<node name="target" type="far" from="10" to="1500" />
+															<node name="skill" faceTarget="0" idx="8" />
+															<!-- 언덕위 발사 레벨22 가 언던위 발사 전용-->
+															<node name="skill" faceTarget="0" idx="8" />
+															<!-- 언덕위 발사 레벨22 가 언던위 발사 전용-->
+															<node name="skill" faceTarget="0" idx="8" />
+															<!-- 언덕위 발사 레벨22 가 언던위 발사 전용-->
+															<node name="skill" faceTarget="0" idx="7" />
+															<!-- 마무리-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</condition>
+												</node>
+											</condition>
+											<condition name="true">
+												<!--JumpCRL  변수가 0, 즉 전투판 중앙에 있을 때의 행동 패턴 -->
+												<node name="conditions">
+													<condition name="state" targetState="holdme">
+														<!-- 타겟팅 된 대상이 매달려 있다면 -->
+														<node name="skill" idx="9" />
+														<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+													</condition>
+													<condition name="true">
+														<node name="select" prob="25,25,25,25">
+															<node name="skill" cooltime="18000" idx="2">
+																<!-- 물줄기 발사-->
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+															<node name="skill" idx="1">
+																<!-- 입에서 충격파 발사-->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+															<node name="skill" cooltime="22000" idx="1">
+																<!-- 입에서 충격파 발사-->
+																<node name="skill" idx="1">
+																	<!-- 입에서 충격파 발사-->
+																	<node name="standby" limit="1500" faceTarget="1" />
+																</node>
+															</node>
+															<!-- 공격 대상 300까지 쫓아가기-->
+															<node name="standby" limit="500" faceTarget="0" cooltime="35000" isKeepBattle="true">
+																<node name="trace" limit="2000" skillIdx="13" />
+																<!-- 300 거리까지 가까이 다가가기-->
+															</node>
+														</node>
+													</condition>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--언던 점프 패턴 잠시 쉬고 바닥에서 진행-->
+								<node name="conditions">
+									<condition name="extraData" key="JumpCRL" value="1" op="greaterEqual">
+										<!--JumpCRL  변수가 1  2 일때 즉 언덕위에 있을 때의 행동 패턴 -->
+										<!--앞쪽 시간 페이즈에서 언덕 위에 있던 상태라면, 언덕 아래로 내려오도록 함 -->
+										<node name="skill" facePos="9150, 4950, 6300" isKeepBattle="true" idx="11">
+											<node name="jump" pos="9150, 4950, 6300" speed="3500" heightMultiplier="0.4" />
+											<!--전투판 중앙으로 점프 이동하기 -->
+											<node name="skill" faceTarget="0" idx="12" />
+											<node name="SetValue" key="JumpCRL" value="0" />
+											<!--JumpCRL  변수가 0을 넣어 전투판 중앙에 있음을 알림-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<!--JumpCRL  변수가 0, 즉 언덕 아래에 있을 때의 행동 패턴 -->
+										<node name="conditions">
+											<condition name="state" targetState="holdme">
+												<!-- 타겟팅 된 대상이 매달려 있다면 -->
+												<node name="skill" idx="9" />
+												<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+											</condition>
+											<condition name="true">
+												<node name="select" prob="25,25,25,25">
+													<node name="skill" idx="1">
+														<!-- 입에서 충격파 발사-->
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+													<node name="skill" cooltime="22000" idx="2">
+														<node name="select" prob="70,30">
+															<!-- 물줄기 발사-->
+															<node name="skill" faceTarget="1" cooltime="35000" idx="3">
+																<!--  꼬리 쾅 전기 공격-->
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+													<node name="skill" cooltime="15000" idx="1">
+														<!-- 입에서 충격파 발사-->
+														<node name="skill" idx="1">
+															<!-- 입에서 충격파 발사-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<!-- 공격 대상 300까지 쫓아가기-->
+													<node name="standby" limit="500" faceTarget="1" cooltime="35000" isKeepBattle="true">
+														<node name="trace" limit="2000" skillIdx="13" />
+														<!-- 300 거리까지 가까이 다가가기-->
+													</node>
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--5페이즈, 물줄기 난사 + 꼬리 전기쾅 + 불번개 발사 -->
+					<node name="conditions">
+						<condition name="state" targetState="holdme">
+							<!-- 타겟팅 된 대상이 매달려 있다면 -->
+							<node name="skill" idx="9" />
+							<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="99,40,89,50,40,40">
+										<node name="skill" cooltime="22000" idx="2">
+											<!-- 물줄기 발사-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="10000" idx="2">
+											<!-- 물줄기 발사-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+										<!-- 꼬리 쾅 전기 공격-->
+										<node name="skill" faceTarget="1" cooltime="22000" idx="3">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="20000" idx="10">
+											<!-- 기폭발 밀치기-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<!-- 뿔에서 번개 발사-->
+										<node name="skill" faceTarget="1" cooltime="15000" isKeepBattle="true" idx="4">
+											<node name="target" type="far" from="10" to="1500" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="1" idx="6" />
+											<!-- 대기-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!-- 발사-->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!-- 마무리-->
+											<node name="standby" limit="1500" faceTarget="0" />
+										</node>
+										<node name="skill" idx="1">
+											<!-- 입에서 충격파 발사-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="50,50">
+										<node name="skill" idx="13" />
+										<!-- Attack_Idle_A 상태로 가만히 있기 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

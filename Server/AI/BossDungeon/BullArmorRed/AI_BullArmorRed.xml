@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="46">
+			<!--***reserved**** -->
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="skill" facePos="150, -1800, 4250" idx="21" />
+				<!--무적 방업 버프 걸기 -->
+				<node name="standby" limit="1000" faceTarget="0" />
+				<node name="move" destination="150, -600, 4250" limit="4000" />
+				<!--점프 도약 장소로 이동 -->
+				<node name="skill" facePos="-1650, -3600, 2150" idx="31" />
+				<node name="jump" pos="-1650, -3600, 2150" speed="3500" heightMultiplier="0.4" />
+				<!--점프중 -->
+				<node name="skill" faceTarget="0" idx="32" />
+				<node name="standby" limit="1000" facePos="-1650, -2400, 2150" />
+				<node name="skill" facePos="-1650, -2400, 2150" idx="17" />
+				<!--기둥에 센서 놓기,  무척 중요! 꼭 실행되어야 함 -->
+				<node name="SetValue" key="JumpMoveOn" value="1" />
+				<!--점프 이동 했으면 변수에 1을 넣어, 점프 이동 했음을 알림 -->
+				<node name="standby" limit="1000" faceTarget="0" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<!--전투 활성화 되면 최초 딱 한번만 실행함-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999">
+				<node name="SetValue" key="JumpMoveOn" value="0" />
+				<!--JumpMoveOn 이 변수에 의해 보스가 점프 이동 했는지 안 했는지를 판단함, 보스 HP 40~37%를 그냥 훅 넘길경우 점프 이동을 안하여 AI가 꼬일수 있어서 만일의 사태를 대비함 -->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="90">
+					<node name="select" prob="99,99,0">
+						<!-- 망치 커져서 좌우 휘두르기 패턴 -->
+						<node name="standby" limit="500" faceTarget="1" cooltime="24000" initialCooltime="40000">
+							<node name="select" prob="34,33,33">
+								<!-- 던전맵에 들어서면 보스 만날때 까지 한 30초 정도 걸리기 때문에 initialCooltime 수치를 40초 정도로 설정함 -->
+								<!-- 망치 커져서 좌우 휘두르기 2+2연타-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="40000" isKeepBattle="true">
+									<node name="target" type="far" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="5" />
+									<node name="skill" faceTarget="0" idx="6" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<node name="target" type="far" from="10" to="1300" />
+									<!-- 다시 타겟팅 체크 -->
+									<node name="skill" faceTarget="1" idx="6" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="skill" faceTarget="0" idx="10" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<!-- 망치 커져서 좌우 휘두르기 2+1연타 후 제자리 쾅-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="40000" isKeepBattle="true">
+									<node name="target" type="far" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="5" />
+									<node name="skill" faceTarget="0" idx="6" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<node name="target" type="far" from="10" to="1300" />
+									<!-- 다시 타겟팅 체크 -->
+									<node name="skill" faceTarget="1" idx="6" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="16" />
+									<!-- 휘두르기 캔슬 동작(불판)-->
+									<node name="skill" faceTarget="1" idx="12" />
+									<!-- 캔슬 후 제자리 점프 쾅!~(불판) 이떄는 faceTarget="1" 설정함-->
+									<node name="standby" limit="500" faceTarget="1" />
+									<!-- 너무 기본 평타 공격을 안해서 이 부분을 넣음-->
+									<node name="target" type="near" from="10" to="1200" />
+									<node name="trace" limit="2500" skillIdx="3" />
+									<node name="skill" idx="4" />
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<!-- 망치 커져서 좌우 한번 휘두르기 후 거리체크  점프쾅 or 휘두르기 -->
+								<node name="standby" limit="500" faceTarget="1" cooltime="40000">
+									<node name="target" type="far" from="10" to="1200">
+										<node name="skill" faceTarget="1" idx="5">
+											<node name="skill" faceTarget="0" idx="6">
+												<node name="skill" faceTarget="0" idx="7">
+													<node name="target" type="rand" from="10" to="1500">
+														<node name="conditions">
+															<condition name="skillRange" skillIdx="16">
+																<!-- 거리체크해서 대상이 가까이 있으면-->
+																<node name="skill" faceTarget="0" idx="16">
+																	<!-- 휘두르기 캔슬 동작(불판)-->
+																	<node name="skill" faceTarget="1" idx="12">
+																		<!-- 캔슬 후 제자리 점프 쾅!~(불판)  이때는 faceTarget="1" 설정함-->
+																		<node name="standby" limit="1000" faceTarget="1" />
+																	</node>
+																</node>
+															</condition>
+															<condition name="true">
+																<!-- 멀리있으면 계속 횡베기 휘두르기-->
+																<node name="skill" faceTarget="0" isKeepBattle="true" idx="8">
+																	<node name="skill" faceTarget="0" idx="10" />
+																</node>
+															</condition>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<!-- 망치 커져서 휠윈드 3바퀴 패턴-->
+						<node name="standby" limit="500" faceTarget="1" cooltime="32000" initialCooltime="47000" isKeepBattle="true">
+							<!-- 던전맵에 들어서면 보스 만날때 까지 한 30초 정도 걸리기 때문에 initialCooltime 수치를 47초 정도로 설정함 -->
+							<node name="target" type="far" from="10" to="1500" />
+							<node name="skill" faceTarget="1" idx="34" />
+							<node name="skill" faceTarget="0" idx="37" />
+							<node name="skill" faceTarget="0" idx="38" />
+							<node name="skill" faceTarget="0" idx="39" />
+							<node name="standby" limit="500" faceTarget="1" />
+							<!-- 너무 기본 평타 공격을 안해서 이 부분을 넣음-->
+							<node name="target" type="near" from="10" to="1200" />
+							<node name="trace" limit="2500" skillIdx="3" />
+							<node name="skill" idx="3" />
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="3">
+								<node name="select" prob="40,60,99">
+									<node name="skill" idx="3">
+										<!-- 약공격 1타-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="9000" idx="4">
+										<!-- 약공격 2콤보-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="22000" initialCooltime="20000" idx="1">
+										<node name="select" prob="50,50">
+											<!-- 바람 일으켜 밀치기 후 연계 공격-->
+											<node name="skill" faceTarget="1" cooltime="40000" isKeepBattle="true" idx="5">
+												<node name="target" type="far" from="10" to="1500" />
+												<node name="skill" faceTarget="0" idx="6" />
+												<node name="skill" faceTarget="0" idx="7" />
+												<node name="skill" faceTarget="0" idx="8" />
+												<node name="skill" faceTarget="0" idx="10" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="skill" faceTarget="1" cooltime="40000" idx="11">
+												<node name="target" type="far" from="10" to="500">
+													<node name="skill" faceTarget="0" idx="14">
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="34,65,1">
+									<node name="trace" limit="2500" skillIdx="3" />
+									<node name="skill" faceTarget="1" idx="11">
+										<node name="target" type="far" from="10" to="500">
+											<node name="skill" faceTarget="0" idx="14">
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="49">
+					<node name="select" prob="9999,0">
+						<!--이 페이즈에서 자주 멀리 있는 대상을 타겟팅 잡도록 함-->
+						<node name="setData" key="aiBattleTime" value="0" cooltime="999999" />
+						<!--2페이즈 시작시 battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="80000" battleTimeLoop="140000">
+								<node name="select" prob="30,30,30,10">
+									<!--연속 휠윈드 공격 구간: 80초-->
+									<!--빠른 회전  짧은ver-->
+									<node name="standby" limit="500" faceTarget="1" cooltime="30000" isKeepBattle="true">
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="skill" faceTarget="1" idx="22" />
+										<node name="skill" faceTarget="0" idx="23" />
+										<node name="skill" faceTarget="0" idx="24" />
+										<node name="skill" faceTarget="0" idx="25" />
+										<!--빠른휠윈드 6번 회전-->
+										<node name="target" type="rand" from="10" to="1600" />
+										<node name="skill" idx="28" />
+										<!--빠른휠윈드 6번 회전, 뒤로 이동-->
+										<node name="skill" faceTarget="0" idx="29" />
+										<!--느린 휠윈드 4번 회전-->
+										<node name="target" type="rand" from="10" to="1600" />
+										<node name="skill" facePos="600, 435, 4500" idx="25" />
+										<!--빠른휠윈드 6번 회전-->
+										<node name="skill" idx="28" />
+										<!--빠른휠윈드 6번 회전, 뒤로 이동-->
+										<node name="skill" faceTarget="0" idx="26" />
+										<node name="target" type="far" from="10" to="1350" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<!--빠른 회전 후 망치 쾅 후 기절 긴ver-->
+									<node name="standby" limit="500" faceTarget="1" cooltime="45000" isKeepBattle="true">
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="skill" faceTarget="1" idx="22" />
+										<node name="skill" faceTarget="0" idx="23" />
+										<node name="skill" faceTarget="0" idx="24" />
+										<node name="skill" faceTarget="0" idx="25" />
+										<!--빠른휠윈드 6번 회전-->
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="skill" idx="28" />
+										<!--빠른휠윈드 6번 회전, 뒤로 이동-->
+										<node name="skill" faceTarget="0" idx="29" />
+										<!--느린 휠윈드 4번 회전-->
+										<node name="target" type="rand" from="10" to="1600" />
+										<node name="skill" facePos="600, 435, 4500" idx="25" />
+										<!--빠른휠윈드 6번 회전-->
+										<node name="skill" faceTarget="0" idx="29" />
+										<!--느린 휠윈드 4번 회전-->
+										<node name="target" type="rand" from="10" to="1600" />
+										<node name="skill" idx="28" />
+										<!--빠른휠윈드 6번 회전, 뒤로 이동-->
+										<node name="skill" faceTarget="1" idx="29" />
+										<!--느린 휠윈드 4번 회전-->
+										<node name="target" type="near" from="100" to="900" />
+										<node name="skill" faceTarget="0" idx="30" />
+										<!-- 점프 쾅 후 기절 -->
+										<node name="target" type="far" from="10" to="1350" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<!--빠른 회전 후 기절 긴ver-->
+									<node name="standby" limit="500" faceTarget="1" cooltime="55000" isKeepBattle="true">
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="skill" faceTarget="1" idx="22" />
+										<node name="skill" faceTarget="0" idx="23" />
+										<node name="skill" faceTarget="0" idx="24" />
+										<node name="skill" faceTarget="0" idx="25" />
+										<!--빠른휠윈드 6번 회전-->
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="skill" faceTarget="1" idx="28" />
+										<!--빠른휠윈드 6번 회전, 뒤로 이동-->
+										<node name="skill" faceTarget="0" idx="29" />
+										<!--느린 휠윈드 4번 회전-->
+										<node name="target" type="rand" from="10" to="1600" />
+										<node name="skill" facePos="600, 435, 4500" idx="25" />
+										<!--빠른휠윈드 6번 회전-->
+										<node name="skill" faceTarget="0" idx="29" />
+										<!--느린 휠윈드 4번 회전-->
+										<node name="target" type="rand" from="10" to="1600" />
+										<node name="skill" faceTarget="1" idx="28" />
+										<!--빠른휠윈드 6번 회전, 뒤로 이동-->
+										<node name="skill" faceTarget="0" idx="29" />
+										<!--느린 휠윈드 4번 회전-->
+										<node name="skill" faceTarget="1" idx="25" />
+										<!--빠른휠윈드 6번 회전-->
+										<node name="skill" faceTarget="0" idx="27" />
+										<!-- 회전 후 기절 -->
+										<node name="target" type="far" from="10" to="1350" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<!-- 망치 커져서 휠윈드 3바퀴 패턴 후 괴성-->
+									<node name="standby" limit="500" faceTarget="1" cooltime="45000" isKeepBattle="true">
+										<node name="target" type="far" from="10" to="1500" />
+										<node name="skill" faceTarget="1" idx="34" />
+										<node name="skill" faceTarget="0" idx="37" />
+										<node name="skill" faceTarget="0" idx="38" />
+										<node name="skill" faceTarget="0" idx="39" />
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="target" type="near" from="10" to="1200" />
+										<node name="skill" idx="2" />
+										<!-- 괴성 지르기 -->
+										<node name="target" type="far" from="10" to="1400" />
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,99,0">
+									<!--일반 공격 구간: 60초-->
+									<node name="standby" limit="10" faceTarget="1" cooltime="17000">
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="11">
+													<node name="skill" faceTarget="1" idx="11">
+														<!-- 점프 내려찍기 준비-->
+														<node name="skill" faceTarget="0" idx="12">
+															<!--제자리 점프 내려찍기(불판)-->
+															<node name="target" type="far" from="10" to="1300">
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="skill" faceTarget="1" idx="11">
+														<!-- 점프 내려찍기 준비-->
+														<node name="skill" faceTarget="0" idx="13">
+															<!-- 원거리 점프 내려찍기(불판)-->
+															<node name="target" type="far" from="10" to="1300">
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</condition>
+											</node>
+										</node>
+									</node>
+									<!-- 망치 커져서 좌우 한번 휘두르기 후 거리체크  점프쾅 or 휘두르기 -->
+									<node name="standby" limit="500" faceTarget="1" cooltime="33000">
+										<node name="target" type="far" from="10" to="1200">
+											<node name="skill" faceTarget="1" idx="5">
+												<node name="skill" faceTarget="0" idx="6">
+													<node name="skill" faceTarget="0" idx="7">
+														<node name="target" type="rand" from="10" to="1500">
+															<node name="conditions">
+																<condition name="skillRange" skillIdx="16">
+																	<!-- 거리체크해서 대상이 가까이 있으면-->
+																	<node name="skill" faceTarget="0" idx="16">
+																		<!-- 휘두르기 캔슬 동작-->
+																		<node name="skill" faceTarget="1" idx="12">
+																			<!-- 캔슬 후 제자리 점프 쾅!~(불판) 이때는 faceTarget="1"로 설정함-->
+																			<node name="standby" limit="1000" faceTarget="1" />
+																		</node>
+																	</node>
+																</condition>
+																<condition name="true">
+																	<!-- 멀리있으면 계속 횡베기 휘두르기-->
+																	<node name="skill" faceTarget="0" isKeepBattle="true" idx="8">
+																		<node name="skill" faceTarget="0" idx="10" />
+																	</node>
+																</condition>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="3">
+											<node name="select" prob="40,60">
+												<node name="skill" idx="3">
+													<!-- 약공격 1타-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+												<node name="skill" cooltime="8000" idx="4">
+													<!-- 약공격 2콤보-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="37,63">
+												<node name="trace" limit="2500" skillIdx="3" />
+												<node name="skill" cooltime="5000" idx="2">
+													<!-- 괴성 지르기-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="46">
+					<node name="select" prob="99,0">
+						<!-- 데미지 극딜로 인해 90~49 이후  49~46 페이즈 건너띄는 문제를 해결하기 위해 중간에 3% 잠깐 휴식 타이밍을 넣음, 여기 공격동작 단위는 짧은 것으로 함-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="18000">
+							<node name="target" type="rand" from="10" to="1500">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="11">
+										<node name="skill" faceTarget="1" idx="11">
+											<!-- 점프 내려찍기 준비-->
+											<node name="skill" faceTarget="0" idx="12">
+												<!--제자리 점프 내려찍기(불판)-->
+												<node name="target" type="far" from="10" to="1300">
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="skill" faceTarget="1" idx="11">
+											<!-- 점프 내려찍기 준비-->
+											<node name="skill" faceTarget="0" idx="13">
+												<!-- 원거리 점프 내려찍기(불판)-->
+												<node name="target" type="far" from="10" to="1300">
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="3">
+								<node name="select" prob="40,60">
+									<node name="skill" idx="3">
+										<!-- 약공격 1타-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="8000" idx="4">
+										<!-- 약공격 2콤보-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="37,63">
+									<node name="trace" limit="2500" skillIdx="3" />
+									<node name="skill" cooltime="5000" idx="2">
+										<!-- 괴성 지르기-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--돌진 공격 후 기둥과 충돌 페이즈 시작, HP 46% 이하부터 시작,   방업 돌진 기둥 출돌 패턴은 3번 나옴-->
+				<condition name="hpOver" value="41">
+					<!--# 방업 돌진 페이즈: 기둥에 충돌해야 멈춤, HP: 46~41%-->
+					<!--***reserved****   <Rif hpLower="46">, HP 46% 이하가 되면 무조건  아래쪽 전투판으로 점프 이동하도록 설정함  -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="18">
+							<node name="select" prob="99,1">
+								<!--돌진(기둥파괴)  사정권에 들어오면 -->
+								<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+									<!--돌진(기둥파괴) 시작  -->
+									<node name="announce" message="$BullArmorRed_DashAttack$" durationTick="10000" />
+									<!-- 파모칸이 돌진 공격할때 기둥에 충돌하도록 하라는 메시지 알림-->
+									<node name="skill" faceTarget="1" idx="18" />
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="19" />
+									<!--돌진(기둥파괴)  발구르기 -->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="19" />
+									<!--돌진(기둥파괴)  발구르기 -->
+									<node name="skill" faceTarget="0" idx="20" />
+									<!--돌진(기둥파괴) 돌진 -->
+									<node name="standby" limit="500" faceTarget="0" />
+									<!--이부분 꼭 faceTarget="0" 이렇게 해야 기둥 출돌 기절 동작 때 방향 전환 하지 않음  -->
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="move" destination="-1600, -3000, 2150" limit="2000" />
+									<!--이거 넣지 않으면 한번 돌진에 기둥 2개를 부수는 버그 상황이 발생할 수 있음, 꼭 -1600 이어야 함  -->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" idx="33" />
+							<!--Attack_Idle_A 로 서있기 -->
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="31">
+					<!--노말 상태, HP: 41~31%-->
+					<node name="conditions">
+						<condition name="extraData" key="JumpMoveOn" value="1">
+							<node name="select" prob="99999,9999,43,43,7,6,1">
+								<!-- 49~46% 구간에서 점프 이동을 한 상태면-->
+								<node name="buff" type="remove" id="50000322" cooltime="999999" />
+								<!--방업버프 제거하기, 혹시 페이즈 건너띄기가 되어서 방업버프가 계속 있을 경우를 대비한 안전장치 -->
+								<node name="move" destination="-1500, -3000, 2150" limit="5000" cooltime="9000">
+									<!--후반전 전투판 중앙으로 이동, 기둥에 있는 센서와의 충돌을 막기 위해 -->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<!-- 거대 망치 키워 2연타 or 1타 후 점프쾅!~-->
+								<node name="standby" limit="10" faceTarget="1" cooltime="23000">
+									<node name="target" type="rand" from="10" to="1500">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="11">
+												<node name="skill" idx="11">
+													<!-- 점프 내려찍기 준비-->
+													<node name="skill" faceTarget="0" idx="12">
+														<!--제자리 점프 내려찍기(불판)-->
+														<node name="target" type="far" from="10" to="1300">
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" idx="11">
+													<!-- 점프 내려찍기 준비-->
+													<node name="skill" faceTarget="0" idx="15">
+														<!-- 중원거리 점프 내려찍기(불판)-->
+														<node name="move" destination="-1500, -3000, 2150" limit="2000" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- 휠윈드 2바퀴 패턴-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="12000" isKeepBattle="true">
+									<node name="target" type="far" from="10" to="1600" />
+									<node name="skill" faceTarget="1" idx="34" />
+									<node name="skill" faceTarget="0" idx="35" />
+									<node name="skill" faceTarget="0" idx="36" />
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="move" destination="-1500, -3000, 2150" limit="2000" />
+								</node>
+								<!--바람 밀치기-->
+								<node name="skill" faceTarget="1" cooltime="3000" idx="1">
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<!--괴성 지르기 디버프 걸기-->
+								<node name="skill" faceTarget="1" cooltime="3000" idx="2">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<!--Attack_Idle_A 로 서있기 -->
+								<node name="skill" idx="33" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,1">
+								<!-- 대미지 극딜을 받아서 49~46%  구간을 건너띄워서 점프 이동을 안했으면, 여기서 점프 이동을 시킴 (방업 버프는 사용 안함)-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+									<node name="move" destination="150, -600, 4250" limit="4000" />
+									<!--점프 도약 장소로 이동 -->
+									<node name="skill" facePos="-1650, -3600, 2150" idx="31" />
+									<node name="jump" pos="-1650, -3600, 2150" speed="3500" heightMultiplier="0.4" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="32" />
+									<node name="standby" limit="1000" facePos="-1650, -2400, 2150" />
+									<node name="skill" facePos="-1650, -2400, 2150" idx="17" />
+									<!--기둥에 센서 놓기,  무척 중요! 꼭 실행되어야 함 -->
+									<node name="SetValue" key="JumpMoveOn" value="1" />
+									<!--점프 이동 했으면 변수에 1을 넣어, 점프 이동 했음을 알림 -->
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+								<!--Attack_Idle_A 로 서있기, AI 꼬였을 경우 만약을 위한 설정 -->
+								<node name="skill" idx="33" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="26">
+					<node name="select" prob="9999,0">
+						<!--# 방업 돌진 페이즈: 기둥에 충돌해야 멈춤, HP: 31~26%-->
+						<node name="skill" faceTarget="0" cooltime="999999" idx="21">
+							<!--무적 방업 버프 걸기 -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="18">
+								<node name="select" prob="99,1">
+									<!--돌진(기둥파괴)  사정권에 들어오면 -->
+									<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+										<!--돌진(기둥파괴) 시작  -->
+										<node name="announce" message="$BullArmorRed_DashAttack$" durationTick="10000" />
+										<!-- 파모칸이 돌진 공격할때 기둥에 충돌하도록 하라는 메시지 알림-->
+										<node name="skill" faceTarget="1" idx="18" />
+										<node name="target" type="rand" from="10" to="1500" />
+										<node name="skill" faceTarget="1" idx="19" />
+										<!--돌진(기둥파괴)  발구르기 -->
+										<node name="target" type="rand" from="10" to="1500" />
+										<node name="skill" faceTarget="1" idx="19" />
+										<!--돌진(기둥파괴)  발구르기 -->
+										<node name="skill" faceTarget="0" idx="20" />
+										<!--돌진(기둥파괴) 돌진 -->
+										<node name="standby" limit="500" faceTarget="0" />
+										<!--이부분 꼭 faceTarget="0" 이렇게 해야 기둥 출돌 기절 동작 때 방향 전환 하지 않음  -->
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="move" destination="-1600, -3000, 2150" limit="2000" />
+										<!--이거 넣지 않으면 한번 돌진에 기둥 2개를 부수는 버그 상황이 발생할 수 있음, 꼭 -1600 이어야 함  -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="skill" idx="33" />
+								<!--Attack_Idle_A 로 서있기 -->
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="16">
+					<node name="select" prob="99999,9999,43,43,7,6,1">
+						<!--노말 상태, HP: 26~16%-->
+						<node name="buff" type="remove" id="50000322" cooltime="999999" />
+						<!--방업버프 제거하기, 혹시 페이즈 건너띄기가 되어서 방업버프가 계속 있을 경우를 대비한 안전장치 -->
+						<node name="move" destination="-1500, -3000, 2150" limit="5000" cooltime="9000">
+							<!--후반전 전투판 중앙으로 이동, 기둥에 있는 센서와의 충돌을 막기 위해 -->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!-- 거대 망치 키워 2연타 or 1타 후 점프쾅!~-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="23000">
+							<node name="target" type="rand" from="10" to="1500">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="11">
+										<node name="skill" idx="11">
+											<!-- 점프 내려찍기 준비-->
+											<node name="skill" faceTarget="0" idx="12">
+												<!--제자리 점프 내려찍기(불판)-->
+												<node name="target" type="far" from="10" to="1300">
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="skill" idx="11">
+											<!-- 점프 내려찍기 준비-->
+											<node name="skill" faceTarget="0" idx="15">
+												<!-- 중원거리 점프 내려찍기(불판)-->
+												<node name="move" destination="-1500, -3000, 2150" limit="2000" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+						<!-- 휠윈드 2바퀴 패턴-->
+						<node name="standby" limit="500" faceTarget="1" cooltime="12000" isKeepBattle="true">
+							<node name="target" type="far" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="34" />
+							<node name="skill" faceTarget="0" idx="35" />
+							<node name="skill" faceTarget="0" idx="36" />
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="move" destination="-1500, -3000, 2150" limit="2000" />
+						</node>
+						<!--바람 밀치기-->
+						<node name="skill" faceTarget="1" cooltime="3000" idx="1">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!--괴성 지르기 디버프 걸기-->
+						<node name="skill" faceTarget="1" cooltime="3000" idx="2">
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<!--Attack_Idle_A 로 서있기 -->
+						<node name="skill" idx="33" />
+					</node>
+				</condition>
+				<condition name="hpOver" value="11">
+					<node name="select" prob="9999,0">
+						<!--# 방업 돌진 페이즈: 기둥에 충돌해야 멈춤, HP: 16~11%-->
+						<node name="skill" faceTarget="0" cooltime="999999" idx="21">
+							<!--무적 방업 버프 걸기 -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="18">
+								<node name="select" prob="99,1">
+									<!--돌진(기둥파괴)  사정권에 들어오면 -->
+									<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+										<!--돌진(기둥파괴) 시작  -->
+										<node name="announce" message="$BullArmorRed_DashAttack$" durationTick="10000" />
+										<!-- 파모칸이 돌진 공격할때 기둥에 충돌하도록 하라는 메시지 알림-->
+										<node name="skill" faceTarget="1" idx="18" />
+										<node name="target" type="rand" from="10" to="1500" />
+										<node name="skill" faceTarget="1" idx="19" />
+										<!--돌진(기둥파괴)  발구르기 -->
+										<node name="target" type="rand" from="10" to="1500" />
+										<node name="skill" faceTarget="1" idx="19" />
+										<!--돌진(기둥파괴)  발구르기 -->
+										<node name="skill" faceTarget="0" idx="20" />
+										<!--돌진(기둥파괴) 돌진 -->
+										<node name="standby" limit="500" faceTarget="0" />
+										<!--이부분 꼭 faceTarget="0" 이렇게 해야 기둥 출돌 기절 동작 때 방향 전환 하지 않음  -->
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="move" destination="-1600, -3000, 2150" limit="2000" />
+										<!--이거 넣지 않으면 한번 돌진에 기둥 2개를 부수는 버그 상황이 발생할 수 있음, 꼭 -1600 이어야 함  -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="skill" idx="33" />
+								<!--Attack_Idle_A 로 서있기 -->
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,25,30,30,15,100">
+						<!--최후 마지막 연속 돌진, HP: 10~0%-->
+						<node name="buff" type="remove" id="50000322" cooltime="999999" />
+						<!--방업버프 제거하기, 혹시 페이즈 건너띄기가 되어서 방업버프가 계속 있을 경우를 대비한 안전장치 -->
+						<!--황소돌진 밀쳐내기 패턴 2번-->
+						<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+							<node name="skill" faceTarget="1" idx="2" />
+							<!--괴성 지르기 디버프 걸기-->
+							<node name="skill" faceTarget="1" idx="40" />
+							<!--황소돌진 시작-->
+							<node name="skill" faceTarget="0" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="skill" faceTarget="0" idx="43" />
+							<!--황소돌진 대기 마무리-->
+							<node name="standby" limit="2500" faceTarget="1" />
+							<!--공격 후 딜링 타이밍을 약간 줌-->
+							<node name="skill" faceTarget="1" idx="1" />
+							<!-- 기폭발 밀치기-->
+						</node>
+						<!--황소돌진 밀쳐내기 패턴 3번-->
+						<node name="standby" limit="500" faceTarget="1" cooltime="20000" isKeepBattle="true">
+							<node name="skill" faceTarget="1" idx="2" />
+							<!--괴성 지르기 디버프 걸기-->
+							<node name="skill" faceTarget="1" idx="40" />
+							<!--황소돌진 시작-->
+							<node name="skill" faceTarget="0" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="44" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="skill" faceTarget="0" idx="43" />
+							<!--황소돌진 대기 마무리-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<!--공격 후 딜링 타이밍을 약간 줌-->
+						</node>
+						<!--황소돌진 밀쳐내기 패턴 4번-->
+						<node name="standby" limit="500" faceTarget="1" cooltime="20000" isKeepBattle="true">
+							<node name="skill" faceTarget="1" idx="40" />
+							<!--황소돌진 시작-->
+							<node name="skill" faceTarget="0" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="44" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="1" idx="41" />
+							<!--황소돌진 대기 루핑-->
+							<node name="skill" faceTarget="0" idx="42" />
+							<!--황소돌진 대기 *발동*-->
+							<node name="skill" faceTarget="0" idx="43" />
+							<!--황소돌진 대기 마무리-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<!--공격 후 딜링 타이밍을 약간 줌-->
+						</node>
+						<!-- 휠윈드 2바퀴 패턴-->
+						<node name="standby" limit="500" faceTarget="1" cooltime="25000" isKeepBattle="true">
+							<node name="target" type="far" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="34" />
+							<node name="skill" faceTarget="0" idx="35" />
+							<node name="skill" faceTarget="0" idx="36" />
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="move" destination="-1500, -3000, 2150" limit="2000" />
+						</node>
+						<node name="standby" limit="1500" faceTarget="1" />
+						<!-- 위 스킬 전부 쿨타임 걸렸을 경우-->
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

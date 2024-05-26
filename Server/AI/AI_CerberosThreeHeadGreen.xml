@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="100,100,9999,0">
+			<node name="SetValue" cooltime="999999" key="OrderBiteAttack" value="0" />
+			<!--물기 공격 횟수 체크하는 변수 선언하는 부분-->
+			<node name="SetSlaveValue" cooltime="999999" key="DeathWitch3CerberosTrainer" value="0" />
+			<!--소환몹 자살  ON OFF 변수 선언하는 부분-->
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+				<node name="target" type="rand" from="10" to="1200" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="93">
+					<node name="select" prob="9999,9999,0">
+						<!--#1페이즈     7%  -->
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="30000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="3000" skillIdx="1" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="skill" cooltime="23000" initialCooltime="15000" idx="10">
+							<!-- 3~4연속 바닥 폭발-->
+							<node name="target" type="rand" from="100" to="1200">
+								<node name="select" prob="50,50">
+									<node name="skill" cooltime="30000" idx="10">
+										<!-- 바닥 폭발 정면-->
+										<node name="target" type="near" from="300" to="1200">
+											<node name="skill" faceTarget="0" idx="11">
+												<!-- 바닥 폭발 양 측면-->
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<node name="skill" faceTarget="0" cooltime="30000" idx="11">
+										<!-- 바닥 폭발 양 측면-->
+										<node name="target" type="near" from="300" to="1200">
+											<node name="skill" idx="10">
+												<node name="skill" faceTarget="0" idx="11">
+													<node name="standby" limit="2000" faceTarget="0" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="65,34,1">
+									<!--근거리 할퀴기 사정권에 들어오면 -->
+									<node name="skill" idx="2" />
+									<!-- 근거리 할퀴기 -->
+									<node name="skill" cooltime="10000" idx="10">
+										<!-- 바닥 폭발-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="55,10,35">
+									<node name="skill" idx="6">
+										<node name="select" prob="50,50">
+											<!-- 뛰어들기 후 할퀴기-->
+											<node name="skill" faceTarget="0" idx="4">
+												<!-- 양 측면 발사-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="target" type="far" from="300" to="1300">
+												<node name="skill" idx="6">
+													<!-- 뛰어들기 후 할퀴기-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="skill" cooltime="21000" idx="10">
+										<!-- 바닥 폭발-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="trace" limit="2000" skillIdx="2" />
+									<!--횡베기 스킬  거리 좁히기-->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="70">
+					<node name="select" prob="9999,0">
+						<!--#2페이즈  마녀 등장   23% -->
+						<node name="standby" limit="100" faceTarget="1" cooltime="120000" initialCooltime="100">
+							<node name="select" prob="49,51">
+								<!--여기서 마녀 등장은 한번 나오고 2분이상 끌지 않으면 안나오도록 함 -->
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="7200, 5700, 4850">
+									<!--12시 방향에서 등장 -->
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="8025, 4875, 6050">
+										<!--짱박혀 있는 플레이어  견제용 -->
+										<node name="standby" limit="4500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="7350, 4050, 4850">
+									<!--3시 방향에서 등장 -->
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="8025, 4875, 6050">
+										<!--짱박혀 있는 플레이어  견제용 -->
+										<node name="standby" limit="4500" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="OrderBiteAttack" value="2" op="greaterEqual">
+								<!--마녀에게 연속 물기 공격 명령을 받은 경우 -->
+								<node name="target" type="far" from="10" to="1300">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="8">
+											<!--근거리 물기-->
+											<node name="skill" idx="8">
+												<!-- 근거리 물기 -->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="SetValue" key="OrderBiteAttack" value="-1" isModify="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="skill" idx="9">
+												<!-- 원거리 물기-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="SetValue" key="OrderBiteAttack" value="-1" isModify="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="extraData" key="OrderBiteAttack" value="1">
+								<!--마녀에게 연속 물기 공격 명령을 받은 경우, OrderBiteAttack = 1 이면 여기가 마지막 물기 공격이라는 뜻 -->
+								<node name="target" type="far" from="10" to="1300">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="8">
+											<!--근거리 물기-->
+											<node name="skill" idx="8">
+												<!-- 근거리 물기 -->
+												<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+													<node name="SetValue" key="OrderBiteAttack" value="-1" isModify="1" />
+													<node name="buff" type="remove" id="50001011" />
+													<!-- 공격 명령 받은 버프 이펙트 해제하기-->
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="skill" idx="9">
+												<!-- 원거리 물기-->
+												<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+													<node name="SetValue" key="OrderBiteAttack" value="-1" isModify="1" />
+													<node name="buff" type="remove" id="50001011" />
+													<!-- 공격 명령 받은 버프 이펙트 해제하기-->
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="65,34,1">
+											<!--근거리 할퀴기 사정권에 들어오면 -->
+											<node name="skill" idx="2" />
+											<!-- 근거리 할퀴기 -->
+											<node name="skill" cooltime="10000" idx="10">
+												<node name="select" prob="50,50">
+													<!-- 가운데 바닥 폭발-->
+													<node name="skill" idx="10">
+														<!--가운데 바닥 폭발-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="skill" faceTarget="0" idx="11">
+														<!--측면 바닥 폭발-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="1000" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,20,30">
+											<node name="skill" idx="6">
+												<node name="select" prob="50,50">
+													<!-- 뛰어들기 후 할퀴기-->
+													<node name="skill" faceTarget="0" idx="4">
+														<!-- 양 측면 발사-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="target" type="far" from="300" to="1300">
+														<node name="skill" idx="6">
+															<!-- 뛰어들기 후 할퀴기-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="21000" idx="10">
+												<node name="select" prob="50,50">
+													<!-- 가운데 바닥 폭발-->
+													<node name="skill" idx="10">
+														<!--가운데 바닥 폭발-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="skill" faceTarget="0" idx="11">
+														<!--측면 바닥 폭발-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="trace" limit="2000" skillIdx="2" />
+											<!--횡베기 스킬  거리 좁히기-->
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="56">
+					<node name="select" prob="9999,9999,9999,0">
+						<!--#3페이즈   유도 광역 공격 페이즈   14%  -->
+						<node name="SetSlaveValue" cooltime="999999" key="DeathWitch3CerberosTrainer" value="1">
+							<!-- 소환 몹 자살 명령 내리기-->
+							<node name="buff" type="remove" id="50001011" />
+							<!-- 공격 명령 받은 버프 이펙트 해제하기, 혹시 이전 페이즈에서 남아있을 경우를 대비해 해제함-->
+						</node>
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="30000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="3000" skillIdx="1" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="skill" cooltime="38000" initialCooltime="21000" idx="7">
+							<!-- 바닥 폭발 후 유도 9발-->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="65,34,1">
+									<!--근거리 할퀴기 사정권에 들어오면 -->
+									<node name="skill" idx="2" />
+									<!-- 근거리 할퀴기 -->
+									<node name="skill" cooltime="10000" idx="10">
+										<node name="select" prob="50,50">
+											<!-- 가운데 바닥 폭발-->
+											<node name="skill" idx="10">
+												<!--가운데 바닥 폭발-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="skill" faceTarget="0" idx="11">
+												<!--측면 바닥 폭발-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="45,40,15">
+									<node name="skill" cooltime="8000" idx="3">
+										<!-- 가운데 발사 -->
+										<node name="skill" faceTarget="0" idx="4">
+											<!--측면 발사-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" cooltime="10000" idx="6">
+										<node name="select" prob="50,50">
+											<!-- 뛰어들기 후 할퀴기-->
+											<node name="skill" faceTarget="0" idx="4">
+												<!-- 양 측면 발사-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="target" type="far" from="300" to="1300">
+												<node name="skill" idx="6">
+													<!-- 뛰어들기 후 할퀴기-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="trace" limit="2000" skillIdx="2" />
+									<!--횡베기 스킬  거리 좁히기-->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="33">
+					<node name="select" prob="9999,0">
+						<!--#4페이즈 마녀 등장   23% -->
+						<node name="standby" limit="100" faceTarget="1" cooltime="58000" initialCooltime="100">
+							<node name="SetSlaveValue" cooltime="999999" key="DeathWitch3CerberosTrainer" value="0">
+								<node name="select" prob="49,51">
+									<!-- 앞선 페이즈에서 소환몹 자살 ON 해놨기 때문에 여기서는 OFF 설정함 -->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="7200, 5700, 4850">
+										<!--12시 방향에서 등장 -->
+										<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="8025, 4875, 6050">
+											<!--짱박혀 있는 플레이어  견제용 -->
+											<node name="standby" limit="4500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="7350, 4050, 4850">
+										<!--3시 방향에서 등장 -->
+										<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="8025, 4875, 6050">
+											<!--짱박혀 있는 플레이어  견제용 -->
+											<node name="standby" limit="4500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="OrderBiteAttack" value="2" op="greaterEqual">
+								<!--마녀에게 연속 물기 공격 명령을 받은 경우 -->
+								<node name="target" type="far" from="10" to="1300">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="8">
+											<!--근거리 물기-->
+											<node name="skill" idx="8">
+												<!-- 근거리 물기 -->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="SetValue" key="OrderBiteAttack" value="-1" isModify="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="skill" idx="9">
+												<!-- 원거리 물기-->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="SetValue" key="OrderBiteAttack" value="-1" isModify="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="extraData" key="OrderBiteAttack" value="1">
+								<!--마녀에게 연속 물기 공격 명령을 받은 경우, OrderBiteAttack = 1 이면 여기가 마지막 물기 공격이라는 뜻 -->
+								<node name="target" type="far" from="10" to="1300">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="8">
+											<!--근거리 물기-->
+											<node name="skill" idx="8">
+												<!-- 근거리 물기 -->
+												<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+													<node name="SetValue" key="OrderBiteAttack" value="-1" isModify="1" />
+													<node name="buff" type="remove" id="50001011" />
+													<!-- 공격 명령 받은 버프 이펙트 해제하기-->
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="skill" idx="9">
+												<!-- 원거리 물기-->
+												<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+													<node name="SetValue" key="OrderBiteAttack" value="-1" isModify="1" />
+													<node name="buff" type="remove" id="50001011" />
+													<!-- 공격 명령 받은 버프 이펙트 해제하기-->
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="9999,0">
+									<node name="skill" cooltime="21000" initialCooltime="21000" idx="5">
+										<!-- 3개 머리서 브레스 공격-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="select" prob="65,34,1">
+												<!--근거리 할퀴기 사정권에 들어오면 -->
+												<node name="skill" idx="2" />
+												<!-- 근거리 할퀴기 -->
+												<node name="skill" cooltime="10000" idx="10">
+													<node name="select" prob="50,50">
+														<!-- 가운데 바닥 폭발-->
+														<node name="skill" idx="10">
+															<!--가운데 바닥 폭발-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+														<node name="skill" faceTarget="0" idx="11">
+															<!--측면 바닥 폭발-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="standby" limit="1000" faceTarget="0" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="45,40,15">
+												<node name="skill" cooltime="9000" idx="3">
+													<!-- 가운데 발사 -->
+													<node name="skill" faceTarget="0" idx="4">
+														<!--측면 발사-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" idx="6">
+													<node name="select" prob="50,50">
+														<!-- 뛰어들기 후 할퀴기-->
+														<node name="skill" faceTarget="0" idx="4">
+															<!-- 양 측면 발사-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+														<node name="target" type="far" from="300" to="1300">
+															<node name="skill" idx="6">
+																<!-- 뛰어들기 후 할퀴기-->
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="trace" limit="2000" skillIdx="2" />
+												<!--근거리 할퀴기  스킬  거리 좁히기-->
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="19">
+					<node name="select" prob="9999,9999,9999,65,35">
+						<!--#5페이즈 광역 공격   14% -->
+						<node name="SetSlaveValue" cooltime="999999" key="DeathWitch3CerberosTrainer" value="1">
+							<!-- 소환 몹 제거하기-->
+							<node name="buff" type="remove" id="50001011" />
+							<!-- 공격 명령 받은 버프 이펙트 해제하기, 혹시 이전 페이즈에서 남아있을 경우를 대비해 해제함-->
+						</node>
+						<node name="skill" cooltime="18000" initialCooltime="18000" idx="5">
+							<!-- 3개 머리서 브레스 공격-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="36000" initialCooltime="20000" idx="7">
+							<!-- 바닥 폭발 후 유도 9발-->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" idx="10">
+							<node name="select" prob="50,50">
+								<!-- 가운데 바닥 폭발-->
+								<node name="skill" idx="10">
+									<!--가운데 바닥 폭발-->
+									<node name="skill" faceTarget="0" idx="11">
+										<!--측면 바닥 폭발-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" faceTarget="0" idx="11">
+									<!--측면 바닥 폭발-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="100" faceTarget="1">
+							<node name="target" type="far" from="300" to="1200">
+								<node name="skill" idx="6">
+									<node name="select" prob="50,50">
+										<!-- 뛰어들기 후 할퀴기-->
+										<node name="skill" faceTarget="0" idx="4">
+											<!-- 양 측면 발사-->
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+										<node name="target" type="far" from="300" to="1300">
+											<node name="skill" idx="6">
+												<!-- 뛰어들기 후 할퀴기-->
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<!--#6페이즈   마지막 마녀 난입 브레스 난사     19% -->
+						<node name="standby" limit="100" faceTarget="1" cooltime="999999" initialCooltime="100" isKeepBattle="true">
+							<!--이 페이즈에서는 마녀 딱 한번만 소환함-->
+							<node name="move" destination="6300, 4950, 4850" limit="3000" />
+							<!--맵 중앙 쪽으로 이동-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="111" summonPos="7200, 5700, 4850" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="8025, 4875, 6050" />
+							<!--짱박혀 있는 플레이어  견제용 -->
+							<node name="standby" limit="5000" faceTarget="1" />
+							<node name="skill" idx="12" />
+							<!--늑대 울음   아~우우~~-->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="OrderBiteAttack" value="10">
+								<!--마녀에게 브레스 난사 공격 명령을 받은 경우 -->
+								<node name="target" type="rand" from="10" to="1400">
+									<node name="select" prob="70,30">
+										<node name="skill" idx="5">
+											<!-- 3개 머리서 브레스 공격-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="25000" idx="7">
+											<!-- 바닥 폭발 후 유도 9발-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="9999,0">
+									<node name="buff" type="remove" id="50001011" cooltime="9999999" initialCooltime="1" />
+									<!--조련사NPC가 죽으면 공격명령 버프 이펙트 해제하기 -->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="select" prob="65,34,1">
+												<!--근거리 할퀴기 사정권에 들어오면 -->
+												<node name="skill" idx="2" />
+												<!-- 근거리 할퀴기 -->
+												<node name="skill" cooltime="10000" idx="10">
+													<node name="select" prob="50,50">
+														<!-- 가운데 바닥 폭발-->
+														<node name="skill" idx="10">
+															<!--가운데 바닥 폭발-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+														<node name="skill" faceTarget="0" idx="11">
+															<!--측면 바닥 폭발-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="standby" limit="1000" faceTarget="0" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="45,40,15">
+												<node name="skill" cooltime="8000" idx="3">
+													<!-- 가운데 발사 -->
+													<node name="skill" faceTarget="0" idx="4">
+														<!--측면 발사-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" cooltime="10000" idx="6">
+													<node name="select" prob="50,50">
+														<!-- 뛰어들기 후 할퀴기-->
+														<node name="skill" faceTarget="0" idx="4">
+															<!-- 양 측면 발사-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+														<node name="target" type="far" from="300" to="1300">
+															<node name="skill" idx="6">
+																<!-- 뛰어들기 후 할퀴기-->
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="trace" limit="2000" skillIdx="2" />
+												<!--근거리 할퀴기  스킬  거리 좁히기-->
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

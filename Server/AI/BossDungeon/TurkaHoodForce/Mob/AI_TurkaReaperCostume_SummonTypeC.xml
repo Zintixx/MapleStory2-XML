@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--두번째 전투판에서 이루어지는 3페이지 후반부에 등장, AI_SignalSummon.xml 에서 호출함 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="select" prob="50,10,15,10,15">
+				<!-- 모든 몬스터가 똑같이 공격 행동 하는 것을 방지하기 위해 초반에 랜덤 standby 설정 넣기, 그리고 랜덤하게 공반 버프 생성되도록 하기 -->
+				<node name="buff" type="add" id="50003306" />
+				<!-- 공격 반사 랜덤 설정 -->
+				<node name="standby" limit="800" faceTarget="1" />
+				<node name="standby" limit="2100" faceTarget="1" />
+				<node name="standby" limit="3400" faceTarget="1" />
+				<node name="standby" limit="4700" faceTarget="1" />
+			</node>			
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="300" faceTarget="0" animation="Attack_01_A" cooltime="2400">
+				<node name="target" type="hasAdditional" additionalId="73000012" additionalLevel="1" target="hostile">
+					<!--일정 시간마다 로봇 탑승 대상(73000012) 타겟팅 함 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!-- 레벨3: 거리 850에 같은 높이의 전투판만 포함 -->
+							<node name="trace" limit="1200" skillIdx="2" />
+							<!-- 즉 로봇탈것 플레어가 거리 850이내에 있으면 바로 trace 함 -->
+							<!-- 우선 로봇 탑승 플레이어 타겟팅 한 다음, 거리체크해서 이 타겟팅 대상이 거리 850 이내에 있으면, 이 로봇탑승 플레이어 계속 타겟팅 함-->
+						</condition>
+						<condition name="true">
+							<!-- 우선 로봇 탑승 플레이어(73000012) 타겟팅 한 다음, 거리체크해서 이 타겟팅 대상이 거리 850 이외에 있으면, "낮은 확률로 등장하는 거대 로봇 탈것+다른 가까이 있는 플레이어"를 타겟팅함-->
+							<node name="target" type="hasAdditional" additionalId="73000013" additionalLevel="1" target="hostile">
+								<!--낮은 확률로 등장하는 거대 로봇 탈것(73000013) 등장을 대비해 이 타겟팅 부분을 넣음 -->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<!-- 레벨3: 거리 850에 같은 높이의 전투판만 포함 -->
+										<node name="trace" limit="1200" skillIdx="2" />
+										<!-- 즉 로봇탈것 플레어가 거리 850이내에 있으면 바로 trace 함 -->
+										<!-- 우선 거대 로봇 탑승 플레이어(73000013) 타겟팅 한 다음, 거리체크해서 이 타겟팅 대상이 거리 850 이내에 있으면, 이 로봇탑승 플레이어 계속 타겟팅 함-->
+									</condition>
+									<condition name="true">
+										<node name="target" type="near" from="10" to="1300" />
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<!-- 레벨1: 거리 280 이내에 플레이어가 있다면, TypeB는 근접 이내 플레이어가 있으면 버프 부여 안하고 공격 행위만 함 -->
+					<node name="skill" faceTarget="1" idx="2">
+						<node name="select" prob="33,33,34">
+							<!-- 근접 공격 -->
+							<node name="standby" limit="900" faceTarget="1" animation="Attack_01_A" />
+							<node name="standby" limit="1800" faceTarget="1" animation="Attack_01_A" />
+							<node name="standby" limit="2700" faceTarget="1" animation="Attack_01_A" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="25,25,20,20,10">
+						<!-- 레벨2: 거리 500에 같은 높이의 전투판만 포함 -->
+						<!-- 추적 거리가 똑같으면 다수 몬스터가 겹쳐 서있는 경우가 있어서 다양한 경우의 추척 거리 설정하였음 -->
+						<node name="trace" limit="1200" skillIdx="2" />
+						<!-- 거리 280 까지 추적 -->
+						<node name="trace" till="250" limit="1200" />
+						<!-- 거리 250 까지 추적 -->
+						<node name="trace" till="230" limit="1200" />
+						<!-- 거리 230 까지 추적 -->
+						<node name="trace" till="210" limit="1200" />
+						<!-- 거리 210 까지 추적 -->
+						<node name="trace" till="180" limit="1200" />
+						<!-- 거리 180 까지 추적 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+							<!-- 공격 후 standby 상태, 본체 투사체 버프 도중에 플레이어가 사정거리 안에 들어오면 바로바로 trace 해야하기 때문에 이렇게 설정함  -->
+							<node name="standby" limit="100" facePos="-300, -1350, 1050" animation="Attack_01_A">
+								<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" facePos="-300, -1350, 1050" idx="1">
+								<node name="select" prob="33,33,34">
+									<!-- 본체에  투사체 버프 부여 -->
+									<node name="SetValue" key="AttackDelay" value="12" />
+									<node name="SetValue" key="AttackDelay" value="18" />
+									<node name="SetValue" key="AttackDelay" value="26" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

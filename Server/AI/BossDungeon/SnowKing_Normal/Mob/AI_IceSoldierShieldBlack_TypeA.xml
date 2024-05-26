@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="MonsterNumber" value="1" isModify="1" />
+				<!--전투 상태가 되면 자쿰AI에게 토템소환몹 마리수 체크 +1 신호 보냄-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<node name="SetValue" cooltime="9999999" key="TraceOk" value="0" />
+			<!--원거리 몬스터가 일정 시간이 지나면 이후 무조건 가까이 다가가도록 하기 위해 사용하는 변수 -->
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="7" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<!--거리 900~1000 이내, 같은 높이에 있으면 -->
+							<aiPreset name="LongRangeMode" />
+						</condition>
+						<condition name="true">
+							<!--거리 900~1000 이밖이나, 계단 지형 등 같은 높이에 있지 않다면-->
+							<node name="conditions">
+								<condition name="extraData" key="TraceOk" value="10" op="lessEqual">
+									<!-- TraceOk 변수가 10 이하면 제자리 서있기, 즉 6초 정도 -->
+									<node name="standby" limit="600" faceTarget="1">
+										<node name="target" type="near" from="10" to="1300">
+											<node name="SetValue" key="TraceOk" value="1" isModify="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<!-- TraceOk 변수가 10 보다 크면 무조건 가까이 쫓아가기, 즉 6초 지나면 -->
+									<node name="trace" limit="5000" skillIdx="1" />
+									<!--레벨1: 거리 250 이내 쫓아가기 -->
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+				<!--죽으면  소환몹 마리수 체크 -1 신호 보냄-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<!--원거리 전용 움직임-->
+		<aiPreset name="LongRangeMode">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="99,1">
+						<!--레벨2: 거리 1150 이내 -->
+						<node name="skill" faceTarget="1" cooltime="8000" isKeepBattle="true" idx="2">
+							<!--원거리 약공격 투척 공격 -->
+							<node name="skill" faceTarget="0" idx="5" />
+							<!--레벨22가 돌진 직전 대기, 레벨2는 디버프 방패 막기임 -->
+							<node name="skill" faceTarget="1" idx="5" />
+							<node name="skill" faceTarget="0" idx="4" />
+						</node>
+						<node name="standby" limit="500" faceTarget="1" />
+						<!--플레이가 가까이 붙으면 바로바로 추척하도록 하기 위해 모든 스킬에 쿨타임 넣고 standby 시간 짧게 함 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="5000" skillIdx="3" />
+					<!--레벨2: 거리 1150 이내 -->
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

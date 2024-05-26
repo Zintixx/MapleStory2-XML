@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<!--칸두라 한테 회복 요청을 보내는 HP 구간 정의, 이 신호 보낼때 칸두라가 전투중이면 이 신호 받아도 회복시켜주지 않음-->
+		<condition name="hpLess" value="94">
+			<!--파티원 9명이 한쪽으로 가서 극딜하는 것을 어느 정도 막기위한 장치-->
+			<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+				<node name="SetMasterValue" key="HealCall" value="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="35">
+			<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+				<node name="SetMasterValue" key="HealCall" value="1" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="DeathSummon" value="0" />
+				<!--소환몹 자살 명령 받는  변수-->
+				<node name="SetValue" key="HealCall" value="0" />
+				<!--  소환몹이 보스한테  HP회복 요청을 보낼때 사용하는 변수  -->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+				<node name="target" type="near" center="-5025, -6225, 2450" />
+				<!-- 02000375 던전 최초 진입 전투판 오른쪽 지점 가운데를 기준으로 제일 가까운 대상 타겟팅 함, 건너편 전투판 대상 타겟팅 하는 것을 최소화 하기 위해-->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<node name="select" prob="999,0">
+						<!-- 잡기 공격 패턴에 거리 체크 없으면 플레이어 타겟이 없어도 스킬을 사용해버려서 이렇게 설정해야 함-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="23000" initialCooltime="11000">
+							<node name="target" type="far" from="10" to="900">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<!-- 같은 전투판 위에 있다면 거리는 1100-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="7">
+												<!--근거리 잡기 사정거리 이내에 있으면 -->
+												<aiPreset name="GrabClose" />
+												<!-- 근거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+											</condition>
+											<condition name="true">
+												<aiPreset name="GrabLong" />
+												<!-- 원거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+											</condition>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="98,2">
+											<!--전부 전투판 아래 있으면-->
+											<node name="move" destination="-5018, -6225, 2460" limit="4000" cooltime="12000">
+												<node name="target" type="near" from="10" to="1000" />
+											</node>
+											<node name="standby" limit="1200" faceTarget="1">
+												<node name="target" type="near" from="10" to="1000" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="DeathSummon" value="1">
+								<!-- 칸두라한테 자살하라는 명령을 받았으면 -->
+								<node name="skill" faceTarget="0" idx="1" />
+								<!-- 자살 스킬 사용하기 -->
+							</condition>
+							<condition name="true">
+								<aiPreset name="MainBattle" />
+								<!-- 여기서 실제 공격 행동을 정의함, 맨 아래쪽에 따로 설정해놓음-->
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="40">
+					<node name="select" prob="999,50,0">
+						<node name="standby" limit="100" faceTarget="1" cooltime="47000">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<!-- 같은 전투판 위에 있다면 거리는 1100-->
+									<node name="skill" faceTarget="1" idx="13">
+										<!--빙빙~ -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="7">
+												<!--근거리 잡기 사정거리 이내에 있으면 -->
+												<aiPreset name="GrabClose" />
+												<!-- 근거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+											</condition>
+											<condition name="true">
+												<aiPreset name="GrabLong" />
+												<!-- 원거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+											</condition>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="98,2">
+										<!--전부 전투판 아래 있으면-->
+										<node name="move" destination="-5018, -6225, 2460" limit="4000" cooltime="12000">
+											<node name="target" type="near" from="10" to="1000" />
+										</node>
+										<node name="standby" limit="1200" faceTarget="1">
+											<node name="target" type="near" from="10" to="1000" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="100" faceTarget="1" cooltime="38000">
+							<node name="target" type="far" from="10" to="900">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<!-- 같은 전투판 위에 있다면 거리는 1100-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="7">
+												<!--근거리 잡기 사정거리 이내에 있으면 -->
+												<aiPreset name="GrabClose" />
+												<!-- 근거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+											</condition>
+											<condition name="true">
+												<aiPreset name="GrabLong" />
+												<!-- 원거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+											</condition>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="98,2">
+											<!--전부 전투판 아래 있으면-->
+											<node name="move" destination="-5018, -6225, 2460" limit="4000" cooltime="12000">
+												<node name="target" type="near" from="10" to="1000" />
+											</node>
+											<node name="standby" limit="1200" faceTarget="1">
+												<node name="target" type="near" from="10" to="1000" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="DeathSummon" value="1">
+								<!-- 칸두라한테 자살하라는 명령을 받았으면 -->
+								<node name="skill" faceTarget="0" idx="1" />
+								<!-- 자살 스킬 사용하기 -->
+							</condition>
+							<condition name="true">
+								<aiPreset name="MainBattle" />
+								<!-- 여기서 실제 공격 행동을 정의함, 맨 아래쪽에 따로 설정해놓음-->
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,50,0">
+						<!--마지막 페이즈에서는  플레이어 타겟이 없어도 스킬을 사용하도록 함-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+							<node name="target" type="far" from="10" to="900">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="7">
+										<!--근거리 잡기 사정거리 이내에 있으면 -->
+										<aiPreset name="GrabClose" />
+										<!-- 근거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+									</condition>
+									<condition name="true">
+										<aiPreset name="GrabLong" />
+										<!-- 원거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="move" destination="-5018, -6225, 2460" limit="4000" cooltime="44000">
+							<node name="skill" faceTarget="1" idx="13">
+								<!--빙빙~ -->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="7">
+										<!--근거리 잡기 사정거리 이내에 있으면 -->
+										<aiPreset name="GrabClose" />
+										<!-- 근거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+									</condition>
+									<condition name="true">
+										<aiPreset name="GrabLong" />
+										<!-- 원거리 잡기 공격 해위 로직설정, 맨 아래쪽에 따로 설정해놓음-->
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="DeathSummon" value="1">
+								<!-- 칸두라한테 자살하라는 명령을 받았으면 -->
+								<node name="skill" faceTarget="0" idx="1" />
+								<!-- 자살 스킬 사용하기 -->
+							</condition>
+							<condition name="true">
+								<aiPreset name="MainBattle" />
+								<!-- 여기서 실제 공격 행동을 정의함, 맨 아래쪽에 따로 설정해놓음-->
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 죽음 신호를 마스터한테 보냄-->
+		<node name="SetMasterValue" key="SummonPhaseEnd" value="1" isModify="1" />
+		<!--Master에게 SummonPhaseEnd 변수 1을 더하게 함-->
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="MainBattle">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="40,40,20">
+						<!-- 사정거리 550 이내에 있으면-->
+						<node name="skill" idx="3">
+							<!--어깨치기 -->
+							<node name="standby" limit="1600" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="12000" initialCooltime="18000" idx="4">
+							<!--어깨치기 후 양손치기 -->
+							<node name="skill" idx="5">
+								<!--어깨치기 후 양손치기 -->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="9000" initialCooltime="10000" idx="6">
+							<!--박치기 공격 -->
+							<node name="standby" limit="1800" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 550 이외 거리 멀리 떨어져 있으면-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="99,60,40">
+								<!-- 같은 전투판 위에 있다면 거리는 1100-->
+								<!-- 건너편 전투판의 대상을 계속 헛공격하는 상황을 막기위한 장치임-->
+								<node name="move" destination="-4731, -6161, 2460" limit="3000" cooltime="15000">
+									<node name="target" type="near" from="10" to="1000" />
+								</node>
+								<node name="skill" cooltime="12000" initialCooltime="18000" idx="6">
+									<!--박치기 공격 -->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+								<node name="trace" limit="2500" skillIdx="3">
+									<!-- 사정거리 550 까지 쫓아가기-->
+									<node name="target" type="near" from="10" to="1000" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="98,2">
+								<!--전부 전투판 아래 있으면-->
+								<node name="move" destination="-5018, -6225, 2460" limit="4000" cooltime="12000">
+									<node name="target" type="near" from="10" to="1000" />
+								</node>
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="GrabClose">
+			<!-- 가까운 대상 잡기 스킬 설정-->
+			<node name="skill" idx="7">
+				<node name="target" type="near" from="1" to="600">
+					<node name="conditions">
+						<condition name="state" targetState="grabTarget">
+							<!-- 타겟팅 된 대상이 잡혀있으면-->
+							<node name="target" type="mid" from="1" to="1000">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="11">
+										<!-- 타겟팅 대상이 600 이내에 있으면-->
+										<node name="skill" idx="11">
+											<!--근거리 스크류 드라이브 -->
+											<node name="standby" limit="1500" faceTarget="1">
+												<node name="move" destination="-5018, -6225, 2460" limit="4000" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="skill" idx="12">
+											<!--원거리 스크류 드라이브 -->
+											<node name="standby" limit="1500" faceTarget="1">
+												<node name="move" destination="-5018, -6225, 2460" limit="4000" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" idx="8" />
+							<!--근거리 잡기 실패 -->
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="GrabLong">
+			<!-- 멀리있는 대상 잡기 스킬 설정-->
+			<node name="skill" idx="9">
+				<node name="target" type="near" from="1" to="600">
+					<node name="conditions">
+						<condition name="state" targetState="grabTarget">
+							<!-- 타겟팅 된 대상이 잡혀있으면-->
+							<node name="target" type="mid" from="1" to="1000">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="11">
+										<!-- 타겟팅 대상이 600 이내에 있으면-->
+										<node name="skill" idx="11">
+											<!--근거리 스크류 드라이브 -->
+											<node name="standby" limit="1500" faceTarget="1">
+												<node name="move" destination="-5018, -6225, 2460" limit="4000" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="skill" idx="12">
+											<!--원거리 스크류 드라이브 -->
+											<node name="standby" limit="1500" faceTarget="1">
+												<node name="move" destination="-5018, -6225, 2460" limit="4000" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" idx="10" />
+							<!--원거리 잡기 실패 -->
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

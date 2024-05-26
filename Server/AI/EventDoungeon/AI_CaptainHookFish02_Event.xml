@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="11000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="95">
+					<!--#1 페이즈 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!--같은 높이의 전투판에 있으면, 통상적인 공격 행동을 함 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="59,40,1">
+										<node name="skill" idx="2" />
+										<!-- 휘두르기-->
+										<node name="skill" idx="8">
+											<!-- 대쉬 휘두르기-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="4">
+											<node name="select" prob="50,25,25">
+												<node name="trace" limit="2500" skillIdx="2" />
+												<node name="skill" idx="3">
+													<!-- 왼손 대포 바닥 폭발-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+												<node name="skill" idx="8">
+													<!-- 돌진 공격-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="99,1">
+												<node name="trace" limit="2500" skillIdx="2" />
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="700" faceTarget="1">
+								<!--전투판 아래로 내려가 있으면, 타겟팅 다시 잡는 행위를 함-->
+								<node name="target" type="rand" from="10" to="2000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="80">
+					<!--#2페이즈-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="50,0">
+								<!--같은 높이의 전투판에 있으면, 통상적인 공격 행동을 함 -->
+								<node name="skill" cooltime="22000" idx="8">
+									<!--돌진 공격 후 왼손 대포 바닥 폭발-->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="skill" idx="3">
+											<!-- 왼손 대포 발사-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="33,33,33,1">
+											<node name="skill" cooltime="4000" idx="2" />
+											<!-- 휘두르기-->
+											<node name="skill" cooltime="4000" idx="8">
+												<!-- 대쉬 휘두르기-->
+												<node name="standby" limit="1000" faceTarget="10" />
+											</node>
+											<node name="skill" cooltime="4000" idx="8">
+												<!-- 돌진 공격-->
+												<node name="standby" limit="1000" faceTarget="0" />
+											</node>
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,30,20">
+											<node name="skill" cooltime="8000" idx="10">
+												<!-- 유도탄 2발 발사-->
+												<node name="standby" limit="1000" faceTarget="0" />
+											</node>
+											<node name="skill" cooltime="5000" idx="3">
+												<!-- 왼손 대포 바닥 폭발-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" skillIdx="2" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="700" faceTarget="1">
+								<!--전투판 아래로 내려가 있으면, 타겟팅 다시 잡는 행위를 함-->
+								<node name="target" type="rand" from="10" to="2000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="60">
+					<!--#3페이즈-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="9999,0">
+								<!--같은 높이의 전투판에 있으면, 통상적인 공격 행동을 함 -->
+								<!--전원 기절시킨 후 한방 킬 공격 이 페이즈때 한번만 사용-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+									<node name="skill" facePos="-2775, -975, 4400" idx="5" />
+									<!--기절시키기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="target" type="mid" from="10" to="1300" />
+									<!--중간 위치한 플레이어로 타겟팅 잡기-->
+									<node name="trace" limit="2000" skillIdx="11" />
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--한방킬 발동-->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="8">
+										<node name="select" prob="65,34,1">
+											<node name="skill" cooltime="5000" idx="8">
+												<!-- 대쉬 휘두르기-->
+												<node name="standby" limit="1000" faceTarget="10" />
+											</node>
+											<node name="skill" idx="3">
+												<!-- 왼손 대포 바닥 폭발-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,25,25">
+											<node name="skill" cooltime="22000" idx="10">
+												<!-- 유도탄 2발 발사-->
+												<node name="standby" limit="1000" faceTarget="0" />
+											</node>
+											<node name="skill" idx="3">
+												<!-- 왼손 대포 바닥 폭발-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" skillIdx="8" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="700" faceTarget="1">
+								<!--전투판 아래로 내려가 있으면, 타겟팅 다시 잡는 행위를 함-->
+								<node name="target" type="rand" from="10" to="2000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="17">
+					<!--#4페이즈-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="9999,0">
+								<!--같은 높이의 전투판에 있으면, 통상적인 공격 행동을 함 -->
+								<!--전원 기절시킨 후 한방 킬 공격 이 페이즈때 한번만 사용-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="27000">
+									<node name="select" prob="25,25,25,25">
+										<node name="skill" facePos="-375, 675, 4700" cooltime="120000" isKeepBattle="true" idx="6">
+											<!--점프뛰기 -->
+											<node name="jump" pos="-375, 675, 4700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!--점프 착지 -->
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="9" />
+											<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+											<node name="skill" facePos="-375, -1125, 4700" idx="6" />
+											<!--점프뛰기 -->
+											<node name="jump" pos="-375, -1125, 4700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!--점프 착지 -->
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="9" />
+											<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+										</node>
+										<node name="skill" facePos="-375, 675, 4700" cooltime="120000" isKeepBattle="true" idx="6">
+											<!--점프뛰기 -->
+											<node name="jump" pos="-375, 675, 4700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!--점프 착지 -->
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="9" />
+											<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+										</node>
+										<node name="skill" facePos="-2175, -1125, 4700" cooltime="120000" isKeepBattle="true" idx="6">
+											<!--점프뛰기 -->
+											<node name="jump" pos="-2175, -1125, 4700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!--점프 착지 -->
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="9" />
+											<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+											<node name="skill" facePos="-2175, 675, 4700" idx="6" />
+											<!--점프뛰기 -->
+											<node name="jump" pos="-2175, 675, 4700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!--점프 착지 -->
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="9" />
+											<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+										</node>
+										<node name="skill" facePos="-2175, 675, 4700" cooltime="120000" isKeepBattle="true" idx="6">
+											<!--점프뛰기 -->
+											<node name="jump" pos="-2175, 675, 4700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!--점프 착지 -->
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="9" />
+											<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="8">
+										<node name="select" prob="55,44,1">
+											<node name="skill" idx="8">
+												<!-- 대쉬 휘두르기-->
+												<node name="standby" limit="500" faceTarget="10" />
+											</node>
+											<node name="skill" cooltime="20000" idx="10">
+												<!-- 유도탄 2발 발사-->
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,30,20">
+											<node name="skill" cooltime="24000" idx="9">
+												<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+											<node name="skill" idx="3">
+												<!-- 왼손 대포 바닥 폭발-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" skillIdx="8" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="700" faceTarget="1">
+								<!--전투판 아래로 내려가 있으면, 타겟팅 다시 잡는 행위를 함-->
+								<node name="target" type="rand" from="10" to="2000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--#5페이즈   -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="9999,299,0">
+								<!--같은 높이의 전투판에 있으면, 통상적인 공격 행동을 함 -->
+								<!--전원 기절시킨 후 한방 킬 공격 이 페이즈때 한번만 사용-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+									<node name="skill" facePos="-2775, -975, 4400" idx="5" />
+									<!--기절시키기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="target" type="mid" from="10" to="1300" />
+									<!--중간 위치한 플레이어로 타겟팅 잡기-->
+									<node name="trace" limit="2000" skillIdx="11" />
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--한방킬 발동-->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="18000" idx="9" />
+								<!--한방킬 발동: 레벨2가 평소에 사용, 레벨1은 석궁 페이즈때만 사용-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="8">
+										<node name="select" prob="45,54,1">
+											<node name="skill" cooltime="5000" idx="8">
+												<!-- 대쉬 휘두르기-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="3">
+												<!-- 왼손 대포 바닥 폭발-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="40,60">
+											<node name="skill" idx="3">
+												<!-- 왼손 대포 바닥 폭발-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" skillIdx="8" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="700" faceTarget="1">
+								<!--전투판 아래로 내려가 있으면, 타겟팅 다시 잡는 행위를 함-->
+								<node name="target" type="rand" from="10" to="2000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

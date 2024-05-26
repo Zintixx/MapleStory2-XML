@@ -1,0 +1,1578 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--전투 최초 시작 때 제일 먼저 꼭 이루어 져야 하는 거 설정-->
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="teleport" pos="4650, 4650, 5500" />
+				<!--이 몬스터는 최초에  단상 위에 올라가 있게 하기-->
+				<node name="SetValue" key="UpperMode" value="1" />
+				<!-- 1: 단상 위에 있음, 0: 바닥에 있음, 보스는 최초에 단상 위에 배치되어 있음, 보스는 최초에 단상 위에서 등장하기 때문에 최초에 1을 넣음-->
+				<node name="SetValue" key="StageCheck" value="1" />
+				<!-- 현재 줄구간 몇 스테이지인지 체크하기 위한 변수, 변수 선언하자마자 최초 1을 넣어 졸구간 1스테이지임을 알림-->
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!-- 소환 졸병들 다 죽었는지 체크하는 변수-->
+				<node name="SetValue" key="BossBattleZoneSummon" value="0" />
+				<!-- 졸구간 끝나 이 변수에 1을 넣어 보스 전투 막 시작해서 보스 전투판 주변 소환몹 생성함, 테스트를 위해 졸구간 생략하려면 이 변수를 1로 임시 설정하면 됨-->
+				<node name="SetValue" key="Position" value="0" />
+				<!-- 보스가 현재 어느 전투판에 있는지를 알리는 변수임 -->
+				<node name="SetValue" key="CountJumpMove" value="0" />
+				<!-- 점프 이동 얼마나 많이 했는지 횟수 체크 -->
+				<node name="SetValue" key="SummonDeath" value="0" />
+				<!-- 소환몹이 죽음을 알리는데 사용하는 변수 -->
+				<node name="SetValue" key="SnowKingSummonDeath" value="0" />
+				<!--자신의 분신 죽음을 알리는데 사용하는 변수, 이 변수에 의해 스스로 대미지 입게 할지 말지를 결정함 -->
+				<node name="SetValue" key="SnowQueenAppear" value="0" />
+				<!--우호적 NPC 에르다 출현 시점 정할때 사용하는 변수 -->
+				<node name="SetValue" key="ShieldMode" value="0" />
+				<!--마지막 페이즈에서 방패 방어 행위를 시작할 때 사용하는 변수 -->
+				<node name="SetValue" key="ShieldModeContinue" value="1" />
+				<!--방패 방어 행위를 얼만큼 오래할지 결정하는 변수 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="hpOver" value="70">
+				<node name="select" prob="99999,0">
+					<!--#1페이즈-->
+					<!--  타겟팅 다시 하는 부분-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="9000">
+						<aiPreset name="TargetSet" />
+						<!-- 보스가 어떤 곳에 있느냐에 따라 타겟팅이 달라지기 때문에 여기에 위치 조건 타겟팅 기능이 들어가 있음 -->
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="UpperMode" value="1">
+							<node name="conditions">
+								<condition name="extraData" key="BossBattleZoneSummon" value="1">
+									<node name="select" prob="99999,1">
+										<!-- 졸구간 끝나 이 변수에 1을 넣어 보스 전투 막 시작함을 알림-->
+										<node name="standby" limit="300" faceTarget="1" cooltime="9999999">
+											<aiPreset name="BossBattleSummon" />
+											<!-- 보스 전투판 주변 타락한 신전의 기사 몬스터를 다량 소환함-->
+										</node>
+										<node name="standby" limit="500" faceTarget="1">
+											<node name="SetValue" key="BossBattleZoneSummon" value="0" />
+											<!-- 이 변수를 초기화 하여 보스 자신이 통상적인 공격 행동을 하도록 함-->
+										</node>
+									</node>
+								</condition>
+								<condition name="skillRange" skillIdx="21">
+									<node name="select" prob="99999,0">
+										<!-- 플레이어가 보스 전투판 위로 올라서면 처음 이부분  실행함, 50002109 스킬코드는 플레이어가 전투판에 올라왔는지를 거리체크하는 용도임-->
+										<node name="standby" limit="5000" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+											<!--이 시간 꼭 넉넉하게 설정해야 함, 주변 졸몹들 막 소환되고 있는데, 아직 진행중에 아래 신호 보내봤자 먹히지 않기 때문에 꼭 넉넉하게 설저해야 함-->
+											<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+											<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+											<node name="standby" limit="1000" faceTarget="0" />
+											<node name="SetSlaveValue" key="EnterBattleRight" value="1" />
+											<!--소환몹 2시 전투판으로 점프 뛰도록 하기-->
+											<node name="SetSlaveValue" key="EnterBattleLeft" value="1" />
+											<!--소환몹 10시 전투판으로 점프 뛰도록 하기-->
+											<node name="SetSlaveValue" key="EnterBattleCenter" value="1" />
+											<!--소환몹 6시 전투판으로 점프 뛰도록 하기-->
+											<node name="standby" limit="2000" faceTarget="0" />
+											<!--점프 뛰어 오는 석상 몬스터와 같이 등장하도록 타이밍 맞추기 위해-->
+											<node name="SetValue" key="MonsterNumber" value="0" />
+											<!--혹시 몰라서 여기서 이 변수 0으로 초기화 함-->
+											<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="8801" summonPos="3450, 3900, 5300" summonRot="0,0,135" />
+											<!--원거리, 6시 -->
+											<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="8802" summonPos="3675, 3675, 5300" summonRot="0,0,135" />
+											<!--원거리, 6시 -->
+											<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="8803" summonPos="3900, 3450, 5300" summonRot="0,0,135" />
+											<!--원거리, 6시 -->
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="8804" summonPos="5250, 4800, 5300" summonRot="0,0,75" />
+											<!--메이스, 2시-->
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="8805" summonPos="5175, 4425, 5300" summonRot="0,0,75" />
+											<!--메이스, 2시-->
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="8806" summonPos="5250, 4050, 5300" summonRot="0,0,75" />
+											<!--메이스, 2시-->
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="8807" summonPos="4800, 5250, 5300" summonRot="0,0,175" />
+											<!--메이스, 10시-->
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="8808" summonPos="4425, 5175, 5300" summonRot="0,0,175" />
+											<!--메이스, 10시-->
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="8809" summonPos="4050, 5250, 5300" summonRot="0,0,175" />
+											<!--메이스, 10시-->
+											<node name="standby" limit="5000" faceTarget="0" />
+											<!-- 졸몹 전부 공격 상태가 될때까지 이단계 충분히 머물기 -->
+										</node>
+										<node name="conditions">
+											<condition name="extraData" key="MonsterNumber" value="1" op="greaterEqual">
+												<node name="select" prob="45,45,10">
+													<!--졸몹 한마리라도 남아있으면 이 부분 실행, 이 MonsterNumber 변수는 보스 전투판 주변에 점프 뛰어올때 한마리씩 1씩 더하고 죽으면 1씩 빼기 때문에 0이 된다는 것은 모든 졸몹 죽였다는 뜻임-->
+													<node name="standby" limit="1400" faceTarget="1" cooltime="40000" isKeepBattle="true">
+														<node name="skill" facePos="3500, 3500, 5600" idx="21" />
+														<!--크리스탈 냉기 폭발-->
+														<node name="standby" limit="1200" faceTarget="0" />
+														<node name="target" type="near" from="10" to="1300" />
+													</node>
+													<node name="standby" limit="1300" faceTarget="1" cooltime="40000" isKeepBattle="true">
+														<node name="skill" facePos="3500, 3500, 5600" idx="22" />
+														<!--크리스탈 레이저-->
+														<node name="standby" limit="1300" faceTarget="0" />
+														<node name="target" type="near" from="10" to="1300" />
+													</node>
+													<node name="standby" limit="1200" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="99999,1">
+													<!--모든 졸몹 다 죽이면 이부분 실행-->
+													<!-- 보스 전투판에 졸몹 다시 등장 시키고, 보스는 전투판으로 내려옴-->
+													<node name="standby" limit="200" faceTarget="1" cooltime="9999999">
+														<aiPreset name="BossBattleSummon" />
+														<!-- 보스 전투판 주변 타락한 신전의 기사 몬스터를 다량 소환함-->
+													</node>
+													<node name="standby" limit="5000" faceTarget="1" isKeepBattle="true">
+														<!--이 시간이 짧으면 졸병 소환 도중이고 아직 전투 상황이 되지 않았는데, 아래 신호를 보내도 받지 못하는 상황이 생길 수 있어 이 시간 꼭 길게 해야함-->
+														<node name="SetSlaveValue" key="EnterBattleRight" value="1" />
+														<!--소환몹 2시 전투판으로 점프 뛰도록 하기-->
+														<node name="SetSlaveValue" key="EnterBattleLeft" value="1" />
+														<!--소환몹 10시 전투판으로 점프 뛰도록 하기-->
+														<node name="SetSlaveValue" key="EnterBattleCenter" value="1" />
+														<!--소환몹 6시 전투판으로 점프 뛰도록 하기-->
+														<node name="standby" limit="1000" faceTarget="1" />
+														<!--졸몹 점프 뛰어 올때 보스가 같은 타이밍에 뛰어 내려오도록 시간 조절 하는 부분-->
+														<node name="SetValue" key="UpperMode" value="0" />
+														<!--전투판으로 내려오라고 신호 보냄-->
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<!-- 던전 입구에 들어서면 최초 이 부분 부터 실행함, 즉 졸구간이 선언된 부분-->
+									<!--졸구간 정의하는 부분, 이 던전 초음 졸구간 스테이지 진행하는 부분, 졸구간 몬스터 소환하고 몬스터 다 죽으면 트리거 신호 보내서 닫힌 문을 열어 다음 스테이지 진행하도록 하기-->
+									<node name="standby" limit="200" faceTarget="1">
+										<aiPreset name="StairsBattle" />
+										<!--###졸구간 다 끝난 상태에서 플레이어가 보스 전투판 위로 올라가지 않으면 이부분 계속 반복  실행하고 있을 것임-->
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99999,399,499,0">
+								<!--1페이즈에서 최초 등장하는 졸몹 전부 처리하고  보스가 전투판으로 내려와 본격 전투를 할때의 행동 패턴을 정의하는 부분-->
+								<node name="skill" facePos="3750, 3750, 5350" cooltime="9999999" isKeepBattle="true" idx="18">
+									<!--공격 준비 하면서 점프 도약 -->
+									<node name="jump" pos="3750, 3750, 5350" speed="1500" heightMultiplier="0.4" />
+									<!--1셋트 전투판 단상위로 점프 뛰기-->
+									<node name="skill" faceTarget="0" idx="19" />
+									<!--착지 하면서 바닥 쾅 공격 -->
+									<node name="SetValue" key="Position" value="6" />
+									<!--자신이 현재 6시 전투판에 있음을 알림-->
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="skill" faceTarget="1" idx="11" />
+									<!--검기투척 약, 착지하자마자 다른 곳으로 점프 뛰면 어색해서 착지하면 한번 공격 하도록 함 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="21000">
+									<aiPreset name="JumpMoveAndSummonMob" />
+									<!--점프 이동 하면서 방금 떠나는 자리에 건너편 대기하고 있는 몬스터 점프 뛰어 오도록 하기-->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="2000">
+									<aiPreset name="BossBattleSummon" />
+									<!--소환몹 건너편 대기 지점에 다시 소환하기-->
+								</node>
+								<aiPreset name="Battle01" />
+								<!--주 공격 패턴-->
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="38">
+				<node name="select" prob="99999,99999,499,0">
+					<!--#2페이즈, 분신 소환 패턴, 종종 다시 단상위로 올라가 크리스탈 공격을 함-->
+					<!--  타겟팅 다시 하는 부분-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="9000">
+						<aiPreset name="TargetSet" />
+						<!-- 보스가 어떤 곳에 있느냐에 따라 타겟팅이 달라지기 때문에 여기에 위치 조건 타겟팅 기능이 들어가 있음 -->
+					</node>
+					<node name="skill" facePos="4650, 4650, 5500" cooltime="9999999" isKeepBattle="true" idx="16">
+						<!-- 점프 도약 -->
+						<node name="jump" pos="4650, 4650, 5500" speed="1500" heightMultiplier="0.4" />
+						<!--1셋트 전투판 단상위로 점프 뛰기-->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--착지 -->
+						<node name="SetValue" key="Position" value="0" />
+						<!--0 은 단상 위에 있다는 뜻임-->
+						<node name="standby" limit="5000" faceTarget="1" />
+						<!--시간을 약간 길게 하여 페이즈 시작에 따른 한텀 쉬는 느낌을 부여함-->
+					</node>
+					<node name="standby" limit="100" faceTarget="0" cooltime="22000" isKeepBattle="true">
+						<!--보스의 소환 동작에 맞추어 분신이 등장하도록 delayTick 시간을 맞춤-->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="401" summonPosOffset="0, 0, 0" delayTick="750" summonRot="0,0,-50" />
+						<!--6시에 분신 소환-->
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="402" summonPosOffset="0, 0, 0" delayTick="750" summonRot="0,0,-50" />
+						<!--2시에 분신 소환-->
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="403" summonPosOffset="0, 0, 0" delayTick="750" summonRot="0,0,-50" />
+						<!--10시에 분신 소환-->
+						<node name="skill" facePos="3500, 3500, 5600" idx="23" />
+						<!--짧은 소환 동작,  항상 바라보는 방향은 6시-->
+						<node name="standby" limit="2000" faceTarget="0" />
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="SnowKingSummonDeath" value="1" op="greaterEqual">
+							<!--분신 소환몹이 죽을때마다 SnowKingSummonDeath 변수 1씩 더해지는데, SnowKingSummonDeath 변수가 0보다 크면 자체 대미지 받는 디버프 적용하고 SnowKingSummonDeath 변수 -1 적용함  -->
+							<aiPreset name="OneselfDamage" />
+						</condition>
+						<condition name="extraData" key="Position" value="0">
+							<node name="select" prob="30,44,25,1">
+								<!--다시 단상위로 올라가 크리스탈 공격 행위를 함-->
+								<node name="skill" facePos="3500, 3500, 5600" cooltime="40000" idx="21">
+									<!--크리스탈 냉기 폭발-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="3500, 3500, 5600" cooltime="40000" idx="22">
+									<!--크리스탈 레이저-->
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1">
+									<aiPreset name="JumpMove" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="399,0">
+								<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+									<!--건너편 전투판으로 점프 이동하거나 혹은 단상위로 올라가기-->
+									<node name="conditions">
+										<condition name="extraData" key="CountJumpMove" value="4" op="greaterEqual">
+											<!--건너편 전투판 점프이동 횟수가 3~4 정도 되었으면 단상위로 올라가기-->
+											<node name="skill" facePos="4650, 4650, 5500" isKeepBattle="true" idx="16">
+												<!--공격 준비 하면서 점프 도약 -->
+												<node name="jump" pos="4650, 4650, 5500" speed="1500" heightMultiplier="0.4" />
+												<!--1셋트 전투판 단상위로 점프 뛰기-->
+												<node name="skill" faceTarget="0" idx="17" />
+												<!--착지 하면서 바닥 쾅 공격 -->
+												<node name="SetValue" key="Position" value="0" />
+												<!--0 은 단상 위에 있다는 뜻임-->
+												<node name="SetValue" key="CountJumpMove" value="0" />
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="50,50">
+												<!--점프 이동할때마다 1 혹은 2를 더함-->
+												<node name="SetValue" key="CountJumpMove" value="1" isModify="1">
+													<aiPreset name="JumpMove" />
+												</node>
+												<node name="SetValue" key="CountJumpMove" value="2" isModify="1">
+													<aiPreset name="JumpMove" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+								<aiPreset name="Battle02" />
+								<!--주 공격 패턴-->
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="18">
+				<node name="select" prob="9999,99999,499,0">
+					<!--#3페이즈, 신전의 기사와 타락한 기사 설콩이까지 같이 제거 공격 패턴-->
+					<!--  타겟팅 다시 하는 부분-->
+					<node name="target" type="near" from="50" to="1100" cooltime="6000" />
+					<!-- 3페이즈 시작을 알리기 위해 일단 단상 위로 뛰어 오르기 -->
+					<node name="standby" limit="100" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+						<!-- 점프 도약 -->
+						<node name="SetSlaveValue" key="SnowKingSummonDeath" value="1" />
+						<!--이 변수에 1을 단상 위로 올라가면서, 분신 몬스터 제거하기, 절대 죽이면서 제거하는 것이 아니고 스스로 사라지게 하여 제거하기, 전투판 주변에 배치된 타락한 기사는 제거하면 안됨-->
+						<node name="SetValueRangeTarget" key="Boss3Phase" value="1" radius="3500" height="3000" />
+						<!--우호적NPC 신전의 기사한테 3페이즈를 위해 자리 잡으라고 신호 보내기, 꼭 점프 이동 전에 보내야 먹힘, 점프이동하면 꼭대기에서 실행하기 때문에 아래쪽 대상 신호 못보냄 -->
+						<node name="skill" facePos="4650, 4650, 5500" idx="16" />
+						<!-- 단상 위로 점프 도약 -->
+						<node name="jump" pos="4650, 4650, 5500" speed="1500" heightMultiplier="0.4" />
+						<!--단상 위로  점프 뛰기-->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--착지 -->
+						<node name="SetValue" key="Position" value="0" />
+						<!--0 은 단상 위에 있다는 뜻임-->
+						<node name="standby" limit="5000" faceTarget="1" />
+						<!--시간을 약간 길게 하여 페이즈 시작에 따른 한텀 쉬는 느낌을 부여함-->
+					</node>
+					<node name="standby" limit="500" faceTarget="0" cooltime="25000">
+						<node name="select" prob="47,52,1">
+							<!-- 2시 혹은 10 전투판으로 점프 뛰면서 분신은 6시 전투판으로 가게 하기 -->
+							<node name="standby" limit="200" faceTarget="0" cooltime="39000" isKeepBattle="true">
+								<node name="SetSlaveValue" key="BattleMode" value="0" />
+								<!--이미 2시 전투판에서 싸우고 있다면, 이 변수를 0으로 만들어 전투 중지 상태로 만들고 10시 전투판으로 오도록 함-->
+								<node name="SetSlaveValue" key="EnterBattleDirection" value="1" />
+								<!--보스 전투판 중앙에 배치되어 있는 소환몹에게 참전하라고 신호 보내는 변수-->
+								<node name="SetSlaveValue" key="EnterBattleRightOrLeft" value="1" />
+								<!--오른족 즉 2시 전투판으로 참전하라고 신호 보내는 변수, 1: 2시 전투판으로 뛰기   2: 10시 전투판으로 뛰기-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="401" summonPosOffset="0, 0, 0" delayTick="0" summonRot="0,0,-50" />
+								<!--6시로 점프뛰는  분신 소환-->
+								<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+								<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+								<node name="standby" limit="500" faceTarget="1" />
+								<!--보스와 분신이 거의 동시에 점프 뛰는 모습을 보이기 위에 도약 동작 없이 이것으로 시간 조절함-->
+								<node name="jump" pos="5625, 4425, 5300" speed="1500" heightMultiplier="0.4" />
+								<!--2시 전투판으로 뛰기-->
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="2" />
+								<!--자신이 2시 전투판에 있다는 것을 알림-->
+								<node name="SetValueRangeTarget" key="Boss3Phase" value="1" radius="3500" height="3000" />
+								<!--우호적NPC 신전의 기사한테 3페이즈를 위해 자리 잡으라고 신호 보내기, 혹시 몰라서 여러번 신호 보내기 함 -->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+							<node name="standby" limit="200" faceTarget="0" cooltime="39000" isKeepBattle="true">
+								<node name="SetSlaveValue" key="BattleMode" value="0" />
+								<!--이미 2시 전투판에서 싸우고 있다면, 이 변수를 0으로 만들어 전투 중지 상태로 만들고 10시 전투판으로 오도록 함-->
+								<node name="SetSlaveValue" key="EnterBattleDirection" value="1" />
+								<!--보스 전투판 중앙에 배치되어 있는 소환몹에게 참전하라고 신호 보내는 변수-->
+								<node name="SetSlaveValue" key="EnterBattleRightOrLeft" value="2" />
+								<!--왼쪽 즉 10시 전투판으로 참전하라고 신호 보내는 변수, 1: 2시 전투판으로 뛰기   2: 10시 전투판으로 뛰기-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="401" summonPosOffset="0, 0, 0" delayTick="0" summonRot="0,0,-50" />
+								<!--6시로 점프뛰는  분신 소환-->
+								<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+								<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+								<node name="standby" limit="500" faceTarget="1" />
+								<!--보스와 분신이 거의 동시에 점프 뛰는 모습을 보이기 위에 도약 동작 없이 이것으로 시간 조절함-->
+								<node name="jump" pos="4425, 5625, 5300" speed="1500" heightMultiplier="0.4" />
+								<!--10시 전투판으로 뛰기-->
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="10" />
+								<!--자신이 10시 전투판에 있다는 것을 알림-->
+								<node name="SetValueRangeTarget" key="Boss3Phase" value="1" radius="3500" height="3000" />
+								<!--우호적NPC 신전의 기사한테 3페이즈를 위해 자리 잡으라고 신호 보내기, 혹시 몰라서 여러번 신호 보내기 함 -->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+							<node name="standby" limit="500" faceTarget="0" />
+							<!-- 혹시 위 두개 다 쿨타임 걸렸을 경우를 대비해 -->
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="SnowKingSummonDeath" value="1" op="greaterEqual">
+							<!--분신 소환몹이 죽을때마다 SnowKingSummonDeath 변수 1씩 더해지는데, SnowKingSummonDeath 변수가 0보다 크면 자체 대미지 받는 디버프 적용하고 SnowKingSummonDeath 변수 -1 적용함  -->
+							<aiPreset name="OneselfDamage" />
+						</condition>
+						<condition name="true">
+							<node name="select" prob="499,0">
+								<node name="standby" limit="100" faceTarget="1" cooltime="2000">
+									<aiPreset name="BossBattleSummon" />
+									<!--소환몹 건너편 대기 지점에 다시 소환하기-->
+								</node>
+								<aiPreset name="Battle03" />
+								<!--주 공격 패턴-->
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,99999,399,0">
+					<!--#4페이즈, 마지막-->
+					<!-- 타겟팅 renew -->
+					<node name="target" type="rand" from="10" to="1200" cooltime="9000" />
+					<node name="standby" limit="100" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+						<!-- 점프 도약 -->
+						<node name="SetSlaveValue" key="SnowKingSummonDeath" value="1" />
+						<!--이 변수에 1을 단상 위로 올라가면서, 분신 몬스터 제거하기, 절대 죽이면서 제거하는 것이 아니고 스스로 사라지게 하여 제거하기, 전투판 주변에 배치된 타락한 기사는 제거하면 안됨-->
+						<node name="SetValueRangeTarget" key="Boss3Phase" value="0" radius="3500" height="3000" />
+						<!--우호적NPC 신전의 기사한테 3페이즈를 종료 알림 -->
+						<node name="SetValueRangeTarget" key="Boss4Phase" value="1" radius="3500" height="3000" />
+						<!--우호적NPC 신전의 기사한테 4페이즈를 시작 알림 -->
+						<node name="skill" facePos="4650, 4650, 5500" idx="16" />
+						<!-- 단상 위로 점프 도약 -->
+						<node name="jump" pos="4650, 4650, 5500" speed="1500" heightMultiplier="0.4" />
+						<!--단상 위로  점프 뛰기-->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--착지 -->
+						<node name="SetValue" key="Position" value="0" />
+						<!--0 은 단상 위에 있다는 뜻임-->
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="SetSlaveValue" key="SummonDeath" value="1" />
+						<!--이 변수에 1을 단상 위로 올라가면서, 일반 소환몹 제거하기, 즉 대기단에 있는 모든 몬스터 제거하기, 암흑 속성 버프 동작에 맞추어 진행-->
+						<node name="skill" facePos="4132, 6300, 5300" idx="20" />
+						<!--암흑 속성 버프 부여, 바라보는 방향은 10시쪽-->
+						<node name="standby" limit="3000" faceTarget="1" />
+						<!--시간을 약간 길게 하여 페이즈 시작에 따른 한텀 쉬는 느낌을 부여함-->
+					</node>
+					<node name="standby" limit="100" faceTarget="0" cooltime="40000">
+						<node name="select" prob="90,10">
+							<node name="standby" limit="100" faceTarget="0" cooltime="140000" isKeepBattle="true">
+								<node name="skill" facePos="4700, 6320, 5300" idx="16" />
+								<node name="jump" pos="4700, 6320, 5300" speed="1500" heightMultiplier="0.4" />
+								<!--10시 전투판으로 약간 위쪽 구석 뛰기-->
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="6" />
+								<!--자신이 6시 전투판에 있다는 것을 알림-->
+								<node name="SetValue" key="ShieldMode" value="1" />
+								<!--방패 방어 행위 시작을 알리는 변수 1 부여-->
+								<node name="SetValue" key="ShieldModeContinue" value="8" />
+								<!--방패 방어 행위 얼만큼 오래할지 정하기, 8 부여-->
+								<node name="SetValue" key="SnowQueenAppear" value="1" isModify="1" />
+								<!--점프 이동할 때마다 1씩 더하는데 3 이상이 되면 우호적 NPC에르다 등장함-->
+								<node name="skill" facePos="4425, 5625, 5300" idx="6" />
+								<!--방패 막기 시작, 방향은 10시 전투판 중앙-->
+							</node>
+							<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+								<node name="skill" facePos="4132, 6300, 5300" idx="16" />
+								<node name="jump" pos="4132, 6300, 5300" speed="1500" heightMultiplier="0.4" />
+								<!--10시 전투판으로 왼쪽 구석 뛰기-->
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="6" />
+								<!--자신이 6시 전투판에 있다는 것을 알림-->
+								<node name="SetValue" key="ShieldMode" value="1" />
+								<!--방패 방어 행위 시작을 알리는 변수 1 부여-->
+								<node name="SetValue" key="ShieldModeContinue" value="8" />
+								<!--방패 방어 행위 얼만큼 오래할지 정하기, 8 부여-->
+								<node name="SetValue" key="SnowQueenAppear" value="1" isModify="1" />
+								<!--점프 이동할 때마다 1씩 더하는데 3 이상이 되면 우호적 NPC에르다 등장함-->
+								<node name="skill" facePos="4425, 5625, 5300" idx="6" />
+								<!--방패 막기 시작, 방향은 10시 전투판 중앙-->
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="SnowQueenAppear" value="3">
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="9999" master="None" summonPos="3630, 6495, 5300" summonRot="0,0,35">
+								<!-- 우호적 NPC 에르다 호출 -->
+								<node name="SetValue" key="SnowQueenAppear" value="10">
+									<!-- 이 변수 3 이상 즉 10 만들어 버려 다시는 3이 되지 않도록 함, 이거 없으면 엄청나게 많이 소환 행위하는 대박 버그 생길것임-->
+									<node name="skill" facePos="4425, 5625, 5250" idx="7">
+										<!--계속 방패 방어하고 있기, 방향은 10시 전투판 중앙 -->
+										<node name="skill" faceTarget="1" idx="7" />
+										<!--계속 방패 방어하고 있기 -->
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="ShieldMode" value="1">
+							<node name="conditions">
+								<condition name="extraData" key="ShieldModeContinue" value="1" op="greaterEqual">
+									<node name="skill" faceTarget="1" idx="7">
+										<!--계속 방패 방어하고 있기 -->
+										<node name="target" type="rand" from="10" to="1200">
+											<node name="select" prob="17,17,17,49">
+												<!--방배 빛 패턴 때 특정 플레이어한테 타겟팅 고정되어 어뷰징 되는 상황을 막기 위해 매 턴마다 랜덤 타겟 변경하도록 함 -->
+												<node name="SetValue" key="ShieldModeContinue" value="-1" isModify="1" />
+												<node name="SetValue" cooltime="15000" key="ShieldModeContinue" value="-2" isModify="1" />
+												<node name="SetValue" cooltime="15000" key="ShieldModeContinue" value="-3" isModify="1" />
+												<node name="SetValueRangeTarget" cooltime="32000" key="ShieldStopStun" value="1" radius="2000" height="3500" />
+												<!-- 에르다에게 자신을 공격해 방패 방어 행위 멈추게 하기 위해 이 변수 신호를 보냄-->
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="skill" faceTarget="1" idx="8">
+										<!--방어 그만하고 돌진 후  -->
+										<node name="skill" faceTarget="1" idx="9">
+											<!--휘두르기 공격 후 마무리 -->
+											<node name="standby" limit="600" faceTarget="1">
+												<node name="SetValue" key="ShieldMode" value="0" />
+											</node>
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="11">
+							<node name="select" prob="40,59,1">
+								<!--1100 사정거리 안에 있으면-->
+								<node name="skill" idx="1">
+									<!-- 3콤보 공격 -->
+									<node name="skill" faceTarget="1" idx="2">
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="skill" faceTarget="1" idx="3">
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="3">
+														<!-- 사정거리 600 이내에 있으면 -->
+														<node name="skill" faceTarget="1" idx="4">
+															<node name="standby" limit="1700" faceTarget="1" />
+														</node>
+													</condition>
+													<condition name="true">
+														<!-- 600 이상  멀리 있으면 -->
+														<node name="skill" faceTarget="1" idx="5">
+															<node name="standby" limit="1700" faceTarget="1" />
+														</node>
+													</condition>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="9000" idx="24">
+									<!--돌진 공격 -->
+									<node name="standby" limit="800" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1100" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetValueRangeTarget" key="SnowKingDead" value="1" radius="3000" height="1200" />
+		<!--신전의 기사단 우호적 NPC 공격 행위 멈추게 하고 에르다 대사 띄우기 위한 신호 보내기-->
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="StairsBattle">
+			<!--졸구간 정의하는 부분, 이 던전 초음 졸구간 스테이지 진행하는 부분, 졸구간 몬스터 소환하고 몬스터 다 죽으면 트리거 신호 보내서 닫힌 문을 열어 다음 스테이지 진행하도록 하기-->
+			<node name="conditions">
+				<condition name="extraData" key="StageCheck" value="1">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="SetValue" key="MonsterNumber" value="0" />
+							<!-- 졸병 몹 마리추 체크하는 변수 초기화 -->
+							<!--중앙-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="101" summonPos="-1200, -900, 1700" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="102" summonPos="-900, -1200, 1700" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="-600, -1500, 1700" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-1500, -600, 1700" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="105" summonPos="-1350, -1050, 1700" summonRot="0,0,-50" />
+							<!--단검, 정화 능력 없는 정령 소환-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="106" summonPos="-1050, -1350, 1700" summonRot="0,0,-50" />
+							<!--단검-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="107" summonPos="-1650, -900, 1700" summonRot="0,0,-50" />
+							<!--단검-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="108" summonPos="-900, -1650, 1700" summonRot="0,0,-50" />
+							<!--단검-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="109" summonPos="-750, -1950, 1700" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="110" summonPos="-1950, -750, 1700" summonRot="0,0,-50" />
+							<!--마법-->
+							<!--오른쪽-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="111" summonPos="750, -1575, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="112" summonPos="750, -1875, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="113" summonPos="750, -2175, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="114" summonPos="-2250, 1350, 1850" summonRot="0,0,-50" />
+							<!--창, 정화 능력 있는 정령 소환-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="115" summonPos="-1950, 1350, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="116" summonPos="-1950, 1050, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<!--왼쪽-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="117" summonPos="-1575, 750, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="118" summonPos="-1875, 750, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="119" summonPos="-2175, 750, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="120" summonPos="1350, -2250, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="121" summonPos="1350, -1950, 1850" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="122" summonPos="1050, -1950, 1850" summonRot="0,0,-50" />
+							<!--창, 정화 능력 있는 정령 소환-->
+							<!--석상기사 건너편 배치-->
+							<!--1층 오른쪽, 1층은 맨 아래쪽이 안개 이펙트 때문에 안보이기 때문에 배치 안함-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="1101" summonPos="3450, -1650, 1400" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="1102" summonPos="3450, -1800, 1400" summonRot="0,0,-90" />
+							<!--보통크기, 45% 정화-->
+							<node name="summon" npcId="15" npcCount="1" npcCountMax="1" group="1103" summonPos="3450, -2100, 1400" summonRot="0,0,-90" />
+							<!--보통크기, 100%-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="1104" summonPos="3450, -2250, 1400" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="1105" summonPos="3450, -1650, 1850" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="1106" summonPos="3450, -1800, 1850" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="16" npcCount="1" npcCountMax="1" group="1107" summonPos="3450, -2100, 1850" summonRot="0,0,-90" />
+							<!--보통크기, 50%-->
+							<node name="summon" npcId="17" npcCount="1" npcCountMax="1" group="1108" summonPos="3750, -1650, 1850" summonRot="0,0,-90" />
+							<!--거대크기, 100%-->
+							<node name="summon" npcId="18" npcCount="1" npcCountMax="1" group="1109" summonPos="3750, -1950, 1850" summonRot="0,0,-90" />
+							<!--거대크기, 35-->
+							<!--1층 왼쪽, 1층은 맨 아래쪽이 안개 이펙트 때문에 안보이기 때문에 배치 안함-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="1201" summonPos="-1800, 3450, 1400" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="20" npcCount="1" npcCountMax="1" group="1202" summonPos="-1950, 3450, 1400" summonRot="0,0,-10" />
+							<!--보통크기, 100%-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="1203" summonPos="-2250, 3450, 1400" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="21" npcCount="1" npcCountMax="1" group="1204" summonPos="-1650, 3450, 1850" summonRot="0,0,-10" />
+							<!--보통크기, 50%-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="1205" summonPos="-1800, 3450, 1850" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="22" npcCount="1" npcCountMax="1" group="1206" summonPos="-2100, 3450, 1850" summonRot="0,0,-10" />
+							<!--보통크기, 45% 정화-->
+							<node name="summon" npcId="23" npcCount="1" npcCountMax="1" group="1207" summonPos="-1650, 3750, 1850 " summonRot="0,0,-10" />
+							<!--거대크기, 35%-->
+							<node name="summon" npcId="24" npcCount="1" npcCountMax="1" group="1208" summonPos="-1950, 3750, 1850 " summonRot="0,0,-10" />
+							<!--거대크기, 100%-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<!-- 졸몹 전부 공격 상태가 될때까지 이단계 충분히 머물기 -->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="MonsterNumber" value="1" op="greaterEqual">
+								<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+								<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+									<node name="SetValue" key="StageCheck" value="1" isModify="1" />
+									<!--다음 스테이지 넘어가기 때문에 1을 더함-->
+									<node name="TriggerSetUserValue" triggerID="1122330" key="StageClear01" value="1" />
+									<!--다음 스테이지 가기 위해 막힌 문을 트리거 신호 보내서 열기-->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="StageCheck" value="2">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="SetValue" key="MonsterNumber" value="0" />
+							<!-- 졸병 몹 마리추 체크하는 변수 초기화 -->
+							<!--중앙-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" summonPos="-300, 0, 2300" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="202" summonPos="0, -300, 2300" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="203" summonPos="150, -600, 2300" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="204" summonPos="-600, 150, 2300" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="205" summonPos="450, -1050, 2300" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="206" summonPos="-1050, 450, 2300" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="207" summonPos="-900, 0, 2300" summonRot="0,0,-50" />
+							<!--단검-->
+							<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="208" summonPos="-600, -150, 2300" summonRot="0,0,-50" />
+							<!--단검, 정화능력 없는 정령 소환-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="209" summonPos="-150, -600, 2300" summonRot="0,0,-50" />
+							<!--단검-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="210" summonPos="0, -900, 2300" summonRot="0,0,-50" />
+							<!--단검-->
+							<!--오른쪽-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="211" summonPos="2250, -900, 2450" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="25" npcCount="1" npcCountMax="1" group="212" summonPos="2400, -1200, 2450" summonRot="0,0,-50" />
+							<!--창, 정화능력 없는 정령 소환-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="213" summonPos="2400, -1500, 2450" summonRot="0,0,-50" />
+							<!--창-->
+							<!--왼쪽-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="214" summonPos="-900, 2250, 2450" summonRot="0,0,-50" />
+							<!--창, 정화능력 없는 정령 소환-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="215" summonPos="-1200, 2400, 2450" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="216" summonPos="-1500, 2400, 2450" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<node name="SetSlaveValue" key="FloorNumber" value="2" />
+							<!--전에 1층에서 소환한 건너편 석상기사 2층으로 점프뛰게 하기-->
+							<node name="standby" limit="2000" faceTarget="1" />
+							<!--석상기사 건너편 배치-->
+							<!--2층 오른쪽-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="2101" summonPos="4500, -750, 1550" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="15" npcCount="1" npcCountMax="1" group="2102" summonPos="4500, -900, 1550" summonRot="0,0,-90" />
+							<!--보통크기, 100%-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="2103" summonPos="4500, -900, 2000" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="2104" summonPos="4500, -750, 2000" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="16" npcCount="1" npcCountMax="1" group="2105" summonPos="4500, -1050, 2000" summonRot="0,0,-90" />
+							<!--보통크기, 50%-->
+							<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="2106" summonPos="4500, -750, 2450" summonRot="0,0,-90" />
+							<!--보통크기, 45% 정화-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="2107" summonPos="4500, -1050, 2450" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="17" npcCount="1" npcCountMax="1" group="2108" summonPos="4800, -750, 2450" summonRot="0,0,-90" />
+							<!--거대크기, 100%-->
+							<node name="summon" npcId="18" npcCount="1" npcCountMax="1" group="2109" summonPos="4800, -1350, 2450" summonRot="0,0,-90" />
+							<!--거대크기, 35%-->
+							<!--2층 왼쪽-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="2201" summonPos="-1350, 4500, 1550" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="2202" summonPos="-1200, 4500, 1550" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="20" npcCount="1" npcCountMax="1" group="2203" summonPos="-750, 4500, 2000" summonRot="0,0,-10" />
+							<!--보통크기, 100%-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="2204" summonPos="-1050, 4500, 2000" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="2205" summonPos="-1350, 4500, 2000" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="2206" summonPos="-1350, 4500, 2450" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="22" npcCount="1" npcCountMax="1" group="2207" summonPos="-1050, 4500, 2450" summonRot="0,0,-10" />
+							<!--보통크기, 45% 정화-->
+							<node name="summon" npcId="21" npcCount="1" npcCountMax="1" group="2208" summonPos="-900, 4500, 2450" summonRot="0,0,-10" />
+							<!--보통크기, 50%-->
+							<node name="summon" npcId="24" npcCount="1" npcCountMax="1" group="2209" summonPos="-750, 4800, 2450" summonRot="0,0,-10" />
+							<!--거대크기, 100%-->
+							<node name="summon" npcId="23" npcCount="1" npcCountMax="1" group="2210" summonPos="-1050, 4800, 2450" summonRot="0,0,-10" />
+							<!--거대크기, 35%-->
+							<node name="summon" npcId="26" npcCount="1" npcCountMax="1" group="2211" summonPos="-1350, 4800, 2450" summonRot="0,0,-10" />
+							<!--거대크기-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<!-- 졸몹 전부 공격 상태가 될때까지 이단계 충분히 머물기 -->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="MonsterNumber" value="1" op="greaterEqual">
+								<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+								<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+									<node name="SetValue" key="StageCheck" value="1" isModify="1" />
+									<!--다음 스테이지 넘어가기 때문에 1을 더함-->
+									<node name="TriggerSetUserValue" triggerID="1122330" key="StageClear02" value="1" />
+									<!--다음 스테이지 가기 위해 막힌 문을 트리거 신호 보내서 열기-->
+									<!--우호적NPC 신전의 기사단에게 3층 전투판으로 이동하라고 신호 보냄 , 보스는 보스 전투판 저 멀리서 신호 보내기 때문에 신호 보내는 영역 무지 넓게 설정해야 함-->
+									<node name="SetValueRangeTarget" key="NextStageGo" value="3" radius="8500" height="9500" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="StageCheck" value="3">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="SetValue" key="MonsterNumber" value="0" />
+							<!-- 졸병 몹 마리추 체크하는 변수 초기화 -->
+							<!--중앙-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="301" summonPos="600, 900, 2900" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="302" summonPos="900, 600, 2900" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="303" summonPos="1050, 300, 2900" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="304" summonPos="300, 1050, 2900" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="305" summonPos="0, 900, 2900" summonRot="0,0,-50" />
+							<!--단검-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="306" summonPos="300, 750, 2900" summonRot="0,0,-50" />
+							<!--단검-->
+							<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="307" summonPos="750, 300, 2900" summonRot="0,0,-50" />
+							<!--단검, 정화 능력 없는 정령 소환-->
+							<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="308" summonPos="900, 0, 2900" summonRot="0,0,-50" />
+							<!--단검-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="309" summonPos="0, 1500, 2900" summonRot="0,0,-50" />
+							<!--거대한 타락한 기사-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="310" summonPos="1500, 0, 2900" summonRot="0,0,-50" />
+							<!--거대한 타락한 기사-->
+							<!--오른쪽-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="311" summonPos="3150, 0, 3050" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="312" summonPos="3300, -300, 3050" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="25" npcCount="1" npcCountMax="1" group="313" summonPos="3300, -600, 3050" summonRot="0,0,-50" />
+							<!--창 정화 능력 없는 정령 소환-->
+							<!--왼쪽-->
+							<node name="summon" npcId="28" npcCount="1" npcCountMax="1" group="314" summonPos="0, 3150, 3050" summonRot="0,0,-50" />
+							<!--창 정화 능력 없는 정령 소환-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="315" summonPos="-300, 3300, 3050" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="316" summonPos="-600, 3300, 3050" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<node name="SetSlaveValue" key="FloorNumber" value="3" />
+							<!--전에 2층에서 소환한 건너편 석상기사 3층으로 점프뛰게 하기-->
+							<node name="standby" limit="2000" faceTarget="1" />
+							<!--석상기사 건너편 배치-->
+							<!--3층 오른쪽-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="3101" summonPos="5550, 150, 2150" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="3102" summonPos="5550, -150, 2150" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="3103" summonPos="5550, -300, 2150" summonRot="0,0,-90" />
+							<!--보통크기, 45% 정화-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="3104" summonPos="5550, 0, 2600" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="16" npcCount="1" npcCountMax="1" group="3105" summonPos="5550, -150, 2600" summonRot="0,0,-90" />
+							<!--보통크기, 50%-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="3106" summonPos="5550, 150, 3050" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="15" npcCount="1" npcCountMax="1" group="3107" summonPos="5550, -150, 3050" summonRot="0,0,-90" />
+							<!--보통크기, 100%-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="3107" summonPos="5550, -300, 3050" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="17" npcCount="1" npcCountMax="1" group="3108" summonPos="5850, 150, 3050" summonRot="0,0,-90" />
+							<!--거대크기, 100%-->
+							<node name="summon" npcId="18" npcCount="1" npcCountMax="1" group="3109" summonPos="5850, -150, 3050" summonRot="0,0,-90" />
+							<!--거대크기, 35%-->
+							<!--3층 왼쪽-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="3201" summonPos="0, 5550, 2150" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="20" npcCount="1" npcCountMax="1" group="3202" summonPos="-300, 5550, 2150" summonRot="0,0,-10" />
+							<!--거대크기, 100%-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="3203" summonPos="-300, 5550, 2600" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="3204" summonPos="-150, 5550, 2600" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="3205" summonPos="0, 5550, 2600" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="21" npcCount="1" npcCountMax="1" group="3206" summonPos="-450, 5550, 3050" summonRot="0,0,-10" />
+							<!--보통크기, 50%-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="3207" summonPos="-150, 5550, 3050" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="22" npcCount="1" npcCountMax="1" group="3208" summonPos="150, 5550, 3050" summonRot="0,0,-10" />
+							<!--보통크기, 45% 정화-->
+							<node name="summon" npcId="26" npcCount="1" npcCountMax="1" group="3209" summonPos="150, 5850, 3050" summonRot="0,0,-10" />
+							<!--거대크기 -->
+							<node name="summon" npcId="26" npcCount="1" npcCountMax="1" group="3210" summonPos="-150, 5850, 3050" summonRot="0,0,-10" />
+							<!--거대크기 -->
+							<node name="summon" npcId="24" npcCount="1" npcCountMax="1" group="3211" summonPos="-450, 5850, 3050" summonRot="0,0,-10" />
+							<!--거대크기, 100%-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<!-- 졸몹 전부 공격 상태가 될때까지 이단계 충분히 머물기 -->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="MonsterNumber" value="1" op="greaterEqual">
+								<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+								<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+									<node name="SetValue" key="StageCheck" value="1" isModify="1" />
+									<!--다음 스테이지 넘어가기 때문에 1을 더함-->
+									<node name="TriggerSetUserValue" triggerID="1122330" key="StageClear03" value="1" />
+									<!--다음 스테이지 가기 위해 막힌 문을 트리거 신호 보내서 열기-->
+									<!--우호적NPC 신전의 기사단에게 4층 전투판으로 이동하라고 신호 보냄 , 보스는 보스 전투판 저 멀리서 신호 보내기 때문에 신호 보내는 영역 무지 넓게 설정해야 함-->
+									<node name="SetValueRangeTarget" key="NextStageGo" value="4" radius="8500" height="9500" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="StageCheck" value="4">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="SetValue" key="MonsterNumber" value="0" />
+							<!-- 졸병 몹 마리추 체크하는 변수 초기화 -->
+							<!--중앙-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="401" summonPos="1500, 1800, 3500" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="402" summonPos="1800, 1500, 3500" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="403" summonPos="1200, 1650, 3500" summonRot="0,0,-50" />
+							<!--메이스-->
+							<node name="summon" npcId="29" npcCount="1" npcCountMax="1" group="404" summonPos="1650, 1200, 3500" summonRot="0,0,-50" />
+							<!--메이스, 정화 능력 없는 정령 소환-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="405" summonPos="2100, 1200, 3500" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="406" summonPos="1200, 2100, 3500" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="407" summonPos="900, 1950, 3500" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="408" summonPos="1950, 900, 3500" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="409" summonPos="2400, 900, 3500" summonRot="0,0,-50" />
+							<!--거대한 타락한 기사-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="410" summonPos="900, 2400, 3500" summonRot="0,0,-50" />
+							<!--거대한 타락한 기사-->
+							<!--오른쪽-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="411" summonPos="4050, 900, 3650" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="412" summonPos="4200, 600, 3650" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="summon" npcId="30" npcCount="1" npcCountMax="1" group="413" summonPos="4200, 300, 3650" summonRot="0,0,-50" />
+							<!--마법, 정화 능력 없는 정령 소환-->
+							<!--왼쪽-->
+							<node name="summon" npcId="31" npcCount="1" npcCountMax="1" group="414" summonPos="900, 4050, 3650" summonRot="0,0,-50" />
+							<!--마법, 정화 능력 없는 정령 소환-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="415" summonPos="600, 4200, 3650" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="416" summonPos="300, 4200, 3650" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<node name="SetSlaveValue" key="FloorNumber" value="4" />
+							<!--전에 3층에서 소환한 건너편 석상기사 4층으로 점프뛰게 하기-->
+							<node name="standby" limit="2000" faceTarget="1" />
+							<!--석상기사 건너편 배치-->
+							<!--4층 오른쪽-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="4101" summonPos="6600, 1050, 2750" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="4102" summonPos="6600, 900, 2750" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="4103" summonPos="6600, 900, 3200" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="4104" summonPos="6600, 600, 3200" summonRot="0,0,-90" />
+							<!--보통크기, 45% 정화-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="4105" summonPos="6600, 450, 3200" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="16" npcCount="1" npcCountMax="1" group="4106" summonPos="6600, 900, 3650" summonRot="0,0,-90" />
+							<!--보통크기, 50%-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="4107" summonPos="6600, 600, 3650" summonRot="0,0,-90" />
+							<!--보통크기-->
+							<node name="summon" npcId="15" npcCount="1" npcCountMax="1" group="4107" summonPos="6600, 450, 3650" summonRot="0,0,-90" />
+							<!--보통크기, 100%-->
+							<node name="summon" npcId="17" npcCount="1" npcCountMax="1" group="4108" summonPos="6900, 750, 3650" summonRot="0,0,-90" />
+							<!--거대크기, 100%-->
+							<node name="summon" npcId="18" npcCount="1" npcCountMax="1" group="4109" summonPos="6900, 450, 3650" summonRot="0,0,-90" />
+							<!--거대크기, 50%-->
+							<!--4층 왼쪽-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="4201" summonPos="1050, 6600, 2750" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="22" npcCount="1" npcCountMax="1" group="4202" summonPos="450, 6600, 3200" summonRot="0,0,-10" />
+							<!--보통크기, 45% 정화-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="4203" summonPos="600, 6600, 3200" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="4204" summonPos="750, 6600, 3200" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="20" npcCount="1" npcCountMax="1" group="4205" summonPos="900, 6600, 3200" summonRot="0,0,-10" />
+							<!--보통크기, 100%-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="4206" summonPos="1050, 6600, 3650" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="21" npcCount="1" npcCountMax="1" group="4207" summonPos="450, 6600, 3650" summonRot="0,0,-10" />
+							<!--보통크기, 50%-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="4208" summonPos="750, 6600, 3650" summonRot="0,0,-10" />
+							<!--보통크기-->
+							<node name="summon" npcId="24" npcCount="1" npcCountMax="1" group="4209" summonPos="1050, 6900, 3650" summonRot="0,0,-10" />
+							<!--거대크기, 100%-->
+							<node name="summon" npcId="26" npcCount="1" npcCountMax="1" group="4210" summonPos="750, 6900, 3650" summonRot="0,0,-10" />
+							<!--거대크기-->
+							<node name="summon" npcId="23" npcCount="1" npcCountMax="1" group="4211" summonPos="450, 6900, 3650" summonRot="0,0,-10" />
+							<!--거대크기, 35%-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<!-- 졸몹 전부 공격 상태가 될때까지 이단계 충분히 머물기 -->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="MonsterNumber" value="1" op="greaterEqual">
+								<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+								<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+									<node name="SetValue" key="StageCheck" value="1" isModify="1" />
+									<!--다음 스테이지 넘어가기 때문에 1을 더함-->
+									<node name="TriggerSetUserValue" triggerID="1122330" key="StageClear04" value="1" />
+									<!--다음 스테이지 가기 위해 막힌 문을 트리거 신호 보내서 열기-->
+									<!--우호적NPC 신전의 기사단에게 5층 전투판으로 이동하라고 신호 보냄 , 보스는 보스 전투판 저 멀리서 신호 보내기 때문에 신호 보내는 영역 무지 넓게 설정해야 함-->
+									<node name="SetValueRangeTarget" key="NextStageGo" value="5" radius="8500" height="9500" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="StageCheck" value="5">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="SetValue" key="MonsterNumber" value="0" />
+							<!-- 졸병 몹 마리추 체크하는 변수 초기화 -->
+							<!--중앙-->
+							<node name="summon" npcId="29" npcCount="1" npcCountMax="1" group="501" summonPos="2400, 2400, 4100" summonRot="0,0,-50" />
+							<!--메이스, 정화 능력 없는 정령 소환-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="502" summonPos="2400, 2700, 4100" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="503" summonPos="2700, 2400, 4100" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="504" summonPos="2700, 1800, 4100" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="505" summonPos="1800, 2700, 4100" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="506" summonPos="3300, 1500, 4100" summonRot="0,0,-50" />
+							<!--거대한 타락한 기사-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="507" summonPos="3300, 2100, 4100" summonRot="0,0,-50" />
+							<!--거대한 타락한 기사-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="508" summonPos="2100, 3300, 4100" summonRot="0,0,-50" />
+							<!--거대한 타락한 기사-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="509" summonPos="1500, 3300, 4100" summonRot="0,0,-50" />
+							<!--거대한 타락한 기사-->
+							<!--오른쪽-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="510" summonPos="4950, 1800, 4250" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="summon" npcId="30" npcCount="1" npcCountMax="1" group="511" summonPos="5100, 1500, 4250" summonRot="0,0,-50" />
+							<!--마법, 정화 능력 없는 정령 소환-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="512" summonPos="5100, 1200, 4250" summonRot="0,0,-50" />
+							<!--마법-->
+							<!--왼쪽-->
+							<node name="summon" npcId="31" npcCount="1" npcCountMax="1" group="513" summonPos="1800, 4950, 4250" summonRot="0,0,-50" />
+							<!--마법, 정화 능력 없는 정령 소환-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="514" summonPos="1500, 5100, 4250" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="515" summonPos="1200, 5100, 4250" summonRot="0,0,-50" />
+							<!--마법-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<node name="SetSlaveValue" key="FloorNumber" value="5" />
+							<!--전에 4층에서 소환한 건너편 석상기사 5층으로 점프뛰게 하기-->
+							<node name="standby" limit="3000" faceTarget="1" />
+							<!-- 졸몹 전부 공격 상태가 될때까지 이단계 충분히 머물기 -->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="MonsterNumber" value="1" op="greaterEqual">
+								<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+								<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+									<node name="SetValue" key="StageCheck" value="1" isModify="1" />
+									<!--다음 스테이지 넘어가기 때문에 1을 더함, 여기서 6이 되기 때문에 졸구간 스테이지 완료됨-->
+									<node name="TriggerSetUserValue" triggerID="1122330" key="StageClear05" value="1" />
+									<!--다음 스테이지 가기 위해 막힌 문을 트리거 신호 보내서 열기-->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9989,10">
+						<!--StageCheck = 6, 전투 다 끝나고 보스전 기지 직전 상황으로 보스 전투판 주변에 석상기사 배치하기, ###졸구간 다 끝난 상태에서 플레이어가 보스 전투판 위로 올라가지 않으면 이부분 계속 실행하고 있을 것임 -->
+						<node name="standby" limit="300" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--이 변수에 1을 넣어 1~5 스테이지의 석상기사  몬스터 전부 제거하기 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+							<node name="SetValue" key="BossBattleZoneSummon" value="1" />
+							<!--이 변수에 1을 넣어 보스 전투 막 시작됨을 알림, 이 신호에 의해 보스 전투판 주변 석상기사 소환함  -->
+							<node name="SetValueRangeTarget" key="BossZone" value="1" radius="9800" height="9800" />
+							<!--설콩이와 신전의 기사 몬스터에게 이 신호를 보내 보스 전투판으로 뛰게 함-->
+							<!-- 전에는 기능 부족으로 아래 설정한 설콩이를 소환하여 이 설콩이가 신호를 보내 점프 뛰도록 설정했는데,이제 기능이 개발되어서 보스가 직접 신호를 보내는 방식으로 하도록 함 -->
+							<!--	<summon npcId="21810069" npcCount="1" npcCountMax="1" group="9999" summonPos="650, 650, 2900"  summonRot="0,0,-50"/>  같은 편 NPC가 전투판으로 점프 뛰도록 신호 보내는 설콩이 소환함-->
+						</node>
+						<!--###졸구간 다 끝난 상태에서 플레이어가 보스 전투판 위로 올라가지 않으면 이부분 계속 반복  실행하고 있을 것임-->
+						<node name="skill" facePos="3500, 3500, 5600" idx="25" />
+						<!--Attack_Idle_A 동작으로 가만히 서있는 스킬임-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="TargetSet">
+			<node name="standby" limit="300" faceTarget="1">
+				<node name="conditions">
+					<condition name="extraData" key="Position" value="6">
+						<!--보스가 6전투판에 있으면-->
+						<node name="target" type="near" center="3975, 3975, 5250" />
+						<!--6시 전투판 대상 우선 타겟함-->
+					</condition>
+					<condition name="extraData" key="Position" value="2">
+						<!--보스가 2전투판에 있으면-->
+						<node name="target" type="near" center="5625, 4425, 5250" />
+						<!--2시 전투판 대상 우선 타겟함-->
+					</condition>
+					<condition name="extraData" key="Position" value="10">
+						<!--보스가 10전투판에 있으면-->
+						<node name="target" type="near" center="4425, 5625, 5250" />
+						<!--10시 전투판 대상 우선 타겟함-->
+					</condition>
+					<condition name="true">
+						<!--보스가 단상 위에 있거, 혹시 모를 예외 상황이면 제일 가까운 대상 타겟팅함-->
+						<node name="target" type="near" from="10" to="900" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BossBattleSummon">
+			<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+				<!--보스구간-->
+				<!--Boss중앙-->
+				<!--오른쪽-->
+				<node name="summon" npcId="32" npcCount="1" npcCountMax="1" group="6001" summonPos="6900, 6150, 5150" summonRot="0,0,-50" />
+				<!--거대크기, 100%, 전투판 한조각에서 7시-->
+				<node name="summon" npcId="33" npcCount="1" npcCountMax="1" group="6002" summonPos="6900, 6150, 4550" summonRot="0,0,-50" />
+				<!--거대크기, 100%, 전투판 한조각에서 10시-->
+				<!--왼쪽-->
+				<node name="summon" npcId="34" npcCount="1" npcCountMax="1" group="6003" summonPos="6150, 6900, 5150" summonRot="0,0,-50" />
+				<!--거대크기, 100%, 전투판 한조각에서 2시-->
+				<node name="summon" npcId="35" npcCount="1" npcCountMax="1" group="6004" summonPos="6150, 6900, 4550" summonRot="0,0,-50" />
+				<!--거대크기, 100%, 전투판 한조각에서 4시-->
+				<!--Boss오른쪽 안쪽-->
+				<node name="summon" npcId="36" npcCount="1" npcCountMax="1" group="6101" summonPos="7050, 4650, 4500" summonRot="0,0,-90" />
+				<!--거대크기, 30%-->
+				<node name="summon" npcId="37" npcCount="1" npcCountMax="1" group="6102" summonPos="7050, 4350, 4500" summonRot="0,0,-90" />
+				<!--거대크기-->
+				<node name="summon" npcId="38" npcCount="1" npcCountMax="1" group="6103" summonPos="7050, 5100, 5150" summonRot="0,0,-90" />
+				<!--보통크기-->
+				<node name="summon" npcId="38" npcCount="1" npcCountMax="1" group="6104" summonPos="7050, 4800, 5150" summonRot="0,0,-90" />
+				<!--보통크기-->
+				<node name="summon" npcId="39" npcCount="1" npcCountMax="1" group="6105" summonPos="7050, 4350, 5150" summonRot="0,0,-90" />
+				<!--보통크기, 100%-->
+				<!--Boss오른쪽 바깥쪽-->
+				<node name="summon" npcId="40" npcCount="1" npcCountMax="1" group="6106" summonPos="7050, 4050, 4500" summonRot="0,0,-90" />
+				<!--거대크기, 100%-->
+				<node name="summon" npcId="37" npcCount="1" npcCountMax="1" group="6107" summonPos="7050, 3750, 4500" summonRot="0,0,-90" />
+				<!--거대크기-->
+				<node name="summon" npcId="41" npcCount="1" npcCountMax="1" group="6108" summonPos="7050, 3450, 4500" summonRot="0,0,-90" />
+				<!--거대크기, 100%, 중앙으로 점프-->
+				<node name="summon" npcId="39" npcCount="1" npcCountMax="1" group="6109" summonPos="7050, 3900, 5150" summonRot="0,0,-90" />
+				<!--보통크기, 100%-->
+				<node name="summon" npcId="39" npcCount="1" npcCountMax="1" group="6110" summonPos="7050, 3600, 5150" summonRot="0,0,-90" />
+				<!--보통크기, 100%-->
+				<node name="summon" npcId="42" npcCount="1" npcCountMax="1" group="6111" summonPos="7050, 3300, 5150" summonRot="0,0,-90" />
+				<!--보통크기, 100%, 중앙으로 점프-->
+				<!--Boss왼쪽 안쪽-->
+				<node name="summon" npcId="43" npcCount="1" npcCountMax="1" group="6201" summonPos="4350, 7050, 4500" summonRot="0,0,-10" />
+				<!--거대크기, 30%-->
+				<node name="summon" npcId="44" npcCount="1" npcCountMax="1" group="6202" summonPos="4850, 7050, 4500" summonRot="0,0,-10" />
+				<!--거대크기-->
+				<node name="summon" npcId="45" npcCount="1" npcCountMax="1" group="6203" summonPos="4950, 7050, 5150" summonRot="0,0,-10" />
+				<!--보통크기-->
+				<node name="summon" npcId="46" npcCount="1" npcCountMax="1" group="6204" summonPos="4650, 7050, 5150" summonRot="0,0,-10" />
+				<!--보통크기, 100%-->
+				<node name="summon" npcId="46" npcCount="1" npcCountMax="1" group="6205" summonPos="4350, 7050, 5150" summonRot="0,0,-10" />
+				<!--보통크기, 100%-->
+				<!--Boss왼쪽 바깥쪽-->
+				<node name="summon" npcId="44" npcCount="1" npcCountMax="1" group="6206" summonPos="3900, 7050, 4500" summonRot="0,0,-10" />
+				<!--거대크기-->
+				<node name="summon" npcId="47" npcCount="1" npcCountMax="1" group="6207" summonPos="3600, 7050, 4500" summonRot="0,0,-10" />
+				<!--거대크기, 100%-->
+				<node name="summon" npcId="48" npcCount="1" npcCountMax="1" group="6208" summonPos="3300, 7050, 4500" summonRot="0,0,-10" />
+				<!--거대크기, 30%, 중앙으로 점프-->
+				<node name="summon" npcId="42" npcCount="1" npcCountMax="1" group="6209" summonPos="4050, 7050, 5150" summonRot="0,0,-10" />
+				<!--보통크기, 100%, 중앙으로 점프-->
+				<node name="summon" npcId="42" npcCount="1" npcCountMax="1" group="6210" summonPos="3750, 7050, 5150" summonRot="0,0,-10" />
+				<!--보통크기, 100%, 중앙으로 점프-->
+				<node name="summon" npcId="46" npcCount="1" npcCountMax="1" group="6211" summonPos="3450, 7050, 5150" summonRot="0,0,-10" />
+				<!--보통크기, 100%-->
+			</node>
+		</aiPreset>
+		<aiPreset name="JumpMove">
+			<node name="standby" limit="300" faceTarget="1">
+				<node name="conditions">
+					<condition name="extraData" key="Position" value="6">
+						<node name="select" prob="50,50">
+							<!--보스가 6전투판에 있으면-->
+							<!--2시-->
+							<node name="skill" facePos="5625, 4425, 5350" isKeepBattle="true" idx="16">
+								<!--점프 도약 -->
+								<node name="jump" pos="5625, 4425, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="2" />
+								<!--자신이 현재 2시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+							<!--10시-->
+							<node name="skill" facePos="4425, 5625, 5350" isKeepBattle="true" idx="16">
+								<!--점프 도약 -->
+								<node name="jump" pos="4425, 5625, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="10" />
+								<!--자신이 현재 10시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="Position" value="2">
+						<node name="select" prob="50,50">
+							<!--보스가 2전투판에 있으면-->
+							<!--6시-->
+							<node name="skill" facePos="3975, 3975, 5350" isKeepBattle="true" idx="16">
+								<!--점프 도약 -->
+								<node name="jump" pos="3975, 3975, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="6" />
+								<!--자신이 현재 6시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+							<!--10시-->
+							<node name="skill" facePos="4425, 5625, 5350" isKeepBattle="true" idx="16">
+								<!--점프 도약 -->
+								<node name="jump" pos="4425, 5625, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="10" />
+								<!--자신이 현재 10시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="Position" value="10">
+						<node name="select" prob="50,50">
+							<!--보스가 10전투판에 있으면-->
+							<!--2시-->
+							<node name="skill" facePos="5625, 4425, 5350" isKeepBattle="true" idx="16">
+								<!--점프 도약 -->
+								<node name="jump" pos="5625, 4425, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="2" />
+								<!--자신이 현재 2시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+							<!--6시-->
+							<node name="skill" facePos="3975, 3975, 5350" isKeepBattle="true" idx="16">
+								<!--점프 도약 -->
+								<node name="jump" pos="3975, 3975, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="6" />
+								<!--자신이 현재 6시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--보스가 단상 위에 있거, 혹시 모를 예외 상황이면 제일 가까운 대상 타겟팅함-->
+						<!--6시-->
+						<node name="skill" facePos="3975, 3975, 5350" isKeepBattle="true" idx="16">
+							<!--점프 도약 -->
+							<node name="jump" pos="3975, 3975, 5350" speed="1500" heightMultiplier="0.4" />
+							<node name="skill" faceTarget="0" idx="17" />
+							<!--착지 -->
+							<node name="SetValue" key="Position" value="6" />
+							<!--자신이 현재 6시 전투판에 있음을 알림-->
+							<node name="standby" limit="3000" faceTarget="1" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="JumpMoveAndSummonMob">
+			<node name="standby" limit="300" faceTarget="1">
+				<node name="conditions">
+					<condition name="extraData" key="Position" value="6">
+						<node name="select" prob="45,55">
+							<!--보스가 6시 전투판에 있으면-->
+							<!--2시-->
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<!--6시 보스 소환함-->
+								<node name="SetSlaveValue" key="EnterBattleCenter" value="1" />
+								<node name="SetSlaveValue" key="EnterBattleRight" value="1" />
+								<node name="skill" faceTarget="1" idx="10" />
+								<!--점프 이동과 동시에 졸몹이 왔으면 해서 점프 이동 전 어떤 공격 행동을 하도록 함 -->
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="skill" facePos="5625, 4425, 5350" idx="16" />
+								<!--점프 도약 -->
+								<node name="jump" pos="5625, 4425, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="2" />
+								<!--자신이 현재 2시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+							<!--10시-->
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<!--6시 보스 소환함-->
+								<node name="SetSlaveValue" key="EnterBattleCenter" value="1" />
+								<node name="SetSlaveValue" key="EnterBattleLeft" value="1" />
+								<node name="skill" faceTarget="1" idx="10" />
+								<!--점프 이동과 동시에 졸몹이 왔으면 해서 점프 이동 전 어떤 공격 행동을 하도록 함 -->
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="skill" facePos="4425, 5625, 5350" idx="16" />
+								<!--점프 도약 -->
+								<node name="jump" pos="4425, 5625, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="10" />
+								<!--자신이 현재 10시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="Position" value="2">
+						<node name="select" prob="50,50">
+							<!--보스가 2시 전투판에 있으면-->
+							<!--6시-->
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<!--2시 보스 전투판-->
+								<node name="SetSlaveValue" key="EnterBattleRight" value="1" />
+								<node name="SetSlaveValue" key="EnterBattleCenter" value="1" />
+								<node name="skill" faceTarget="1" idx="10" />
+								<!--점프 이동과 동시에 졸몹이 왔으면 해서 점프 이동 전 어떤 공격 행동을 하도록 함 -->
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="skill" facePos="3975, 3975, 5350" idx="16" />
+								<!--점프 도약 -->
+								<node name="jump" pos="3975, 3975, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="6" />
+								<!--자신이 현재 6시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+							<!--10시-->
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<!--2시 보스 전투판-->
+								<node name="SetSlaveValue" key="EnterBattleRight" value="1" />
+								<node name="SetSlaveValue" key="EnterBattleLeft" value="1" />
+								<node name="skill" faceTarget="1" idx="10" />
+								<!--점프 이동과 동시에 졸몹이 왔으면 해서 점프 이동 전 어떤 공격 행동을 하도록 함 -->
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="skill" facePos="4425, 5625, 5350" idx="16" />
+								<!--점프 도약 -->
+								<node name="jump" pos="4425, 5625, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="10" />
+								<!--자신이 현재 10시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="Position" value="10">
+						<node name="select" prob="50,50">
+							<!--보스가 10시 전투판에 있으면-->
+							<!--2시-->
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<!--10시 보스 전투판-->
+								<node name="SetSlaveValue" key="EnterBattleLeft" value="1" />
+								<node name="SetSlaveValue" key="EnterBattleRight" value="1" />
+								<node name="skill" faceTarget="1" idx="10" />
+								<!--점프 이동과 동시에 졸몹이 왔으면 해서 점프 이동 전 어떤 공격 행동을 하도록 함 -->
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="skill" facePos="5625, 4425, 5350" idx="16" />
+								<!--점프 도약 -->
+								<node name="jump" pos="5625, 4425, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="2" />
+								<!--자신이 현재 2시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+							<!--6시-->
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<!--10시 보스 전투판-->
+								<node name="SetSlaveValue" key="EnterBattleLeft" value="1" />
+								<node name="SetSlaveValue" key="EnterBattleCenter" value="1" />
+								<node name="skill" faceTarget="1" idx="10" />
+								<!--점프 이동과 동시에 졸몹이 왔으면 해서 점프 이동 전 어떤 공격 행동을 하도록 함 -->
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="skill" facePos="3975, 3975, 5350" idx="16" />
+								<!--점프 도약 -->
+								<node name="jump" pos="3975, 3975, 5350" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="17" />
+								<!--착지 -->
+								<node name="SetValue" key="Position" value="6" />
+								<!--자신이 현재 6시 전투판에 있음을 알림-->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--보스가 단상 위에 있거, 혹시 모를 예외 상황이면 제일 가까운 대상 타겟팅함-->
+						<!--6시-->
+						<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+							<node name="skill" facePos="3975, 3975, 5350" idx="16" />
+							<!--점프 도약 -->
+							<node name="jump" pos="3975, 3975, 5350" speed="1500" heightMultiplier="0.4" />
+							<node name="skill" faceTarget="0" idx="17" />
+							<!--착지 -->
+							<node name="SetValue" key="Position" value="6" />
+							<!--자신이 현재 6시 전투판에 있음을 알림-->
+							<node name="standby" limit="3000" faceTarget="1" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="OneselfDamage">
+			<!--분신이 죽어서 스스로 대미지 부여하는 부분-->
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="announce" message="$SnowKing_OneselfDamage$" durationTick="5000" />
+				<!--분신이 죽어서 대미지 입었다는 것을 알려주는 시스템 메시지-->
+				<node name="buff" type="add" id="50170031" />
+				<!--스스로 대미지 입는 버프 부여하기-->
+				<node name="SetValue" key="SnowKingSummonDeath" value="-1" isModify="1" />
+				<!--스스로 대미지를 입으면 SummonDeath 변수 -1 하여 최초 상태로 돌려놓기-->
+				<node name="standby" limit="500" faceTarget="1" />
+			</node>
+		</aiPreset>
+		<aiPreset name="Battle01">
+			<!--1페이즈 주 공격 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="30,40,40">
+						<!--900 사정거리 안에 있으면-->
+						<node name="skill" idx="1">
+							<!-- 3콤보 공격 -->
+							<node name="skill" faceTarget="1" idx="2">
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="skill" faceTarget="1" idx="3">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="3">
+												<!-- 사정거리 600 이내에 있으면 -->
+												<node name="skill" faceTarget="1" idx="4">
+													<node name="standby" limit="1700" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- 600 이상  멀리 있으면 -->
+												<node name="skill" faceTarget="1" idx="5">
+													<node name="standby" limit="1700" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="15000" idx="10">
+							<!--돌진 공격 -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" idx="11">
+							<!--검기투척 약 -->
+							<node name="standby" limit="1300" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="60,40">
+								<!--1150 사정거리 안에 있으면-->
+								<node name="skill" cooltime="15000" idx="10">
+									<!--돌진 공격 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="11">
+									<!--검기투척 약 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Battle02">
+			<!--2페이즈 주 공격 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="30,40,40">
+						<!--900 사정거리 안에 있으면-->
+						<node name="skill" idx="1">
+							<!-- 3콤보 공격 -->
+							<node name="skill" faceTarget="1" idx="2">
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="skill" faceTarget="1" idx="3">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="3">
+												<!-- 사정거리 600 이내에 있으면 -->
+												<node name="skill" faceTarget="1" idx="4">
+													<node name="standby" limit="1700" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- 600 이상  멀리 있으면 -->
+												<node name="skill" faceTarget="1" idx="5">
+													<node name="standby" limit="1700" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="17000" idx="10">
+							<!--돌진 공격 -->
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="skill" idx="12">
+									<!--냉기 웨이브 발사 -->
+									<node name="standby" limit="1300" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="22000" idx="12">
+							<!--냉기 웨이브 발사 -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="60,40">
+								<!--1150 사정거리 안에 있으면-->
+								<node name="skill" cooltime="15000" idx="10">
+									<!--돌진 공격 -->
+									<node name="standby" limit="1400" faceTarget="1" />
+								</node>
+								<node name="skill" idx="11">
+									<!--검기투척 약 -->
+									<node name="standby" limit="1200" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Battle03">
+			<!--3페이즈 주 공격 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="13">
+					<node name="select" prob="10,30,30,30,1">
+						<!--980 사정거리 안에 있으면-->
+						<node name="skill" cooltime="24000" isKeepBattle="true" idx="13">
+							<!--바닥 쾅 치기, 우호적 적대적NPC 가 맞으면 죽음 -->
+							<node name="target" type="near" from="10" to="800" />
+							<!--신전의 기사가 죽음 당하는 것을 막을 수 있게, 가까이 붙으면 자신 쪽으로 타겟팅 오도록 함 -->
+							<node name="skill" faceTarget="1" idx="14" />
+							<node name="skill" faceTarget="1" idx="15" />
+							<node name="standby" limit="1400" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" isKeepBattle="true" idx="13">
+							<!--바닥 쾅 치기, 우호적 적대적NPC 가 맞으면 죽음 -->
+							<node name="skill" faceTarget="1" idx="14" />
+							<node name="target" type="near" from="10" to="800" />
+							<!--신전의 기사가 죽음 당하는 것을 막을 수 있게, 가까이 붙으면 자신 쪽으로 타겟팅 오도록 함 -->
+							<node name="skill" faceTarget="1" idx="14" />
+							<node name="skill" faceTarget="1" idx="15" />
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" isKeepBattle="true" idx="13">
+							<!--바닥 쾅 치기, 우호적 적대적NPC 가 맞으면 죽음 -->
+							<node name="skill" faceTarget="1" idx="14" />
+							<node name="target" type="near" from="10" to="800" />
+							<!--신전의 기사가 죽음 당하는 것을 막을 수 있게, 가까이 붙으면 자신 쪽으로 타겟팅 오도록 함 -->
+							<node name="skill" faceTarget="1" idx="14" />
+							<node name="target" type="near" from="10" to="800" />
+							<!--신전의 기사가 죽음 당하는 것을 막을 수 있게, 가까이 붙으면 자신 쪽으로 타겟팅 오도록 함 -->
+							<node name="skill" faceTarget="1" idx="14" />
+							<node name="skill" faceTarget="1" idx="15" />
+							<node name="standby" limit="1200" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" idx="12">
+							<!--얼어버리는 거대 투사체 발사 -->
+							<node name="standby" limit="1000" faceTarget="1">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</node>
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="33,34,33">
+						<node name="skill" cooltime="21000" idx="12">
+							<!--얼어버리는 거대 투사체 발사 -->
+							<node name="standby" limit="1100" faceTarget="1">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</node>
+						<node name="skill" cooltime="21000" idx="11">
+							<!--약 투사체 발사 -->
+							<node name="standby" limit="1150" faceTarget="1">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</node>
+						<node name="standby" limit="1300" faceTarget="1">
+							<node name="target" type="near" from="10" to="1300" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

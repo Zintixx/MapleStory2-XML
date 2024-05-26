@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="CntSlaves" value="0" op="lessEqual">
+				<node name="skill" cooltime="15000" initialCooltime="10000" idx="9">
+					<node name="standby" limit="1000" faceTarget="1">
+						<node name="SetValue" key="CntSlaves" value="4" />
+						<node name="SetValue" key="SummonIdx" value="0" />
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="CntSlavesStrong" value="0" op="lessEqual">
+				<node name="skill" cooltime="15000" initialCooltime="10000" idx="9">
+					<node name="standby" limit="1000" faceTarget="1">
+						<node name="SetValue" key="CntSlavesStrong" value="1" />
+						<node name="SetValue" key="SummonIdx" value="0" />
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="CntBuffLev" value="0">
+				<node name="SetValue" key="CntBuffLev" value="-1">
+					<node name="skill" idx="5">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="CntBuffLev" value="1">
+				<node name="SetValue" key="CntBuffLev" value="-1">
+					<node name="skill" idx="6">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="CntBuffLev" value="2">
+				<node name="SetValue" key="CntBuffLev" value="-1">
+					<node name="skill" idx="7">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,9999,0">
+					<node name="SetValue" cooltime="999999" initialCooltime="1" key="SummonIdx" value="0" />
+					<node name="conditions" cooltime="60000" initialCooltime="10000">
+						<condition name="extraData" key="SummonIdx" value="0">
+							<node name="select" prob="9999,999,999">
+								<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="5000">
+									<node name="select" prob="100,100">
+										<node name="target" type="far" from="10" to="1000">
+											<node name="trace" limit="2000" skillIdx="1" />
+											<!--distance 200짜리 가짜 스킬 데이터-->
+										</node>
+										<node name="runaway" till="950" limit="1000">
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="80000" initialCooltime="5000" idx="4">
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="4" group="101" summonPos="-350, -1550, 2850" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="4" group="101" summonPos="-1250, -1550, 2850" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="4" group="101" summonPos="-350, -2450, 2850" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="4" group="101" summonPos="-1250, -2450, 2850" />
+									<node name="skill" idx="8">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<!--이벤트 설정 - CntSlaves : 4의 값을 가지며 소환된 네펜투스가 죽으면 1씩 감소한다.-->
+									<node name="SetValue" key="CntSlaves" value="4" />
+									<node name="SetValue" key="SummonIdx" value="1" />
+									<!--SummonIdx 0 = 네펜투스 소환 중, 1 = 바야르 소환 중-->
+								</node>
+								<!--바야르 소환 후 무적 모드-->
+								<node name="skill" cooltime="120000" initialCooltime="50000" idx="4">
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="-850, -2050, 2850" />
+									<node name="skill" idx="8">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<!--이벤트 설정 - CntSlavesStrong : 바야르 소환 값이며 1의 값을 가지며 소환된 바야르가 죽으면 1씩 감소한다.-->
+									<node name="SetValue" key="CntSlavesStrong" value="1" />
+									<node name="SetValue" key="SummonIdx" value="1" />
+									<!--이벤트 설정 - CntBuffLev : 바야르를 강화시키는 스킬로 바야르가 죽으면 0으로, 중첩될때마다 1씩 증가한다.-->
+									<!--event eventName="SetExtra" target="Me" param1="CntBuffLev" param2="0"/-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="50,50,50">
+										<node name="skill" idx="2">
+											<node name="select" prob="100,100,100">
+												<node name="standby" limit="500" faceTarget="1" />
+												<node name="runaway" till="950" limit="1000" />
+												<node name="skill" idx="3" />
+											</node>
+										</node>
+										<node name="skill" idx="2">
+											<node name="target" type="near" from="10" to="1300">
+												<node name="skill" idx="2">
+													<node name="runaway" till="950" limit="1000" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" idx="3">
+											<node name="select" prob="100,100,100">
+												<node name="standby" limit="500" faceTarget="1" />
+												<node name="runaway" till="950" limit="1000" />
+												<node name="skill" idx="2" />
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="100,100,200">
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="trace" limit="1500" skillIdx="2" />
+										<node name="target" type="near" from="10" to="500">
+											<node name="runaway" till="950" limit="1000">
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="50,50,50">
+								<node name="skill" idx="2">
+									<node name="select" prob="100,100,100">
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="runaway" till="950" limit="1000" />
+										<node name="skill" idx="3" />
+									</node>
+								</node>
+								<node name="skill" idx="2">
+									<node name="target" type="near" from="10" to="1300">
+										<node name="skill" idx="2">
+											<node name="runaway" till="950" limit="1000" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="3">
+									<node name="select" prob="100,100,100">
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="runaway" till="950" limit="1000" />
+										<node name="skill" idx="2" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,100,200">
+								<node name="standby" limit="500" faceTarget="1" />
+								<node name="trace" limit="1500" skillIdx="2" />
+								<node name="target" type="near" from="10" to="500">
+									<node name="runaway" till="950" limit="1000">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

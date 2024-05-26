@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--등장하자마자 무조건 이거 실행-->
+			<node name="standby" limit="300" animation="Attack_Idle_B" isKeepBattle="true">
+				<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+				<!--팔이 한개씩 제거될때 성우 음성 출력하게 하기 위해 사용하는 변수-->
+				<node name="SetValue" key="ZakumArmBuff" value="0" />
+				<!--팔이 제거되면 이 변수에 1씩 더해 자쿰팔에 버프를 부여하도록 하기 위해 사용하는 변수-->
+				<node name="SetValue" key="ZakumArmNumber" value="6" />
+				<!--현재 팔이 몇개 남아있는지를 알수있게 해주는 변수-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="104" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="105" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="106" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="buff" type="add" id="50004506" level="1" />
+				<!--레벨1: 자쿰팔이 있는 상태에서 플레이어가 자쿰몸에 가까이 붙으면 디버프에 걸리에 하기 위해 애디셔널을 걸기 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="ZakumArmBuff" value="1" op="greaterEqual">
+				<!--이 변수가 1 이상이면 방금 자쿰 팔이 제거 되었다는 뜻이기 때문에 버프 부여하는 행위를 해야 함-->
+				<node name="skill" faceTarget="0" idx="3">
+					<!--각 팔에 공격력 상승 버프 부여하기-->
+					<node name="SetValue" key="ZakumArmBuff" value="-1" isModify="1" />
+					<!--이 변수에 -1씩하여 팔이 죽음에 따른 버프 부여 스킬 발동했음을 알림, 이거 안하면 이곳에서 무한루프에 걸림 -->
+				</node>
+			</condition>
+			<condition name="extraData" key="VoiceDeathZakumArm" value="1">
+				<node name="conditions">
+					<condition name="extraData" key="ZakumArmNumber" value="1" op="greaterEqual">
+						<node name="select" prob="9999,1">
+							<!--팔 하나씩 제거되었을 때 성우 대사 나오고 용암 올라오게 하는 부분-->
+							<node name="standby" limit="300" faceTarget="0" animation="Attack_Idle_B" cooltime="33000">
+								<node name="select" prob="50,50">
+									<!--팔이 파괴되고 용암이 올라오는 상황에서 다른 팔을 바로 연속이로 파괴되면 성우음성 겹치고 용암이 연속으로 올라오는 문제가 있어서 쿨타임 33초 설정함, 33초 기준은 용암 2단계 2층까지 올라와서 사라지는 시간임-->
+									<node name="TriggerSetUserValue" isKeepBattle="true" triggerID="999102" key="LavaflowHigh" value="1">
+										<!-- 용암 올라오기 2단 높이 -->
+										<node name="announce" message="$ZakumArmBroken_Warning$" durationTick="5000" />
+										<!-- 자쿰팔이 파괴되서 용암 올라올 수 있다는 경고  메시지로 알림 -->
+										<node name="skill" faceTarget="0" idx="1" />
+										<!--레벨2는 팔이 1개씩 제거되었을 때 성우 목소리 나오게 하기 -->
+										<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+										<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+										<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+										<!--VoiceDeathZakumArm 값을  0 으로 초기화 하기 -->
+									</node>
+									<node name="TriggerSetUserValue" isKeepBattle="true" triggerID="999102" key="LavaflowLow" value="1">
+										<!-- 용암 올라오기 1단 높이 -->
+										<node name="announce" message="$ZakumArmBroken_Warning$" durationTick="5000" />
+										<!-- 자쿰팔이 파괴되서 용암 올라올 수 있다는 경고  메시지로 알림 -->
+										<node name="skill" faceTarget="0" idx="1" />
+										<!--레벨2는 팔이 1개씩 제거되었을 때 성우 목소리 나오게 하기 -->
+										<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+										<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+										<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+										<!--VoiceDeathZakumArm 값을  0 으로 초기화 하기 -->
+									</node>
+								</node>
+							</node>
+							<node name="standby" limit="300" faceTarget="0" animation="Attack_Idle_B">
+								<!--팔이 바로 연속으로 파괴 되어 위 쿨타임에 걸리면 용암파도 올라오는 부분 생략하고 이 부분 사용하도록 함-->
+								<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+								<!--VoiceDeathZakumArm 값을  0 으로 초기화 하기 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- ZakumArmNumber = 0 즉 모든 팔이 제거되었을 때 나오는 성우 대사-->
+						<node name="standby" limit="500" animation="Attack_Idle_B" isKeepBattle="true">
+							<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+							<node name="skill" faceTarget="0" idx="2" />
+							<!--레벨3는 팔이 전부 제거되었을 때 성우 목소리 나오게 하는 스킬 데이터, 본체AI에 껍대기 스킬 데이터라도 있어야 소환된 팔이 전투가 풀리지 않음, 팔 전부 죽을때의 대사 나오는 타이밍을 정밀하게 맞추기 위해 여기에 출력함 -->
+							<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+							<!--VoiceDeathZakumArm 값을  0 으로 초기화 하기 -->
+							<node name="standby" limit="5000" faceTarget="0" animation="Attack_Idle_B" />
+							<!--팔 전부 제거된 후 성우 목소리 나오는 동안 8초 정도 가만히 있음 -->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="ZakumArmNumber" value="1" op="greaterEqual">
+				<!--팔이 1개라도 남아있으면-->
+				<node name="standby" limit="1200" faceTarget="0" animation="Attack_Idle_B" />
+				<!--주 메인 행동임: 자쿰 팔이 있을 때 가짜 자쿰 몸은 이 행동을 계속 반복하게 함-->
+				<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+			</condition>
+			<condition name="true">
+				<!-- ZakumArmNumber = 0 즉 팔이 다 제거된 경우 -->
+				<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" isKeepBattle="true">
+					<!--모든 팔이 다 제거되었으면-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="201" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,342" />
+					<!-- 진짜 자쿰 본체 소환을 함   summonRot="0,0,342" 자쿰 몸체는 약간 비스듬히 배치하는데 342도 수치 정도 비스듬히 배치함 -->
+					<node name="RemoveMe" />
+					<!-- 자기 자신 스스로 제거하기 -->
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

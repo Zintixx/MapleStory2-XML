@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1600" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="81">
+					<!--#1페이즈 -->
+					<!--*****************HP 90% 이상 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="100,100,100">
+								<!--기본 공격 세가지 중 랜덤으로 발생 시키기 위한 거리체크 시작 스킬-->
+								<node name="skill" idx="2">
+									<!--해군 1식 -->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="19">
+											<node name="select" prob="100,100">
+												<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+												<node name="trace" limit="2000" skillIdx="3">
+													<node name="select" prob="100,100">
+														<!--1공격후 파생기-->
+														<node name="skill" idx="3" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+												<node name="trace" limit="2000" skillIdx="4">
+													<node name="select" prob="100,100">
+														<node name="skill" idx="4" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="standby" limit="500" faceTarget="1" />
+										</condition>
+									</node>
+								</node>
+								<node name="skill" idx="3">
+									<!--해군 2식 -->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="19">
+											<node name="select" prob="100,100">
+												<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+												<node name="trace" limit="2000" skillIdx="2">
+													<node name="select" prob="100,100">
+														<!--1공격후 파생기-->
+														<node name="skill" idx="2" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+												<node name="trace" limit="2000" skillIdx="4">
+													<node name="select" prob="100,100">
+														<node name="skill" idx="4" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="runaway" till="400" limit="2000" />
+										</condition>
+									</node>
+								</node>
+								<node name="skill" idx="4">
+									<!--해군 3식 -->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="19">
+											<node name="select" prob="100,100">
+												<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+												<node name="trace" limit="2000" skillIdx="2">
+													<node name="select" prob="100,100">
+														<!--1공격후 파생기-->
+														<node name="skill" idx="2" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+												<node name="trace" limit="2000" skillIdx="3">
+													<node name="select" prob="100,100">
+														<node name="skill" idx="3" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="runaway" till="400" limit="2000" />
+										</condition>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="21">
+									<node name="select" prob="100,100,100">
+										<node name="standby" limit="500" faceTarget="1" cooltime="30000" initialCooltime="30000" isKeepBattle="true">
+											<node name="say" message="$Bliche__AI_BLICHE_FR_LV2__0$" durationTick="3000" delayTick="0" />
+											<node name="sidePopup" type="talk" illust="Neirin_surprise" script="$Bliche__AI_BLICHE_FR_LV2__1$" duration="3000" voice="ko/Npc/00002238" />
+											<node name="skill" faceTarget="1" idx="22" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="15000" initialCooltime="10000" idx="8">
+											<!--1페이즈 진격 베기 Lv1-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="trace" till="300" limit="2000" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" till="300" limit="2000" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!--*****************HP 90% 이하 2페이즈 -->
+				<condition name="hpOver" value="61">
+					<node name="select" prob="100,0">
+						<node name="skill" facePos="2633, 830, 7951" cooltime="9999999" isKeepBattle="true" idx="14">
+							<!--월광베기 점프 준비 -->
+							<node name="sidePopup" type="talk" illust="Bliche_closeEye" script="$Bliche__AI_BLICHE_FR_LV2__6$" duration="1000" />
+							<node name="jump" pos="2633, 830, 7951" speed="2100" heightMultiplier="0.7" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="15" />
+							<node name="target" type="far" from="10" to="1600" />
+							<node name="sidePopup" type="cutin" illust="Cutin_Bliche_01" duration="2000" sound="System_FortressRumble_CutIn_01" />
+							<node name="skill" idx="10" />
+							<!--근거리 시작 월광베기 사용차지-->
+							<node name="standby" limit="100" faceTarget="1" />
+							<node name="skill" idx="11" />
+							<!--근-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="12" />
+							<!--원-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="13" />
+							<!--근-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="sidePopup" type="talk" illust="Bliche_nomal" script="$Bliche__AI_BLICHE_FR_LV2__2$" duration="3000" voice="ko/Npc/00002061" />
+							<node name="skill" faceTarget="1" idx="16" />
+							<node name="standby" limit="100" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="100,100,100">
+									<!--기본 공격 세가지 중 랜덤으로 발생 시키기 위한 거리체크 시작 스킬-->
+									<node name="skill" idx="5">
+										<!--블리체 1식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 블리체 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="6">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="6" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="7">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="7" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="standby" limit="500" faceTarget="1" />
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="6">
+										<!--해군 2식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="5">
+														<node name="select" prob="100,100">
+															<!--1공격후 파생기-->
+															<node name="skill" idx="5" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="7">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="7" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="runaway" till="400" limit="2000" />
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="7">
+										<!--해군 3식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="5">
+														<node name="select" prob="100,100">
+															<!--1공격후 파생기-->
+															<node name="skill" idx="5" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="6">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="6" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="runaway" till="400" limit="2000" />
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="21">
+								<node name="select" prob="100,100,100">
+									<node name="skill" cooltime="15000" idx="9">
+										<!--2페이즈 진격 베기 Lv2-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="skill" facePos="3037, 830, 7951" cooltime="35000" isKeepBattle="true" idx="14">
+										<!--선풍참-->
+										<!--점프 준비 -->
+										<node name="jump" pos="3037, 830, 7951" speed="2100" heightMultiplier="0.7" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="15" />
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="sidePopup" type="talk" illust="Bliche_nomal" script="$Bliche__AI_BLICHE_FR_LV2__5$" duration="3000" voice="ko/Npc/00002257" />
+										<node name="skill" idx="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="trace" till="300" limit="2000" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="20">
+										<node name="select" prob="100,100">
+											<!--함포 사격-->
+											<node name="standby" limit="500" faceTarget="1" cooltime="30000" isKeepBattle="true">
+												<node name="say" message="$Bliche__AI_BLICHE_FR_LV2__3$" durationTick="3000" delayTick="0" />
+												<node name="sidePopup" type="talk" illust="Neirin_surprise" script="$Bliche__AI_BLICHE_FR_LV2__4$" duration="3000" voice="ko/Npc/00002238" />
+												<node name="skill" faceTarget="1" idx="22" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="trace" till="300" limit="2000" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" till="300" limit="2000" />
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="41">
+					<node name="select" prob="100,0">
+						<!--월광베기 Hp별 사용 제어를 위한 패턴 분리-->
+						<node name="skill" facePos="2633, 830, 7951" cooltime="9999999" isKeepBattle="true" idx="14">
+							<!--월광베기 점프 준비 -->
+							<node name="sidePopup" type="talk" illust="Bliche_closeEye" script="$Bliche__AI_BLICHE_FR_LV2__10$" duration="1000" />
+							<node name="jump" pos="2633, 830, 7951" speed="2100" heightMultiplier="0.7" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="15" />
+							<node name="target" type="far" from="10" to="1600" />
+							<node name="sidePopup" type="cutin" illust="Cutin_Bliche_01" duration="2000" sound="System_FortressRumble_CutIn_01" />
+							<node name="skill" idx="23" />
+							<!--원거리 시작 월광베기 사용-->
+							<node name="standby" limit="100" faceTarget="1" />
+							<node name="skill" idx="24" />
+							<!--원-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="25" />
+							<!--근-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="26" />
+							<!--원-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="100,100,100">
+									<!--기본 공격 세가지 중 랜덤으로 발생 시키기 위한 거리체크 시작 스킬-->
+									<node name="skill" idx="5">
+										<!--블리체 1식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 블리체 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="6">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="6" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="7">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="7" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="standby" limit="500" faceTarget="1" />
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="6">
+										<!--해군 2식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="5">
+														<node name="select" prob="100,100">
+															<!--1공격후 파생기-->
+															<node name="skill" idx="5" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="7">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="7" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="runaway" till="400" limit="2000" />
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="7">
+										<!--해군 3식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="5">
+														<node name="select" prob="100,100">
+															<!--1공격후 파생기-->
+															<node name="skill" idx="5" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="6">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="6" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="runaway" till="400" limit="2000" />
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="21">
+								<node name="select" prob="100,100,100">
+									<node name="skill" cooltime="15000" idx="9">
+										<!--3페이즈 진격 베기 Lv2-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="skill" facePos="3037, 830, 7951" cooltime="35000" isKeepBattle="true" idx="14">
+										<!--선풍참-->
+										<!--점프 준비 -->
+										<node name="jump" pos="3037, 830, 7951" speed="2100" heightMultiplier="0.7" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="15" />
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="sidePopup" type="talk" illust="Bliche_nomal" script="$Bliche__AI_BLICHE_FR_LV2__9$" duration="3000" voice="ko/Npc/00002257" />
+										<node name="skill" idx="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="trace" till="300" limit="2000" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="20">
+										<node name="select" prob="100,100">
+											<node name="standby" limit="500" faceTarget="1" cooltime="30000" isKeepBattle="true">
+												<!--함포 사격-->
+												<node name="say" message="$Bliche__AI_BLICHE_FR_LV2__7$" durationTick="2000" delayTick="0" />
+												<node name="sidePopup" type="talk" illust="Neirin_surprise" script="$Bliche__AI_BLICHE_FR_LV2__8$" duration="3000" voice="ko/Npc/00002238" />
+												<node name="skill" faceTarget="1" idx="22" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="trace" till="300" limit="2000" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" till="300" limit="2000" />
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="21">
+					<node name="select" prob="100,0">
+						<!-- 광폭화 패턴을 위한 KR 버프 피쳐 처리-->
+						<node name="skill" facePos="2633, 830, 7951" cooltime="9999999" isKeepBattle="true" idx="14">
+							<!--월광베기 점프 준비 -->
+							<node name="sidePopup" type="talk" illust="Bliche_closeEye" script="$Bliche__AI_BLICHE_FR_LV2__18$" duration="1000" />
+							<node name="jump" pos="2633, 830, 7951" speed="2100" heightMultiplier="0.7" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="15" />
+							<node name="target" type="far" from="10" to="1600" />
+							<node name="sidePopup" type="cutin" illust="Cutin_Bliche_01" duration="2000" sound="System_FortressRumble_CutIn_01" />
+							<node name="skill" idx="10" />
+							<!--근거리 강화 시작 월광베기 사용-->
+							<node name="standby" limit="100" faceTarget="1" />
+							<node name="skill" idx="11" />
+							<!--근-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="12" />
+							<!--원-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="11" />
+							<!--근-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="12" />
+							<!--원-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="11" />
+							<!--근-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="sidePopup" type="talk" illust="Bliche_closeEye" script="$Bliche__AI_BLICHE_FR_LV2__19$" duration="3000" voice="ko/Npc/00002254" />
+							<node name="conditions">
+								<condition name="feature" feature="FameChallengeBuff_01">
+									<node name="skill" faceTarget="1" idx="17" />
+								</condition>
+								<condition name="true">
+									<node name="skill" faceTarget="1" idx="18" />
+								</condition>
+							</node>
+							<node name="standby" limit="100" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="100,100,100">
+									<!--기본 공격 세가지 중 랜덤으로 발생 시키기 위한 거리체크 시작 스킬-->
+									<node name="skill" idx="5">
+										<!--블리체 1식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 블리체 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="6">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="6" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="7">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="7" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="standby" limit="500" faceTarget="1" />
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="6">
+										<!--해군 2식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="5">
+														<node name="select" prob="100,100">
+															<!--1공격후 파생기-->
+															<node name="skill" idx="5" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="7">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="7" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="runaway" till="400" limit="2000" />
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="7">
+										<!--해군 3식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="5">
+														<node name="select" prob="100,100">
+															<!--1공격후 파생기-->
+															<node name="skill" idx="5" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="6">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="6" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="runaway" till="400" limit="2000" />
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="21">
+								<node name="select" prob="100,100,100">
+									<node name="skill" cooltime="15000" idx="9">
+										<!--3페이즈 진격 베기 Lv2-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="skill" facePos="3037, 830, 7951" cooltime="40000" isKeepBattle="true" idx="14">
+										<!--강화 선풍참 페이즈-->
+										<!--점프 준비 -->
+										<node name="jump" pos="3037, 830, 7951" speed="2200" heightMultiplier="0.7" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="15" />
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="sidePopup" type="talk" illust="Bliche_nomal" script="$Bliche__AI_BLICHE_FR_LV2__22$" duration="3000" />
+										<node name="skill" idx="27" />
+										<!--1차 선풍참 사용 -->
+										<node name="skill" idx="28" />
+										<node name="skill" facePos="2228, 830, 7951" idx="14" />
+										<!--점프중 -->
+										<node name="jump" pos="2228, 830, 7951" speed="2200" heightMultiplier="0.7" />
+										<node name="skill" faceTarget="0" idx="15" />
+										<node name="skill" idx="28" />
+										<!--2차 선풍참 사용 -->
+										<node name="skill" idx="29" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="trace" till="300" limit="2000" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="20">
+										<node name="select" prob="100,100">
+											<node name="standby" limit="500" faceTarget="1" cooltime="30000" isKeepBattle="true">
+												<!--함포 사격-->
+												<node name="say" message="$Bliche__AI_BLICHE_FR_LV2__20$" durationTick="2000" delayTick="0" />
+												<node name="sidePopup" type="talk" illust="Neirin_surprise" script="$Bliche__AI_BLICHE_FR_LV2__21$" duration="3000" voice="ko/Npc/00002238" />
+												<node name="skill" faceTarget="1" idx="22" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="trace" till="300" limit="2000" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" till="300" limit="2000" />
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="100,0">
+						<node name="skill" facePos="2633, 830, 7951" cooltime="9999999" isKeepBattle="true" idx="14">
+							<!--월광베기 점프 준비 -->
+							<node name="sidePopup" type="talk" illust="Bliche_closeEye" script="$Bliche__AI_BLICHE_FR_LV2__18$" duration="1000" />
+							<node name="jump" pos="2633, 830, 7951" speed="2100" heightMultiplier="0.7" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="15" />
+							<node name="target" type="far" from="10" to="1600" />
+							<node name="sidePopup" type="cutin" illust="Cutin_Bliche_01" duration="2000" sound="System_FortressRumble_CutIn_01" />
+							<node name="skill" idx="23" />
+							<!--원거리 시작 강화 월광베기 사용-->
+							<node name="standby" limit="100" faceTarget="1" />
+							<node name="skill" idx="24" />
+							<!--원-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="25" />
+							<!--근-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="24" />
+							<!--원-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="25" />
+							<!--근-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="skill" idx="26" />
+							<!--원-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="100,100,100">
+									<!--기본 공격 세가지 중 랜덤으로 발생 시키기 위한 거리체크 시작 스킬-->
+									<node name="skill" idx="5">
+										<!--블리체 1식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 블리체 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="6">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="6" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="7">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="7" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="standby" limit="500" faceTarget="1" />
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="6">
+										<!--해군 2식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="5">
+														<node name="select" prob="100,100">
+															<!--1공격후 파생기-->
+															<node name="skill" idx="5" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="7">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="7" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="runaway" till="400" limit="2000" />
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="7">
+										<!--해군 3식 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="19">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 해군 2,3식 랜덤 사용-->
+													<node name="trace" limit="2000" skillIdx="5">
+														<node name="select" prob="100,100">
+															<!--1공격후 파생기-->
+															<node name="skill" idx="5" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="6">
+														<node name="select" prob="100,100">
+															<node name="skill" idx="6" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="runaway" till="400" limit="2000" />
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="21">
+								<node name="select" prob="100,100,100">
+									<node name="skill" cooltime="15000" idx="9">
+										<!--3페이즈 진격 베기 Lv2-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="skill" facePos="3037, 830, 7951" cooltime="40000" isKeepBattle="true" idx="14">
+										<!--강화 선풍참 -->
+										<!--점프 준비 -->
+										<node name="jump" pos="3037, 830, 7951" speed="2000" heightMultiplier="0.7" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="15" />
+										<node name="target" type="far" from="10" to="1600" />
+										<node name="sidePopup" type="talk" illust="Bliche_nomal" script="$Bliche__AI_BLICHE_FR_LV2__22$" duration="3000" voice="ko/Npc/00002257" />
+										<node name="skill" idx="27" />
+										<!--1차 선풍참 사용 -->
+										<node name="skill" idx="28" />
+										<node name="skill" facePos="2228, 830, 7951" idx="14" />
+										<!--점프중 -->
+										<node name="jump" pos="2228, 830, 7951" speed="2200" heightMultiplier="0.7" />
+										<node name="skill" faceTarget="0" idx="15" />
+										<node name="skill" idx="28" />
+										<!--2차 선풍참 사용 -->
+										<node name="skill" idx="29" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="trace" till="300" limit="2000" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="20">
+										<node name="select" prob="100,100">
+											<!--함포 사격 거리체크-->
+											<node name="standby" limit="500" faceTarget="1" cooltime="30000" isKeepBattle="true">
+												<!--함포 사격-->
+												<node name="say" message="$Bliche__AI_BLICHE_FR_LV2__20$" durationTick="2000" delayTick="0" />
+												<node name="sidePopup" type="talk" illust="Neirin_surprise" script="$Bliche__AI_BLICHE_FR_LV2__21$" duration="3000" voice="ko/Npc/00002238" />
+												<node name="skill" faceTarget="1" idx="22" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="trace" till="300" limit="2000" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" till="300" limit="2000" />
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

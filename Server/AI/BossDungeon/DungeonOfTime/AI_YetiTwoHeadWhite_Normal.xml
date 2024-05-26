@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 소환몹 ID가 난이도별로 따로 설정 되어야 해서, 몬스터 AI.xml 이 노말 하드 각각 따로 적용했음-->
+	<reserved>
+		<condition name="hpLess" value="101">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true"/>
+				<node name="SetValue" key="CheckBodyBigger" value="0" />
+				<node name="SetValue" key="ActionBodyBigger" value="0" />
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="99999,0">
+			<node name="conditions" cooltime="1000">
+				<condition name="extraData" key="CheckBodyBigger" value="1">
+					<!-- 몹 소환 이후 몹이 살아있는 상태  -->
+					<node name="conditions">
+						<condition name="SlaveCount" count="0">
+							<node name="SetValue" key="CheckBodyBigger" value="0" />
+							<node name="buff" type="remove" id="50001501" />
+							<node name="buff" type="remove" id="50001502" />
+							<node name="buff" type="remove" id="50001503" />
+							<node name="buff" type="remove" id="50001504" />				
+						</condition>
+						<condition name="SlaveCount" count="1">
+							<node name="SetValue" key="ActionBodyBigger" value="1" />
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="5"/>
+							<node name="target" type="near" from="10" to="1800" />
+						</condition>
+						<condition name="SlaveCount" count="2">
+							<node name="SetValue" key="ActionBodyBigger" value="2" />
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="6"/>
+							<node name="target" type="near" from="10" to="1800" />
+							<node name="move" destination="-300, -600, 2260" limit="4000" cooltime="60000"/>
+							<!--  보스가 너무 12시 방향쪽으로 붙어있으면, 2층 대상이 타겟팅에 제일 가까울 수 있어 이때 한방킬 스킬이 나갈 위험이 있기 때문에 맵 6시 바향으로 이동하도록 하는 안전 장치를 넣음 -->
+						</condition>
+						<condition name="SlaveCount" count="3">
+							<node name="SetValue" key="ActionBodyBigger" value="3" />
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="7"/>
+							<node name="target" type="near" from="10" to="1800" />
+						</condition>
+						<condition name="SlaveCount" count="4">
+							<node name="SetValue" key="ActionBodyBigger" value="4" />
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="8"/>
+							<node name="target" type="near" from="10" to="1800" />
+							<node name="select" prob="99,0">
+								<node name="move" destination="-300, -600, 2260" limit="4000" cooltime="60000"/>
+								<!--  보스가 너무 12시 방향쪽으로 붙어있으면, 2층 대상이 타겟팅에 제일 가까울 수 있어 이때 한방킬 스킬이 나갈 위험이 있기 때문에 맵 6시 바향으로 이동하도록 하는 안전 장치를 넣음 -->
+								<node name="target" type="near" from="10" to="1800" />
+							</node>
+							<node name="target" type="near" from="10" to="1800" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="90">
+					<node name="select" prob="9999,9999,0">
+						<!--비교적 평범한 공격 사용, 가끔 강제 얼리기 스킬 발동 -->
+						<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+							<node name="target" type="rand" from="10" to="1800" />
+						</node>
+						<node name="skill" cooltime="180000" initialCooltime="18000" idx="11">
+							<!--강제 얼리기 공격, 레벨1: 2발 발사 , 거의 한번만 사용하도록함, 딜레이 설정된 애디셔널은 무조건 중첩 적용되기 때문에-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="12">
+								<node name="select" prob="31,31,37,1">
+									<node name="skill" isKeepBattle="true" idx="12">
+										<!--전진하면서 휘두르기 공격 -->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="skill" faceTarget="0" idx="15" />
+										<!--마무리-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="12">
+										<!--전진하면서 휘두르기 공격 -->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="skill" faceTarget="0" idx="15" />
+										<!--마무리-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="far" from="10" to="1100" />
+										<node name="skill" idx="24" />
+										<!--뛰어간 후 머리로 올려치기 -->
+										<node name="skill" idx="25" />
+										<!--뛰어기기-->
+										<node name="skill" faceTarget="0" idx="26" />
+										<!--올려치기-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="70,30">
+									<node name="trace" limit="3000" skillIdx="1" />
+									<node name="skill" isKeepBattle="true" idx="2">
+										<!--뛰어간 후 머리로 올려치기 -->
+										<node name="skill" idx="3" />
+										<!--뛰어기기-->
+										<node name="skill" idx="3" />
+										<!--뛰어기기-->
+										<node name="skill" faceTarget="0" idx="4" />
+										<!--올려치기-->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="target" type="rand" from="10" to="800" />
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="75">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="10" faceTarget="1" cooltime="62000" isKeepBattle="true">
+							<!-- 소환몹 2마리 등장시켜 2단계 까지만 커지기-->
+							<!-- 이 몬스터는 50000253 3초간 무적버프 달고 태어남, 보스한테 커지기 버프 부여 전에 죽으면 안되기 때문에 -->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" lifeTime="99900" summonPos="0, 1200, 2710" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" lifeTime="99900" summonPos="1350, 600, 2710" />
+							<node name="skill" facePos="900, 1050, 2710" idx="39" />
+							<!--그냥 AttackIdle 서있는 껍데기 스킬 데이터, 음성 효과음 여기서 설정함 -->
+							<node name="standby" limit="2000" faceTarget="0" />
+							<!--  커지기 주문 4개를 한꺼번에 받으려면 4초 정도 기다리고 있어야 함, 4초가 너무 길어도 어쩔 수 없음 -->
+							<node name="standby" limit="2500" faceTarget="1" />
+							<node name="target" type="near" from="10" to="1800" />
+							<!--  이 페이즈에서 항상 가까이 있는 대상에게 타겟팅 가도록 함  -->
+							<node name="SetValue" key="CheckBodyBigger" value="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="9999,0">
+									<!--타겟팅 대상이 1층 지형에 있으면-->
+									<node name="skill" cooltime="28000" idx="10">
+										<!--유도탄 2발 발사, 파티원이 1층에 항상 5명 이상 있도록 하기 위해 유도탄 5발 발사 -->
+										<node name="standby" limit="2500" faceTarget="1">
+											<node name="target" type="near" from="10" to="1800" />
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="extraData" key="ActionBodyBigger" value="1">
+											<node name="select" prob="50,50">
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="41">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="20">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="2">
+											<node name="select" prob="50,50">
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="42">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="21">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="3">
+											<node name="select" prob="50,50">
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="43">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="22">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="4">
+											<node name="select" prob="50,50">
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="44">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="23">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="0" op="lessEqual">
+											<node name="select" prob="60,40">
+												<!--  덩치가 보통 상태일 때  -->
+												<node name="standby" limit="10" faceTarget="1" cooltime="23000" initialCooltime="100">
+													<node name="select" prob="100,100">
+														<node name="skill" cooltime="53000" initialCooltime="100" idx="34">
+															<!--얼음큐브 갈라짐, 레벨11(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+														<node name="skill" cooltime="53000" initialCooltime="100" idx="35">
+															<!--얼음큐브 갈라짐, 레벨12(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="skill" isKeepBattle="true" idx="12">
+													<!--전진하면서 휘두르기 공격 -->
+													<node name="skill" faceTarget="0" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="target" type="near" from="10" to="700" />
+													<node name="skill" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="skill" faceTarget="0" idx="15" />
+													<!--마무리-->
+													<node name="target" type="near" from="10" to="1500" />
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="60,40">
+												<!--  덩치가 보통 상태일 때 (신호 데이터가 꼬였을 때를 대비해서 ActionBodyBigger=0 과 똑같이 설정함) -->
+												<node name="standby" limit="10" faceTarget="1" cooltime="23000" initialCooltime="100">
+													<node name="select" prob="100,100">
+														<node name="skill" cooltime="53000" initialCooltime="100" idx="34">
+															<!--얼음큐브 갈라짐, 레벨11(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+														<node name="skill" cooltime="53000" initialCooltime="100" idx="35">
+															<!--얼음큐브 갈라짐, 레벨12(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="skill" isKeepBattle="true" idx="12">
+													<!--전진하면서 휘두르기 공격 -->
+													<node name="skill" faceTarget="0" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="target" type="near" from="10" to="700" />
+													<node name="skill" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="skill" faceTarget="0" idx="15" />
+													<!--마무리-->
+													<node name="target" type="near" from="10" to="1500" />
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--모든 플레이어가 2층 지형으로 올라가 있으면-->
+								<!--1방 킬 유도 투사체 2개 발사, 난이도 쉽게하는 이슈로 이 스킬 빼기 -->
+								<!--
+								<skill id="50100482"  level="1" prob="99">  
+									<standby limit="2000"  faceTarget="1"  prob="100">	
+										<target type="near" prob="100" from="10" to="1800" />  
+									</standby>
+								</skill>		-->
+								<node name="standby" limit="1000" faceTarget="1">
+									<node name="target" type="near" from="10" to="1800" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="70">
+					<node name="select" prob="9999,9999,9999,0">
+						<!--중간에 약간 템포 조절 부분, 얼리기 공격 가끔 사용 3발-->
+						<node name="standby" limit="100" isKeepBattle="true" cooltime="9999999">
+							<!--이전 페이즈가 몸 커지기 패턴이라면 다음 페이지에 몸크기 초기화 하는 부분 꼭 넣어야 함-->
+							<node name="buff" type="remove" id="50001501" />
+							<node name="buff" type="remove" id="50001502" />
+							<node name="buff" type="remove" id="50001503" />
+							<node name="buff" type="remove" id="50001504" />
+							<node name="SetValue" key="CheckBodyBigger" value="0" />
+							<node name="SetValue" key="ActionBodyBigger" value="0" />
+						</node>
+						<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+							<node name="target" type="rand" from="10" to="1800" />
+						</node>
+						<!--강제 얼리기 공격-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="23000">
+							<node name="select" prob="999,35,65">
+								<node name="skill" cooltime="999000" idx="11">
+									<!--강제 얼리기 공격, 레벨1: 2발 발사 , 거의 한번만 사용하도록함, 딜레이 설정된 애디셔널은 무조건 중첩 적용되기 때문에-->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="11">
+									<!--강제 얼리기 공격, 레벨1: 2발 발사 , 거의 한번만 사용하도록함, 딜레이 설정된 애디셔널은 무조건 중첩 적용되기 때문에-->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="12">
+								<node name="select" prob="999,31,31,37,1">
+									<node name="skill" cooltime="26000" idx="40">
+										<!--바닥 쾅! 쳐서 납짝이-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="12">
+										<!--전진하면서 휘두르기 공격 -->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="13" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--2타-->
+										<node name="skill" faceTarget="0" idx="15" />
+										<!--마무리-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="16">
+										<!--전진하면서 강력 휘두르기 공격 -->
+										<node name="skill" faceTarget="0" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="skill" faceTarget="0" idx="19" />
+										<!--마무리-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="far" from="10" to="1100" />
+										<node name="skill" idx="24" />
+										<!--뛰어간 후 머리로 올려치기 -->
+										<node name="skill" idx="25" />
+										<!--뛰어기기-->
+										<node name="skill" faceTarget="0" idx="26" />
+										<!--올려치기-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="70,30">
+									<node name="trace" limit="3000" skillIdx="1" />
+									<node name="skill" isKeepBattle="true" idx="2">
+										<!--뛰어간 후 머리로 올려치기 -->
+										<node name="skill" idx="3" />
+										<!--뛰어기기-->
+										<node name="skill" idx="3" />
+										<!--뛰어기기-->
+										<node name="skill" faceTarget="0" idx="4" />
+										<!--올려치기-->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="target" type="rand" from="10" to="800" />
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="50">
+					<node name="select" prob="9999,0">
+						<!--소환몹 4마리 등장시켜 4단계  커지기-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="70000" isKeepBattle="true">
+							<!-- 이 몬스터는 50000253 3초간 무적버프 달고 태어남, 보스한테 커지기 버프 부여 전에 죽으면 안되기 때문에 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" lifeTime="99900" summonPos="450, 1200, 2710" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" lifeTime="99900" summonPos="0, 1200, 2710" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" lifeTime="99900" summonPos="1350, 600, 2710" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="104" lifeTime="99900" summonPos="1500, 150, 2710" />
+							<node name="skill" facePos="900, 1050, 3100" idx="39" />
+							<!--그냥 AttackIdle 서있는 껍데기 스킬 데이터, 음성 효과음 여기서 설정함 -->
+							<node name="standby" limit="2000" faceTarget="0" />
+							<node name="standby" limit="2500" faceTarget="1" />
+							<!--  커지기 주문 4개를 한꺼번에 받으려면 4초 정도 기다리고 있어야 함, 4초가 너무 길어도 어쩔 수 없음 -->
+							<node name="target" type="near" from="10" to="1800" />
+							<!--  이 페이즈에서 항상 가까이 있는 대상에게 타겟팅 가도록 함  -->
+							<node name="SetValue" key="CheckBodyBigger" value="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="9999,0">
+									<!--타겟팅 대상이 1층 지형에 있으면-->
+									<node name="skill" cooltime="32000" idx="10">
+										<!--유도탄 2발 발사, 파티원이 1층에 항상 2명 이상 있도록 하기 위해 유도탄 5발 발사 -->
+										<node name="standby" limit="1000" faceTarget="1">
+											<node name="target" type="near" from="10" to="1800" />
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="extraData" key="ActionBodyBigger" value="1">
+											<node name="select" prob="50,50">
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="41">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="20">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="2">
+											<node name="select" prob="50,50">
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="42">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="21">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="3">
+											<node name="select" prob="50,50">
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="43">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="22">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="4">
+											<node name="select" prob="50,50">
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="44">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" cooltime="1000" initialCooltime="100" idx="23">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="0" op="lessEqual">
+											<node name="select" prob="60,40">
+												<!--  덩치가 보통 상태일 때  -->
+												<node name="standby" limit="10" faceTarget="1" cooltime="23000" initialCooltime="100">
+													<node name="select" prob="100,100">
+														<node name="skill" cooltime="53000" initialCooltime="100" idx="34">
+															<!--얼음큐브 갈라짐, 레벨11(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+														<node name="skill" cooltime="53000" initialCooltime="100" idx="35">
+															<!--얼음큐브 갈라짐, 레벨12(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="skill" isKeepBattle="true" idx="12">
+													<!--전진하면서 휘두르기 공격 -->
+													<node name="skill" faceTarget="0" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="target" type="near" from="10" to="700" />
+													<node name="skill" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="skill" faceTarget="0" idx="15" />
+													<!--마무리-->
+													<node name="target" type="near" from="10" to="1500" />
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="60,40">
+												<!--  덩치가 보통 상태일 때 (신호 데이터가 꼬였을 때를 대비해서 ActionBodyBigger=0 과 똑같이 설정함) -->
+												<node name="standby" limit="10" faceTarget="1" cooltime="25000">
+													<node name="select" prob="100,100">
+														<node name="skill" cooltime="65000" initialCooltime="100" idx="34">
+															<!--얼음큐브 갈라짐, 레벨11(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+														<node name="skill" cooltime="65000" initialCooltime="100" idx="35">
+															<!--얼음큐브 갈라짐, 레벨12(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="skill" isKeepBattle="true" idx="12">
+													<!--전진하면서 휘두르기 공격 -->
+													<node name="skill" faceTarget="0" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="target" type="near" from="10" to="700" />
+													<node name="skill" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="skill" faceTarget="0" idx="15" />
+													<!--마무리-->
+													<node name="target" type="near" from="10" to="1500" />
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--모든 플레이어가 2층 지형으로 올라가 있으면-->
+								<!--1방 킬 유도 투사체 2개 발사, 난이도 쉽게하는 이슈로 이 스킬 빼기 -->
+								<!--
+								<skill id="50100482"  level="1" prob="99">  
+									<standby limit="2000"  faceTarget="1"  prob="100">	
+										<target type="near" prob="100" from="10" to="1800" />  
+									</standby>
+								</skill>		-->
+								<node name="standby" limit="1000" faceTarget="1">
+									<node name="target" type="near" from="10" to="1800" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="35">
+					<node name="select" prob="9999,9999,9999,0">
+						<!--얼리기 공격 난사-->
+						<node name="standby" limit="100" cooltime="9999999" isKeepBattle="true">
+							<!--이전 페이즈가 몸 커지기 패턴이라면 다음 페이지에 몸크기 초기화 하는 부분 꼭 넣아야 함-->
+							<node name="buff" type="remove" id="50001501" />
+							<node name="buff" type="remove" id="50001502" />
+							<node name="buff" type="remove" id="50001503" />
+							<node name="buff" type="remove" id="50001504" />
+							<node name="SetValue" key="CheckBodyBigger" value="0" />
+							<node name="SetValue" key="ActionBodyBigger" value="0" />
+						</node>
+						<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+							<node name="target" type="rand" from="10" to="1800" />
+						</node>
+						<!--강제 얼리기 공격-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="23000">
+							<node name="select" prob="999,35,65">
+								<node name="skill" cooltime="999000" idx="11">
+									<!--강제 얼리기 공격, 레벨1: 2발 발사 , 거의 한번만 사용하도록함, 딜레이 설정된 애디셔널은 무조건 중첩 적용되기 때문에-->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="11">
+									<!--강제 얼리기 공격, 레벨1: 2발 발사 , 거의 한번만 사용하도록함, 딜레이 설정된 애디셔널은 무조건 중첩 적용되기 때문에-->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="12">
+								<node name="select" prob="999,31,31,37,1">
+									<node name="skill" cooltime="27000" idx="40">
+										<!--바닥 쾅! 쳐서 납짝이-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="16">
+										<!--전진하면서 강력 휘두르기 공격 -->
+										<node name="skill" faceTarget="0" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="skill" faceTarget="0" idx="19" />
+										<!--마무리-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="16">
+										<!--전진하면서 강력 휘두르기 공격 -->
+										<node name="skill" faceTarget="0" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="target" type="rand" from="10" to="700" />
+										<node name="skill" idx="17" />
+										<!--1타-->
+										<node name="skill" faceTarget="0" idx="18" />
+										<!--2타-->
+										<node name="skill" faceTarget="0" idx="19" />
+										<!--마무리-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="far" from="10" to="1100" />
+										<node name="skill" idx="24" />
+										<!--뛰어간 후 머리로 올려치기 -->
+										<node name="skill" idx="25" />
+										<!--뛰어기기-->
+										<node name="skill" faceTarget="0" idx="26" />
+										<!--올려치기-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="70,30">
+									<node name="trace" limit="3000" skillIdx="1" />
+									<node name="skill" isKeepBattle="true" idx="2">
+										<!--뛰어간 후 머리로 올려치기 -->
+										<node name="skill" idx="3" />
+										<!--뛰어기기-->
+										<node name="skill" idx="3" />
+										<!--뛰어기기-->
+										<node name="skill" faceTarget="0" idx="4" />
+										<!--올려치기-->
+										<node name="standby" limit="2500" faceTarget="1" />
+										<node name="target" type="rand" from="10" to="800" />
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="10">
+					<node name="select" prob="9999,0">
+						<!--소환몹 4마리 등장시켜 4단계  커지기-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="70000" isKeepBattle="true">
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" lifeTime="99900" summonPos="450, 1200, 2710" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" lifeTime="99900" summonPos="0, 1200, 2710" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" lifeTime="99900" summonPos="1350, 600, 2710" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="104" lifeTime="99900" summonPos="1500, 150, 2710" />
+							<node name="skill" facePos="900, 1050, 3100" idx="39" />
+							<!--그냥 AttackIdle 서있는 껍데기 스킬 데이터, 음성 효과음 여기서 설정함 -->
+							<node name="standby" limit="2000" faceTarget="0" />
+							<!--  커지기 주문 4개를 한꺼번에 받으려면 4초 정도 기다리고 있어야 함, 4초가 너무 길어도 어쩔 수 없음 -->
+							<node name="standby" limit="2500" faceTarget="1" />
+							<node name="target" type="near" from="10" to="1800" />
+							<!--  이 페이즈에서 항상 가까이 있는 대상에게 타겟팅 가도록 함  -->
+							<node name="SetValue" key="CheckBodyBigger" value="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="9999,0">
+									<!--타겟팅 대상이 1층 지형에 있으면-->
+									<node name="skill" cooltime="28000" idx="10">
+										<!--유도탄 2발 발사, 파티원이 1층에 항상 2명 이상 있도록 하기 위해 유도탄 5발 발사 -->
+										<node name="standby" limit="2500" faceTarget="1">
+											<node name="target" type="near" from="10" to="1800" />
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="extraData" key="ActionBodyBigger" value="1">
+											<node name="select" prob="50,50">
+												<node name="skill" idx="41">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" idx="20">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="2">
+											<node name="select" prob="50,50">
+												<node name="skill" idx="42">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" idx="21">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="3">
+											<node name="select" prob="50,50">
+												<node name="skill" idx="43">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" idx="22">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="4">
+											<node name="select" prob="50,50">
+												<node name="skill" idx="44">
+													<!--바닥 쾅!~ 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+												<node name="skill" idx="23">
+													<!--어퍼컷 공격 -->
+													<node name="standby" limit="2500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1800" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="ActionBodyBigger" value="0" op="lessEqual">
+											<node name="select" prob="60,40">
+												<!--  덩치가 보통 상태일 때  -->
+												<node name="standby" limit="10" faceTarget="1" cooltime="30000">
+													<node name="select" prob="100,100">
+														<node name="skill" cooltime="75000" idx="34">
+															<!--얼음큐브 갈라짐, 레벨11(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+														<node name="skill" cooltime="75000" idx="35">
+															<!--얼음큐브 갈라짐, 레벨12(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="skill" isKeepBattle="true" idx="12">
+													<!--전진하면서 휘두르기 공격 -->
+													<node name="skill" faceTarget="0" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="target" type="near" from="10" to="700" />
+													<node name="skill" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="skill" faceTarget="0" idx="15" />
+													<!--마무리-->
+													<node name="target" type="near" from="10" to="1500" />
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="60,40">
+												<!--  덩치가 보통 상태일 때 (신호 데이터가 꼬였을 때를 대비해서 ActionBodyBigger=0 과 똑같이 설정함) -->
+												<node name="standby" limit="10" faceTarget="1" cooltime="23000">
+													<node name="select" prob="100,100">
+														<node name="skill" cooltime="53000" initialCooltime="100" idx="34">
+															<!--얼음큐브 갈라짐, 레벨11(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+														<node name="skill" cooltime="53000" initialCooltime="100" idx="35">
+															<!--얼음큐브 갈라짐, 레벨12(공격력 30% 높은거) -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="target" type="near" from="10" to="1800" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="skill" isKeepBattle="true" idx="12">
+													<!--전진하면서 휘두르기 공격 -->
+													<node name="skill" faceTarget="0" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="target" type="near" from="10" to="700" />
+													<node name="skill" idx="13" />
+													<!--1타-->
+													<node name="skill" faceTarget="0" idx="14" />
+													<!--2타-->
+													<node name="skill" faceTarget="0" idx="15" />
+													<!--마무리-->
+													<node name="target" type="near" from="10" to="1500" />
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--모든 플레이어가 2층 지형으로 올라가 있으면-->
+								<!--1방 킬 유도 투사체 2개 발사, 난이도 쉽게하는 이슈로 이 스킬 빼기 -->
+								<!--
+								<skill id="50100482"  level="1" prob="99">  
+									<standby limit="2000"  faceTarget="1"  prob="100">	
+										<target type="near" prob="100" from="10" to="1800" />  
+									</standby>
+								</skill>		-->
+								<node name="standby" limit="1000" faceTarget="1">
+									<node name="target" type="near" from="10" to="1800" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,100">
+						<!--얼굴공개 폭주모드-->
+						<node name="standby" limit="100" isKeepBattle="true" cooltime="9999999">
+							<!--이전 페이즈가 몸 커지기 패턴이라면 다음 페이지에 몸크기 초기화 하는 부분 꼭 넣아야 함-->
+							<node name="buff" type="remove" id="50001501" />
+							<node name="buff" type="remove" id="50001502" />
+							<node name="buff" type="remove" id="50001503" />
+							<node name="buff" type="remove" id="50001504" />
+							<node name="SetValue" key="CheckBodyBigger" value="0" />
+							<node name="SetValue" key="ActionBodyBigger" value="0" />
+							<node name="skill" facePos="600, 750, 2260" idx="37" />
+							<!--점프 뛰기 준비 동작-->
+							<node name="jump" pos="600, 750, 2260" speed="1800" heightMultiplier="1.1" />
+							<node name="skill" faceTarget="0" idx="38" />
+							<!--점프 착지 동작-->
+						</node>
+						<node name="standby" limit="500" faceTarget="0" cooltime="11" initialCooltime="100" isKeepBattle="true">
+							<!--	<teleport pos = "600, 750, 2260"  prob="100"/>    -->
+							<node name="skill" facePos="-750, -750, 2260" idx="27" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--레벨2도  성우 음성 설정-->
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="29" />
+							<!--레벨3과 5에 성우 음성 설정-->
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="30" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="31" />
+							<!--레벨3과 5에 성우 음성 설정-->
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--레벨2도  성우 음성 설정-->
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<node name="skill" faceTarget="0" idx="33" />
+							<node name="skill" faceTarget="0" idx="36" />
+							<!--얼음큐브 갈라짐, 레벨13(공격력 30% 높은거) -->
+							<node name="standby" limit="5000" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="ActionMode" value="0" />
+				<!-- 스노우퀸 보스한테 신호를 받아서, 특수한 행동을 하고자 할때 사용하는 변수-->
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--소환 몬스터 다 죽었는지 체크하는 변수-->
+				<node name="SetValue" key="SummonDeath" value="0" />
+				<!--보스 Kill 되었을때 체크하여 특수 처리하는데 사용되는 변수-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<node name="select" prob="99989,10">
+						<!--스노우퀸 보스가 죽으면 SummonDeath = 1 신호를 받음  -->
+						<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--설눈이가 소환한 소환몹에게 자살 명령 내리기-->
+							<node name="move" destination="900, 1050, 3700" limit="19500" />
+							<!-- 나가기 포탈에 가까이 서있으면 버그 생기기 때문에 적당히 근처에 있기-->
+							<node name="skill" facePos="1200, 1350, 3700" idx="7" />
+							<!-- 스노우퀸쪽 도망 이벤트 쪽  방향으로 바라보기-->
+						</node>
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="2">
+					<!--스노우퀸 보스가 호위병 방패 방어 공격 패턴을 할때  ActionMode=2 신호를 보내는데, 이때 설눈이 주변에 졸병몹 소환시킴 -->
+					<!--왼쪽과 오른쪽 지점 등장하는 스노우퀸에서 사용함 -->
+					<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+						<node name="move" destination="450, 600, 3700" limit="19500" />
+						<!-- 설눈이가 구석에 있으면, 소환몹 4마리가 다 안나올 수 있기 때문에 일단 맵 중앙으로 이동시킴-->
+						<node name="standby" limit="500" faceTarget="1" />
+						<node name="SetValue" key="MonsterNumber" value="2" />
+						<!--졸몹 2마리니 변수에 2를 넣음  ,21421315 코드는 HP가 무척 낮 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="-350, 0, 0" summonRot="0,0,-50" />
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPosOffset="0, -350, 0" summonRot="0,0,-50" />
+						<!--			<summon npcId="21421315" npcCount="1" npcCountMax="1" group="101" summonPosOffset="350, 0, 0" summonRot="0,0,-50"/>	
+					<summon npcId="21421315" npcCount="1" npcCountMax="1" group="102" summonPosOffset="-350, 0, 0" summonRot="0,0,-50"/>	-->
+						<node name="standby" limit="800" faceTarget="1" />
+						<node name="target" type="near" from="10" to="650" />
+						<node name="SetValue" key="ActionMode" value="1" />
+						<!--졸병 소환 후 이 변수에 1을 넣어서 주변 졸병 공격 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="1">
+					<!--졸병 소환 후 주변 졸병 공격하고 졸병 3마리가 죽으며, 스노우퀸 방어 상태를 스턴 스킬로 공격하도록함-->
+					<!--왼쪽과 오른쪽 지점 등장하는 스노우퀸에서 사용함 -->
+					<node name="conditions">
+						<condition name="extraData" key="MonsterNumber" value="2" op="greaterEqual">
+							<!--졸병이 2마리 이상 남아있으면, 졸병 공격 행동함-->
+							<!--평범한 수준의 공격 패턴 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="85,2,10,3">
+										<!--망치 휘두르기 사정거리까지 다가가기 -->
+										<node name="skill" cooltime="3000" idx="4">
+											<node name="select" prob="90,10">
+												<!--망치 휘두르기 -->
+												<node name="say" message="$Seolnunyi_SOS$" durationTick="8000" delayTick="0" cooltime="10000" />
+												<!-- 플레이어한테 도와달라는 말풍선을 출력 -->
+												<node name="standby" limit="300" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" cooltime="33000" idx="5" />
+										<!--망치 강력 내려치기 -->
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="target" type="near" from="10" to="650" cooltime="20000" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="5000" skillIdx="4" />
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--졸병이 1마리 이하면 스노우퀸 공격하기 위한 스턴 망치 자주 사용하도록 함-->
+							<!--스턴 공격 자주 사용 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="45,42,10,3">
+										<!--망치 휘두르기 사정거리까지 다가가기 -->
+										<node name="skill" cooltime="3000" idx="4" />
+										<!--망치 휘두르기 -->
+										<node name="trace" limit="9000" cooltime="7000" skillIdx="6">
+											<!--200 거리 이내로 추적-->
+											<node name="skill" idx="6" />
+											<!--망치 강력 내려치기, 레벨2: 히트박스 큰거임 -->
+										</node>
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="target" type="rand" from="10" to="650" cooltime="12000" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="5000" skillIdx="4" />
+									<!--400 거리 까지 추적-->
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="4">
+					<!--스노우퀸 보스가 허리케인 바람 끌어당김 공격을 했을 때 ActionMode = 4 변수를 보냄-->
+					<!--가운데 지하 지점 등장하는 스노우퀸에서 사용함 -->
+					<node name="standby" limit="5000" faceTarget="1" isKeepBattle="true">
+						<node name="move" destination="0, 150, 3700" limit="19500" />
+						<!--회오리 바람 나오는 근처로 이동하기-->
+						<node name="standby" limit="500" faceTarget="1" />
+						<node name="say" message="$Seolnunyi_Hang$" durationTick="15000" delayTick="800" />
+						<node name="skill" facePos="750, 900, 3700" idx="1" />
+						<node name="skill" facePos="750, 900, 3700" idx="2" />
+						<node name="skill" faceTarget="0" idx="2" />
+						<node name="skill" faceTarget="0" idx="2" />
+						<node name="skill" faceTarget="0" idx="2" />
+						<node name="SetValue" key="ActionMode" value="3" />
+						<!--허리케인 바람 벗어나기 행동을 마치면 스스로 ActionMode = 3 변수를 셋팅함-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="3">
+					<!--스스로 ActionMode = 3 변수를 셋팅하면, 스노우퀸 호위병들한테 스턴 망치 공격함-->
+					<!--가운데 지하 지점 등장하는 스노우퀸에서 사용함 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!--단상 위에 있는 스노우퀸을 타겟팅하고 하고 있지 않으면  일반적인 공격 행위를 함  -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="45,42,10,3">
+										<!--망치 휘두르기 사정거리까지 다가가기 -->
+										<node name="skill" cooltime="3000" idx="4" />
+										<!--망치 휘두르기 -->
+										<node name="skill" cooltime="9000" idx="6" />
+										<!--망치 강력 내려치기, 레벨2 히트박스 더 넓음 -->
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="target" type="rand" from="10" to="650" cooltime="20000" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99,1">
+										<node name="move" destination="850, 1000, 3750" limit="11000" cooltime="35000" />
+										<!--스노퀸이 서있는 지점으로 이동-->
+										<node name="trace" limit="5000" skillIdx="4" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<!--보스를 죽여서 타겟팅 대상이 없으면 전투판 상단 지점으로 이동시킴 -->
+								<node name="move" destination="900, 750, 3750" limit="11000" cooltime="12000" />
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="target" type="rand" from="10" to="2600" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!--단상 위에 있는 스노우퀸을 타겟팅하고 하고 있지 않으면  일반적인 공격 행위를 함  -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="85,2,10,3">
+										<!--망치 휘두르기 사정거리까지 다가가기 -->
+										<node name="skill" cooltime="3000" idx="4" />
+										<!--망치 휘두르기 -->
+										<node name="skill" cooltime="33000" idx="5" />
+										<!--망치 강력 내려치기 -->
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="target" type="rand" from="10" to="650" cooltime="20000" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="50,50">
+										<node name="standby" limit="1000" faceTarget="1" />
+										<!--너무 적극적으로 추척하는 것을 막기 위한 설정 -->
+										<node name="trace" limit="3000" cooltime="4500" skillIdx="4" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<!--보스를 죽여서 타겟팅 대상이 없으면 전투판 상단 지점으로 이동시킴 -->
+								<node name="move" destination="900, 750, 3750" limit="11000" cooltime="12000" />
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="target" type="rand" from="10" to="2600" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

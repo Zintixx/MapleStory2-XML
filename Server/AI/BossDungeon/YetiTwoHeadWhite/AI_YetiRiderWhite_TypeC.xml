@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,399,0">
+			<!--슈슈 덩치 키우게 하는 주문 동작, standby limit="100" 이 시간이 너무 길면 몸커짐 신호 보내기 실패할 확률이 있음 -->
+			<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="skill" facePos="150, 0, 3100" idx="1" />
+				<node name="standby" limit="3000" faceTarget="1" />
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="10000">
+				<node name="target" type="near" from="10" to="5000" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="DeathYetiRiderWhite" value="1">
+					<node name="skill" idx="7" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<!-- 통상적인 행동 패턴  -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="80,20">
+								<node name="skill" isKeepBattle="true" idx="3">
+									<node name="skill" faceTarget="0" idx="4" />
+									<node name="skill" faceTarget="1" idx="4" />
+									<node name="skill" faceTarget="0" idx="4" />
+									<node name="skill" faceTarget="0" idx="5" />
+									<node name="target" type="near" from="10" to="2000" />
+									<node name="standby" limit="5500" faceTarget="1" />
+								</node>
+								<!--얼리기 볼 투척, 레벨1이 5초 레벨2가 15초 짜리임, 쫄은 금방 죽기 때문에 5초 짜리로 하는 것이 좋음 -->
+								<node name="skill" cooltime="99000" idx="6">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="90,10">
+										<node name="skill" idx="2">
+											<node name="standby" limit="7000" faceTarget="1" />
+										</node>
+										<!--얼리기 볼 투척, 레벨1이 5초 레벨2가 15초 짜리임, 쫄은 금방 죽기 때문에 5초 짜리로 하는 것이 좋음 -->
+										<node name="skill" cooltime="99000" idx="6">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="1000" faceTarget="1" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

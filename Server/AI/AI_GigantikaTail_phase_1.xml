@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<!-- 어떤 강력한 공격을 받더라도 다음 체력 페이즈만큼만 피해를 입고 추가 피해를 한동안 방지 한다. -->
+			<node name="standby" limit="10" faceTarget="1" initialCooltime="0">
+				<node name="MinimumHp" hpPercent="79" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="80">
+			<!--기간티카 전용 중간 보스몹들을 리스폰 시키고, 랜덤하게 위치를 이동 한다.-->
+			<node name="standby" limit="10" faceTarget="1" initialCooltime="0">
+				<node name="buff" type="add" id="49288030" />
+				<node name="MinimumHp" hpPercent="0" />
+				<node name="skill" idx="5" />
+				<node name="standby" limit="2000" faceTarget="1" />
+				<node name="select" prob="1,1,1,1,1,1">
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP,hitDamage" summonPos="-306, 2089, 1801" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP,hitDamage" summonPos="-4957, 909, 1801" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP,hitDamage" summonPos="-7064, -5234, 2401" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP,hitDamage" summonPos="-3475, -4656, 2251" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP,hitDamage" summonPos="-437, -6449, 2251" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP,hitDamage" summonPos="2095, -3887, 2251" />
+				</node>
+				<node name="RemoveMe" />
+				<node name="standby" limit="5000" faceTarget="1" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,50,40,30">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="buff" type="add" id="49288020" />
+				<node name="target" type="rand" from="10" to="2500" />
+			</node>
+			<!--기본공격 패턴 근거리 패턴 2개, 거리가 먼 경우 원거리 대상으로 타겟-->
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="55,50">
+							<!--전방 1단 찍기 -->
+							<node name="skill" idx="1">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<!--전방위 3단 찍기 -->
+							<node name="skill" idx="2">
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="50,40,10">
+							<!--독탄 발사/원거리 공격 -->
+							<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+								<node name="select" prob="100,55">
+									<node name="target" type="far" from="750" to="2000" />
+									<node name="skill" idx="3" />
+								</node>
+							</node>
+							<!--전방 1단 찍기 -->
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="select" prob="50,50">
+									<node name="skill" idx="1">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<!--전방 3단 찍기 -->
+									<node name="skill" idx="2">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+					</condition>
+				</node>
+			</node>
+			<!--중거리 광역 및 깔아두기 공격 패턴, 거리가 먼 경우 원거리 대상으로 타겟-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000" initialCooltime="7000">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="4">
+						<!--수직 상승/근, 중거리 광역 공격 -->
+						<node name="skill" cooltime="20000" idx="4">
+							<node name="select" prob="100,100">
+								<node name="target" type="near" from="10" to="700" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="50,10">
+							<!--독탄 발사/원거리 공격 -->
+							<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+								<node name="select" prob="100,100,100">
+									<node name="target" type="far" from="750" to="2000" />
+									<node name="skill" idx="3" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+					</condition>
+				</node>
+			</node>
+			<node name="standby" limit="2000" faceTarget="1" cooltime="12000"></node>
+		</node>
+	</battle>
+</npcAi>

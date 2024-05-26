@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<node name="buff" type="add" id="69000501" />
+			<node name="standby" limit="4500" faceTarget="0" />
+			<node name="buff" type="remove" id="69000501" level="1" />
+			<node name="standby" limit="1000" faceTarget="0" />
+			<node name="SetValue" key="phase" value="1" />
+			<node name="target" type="rand" />
+		</condition>
+		<condition name="hpLess" value="70">
+			<node name="SetValue" key="phase" value="2" />
+		</condition>
+	</reserved>
+	<aiPresets>
+		<aiPreset name="Atk_1">
+			<!-- 기본공격 패턴1 (무조건 근거리)-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="skill" faceTarget="0" idx="1">
+						<node name="standby" limit="100" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="500" skillIdx="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Atk_2">
+			<!-- 기본공격 패턴2 (가까우면 근거리 멀면 원거리) -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="skill" faceTarget="0" idx="1">
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="skill" faceTarget="0" idx="2">
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="2" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Enchant_1">
+			<!-- 강화 시도 (노버프) -->
+			<node name="skill" faceTarget="0" idx="3" />
+		</aiPreset>
+		<aiPreset name="Enchant_2">
+			<node name="select" prob="50,50">
+				<!-- 강화 시도 (버프상태 페이즈1 or 강화 4중첩 페이즈2) -->
+				<node name="skill" faceTarget="0" idx="3" />
+				<node name="skill" faceTarget="0" idx="4">
+					<node name="buff" type="remove" id="49289052" level="1" />
+					<!-- 실패 강화버프 삭제 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Enchant_3">
+			<node name="select" prob="70,30">
+				<!-- 강화 시도 (버프상태 페이즈2) -->
+				<node name="skill" faceTarget="0" idx="3" />
+				<node name="skill" faceTarget="0" idx="4">
+					<node name="buff" type="remove" id="49289052" level="1" />
+					<!-- 실패 강화버프 삭제 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Enchant_4">
+			<node name="select" prob="30,70">
+				<!-- 강화 4중첩 이상 페이즈1 -->
+				<node name="skill" faceTarget="0" idx="3" />
+				<node name="skill" faceTarget="0" idx="4">
+					<node name="buff" type="remove" id="49289052" level="1" />
+					<!-- 실패 강화버프 삭제 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Skill_1">
+			<!-- 장비 던지기 스킬 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="5">
+					<node name="skill" idx="5" />
+					<node name="skill" idx="6" />
+					<node name="target" type="rand" />
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="5" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="5">
+							<!-- 스킬사용 한번 더 체크 -->
+							<node name="skill" idx="5" />
+							<node name="skill" idx="6" />
+							<node name="target" type="rand" />
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="500" skillIdx="5" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+	<!--전투-->
+	<battle>
+		<!--1페이즈 강화 빈도 낮음 -->
+		<node name="conditions">
+			<condition name="extraData" key="phase" value="1">
+				<node name="select" prob="40,40,10,10">
+					<node name="standby" limit="10" faceTarget="1" cooltime="15000" initialCooltime="9000">
+						<node name="conditions">
+							<condition name="additional" id="49289052" overlapCount="1">
+								<aiPreset name="Enchant_2" />
+							</condition>
+							<condition name="additional" id="49289052" overlapCount="2">
+								<aiPreset name="Enchant_2" />
+							</condition>
+							<condition name="additional" id="49289052" overlapCount="3">
+								<aiPreset name="Enchant_2" />
+							</condition>
+							<condition name="additional" id="49289052" overlapCount="4">
+								<aiPreset name="Enchant_2" />
+							</condition>
+							<condition name="additional" id="49289052">
+								<!-- 5중첩 이상시 -->
+								<aiPreset name="Enchant_4" />
+							</condition>
+							<condition name="true">
+								<!-- 중첩 없을 경우 -->
+								<aiPreset name="Enchant_1" />
+							</condition>
+						</node>
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="20000" initialCooltime="10000">
+						<aiPreset name="Skill_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+						<aiPreset name="Atk_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<aiPreset name="Atk_2" />
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="50,40,5,5">
+					<!-- 2페이즈 강화 빈도 높음 -->
+					<node name="standby" limit="10" faceTarget="1" cooltime="10000">
+						<node name="conditions">
+							<condition name="additional" id="49289052" overlapCount="1">
+								<aiPreset name="Enchant_3" />
+							</condition>
+							<condition name="additional" id="49289052" overlapCount="2">
+								<aiPreset name="Enchant_3" />
+							</condition>
+							<condition name="additional" id="49289052" overlapCount="3">
+								<aiPreset name="Enchant_3" />
+							</condition>
+							<condition name="additional" id="49289052" overlapCount="4">
+								<aiPreset name="Enchant_3" />
+							</condition>
+							<condition name="additional" id="49289052">
+								<!-- 5중첩 이상시 -->
+								<aiPreset name="Enchant_2" />
+							</condition>
+							<condition name="true">
+								<!-- 중첩 없을 경우 -->
+								<aiPreset name="Enchant_1" />
+							</condition>
+						</node>
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="20000">
+						<aiPreset name="Skill_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+						<aiPreset name="Atk_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<aiPreset name="Atk_2" />
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

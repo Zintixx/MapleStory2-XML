@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 마지막 페이즈때 광역 공격 명령 부여하는 마녀-->
+	<battle>
+		<node name="select" prob="9999,9999,0">
+			<node name="skill" cooltime="20000" initialCooltime="8000" idx="3">
+				<node name="select" prob="24,24,24,24,1,1,1,1">
+					<node name="teleport" pos="7350, 4800, 4850" isKeepBattle="true">
+						<!--2시-->
+						<node name="target" type="far" from="300" to="1300" />
+						<node name="trace" limit="2000" skillIdx="2" />
+						<node name="skill" idx="2" />
+						<node name="standby" limit="3000" faceTarget="1" />
+					</node>
+					<node name="teleport" pos="6150, 3900, 4850" isKeepBattle="true">
+						<!--5시-->
+						<node name="target" type="far" from="300" to="1300" />
+						<node name="trace" limit="2000" skillIdx="2" />
+						<node name="skill" idx="2" />
+						<node name="standby" limit="3000" faceTarget="1" />
+					</node>
+					<node name="teleport" pos="5250, 4650, 4850" isKeepBattle="true">
+						<!--7시-->
+						<node name="target" type="far" from="300" to="1300" />
+						<node name="trace" limit="2000" skillIdx="2" />
+						<node name="skill" idx="2" />
+						<node name="standby" limit="3000" faceTarget="1" />
+					</node>
+					<node name="teleport" pos="6150, 5850, 4850" isKeepBattle="true">
+						<!--10시-->
+						<node name="target" type="far" from="300" to="1300" />
+						<node name="trace" limit="2000" skillIdx="2" />
+						<node name="skill" idx="2" />
+						<node name="standby" limit="3000" faceTarget="1" />
+					</node>
+					<node name="teleport" pos="7350, 4800, 4850" cooltime="999999">
+						<!--12시-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+					<node name="teleport" pos="7350, 3900, 4850" cooltime="999999">
+						<!--3시-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+					<node name="teleport" pos="5100, 3900, 4850" cooltime="999999">
+						<!--6시-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+					<node name="teleport" pos="5100, 5850, 4850" cooltime="999999">
+						<!--9시-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</node>
+			</node>
+			<node name="skill" cooltime="999999" idx="4">
+				<!--딱 한번만 실행함, 브래스 난사 공격 명령 -->
+				<node name="SetMasterValue" key="OrderBiteAttack" value="10">
+					<!--연속 브레스 혹은 광역 유도탄 발사 공격 발동을 명령내림 -->
+					<node name="standby" limit="3000" faceTarget="1" />
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="70">
+					<!--#1페이즈 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="65,34,1">
+								<!-- 사정거리 900 -->
+								<node name="skill" idx="1">
+									<!--전방 마법 폭발 -->
+									<node name="target" type="rand" from="100" to="1000">
+										<node name="standby" limit="4000" faceTarget="1" />
+									</node>
+								</node>
+								<node name="trace" limit="1500" cooltime="20000" skillIdx="2">
+									<node name="skill" idx="2">
+										<!--발 느리기 원형 마법진 -->
+										<node name="target" type="rand" from="100" to="1000">
+											<node name="standby" limit="4000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="2000" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="2000" skillIdx="1" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="35">
+					<node name="select" prob="9999,0">
+						<!--#2페이즈  마녀 등장 -->
+						<node name="skill" cooltime="999999" idx="3">
+							<node name="teleport" pos="7350, 3900, 4850" isKeepBattle="true">
+								<!--3시, 순간이동 하면서 동료 소환-->
+								<node name="target" type="far" from="300" to="1300" />
+								<node name="trace" limit="2000" skillIdx="2" />
+								<node name="skill" idx="2" />
+								<node name="standby" limit="4000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="65,34,1">
+									<!-- 사정거리 900 -->
+									<node name="skill" idx="1">
+										<!--전방 마법 폭발 -->
+										<node name="target" type="rand" from="100" to="1000">
+											<node name="standby" limit="4000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="trace" limit="1500" cooltime="20000" skillIdx="2">
+										<node name="skill" idx="2">
+											<!--발 느리기 원형 마법진 -->
+											<node name="target" type="rand" from="100" to="1000">
+												<node name="standby" limit="4000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="2000" skillIdx="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<!--#3페이즈   마지막-->
+						<node name="skill" cooltime="999999" initialCooltime="100" idx="3">
+							<node name="teleport" pos="5100, 5850, 4850" isKeepBattle="true">
+								<!--9시-->
+								<node name="target" type="far" from="300" to="1300" />
+								<node name="trace" limit="2000" skillIdx="2" />
+								<node name="skill" idx="2" />
+								<node name="standby" limit="4000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="65,34,1">
+									<!-- 사정거리 900 -->
+									<node name="skill" idx="1">
+										<!--전방 마법 폭발 -->
+										<node name="target" type="rand" from="100" to="1000">
+											<node name="standby" limit="4000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="trace" limit="1500" cooltime="20000" skillIdx="2">
+										<node name="skill" idx="2">
+											<!--발 느리기 원형 마법진-->
+											<node name="target" type="rand" from="100" to="1000">
+												<node name="standby" limit="4000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="2000" skillIdx="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="OrderBiteAttack" value="0" />
+		<!-- 죽을 때 신호를 보내 광역 공격 난사를 풀어줌-->
+	</battleEnd>
+</npcAi>

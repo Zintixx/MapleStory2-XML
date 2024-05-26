@@ -1,0 +1,732 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="68">
+			<!--3페이즈 들어서면 보호막 애디셔널 전부 제거 처리함 -->
+			<node name="buff" type="remove" id="50000337" level="1" isKeepBattle="true">
+				<!--제거: 1단계 보호막 애디셔널 부여 -->
+				<node name="buff" type="remove" id="50000339" level="1" />
+				<!--제거: 1단계 아이콘만 띄우기고 이전에 1단계 보호막 상태를 제거하기 위한 용도 -->
+				<node name="buff" type="remove" id="50000340" level="1" />
+				<!--제거: 2단계 보호막 애디셔널 부여 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,0">
+			<!--보스 AI 로직을 위해 필요한 변수를 여기서 전부 선언함, 이 AI는 중국 전용 파풀라투스로 중국은 파풀라투스가 이벤트 던전으로 투입되어서 소환몹 등장하지 않기 때문에 아래 소환몹 관련 변수는 사용하지 않음-->
+			<node name="standby" limit="500" faceTarget="0" cooltime="999999" isKeepBattle="true">
+				<node name="SetValue" key="FirstAttackCheck" value="0" />
+				<!--FirstAttackCheck  해당 페이즈의 최초 공격 행동을 했는지 안 했는지를 체크하기 위한 변수-->
+				<node name="SetValue" key="LeftPositionCheck" value="0" />
+				<!-- 왼쪽 태엽폭탄 있는 곳에 플레이어가 있다면 체크하여 견제하기 위해 사용하는 변수, 이 변수는 트리거에서 신호받아서 작동됨 -->
+				<node name="SetValue" key="RightPositionCheck" value="0" />
+				<!-- 오른쪽 태엽폭탄 있는 곳에 플레이어가 있다면 체크하여 견제하기 위해 사용하는 변수, 이 변수는 트리거에서 신호받아서 작동됨 -->
+				<node name="SetValue" key="SuddenAttackMode" value="0" />
+				<!--SuddenAttackMode  돌발 물리공격모드 레이저공격모드 30초짜리 사용 유무 체크하기 위한 변수 -->
+				<node name="SetSlaveValue" key="CheckDarkStarMany" value="0" />
+				<!--소환몹 다크스타 죽음 현황 체크, 이 변수 사용 안함, 혹시 나중에 사용할 수 있어 남겨둠-->
+				<node name="SetSlaveValue" key="CheckRobotMaidMany" value="0" />
+				<!--소환몹 로봇 죽음 현황 체크-->
+				<node name="SetSlaveValue" key="DeathSummonMob" value="0" />
+				<!--모든 소환몹 자살 명령 내리기 위한 변수, 0은 OFF 상태로 놓기-->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="98">
+					<node name="select" prob="99999,99999,0">
+						<!--1페이즈 워밍업 -->
+						<!--  중국쪽만 추가 요소:   Message = 1 신호를 트리거에 보내면, 안내 메시지를 띄움-->
+						<node name="TriggerSetUserValue" cooltime="999999" triggerID="420" key="Message" value="1" />
+						<!--벙업 극강버프 지속적으로 사용함 -->
+						<node name="standby" limit="100" faceTarget="0" cooltime="3000">
+							<node name="buff" type="add" id="50000337" level="1" />
+							<!--보호막 1단계 버프-->
+						</node>
+						<!--**평범한 통상 공격 부분**-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="30">
+								<node name="select" prob="60,40">
+									<!--원형 밀쳐내기 사정권에 들어오면 -->
+									<node name="skill" idx="30">
+										<!--주변 바닥쾅!~ 원형 밀쳐내기 사정권에 들어오면 -->
+										<node name="target" type="near" from="10" to="1200">
+											<!--밀치기 공격 사정권에 안에서 랜덤 타겟팅 하기 -->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" cooltime="12000" idx="18">
+										<!--거대 레이저 줄기 -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="9">
+										<node name="select" prob="35,35,30">
+											<!--주먹 2연타 공격 -->
+											<node name="skill" idx="9">
+												<!--주먹 2연타 중 1타 -->
+												<node name="skill" faceTarget="0" idx="10">
+													<!--주먹 2연타 중 2타 -->
+													<node name="target" type="mid" from="2" to="1200">
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<!--주먹 2연타 연속 두번 공격 -->
+											<node name="skill" cooltime="12000" isKeepBattle="true" idx="9">
+												<!--주먹 2연타 중 1타 -->
+												<node name="skill" faceTarget="0" idx="10" />
+												<!--주먹 2연타 중 2타 -->
+												<node name="target" type="mid" from="2" to="1000" />
+												<node name="skill" idx="9" />
+												<!--주먹 2연타 중 1타 -->
+												<node name="skill" faceTarget="0" idx="10" />
+												<!--주먹 2연타 중 2타 -->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<!--주먹 2연타 후 레이저 발사 -->
+											<node name="skill" cooltime="12000" isKeepBattle="true" idx="9">
+												<!--주먹 2연타 중 1타 -->
+												<node name="skill" faceTarget="0" idx="10" />
+												<!--주먹 2연타 중 2타 -->
+												<node name="target" type="mid" from="2" to="1000" />
+												<node name="skill" idx="18" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="55,45">
+											<node name="standby" limit="500" faceTarget="1">
+												<node name="target" type="near" from="5" to="1200" />
+											</node>
+											<!--모든 플레이어가 태엽폭탄있는 건너편 큐브한칸위에 있으면 어뷰징 이슈가 있기 때문에 여기서 세부 체크함 -->
+											<node name="trace" limit="2000" skillIdx="14">
+												<!--distance 850, 큐브 두칸 높이도 커버, 50100736 은 손뼉치기(일반) 스킬임 -->
+												<node name="target" type="near" from="5" to="1300">
+													<node name="conditions">
+														<condition name="skillRange" skillIdx="8">
+															<!--타겟팅 대상이 큐브 한칸 높이에 있으면-->
+															<node name="skill" idx="18">
+																<!--양손 레이저로 쓸어버리기 -->
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+														</condition>
+														<condition name="true">
+															<node name="target" type="near" from="5" to="1200" />
+														</condition>
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="68">
+					<!--2페이즈, 보호막 태엽폭탄 패턴 -->
+					<node name="conditions">
+						<condition name="extraData" key="FirstAttackCheck" value="0">
+							<!--2페이즈 들어서자마자 바로 이 공격 사용, 5시 7시 전투판 분리하기 위한 스킬 사용임, 회복제로 버틸 수 있어야 하기 때문에 너무 오래 사용하지 않음-->
+							<!--알람 공격 -->
+							<node name="standby" limit="500" facePos="-1350, -1500, 1700" isKeepBattle="true">
+								<node name="move" destination="-750, -900, 1700" limit="2000" />
+								<node name="buff" type="add" id="50000339" level="1" />
+								<!--1단계 아이콘만 띄우기고 이전에 1단계 보호막 상태를 제거하기 위한 용도 -->
+								<node name="buff" type="add" id="50000340" level="1" />
+								<!--2단계 보호막 애디셔널 부여 -->
+								<node name="skill" facePos="-1950, -2100, 1700" idx="2" />
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--공격 Tick 2번 , 알람 공격 코드 50100732 는 중국 전용임-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--공격 Tick 2번 -->
+								<node name="skill" faceTarget="0" idx="3" />
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--공격 Tick 2번 -->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--공격 Tick 1번, 밀치기, 이거 맞으면 들고있던 태엽폭탄 사라짐, 큐브 한칸 아래 있으면 안맞음,  건너편 넘어가는 다리 파괴 용도로 꼭 있어야 함 -->
+								<node name="skill" faceTarget="0" idx="3" />
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--공격 Tick 2번 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<node name="SetValue" key="FirstAttackCheck" value="1" />
+								<!--FirstAttackCheck 변수에 1을 넣어서 최초 딱 한번만 사용하도록 함 -->
+								<node name="buff" type="add" id="50000337" level="1" />
+								<node name="standby" limit="3000" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="999999,9999,99,99,0">
+								<!--2페이즈 평상시 패턴-->
+								<!-- ##시계 대미지 필드 생성 100초짜리, 딱 한번만 실행, 알람공격 이전에 시계 대미지 필드 설치하면 뒤로 밀칠 때 이 필드를 밟아서 허무하게 죽을 수 있기 때문에 이 단계에서 생성함 -->
+								<node name="skill" facePos="-1350, -1500, 1700" cooltime="9999999" idx="13">
+									<!--바닥 시계 대미지필드 깔기,  facePos = "-1950, -2100, 1700"-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<!--##방업 극강버프 지속적으로 사용함, 한국 카오스보다 중국 이벤트가 더 보호막 생성 쿨타임 더 짧게 설정하기 -->
+								<node name="standby" limit="100" faceTarget="0" cooltime="3000" isKeepBattle="true">
+									<node name="buff" type="add" id="50000339" level="1" />
+									<!--1단계 아이콘만 띄우기고 이전에 1단계 보호막 상태를 제거하기 위한 용도 -->
+									<node name="buff" type="add" id="50000340" level="1" />
+									<!--2단계 보호막 애디셔널 부여 -->
+								</node>
+								<!--##5시 7시 지형에 태엽폭탄 던지는 플레이어 견제-->
+								<node name="standby" limit="500" faceTarget="0" cooltime="33000">
+									<node name="select" prob="50,50">
+										<node name="standby" limit="100" faceTarget="1">
+											<!--왼쪽 지점의 태엽폭탄 견제-->
+											<node name="target" type="near" center="-2175, -830, 1800">
+												<!-- 02000420 던전  보호막을 파괴시키는 왼쪽 지점의  태엽폭탄 던지는 플레이어 견제-->
+												<node name="conditions">
+													<condition name="extraData" key="LeftPositionCheck" value="1">
+														<!--타겟팅 대상이 왼쪽 지점 태엽폭탄 있는 트리거 박스 안에  있다면, 이 변수는 맵트리거에 의해서 변경되는 방식임-->
+														<node name="move" destination="-1300, -900, 1700" limit="3000" isKeepBattle="true">
+															<node name="target" type="near" center="-2175, -830, 1800" />
+															<!-- 02000420 던전  왼쪽 지점의 태엽폭탄 좌표 다시한번 타겟팅하기-->
+															<node name="skill" faceTarget="1" idx="19" />
+															<!--레벨2 : 양손 레이저는 공속 느린버전-->
+															<node name="target" type="near" from="10" to="800" />
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+															<node name="target" type="near" from="10" to="1500" />
+															<node name="skill" idx="9" />
+															<!--주먹 2연타 중 1타 -->
+															<node name="skill" faceTarget="0" idx="10" />
+															<!--주먹 2연타 중 2타 -->
+															<node name="target" type="mid" from="10" to="1200" />
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</condition>
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="100" faceTarget="1">
+											<!--오른쪽 지점의 태엽폭탄 견제-->
+											<node name="target" type="near" center="-675, -2330, 1800">
+												<!-- 02000420 던전  보호막을 파괴시키는 오른쪽 지점의  태엽폭탄 던지는 플레이어 견제-->
+												<node name="conditions">
+													<condition name="extraData" key="RightPositionCheck" value="1">
+														<!--타겟팅 대상이 오른쪽 지점 태엽폭탄 있는 트리거 박스 안에  있다면, 이 변수는 맵트리거에 의해서 변경되는 방식임-->
+														<node name="move" destination="-750, -1450, 1500" limit="3000" isKeepBattle="true">
+															<node name="target" type="near" center="-675, -2330, 1800" />
+															<!-- 02000420 던전  오른쪽 지점의 태엽폭탄 좌표 다시한번 타겟팅하기-->
+															<node name="skill" faceTarget="1" idx="19" />
+															<!--레벨2 : 양손 레이저는 공속 느린버전-->
+															<node name="target" type="near" from="10" to="800" />
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+															<node name="target" type="near" from="10" to="1500" />
+															<node name="skill" idx="9" />
+															<!--주먹 2연타 중 1타 -->
+															<node name="skill" faceTarget="0" idx="10" />
+															<!--주먹 2연타 중 2타 -->
+															<node name="target" type="mid" from="10" to="1200" />
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</condition>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<!--##회전 레이저 공격, 레벨3이 공속 느린 버전,  쿨타임은 43000-->
+								<node name="standby" limit="500" faceTarget="0" cooltime="43000">
+									<node name="select" prob="50,50">
+										<node name="skill" facePos="-2700, -3000, 1650" cooltime="78000" idx="34">
+											<!--앞뒤 발사, 7시 태엽폭탄 플레이어 견제 -->
+											<node name="target" type="mid" from="10" to="1200">
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" facePos="-2700, -3000, 1650" cooltime="78000" idx="37">
+											<!--좌우 발사, 5시 태엽폭탄 플레이어 견제-->
+											<node name="target" type="mid" from="10" to="1200">
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<!--**평범한 통상 공격 부분**-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="30">
+										<node name="select" prob="60,40">
+											<!--원형 밀쳐내기 사정권에 들어오면, 사정거리 450   높이는 100  태엽폭탄의 대상 공격하지 않기 위해  -->
+											<node name="skill" idx="30">
+												<!--주변 바닥쾅!~ 원형 밀쳐내기 사정권에 들어오면 -->
+												<node name="target" type="near" from="10" to="1200">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" cooltime="12000" idx="18">
+												<!--거대 레이저 줄기 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="9">
+												<node name="select" prob="27,21,27,25">
+													<!--주먹 2연타 공격, 사정거리 850   높이는 100 태엽폭탄의 대상 공격하지 않기 위해-->
+													<node name="skill" idx="9">
+														<!--주먹 2연타 중 1타 -->
+														<node name="skill" faceTarget="0" idx="10">
+															<!--주먹 2연타 중 2타 -->
+															<node name="target" type="mid" from="2" to="1000">
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+													<node name="trace" limit="5000" skillIdx="30" />
+													<!--주먹 2연타 후 손뼉치기 -->
+													<node name="skill" cooltime="12000" isKeepBattle="true" idx="9">
+														<node name="skill" faceTarget="0" idx="10" />
+														<!--주먹 2연타 중 2타 -->
+														<node name="target" type="mid" from="2" to="1000" />
+														<node name="skill" idx="14" />
+														<!-- 손뼉치기 -->
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+													<!-- 손뼉치기 후 레이저 발사, 레이저 발사 때 타겟팅 변경하면 태엽폭탄 플레이어를 공격할 수 있어서 넣지 않음 -->
+													<node name="skill" cooltime="12000" isKeepBattle="true" idx="14">
+														<node name="skill" idx="18" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="skillRange" skillIdx="13">
+												<!--타켓팅이 사정거리 850~1300 사이에 있으면 쫓아가기, 높이는 100 태엽폭탄의 대상 공격하지 않기 위해 -->
+												<node name="trace" limit="5000" skillIdx="9" />
+											</condition>
+											<condition name="true">
+												<!--모든 플레이어가 태엽폭탄있는 건너편 큐브한칸위에 있으면 어뷰징 이슈가 있기 때문에 여기서 세부 체크함 -->
+												<node name="trace" limit="3000" skillIdx="14">
+													<!--distance 850, 큐브 두칸 높이도 커버, 50100736 은 손뼉치기(일반) 스킬임 -->
+													<node name="target" type="near" from="5" to="1300">
+														<node name="conditions">
+															<condition name="skillRange" skillIdx="8">
+																<!--타겟팅 대상이 큐브 한칸 높이에 있으면-->
+																<node name="skill" idx="18">
+																	<!--양손 레이저로 쓸어버리기 -->
+																	<node name="standby" limit="1500" faceTarget="1" />
+																</node>
+															</condition>
+															<condition name="true">
+																<node name="target" type="near" from="5" to="1200" />
+															</condition>
+														</node>
+													</node>
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="20">
+					<node name="select" prob="999999,0">
+						<!--3페이즈, 바닥 연산 큐브 극악 패턴   -  이 페이즈에서 페이즈 전환 시간인 62초  124초, 연산큐브스킬 쿨타임 29초, 30초짜리 돌발 공격모드 설정 쿨타임 46~47초  이 시간 전부 긴밀히 연간되어 설정한 것이니 함부로 쿨타임 시간 변경하면 안됨 -->
+						<node name="setData" key="aiBattleTime" value="0" cooltime="9999999">
+							<!--2페이즈 시작시 battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+							<node name="TriggerSetUserValue" triggerID="4578" key="ThirdPhase" value="1" />
+							<!--    ThirdPhase = 1 신호를 트리거에 보내면, Portal4578.xml 에서 이 신호를 받아서 태엽폭탄 있는 지점에 순간이동 포탈이 생성되도록 함 -->
+						</node>
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="62000" battleTimeLoop="124000">
+								<node name="select" prob="99999,599,399,399,0">
+									<!--물리 공격 모드-->
+									<!-- battleTimeLoop="124000" 인 이유,  물리공격 or 레이저공격 모드 60초 + 맵 중앙 이동 1초 + standby 시간 1초-->
+									<node name="move" destination="-750, -900, 1700" limit="3000" cooltime="110000">
+										<!--맵 정중앙으로 이동-->
+										<node name="setData" key="aiBattleTime" value="0">
+											<!--시간이 다소 어긋나는 상황을 보정함, 알람공격 때문에 물리공격 모드 60초 시간과 페이즈 변환 시간이 크게 어긋나는 상황이 있기 때문에 여기서 꼭 보정해야 함-->
+											<node name="buff" type="remove" id="50001006">
+												<!--레이저 공격 모드 아이콘 표시 제거-->
+												<node name="SetValue" key="SuddenAttackMode" value="0">
+													<!--30초짜리 사용 유무 체크하기 위한 변수 : 0 이면 Off, 1이면 On -->
+													<node name="SetSlaveValue" key="DeathSummonMob" value="1">
+														<node name="select" prob="50,50">
+															<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+															<node name="skill" facePos="-1950, -2100, 1700" cooltime="145000" idx="24" />
+															<!--물방 부여 패턴1, 물리공격 강화 공격 모드로 전환, 여기서 5시 7시 건너는 다리 파괴함-->
+															<node name="skill" facePos="-1950, -2100, 1700" cooltime="145000" idx="25" />
+															<!--물방 부여 패턴2, 물리공격 강화 공격 모드로 전환, 여기서 5시 7시 건너는 다리 파괴함-->
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+									<!--  중국쪽만 추가 요소:   Message = 2 신호를 트리거에 보내면, 안내 메시지를 띄움-->
+									<node name="TriggerSetUserValue" cooltime="999999" triggerID="420" key="Message" value="2" />
+									<!--연산 큐브: 버프 시간늘리기, 쿨타임 29초 이하로 줄이면 다음 페이지에서 넘어갈때 연속으로 사용하는 듯한  상황이 생길 수 있기 때문에 29초로 함 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="29000">
+										<node name="select" prob="47,47,6">
+											<node name="skill" cooltime="170000" idx="21">
+												<node name="standby" limit="1500" faceTarget="1">
+													<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+													<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+												</node>
+											</node>
+											<node name="skill" cooltime="50000" idx="22">
+												<node name="standby" limit="1500" faceTarget="1">
+													<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+													<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+												</node>
+											</node>
+											<node name="skill" cooltime="50000" idx="23">
+												<!--연산 큐브: 나누기 큐브 많이 사용하기 -->
+												<node name="standby" limit="1500" faceTarget="1">
+													<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+													<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+												</node>
+											</node>
+										</node>
+									</node>
+									<!--물리 공격 모드 다시 사용하기, 쿨타임 시간조절 중요 - 물리공격모드 10~0초 정도 남겨놓고 사용해야 하기 때문에 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="47000">
+										<node name="conditions">
+											<condition name="extraData" key="SuddenAttackMode" value="0">
+												<node name="SetValue" key="SuddenAttackMode" value="1" />
+												<!--이 페이즈 들어서면 이 행동부터 먼저 하게 될 것임 -->
+											</condition>
+											<condition name="true">
+												<node name="select" prob="42,58">
+													<!--물리 공격 모드 10~0초 정도 남았을 때, 30초 짜리 돌발 물리 공격 모드를 사용할지 말지를 여기서 결정함 -->
+													<node name="SetValue" key="SuddenAttackMode" value="0" />
+													<!--변수 초기화 하기-->
+													<node name="skill" isKeepBattle="true" idx="26">
+														<node name="setData" key="aiBattleTime" value="32000" />
+														<!--물리 공격 모드 30초 짜리 다시 사용하기 때문에 중간대 시간으로 셋팅함-->
+														<node name="SetValue" key="SuddenAttackMode" value="0" />
+														<!--변수 초기화 하기-->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+									<!--**평범한 통상 공격 부분**-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="9">
+											<!--근거리 주먹 공격 범위 -->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="30">
+													<node name="select" prob="70,30">
+														<!--주변 바닥쾅!~ 밀쳐내기 공격 사정권에 들어오면 -->
+														<node name="skill" idx="31">
+															<!--주변 바닥쾅!~ 밀쳐내기 공격, 레벨2: 물리 공격 모드 -->
+															<node name="target" type="rand" from="10" to="1300">
+																<!--밀치기 공격 사정권에 안에서 랜덤 타겟팅 하기 -->
+																<node name="standby" limit="1500" faceTarget="1">
+																	<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+																	<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+																</node>
+															</node>
+														</node>
+														<node name="skill" idx="11">
+															<!--근거리 주먹 2연타 중 1타 -->
+															<node name="skill" faceTarget="0" idx="12">
+																<!--근거리 주먹 2연타 중 2타 -->
+																<node name="standby" limit="1500" faceTarget="1">
+																	<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+																	<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+																</node>
+															</node>
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="select" prob="45,20,34,1">
+														<node name="skill" idx="11">
+															<!--근거리 주먹 2연타 -->
+															<node name="skill" faceTarget="0" idx="12">
+																<!--근거리 주먹 2연타 중 2타 -->
+																<node name="standby" limit="1500" faceTarget="1">
+																	<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+																	<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+																</node>
+															</node>
+														</node>
+														<node name="skill" idx="15">
+															<!--바람일으켜 손뼉치기 -->
+															<node name="target" type="rand" from="10" to="1300">
+																<!--밀치기 공격 사정권에 안에서 랜덤 타겟팅 하기 -->
+																<node name="standby" limit="1500" faceTarget="1">
+																	<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+																	<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+																</node>
+															</node>
+														</node>
+														<!--이 스킬은 맵 구석에서 사용하면 안되기 때문에 이 스킬은 맵 중앙 쪽을  바라보면서 사용하도록 함 -->
+														<node name="skill" facePos="-760, -910, 1700" cooltime="23000" idx="16">
+															<!--주먹 바닥에 박기, 스킬 사용 방향 기준은 맵 중앙에서 약간 아래쪽 -->
+															<node name="target" type="mid" from="10" to="1700">
+																<node name="standby" limit="1500" faceTarget="1">
+																	<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+																	<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+																</node>
+															</node>
+														</node>
+														<node name="standby" limit="500" faceTarget="0" />
+													</node>
+												</condition>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="55,45">
+												<node name="skill" idx="15">
+													<!--바람일으켜 손뼉치기 -->
+													<node name="target" type="rand" from="10" to="1300">
+														<!--밀치기 공격 사정권에 안에서 랜덤 타겟팅 하기 -->
+														<node name="standby" limit="1500" faceTarget="1">
+															<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+															<!--delayTick 에 의해 늦게 소환되는 몬스터도 꼼꼼하게 제거하기 위해 이 설정 넣음-->
+														</node>
+													</node>
+												</node>
+												<node name="trace" limit="2000" skillIdx="14" />
+												<!--distance 850, 큐브 두칸 높이도 커버, 50100736 은 손뼉치기(일반) 스킬임 -->
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99999,399,399,25,25,25,24,1">
+									<!--레이저 공격 모드-->
+									<node name="move" destination="-750, -900, 1700" limit="3000" cooltime="110000">
+										<!--맵 정중앙으로 이동-->
+										<node name="setData" key="aiBattleTime" value="62001">
+											<!--시간이 다소 어긋나는 상황을 보정함, 알람공격 때문에 물리공격 모드 60초 시간과 페이즈 변환 시간이 크게 어긋나는 상황이 있기 때문에 여기서 꼭 보정해야 함-->
+											<node name="buff" type="remove" id="50001005">
+												<!--물리 공격 모드 아이콘 표시 제거-->
+												<node name="SetValue" key="SuddenAttackMode" value="0">
+													<node name="select" prob="100,100">
+														<!--30초짜리 사용 유무 체크하기 위한 변수 : 0 이면 Off, 1이면 On -->
+														<node name="skill" facePos="-1950, -2100, 1700" cooltime="145000" idx="27" />
+														<!--마방 부여 패턴1, 레이저공격 강화 공격 모드로 전환-->
+														<node name="skill" facePos="-1950, -2100, 1700" cooltime="145000" idx="28" />
+														<!--마방 부여 패턴2, 레이저공격 강화 공격 모드로 전환-->
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+									<!--연산 큐브: 버프 시간늘리기, 쿨타임 29초 이하로 줄이면 다음 페이지에서 넘어갈때 연속으로 사용하는 듯한  상황이 생길 수 있기 때문에 29초로 함 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="29000">
+										<node name="select" prob="47,47,6">
+											<node name="skill" cooltime="170000" idx="21">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="skill" cooltime="50000" idx="22">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="skill" cooltime="50000" idx="23">
+												<!--연산 큐브: 나누기 큐브 많이 사용하기 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<!--레이저 공격 모드 다시 사용하기, 쿨타임 시간조절 중요  - 레이저공격모드 10~0초 정도 남겨놓고 사용해야 하기 때문에, 레이저 모드때의 공격 동작이 길기 때문에 쿨타임을 상대적으로 짧게 설정함 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="46000">
+										<node name="conditions">
+											<condition name="extraData" key="SuddenAttackMode" value="0">
+												<node name="SetValue" key="SuddenAttackMode" value="1" />
+												<!--이 페이즈 들어서면 이 행동부터 먼저 하게 될 것임 -->
+											</condition>
+											<condition name="true">
+												<node name="select" prob="42,58">
+													<!--레이저 공격 모드 10~0초 정도 남았을 때, 30초 짜리 돌발 레이저 공격 모드를 사용할지 말지를 여기서 결정함 -->
+													<node name="SetValue" key="SuddenAttackMode" value="0" />
+													<!--변수 초기화 하기-->
+													<node name="skill" isKeepBattle="true" idx="29">
+														<node name="setData" key="aiBattleTime" value="92000" />
+														<!--레이저 공격 모드 30초 짜리 다시 사용하기 때문에 중간대 시간으로 설정함,  62000 + 30000-->
+														<node name="SetValue" key="SuddenAttackMode" value="0" />
+														<!--변수 초기화 하기-->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+									<!--90도 회전 레이저 공격, 레벨2: 레이저 공격모드용 (스턴기능 있음)-->
+									<node name="standby" limit="10" faceTarget="1" cooltime="18000">
+										<node name="select" prob="50,50">
+											<node name="skill" cooltime="33000" idx="33">
+												<!--앞뒤 회전 레이저 -->
+												<node name="standby" limit="1500" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1300" />
+												</node>
+											</node>
+											<node name="skill" cooltime="33000" idx="36">
+												<!--좌우 회전 레이저 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="skill" cooltime="5000" idx="17">
+										<!--손바닥 유도탄 레이저 -->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="skill" idx="20">
+										<!--거대 레이저 줄기, 레벨3: 레이저 공격 모드용 (스턴기능 있음) -->
+										<node name="standby" limit="1500" faceTarget="1">
+											<node name="target" type="mid" from="10" to="1300" />
+										</node>
+									</node>
+									<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+									<node name="standby" limit="10" faceTarget="1" cooltime="36000">
+										<node name="target" type="far" from="10" to="1100">
+											<node name="trace" limit="3000" skillIdx="1" />
+											<!--distance 200짜리 가짜 스킬 데이터-->
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="999999,599,27,27,26">
+						<!--4페이즈, 알람 공격 극악 패턴 -->
+						<node name="standby" limit="100" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+							<node name="buff" type="remove" id="50001005" />
+							<!--물리 공격 모드 아이콘 표시 제거-->
+							<node name="buff" type="remove" id="50000327" />
+							<!--물리용 공업 버프 제거-->
+							<node name="buff" type="remove" id="50001006" />
+							<!--마법 공격 모드 아이콘 표시 제거-->
+							<node name="buff" type="remove" id="50000326" />
+							<!--마법용 공업 버프 제거-->
+							<node name="SetSlaveValue" key="DeathSummonMob" value="0" />
+							<!--4페이즈에 들어서면 바로 소완몹 자살 명령 Off 상태로 놓기-->
+						</node>
+						<!--알람 공격 모드 + 방업버프 사용, 알람 공격 코드 50100732 는 중국 전용임-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="60000" isKeepBattle="true">
+							<!--	<move destination="-750, -900, 1700" limit="2500" prob="100"/>	-->
+							<node name="buff" type="add" id="50000339" level="1" />
+							<!--1단계 아이콘만 띄우기고 이전에 1단계 보호막 상태를 제거하기 위한 용도 -->
+							<node name="buff" type="add" id="50000340" level="1" />
+							<!--2단계 보호막 애디셔널 부여 -->
+							<node name="move" destination="-750, -900, 1700" />
+							<node name="standby" limit="1200" faceTarget="1" />
+							<!--  중국쪽만 추가 요소:   Message = 3 신호를 트리거에 보내면, 안내 메시지를 띄움, 이 트리거 신호는 한번 보내면 이후 트리거 쪽에서 두번 이상 받지 않기 때문에 최초 딱 한번만 실행될 것임-->
+							<node name="TriggerSetUserValue" triggerID="420" key="Message" value="3" />
+							<node name="skill" facePos="-1950, -2100, 1700" idx="2" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<!--공격 Tick 2번 -->
+							<node name="skill" faceTarget="0" idx="4" />
+							<!--공격 Tick 1번, 밀치기, 이거 맞으면 들고있던 태엽폭탄 사라지지 않음, 큐브 한칸 아래 있으면 안맞음 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="7" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐, 제일 먼쪽 기준으로 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<!--공격 Tick 2번 -->
+							<node name="skill" faceTarget="0" idx="4" />
+							<!--공격 Tick 1번, 밀치기, 이거 맞으면 들고있던 태엽폭탄 사라지지 않음, 큐브 한칸 아래 있으면 안맞음 -->
+							<node name="skill" faceTarget="0" idx="5" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<!--공격 Tick 2번 -->
+							<node name="skill" faceTarget="0" idx="4" />
+							<!--공격 Tick 1번, 밀치기, 이거 맞으면 들고있던 태엽폭탄 사라지지 않음, 큐브 한칸 아래 있으면 안맞음 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="7" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐, 제일 먼쪽 기준으로 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="7" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐, 제일 먼쪽 기준으로 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="4" />
+							<!--공격 Tick 1번, 밀치기, 이거 맞으면 들고있던 태엽폭탄 사라지지 않음, 큐브 한칸 아래 있으면 안맞음 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="skill" faceTarget="0" idx="6" />
+							<node name="target" type="mid" from="10" to="2000" />
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<!--주먹 2연타 연속 두번 공격 -->
+						<node name="skill" cooltime="12000" isKeepBattle="true" idx="9">
+							<!--주먹 2연타 중 1타 -->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--주먹 2연타 중 2타 -->
+							<node name="target" type="mid" from="10" to="1000" />
+							<node name="skill" idx="9" />
+							<!--주먹 2연타 중 1타 -->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--주먹 2연타 중 2타 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+							<node name="buff" type="add" id="50000337" level="1" />
+							<!--보호막 1단계 버프-->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<!--거대 레이저 줄기 후 주목 2연타 공격 -->
+						<node name="skill" isKeepBattle="true" idx="18">
+							<!--거대 레이저 줄기 -->
+							<node name="target" type="mid" from="10" to="1000" />
+							<node name="skill" idx="9" />
+							<!--주먹 2연타 중 1타 -->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--주먹 2연타 중 2타 -->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<!--연속 레이저 발사 공격 -->
+						<node name="skill" idx="18">
+							<!--거대 레이저 줄기 -->
+							<node name="target" type="rand" from="10" to="1400">
+								<node name="select" prob="49,50,1">
+									<node name="skill" idx="32">
+										<!--앞뒤 회전 레이저 -->
+										<node name="skill" idx="35">
+											<!--좌우 회전 레이저 -->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" cooltime="12000" idx="35">
+										<!--좌우 회전 레이저 -->
+										<node name="skill" idx="32">
+											<!--앞뒤 회전 레이저 -->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<!-- 시계 대미지 필드 생성 100초짜리-->
+						<!--바닥 시계 대미지필드 깔기,  facePos = "-1950, -2100, 1700"-->
+						<!--	<skill id="50100735" level="1" facePos = "-1350, -1500, 1700" prob="20" cooltime = "140000"> 
+				<standby limit="500"  faceTarget="1"  prob="100"/>
+			</skill>	
+				-->
+						<!--넘 어려운거 같으니 일단 빼자-->
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

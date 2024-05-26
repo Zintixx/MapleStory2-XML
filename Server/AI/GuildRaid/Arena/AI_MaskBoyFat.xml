@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,1000,0">
+			<!--최초 1회-->
+			<node name="standby" limit="10" faceTarget="0" cooltime="999999999">
+				<node name="jump" pos="-150, 150, 1850" speed="800" heightMultiplier="0.8" />
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--주기적인 타겟 전환-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--#1페이즈 -->
+			<node name="conditions">
+				<condition name="hpOver" value="40">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="55,45,30,1">
+								<node name="skill" idx="1">
+									<node name="select" prob="100,100">
+										<!--1타 휘두르기 -->
+										<node name="standby" limit="1500" faceTarget="1" />
+										<node name="trace" limit="1500" skillIdx="1" />
+									</node>
+								</node>
+								<node name="skill" idx="2">
+									<node name="select" prob="100,100">
+										<!--2연타 휘두르기 -->
+										<node name="standby" limit="1500" faceTarget="1" />
+										<node name="trace" limit="1500" skillIdx="1" />
+									</node>
+								</node>
+								<!--점프 내려찍기-->
+								<node name="skill" cooltime="12000" idx="4">
+									<!--점프 내려찍기_근거리-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="3">
+									<node name="select" prob="60,40,1">
+										<!--점프 내려찍기_원거리 거리 체크-->
+										<node name="skill" idx="3">
+											<!--점프 내려찍기_원거리 -->
+											<node name="target" type="rand" from="10" to="900">
+												<!--타겟팅 변경 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="trace" limit="1500" skillIdx="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="1500" skillIdx="1" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--#2페이즈 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="5">
+							<node name="select" prob="10,30,30,30,30,1">
+								<node name="skill" idx="2">
+									<!--2연타 휘두르기 -->
+									<node name="target" type="rand" from="10" to="900">
+										<!--타겟팅 변경 -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+								<!--회전공격 3연속-->
+								<node name="skill" idx="6">
+									<!--준비 동작 후 회전공격 1타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 2타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 3타-->
+									<node name="skill" idx="8" />
+									<!--회전공격_마무리 포함 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<!--회전공격 4연속-->
+								<node name="skill" idx="6">
+									<!--준비 동작 후 회전공격 1타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 2타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 3타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 3타-->
+									<node name="skill" idx="8" />
+									<!--회전공격_마무리 포함 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<!--점프 내려찍기 2연속-->
+								<node name="skill" idx="4">
+									<!--점프 내려찍기_근거리-->
+									<node name="skill" idx="4" />
+									<!--점프 내려찍기_근거리-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<!--점프 내려찍기 3연속-->
+								<node name="skill" idx="4">
+									<!--점프 내려찍기_근거리-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" idx="4" />
+									<!--점프 내려찍기_근거리-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" idx="4" />
+									<!--점프 내려찍기_근거리-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="1000" skillIdx="5" />
+							<!--회전공격 범위까지 추적-->
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="999991" key="RoundEnd" value="1" />
+	</battleEnd>
+</npcAi>

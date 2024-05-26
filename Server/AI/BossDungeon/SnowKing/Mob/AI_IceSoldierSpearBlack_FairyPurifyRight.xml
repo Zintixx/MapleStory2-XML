@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="MonsterNumber" value="1" isModify="1" />
+				<!--전투 상태가 되면 자쿰AI에게 토템소환몹 마리수 체크 +1 신호 보냄-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="4" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!--거리 900~1000 이내 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="50,49,1">
+										<!--거리 500 이내 -->
+										<node name="skill" cooltime="21000" idx="2">
+											<!--돌진 창 찌르기 -->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="2500" skillIdx="1">
+											<!--거리 300 이내 -->
+											<node name="skill" idx="1">
+												<!--근접  -->
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99,1">
+										<node name="standby" limit="2500" faceTarget="1" cooltime="999000" />
+										<!--근거리형 몬스터가 전투판에 들어서자마자 우르르 달려드는 상황을 막기 위해, 최초에는 2~4초 정도 대기하도록 함 -->
+										<node name="trace" limit="1000" skillIdx="2" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1">
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="999" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,-45" />
+				</node>
+				<!--오른쪽 지점에서 설콩이 , 정화 능력 -->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

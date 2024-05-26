@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--등장하자마자 무조건 이거 실행-->
+			<node name="standby" limit="300" animation="Attack_Idle_B" isKeepBattle="true">
+				<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+				<!--팔이 한개씩 제거될때 성우 음성 출력하게 하기 위해 사용하는 변수-->
+				<node name="SetValue" key="ZakumArmNumber" value="6" />
+				<!--현재 팔이 몇개 남아있는지를 알수있게 해주는 변수-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="104" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="105" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="106" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<node name="buff" type="add" id="50004506" level="1" />
+				<!--레벨1: 자쿰팔이 있는 상태에서 플레이어가 자쿰몸에 가까이 붙으면 디버프에 걸리에 하기 위해 애디셔널을 걸기 -->
+				<node name="standby" limit="3700" animation="Attack_Idle_B" />
+				<!-- 자쿰팔이 전투 활성화 될때까지 이 부분에서 충분히 기다리기, 자쿰팔의 리젠 애니 시간정도 설정, 이거 실행 끝나면 바로 "$#%&" 단계로 넘어가 속성 보호 버프 부여 행위를 함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="VoiceDeathZakumArm" value="1">
+				<!--자쿰 팔이 죽을 때마다 이 부분 실행하고, VoiceDeathZakumArm 변수 0 초기화 하면서 이 단계 빠져나옴 -->
+				<node name="conditions">
+					<condition name="extraData" key="ZakumArmNumber" value="1" op="greaterEqual">
+						<node name="select" prob="9999,1">
+							<!--팔 하나씩 제거되었을 때 성우 대사 나오고 용암 올라오게 하는 부분-->
+							<node name="standby" limit="300" faceTarget="0" animation="Attack_Idle_B" cooltime="33000">
+								<node name="select" prob="40,60">
+									<!--팔이 파괴되고 용암이 올라오는 상황에서 다른 팔을 바로 연속이로 파괴되면 성우음성 겹치고 용암이 연속으로 올라오는 문제가 있어서 쿨타임 33초 설정함, 33초 기준은 용암 2단계 2층까지 올라와서 사라지는 시간임-->
+									<node name="TriggerSetUserValue" cooltime="93000" isKeepBattle="true" triggerID="999102" key="LavaflowHigh" value="1">
+										<!-- 용암 올라오기 2단 높이 -->
+										<node name="announce" message="$ZakumArmBroken_Warning$" durationTick="5000" />
+										<!-- 자쿰팔이 파괴되서 용암 올라올 수 있다는 경고  메시지로 알림 -->
+										<node name="skill" faceTarget="0" idx="1" />
+										<!--레벨2는 팔이 1개씩 제거되었을 때 성우 목소리 나오게 하기 -->
+										<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+										<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+										<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+										<!--VoiceDeathZakumArm 값을  0 으로 초기화 하기 -->
+									</node>
+									<node name="TriggerSetUserValue" isKeepBattle="true" triggerID="999102" key="LavaflowLow" value="1">
+										<!-- 용암 올라오기 1단 높이 -->
+										<node name="announce" message="$ZakumArmBroken_Warning$" durationTick="5000" />
+										<!-- 자쿰팔이 파괴되서 용암 올라올 수 있다는 경고  메시지로 알림 -->
+										<node name="skill" faceTarget="0" idx="1" />
+										<!--레벨2는 팔이 1개씩 제거되었을 때 성우 목소리 나오게 하기 -->
+										<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+										<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+										<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+										<!--VoiceDeathZakumArm 값을  0 으로 초기화 하기 -->
+									</node>
+								</node>
+							</node>
+							<node name="standby" limit="300" faceTarget="0" animation="Attack_Idle_B">
+								<!--팔이 바로 연속으로 파괴 되어 위 쿨타임에 걸리면 용암파도 올라오는 부분 생략하고 이 부분 사용하도록 함-->
+								<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+								<!--VoiceDeathZakumArm 값을  0 으로 초기화 하기 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- ZakumArmNumber = 0 즉 모든 팔이 제거되었을 때 나오는 성우 대사-->
+						<node name="standby" limit="500" animation="Attack_Idle_B" isKeepBattle="true">
+							<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+							<node name="skill" faceTarget="0" idx="2" />
+							<!--레벨3는 팔이 전부 제거되었을 때 성우 목소리 나오게 하는 스킬 데이터, 본체AI에 껍대기 스킬 데이터라도 있어야 소환된 팔이 전투가 풀리지 않음, 팔 전부 죽을때의 대사 나오는 타이밍을 정밀하게 맞추기 위해 여기에 출력함 -->
+							<node name="SetValue" key="VoiceDeathZakumArm" value="0" />
+							<!--VoiceDeathZakumArm 값을  0 으로 초기화 하기 -->
+							<node name="standby" limit="5000" faceTarget="0" animation="Attack_Idle_B" />
+							<!--팔 전부 제거된 후 성우 목소리 나오는 동안 8초 정도 가만히 있음 -->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<!-- 팔이 6개부터 1개까지 즉 1개라도 남아있으면, 즉 자쿰 몸체는 평상시에 주로 이부분 행동을 함, 자쿰팔이 몇개 남아있느냐에 따라 각 팔의 속성 보호 버프 부여 방식이 결정되기 때문에 다소 복잡하게 설정되어있음 -->
+			<condition name="extraData" key="ZakumArmNumber" value="1" op="greaterEqual">
+				<node name="conditions">
+					<condition name="extraData" key="ZakumArmNumber" value="6">
+						<node name="select" prob="999999,100">
+							<!--# 팔이 6개 되었을때 즉 최초 시작때 1번 2번 4번 5번 팔에 속성 보호 버프 부여하기,  "$#%&"  본격 활성화 되면 바로 이 부분 부터 실행함-->
+							<node name="standby" limit="200" faceTarget="0" animation="Attack_Idle_B" cooltime="9999999">
+								<aiPreset name="ElementsBarrierOrder" />
+								<!-- 남은 팔이 4개 되면 1번 4번 자쿰팔 AI 쪽에서 신호 보내도 보호 버프 부여 로직 작동 하지 않을 것임, 자쿰팔이 4개 일때는 3번 5번 팔만 속성 보호 버프 부여해야하기 때문에-->
+							</node>
+							<node name="standby" limit="1200" faceTarget="0" animation="Attack_Idle_B" />
+							<!--주 메인 행동임: 자쿰 팔이 있을 때 가짜 자쿰 몸은 이 행동을 계속 반복하게 함-->
+							<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="ZakumArmNumber" value="5">
+						<node name="select" prob="999999,100">
+							<!--# 팔이 5개 되었을때,  팔이 파괴될 때마다 속성 보호 버프 변경하기-->
+							<node name="standby" limit="200" faceTarget="0" animation="Attack_Idle_B" cooltime="9999999">
+								<aiPreset name="ElementsBarrierOrder" />
+								<!-- 남은 팔이 4개 되면 1번 4번 자쿰팔 AI 쪽에서 신호 보내도 보호 버프 부여 로직 작동 하지 않을 것임, 자쿰팔이 4개 일때는 3번 5번 팔만 속성 보호 버프 부여해야하기 때문에-->
+							</node>
+							<node name="standby" limit="1200" faceTarget="0" animation="Attack_Idle_B" />
+							<!--주 메인 행동임: 자쿰 팔이 있을 때 가짜 자쿰 몸은 이 행동을 계속 반복하게 함-->
+							<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="ZakumArmNumber" value="4">
+						<node name="select" prob="999999,100">
+							<!--# 팔이 4개 되었을때,  팔이 파괴될 때마다 속성 보호 버프 변경하기-->
+							<node name="standby" limit="200" faceTarget="0" animation="Attack_Idle_B" cooltime="9999999">
+								<aiPreset name="ElementsBarrierOrder" />
+								<!-- 남은 팔이 4개 부터 1번 4번 자쿰팔 AI 쪽에서 신호 보내도 보호 버프 부여 로직 작동 하지 않을 것임, 자쿰팔이 4개 일때는 3번 5번 팔만 속성 보호 버프 부여해야하기 때문에-->
+							</node>
+							<node name="standby" limit="1200" faceTarget="0" animation="Attack_Idle_B" />
+							<!--주 메인 행동임: 자쿰 팔이 있을 때 가짜 자쿰 몸은 이 행동을 계속 반복하게 함-->
+							<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="ZakumArmNumber" value="3">
+						<node name="select" prob="999999,100">
+							<!--# 팔이 3개 되었을때,  팔이 파괴될 때마다 속성 보호 버프 변경하기-->
+							<node name="standby" limit="200" faceTarget="0" animation="Attack_Idle_B" cooltime="9999999">
+								<aiPreset name="ElementsBarrierOrder" />
+								<!-- 남은 팔이 4개 부터 1번 4번 자쿰팔 AI 쪽에서 신호 보내도 보호 버프 부여 로직 작동 하지 않을 것임, 자쿰팔이 4개 일때는 3번 5번 팔만 속성 보호 버프 부여해야하기 때문에-->
+							</node>
+							<node name="standby" limit="1200" faceTarget="0" animation="Attack_Idle_B" />
+							<!--주 메인 행동임: 자쿰 팔이 있을 때 가짜 자쿰 몸은 이 행동을 계속 반복하게 함-->
+							<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="ZakumArmNumber" value="2">
+						<node name="select" prob="999999,100">
+							<!--# 팔이 2개 되었을때, 각 자쿰팔에 있는 보호 버프 전부 제거 작업 함-->
+							<node name="standby" limit="200" faceTarget="0" animation="Attack_Idle_B" cooltime="9999999">
+								<aiPreset name="ElementsBarrierRemove" />
+								<!-- 남은 팔이 2개 되면 모든 보호 버프 제거해야 함-->
+							</node>
+							<node name="standby" limit="1200" faceTarget="0" animation="Attack_Idle_B" />
+							<!--주 메인 행동임: 자쿰 팔이 있을 때 가짜 자쿰 몸은 이 행동을 계속 반복하게 함-->
+							<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="999999,100">
+							<!--# ZakumArmNumber = 1 인 경우, 즉 팔이 1개일 경우 -->
+							<!-- 혹시 모르니 팔 1개일 때보 보호 버프 제거 부분 다시 실행함-->
+							<node name="standby" limit="200" faceTarget="0" animation="Attack_Idle_B" cooltime="9999999">
+								<aiPreset name="ElementsBarrierRemove" />
+								<!-- 남은 팔이 1개 되면 다시한번 모든 보호 버프 제거하기-->
+							</node>
+							<node name="standby" limit="1200" faceTarget="0" animation="Attack_Idle_B" />
+							<!--주 메인 행동임: 자쿰 팔이 있을 때 가짜 자쿰 몸은 이 행동을 계속 반복하게 함-->
+							<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="true">
+				<!-- ZakumArmNumber = 0 즉 팔이 다 제거된 경우 -->
+				<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" isKeepBattle="true">
+					<!--모든 팔이 다 제거되었으면-->
+					<!-- 어려운 난이도 자쿰 몸체 코드임 -->
+					<node name="TriggerSetUserValue" triggerID="999101" key="ZakumBodyAppearance" value="1" />
+					<!--bossSpawn.xml 트리거에 신호 보내서 자쿰몸체 등장시키기 -->
+					<node name="standby" limit="2000" faceTarget="0" animation="Attack_Idle_B" />
+					<!-- 자쿰몸 등장할때까지 자까 몸음 잠시 대기하기 -->
+					<node name="RemoveMe" />
+					<!-- 자기 자신 스스로 제거하기 -->
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<!--자쿰 팔에 변수 할당해여 어떤 속성 보호를 부여할지를 결정하는 부분-->
+		<aiPreset name="ElementsBarrierOrder">
+			<node name="select" prob="17,17,17,17,17,17">
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="4" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="1" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="5" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="3" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="2" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="3" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="6" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="4" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="6" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="5" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="4" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="2" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="3" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="6" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="2" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="5" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="5" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="2" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="1" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="6" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="5" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="4" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="3" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="1" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+			</node>
+		</aiPreset>
+		<!--모든 자쿰 팔에 속성 보호 버프 제거하기-->
+		<aiPreset name="ElementsBarrierRemove">
+			<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+				<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+				<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독, 99번: 모든 속성 버프 제거 -->
+				<node name="SetSlaveValue" key="ElementsDecision01" value="99" />
+				<!--1번 자쿰팔에서 속성 보호 제거 신호 보내기-->
+				<node name="SetSlaveValue" key="ElementsDecision02" value="99" />
+				<!--2번 자쿰팔에서 속성 보호 제거 신호 보내기-->
+				<node name="SetSlaveValue" key="ElementsDecision04" value="99" />
+				<!--4번 자쿰팔에서 속성 보호 제거 신호 보내기-->
+				<node name="SetSlaveValue" key="ElementsDecision05" value="99" />
+				<!--5번 자쿰팔에서 속성 보호 제거 신호 보내기-->
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

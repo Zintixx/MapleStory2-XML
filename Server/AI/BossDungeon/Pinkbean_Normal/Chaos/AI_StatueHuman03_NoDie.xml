@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 아리엘 활성화 안죽음-->
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="5">
+			<!--HP 5% 이하로 줄어들면 비활성화 상태로 들어감-->
+			<!--***reserved**** -->
+			<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_B" isKeepBattle="true">
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,-45" />
+				<node name="RemoveMe" />
+				<!-- 자기 자신 스스로 제거하기 -->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<!--등장하자마자 바로 공격하면 어색해 보여 약 1~2초 대기 상태로 있게 하기 -->
+			<node name="standby" limit="1800" faceTarget="0" cooltime="9999999" />
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="target" type="near" center="1583, 1283, 2010" cooltime="4000" />
+			<!--2층 난간 가운데를 최우선 타겟으로  설정함, 2층 난간 지형에서 이 몬스터를 때릴 수 있기 때문에 이곳을 최우선 타겟팅 설정함  -->
+			<node name="conditions">
+				<condition name="extraData" key="ActiveStatueHuman03" value="4">
+					<!--핑크빈에게 이 변수 4 신호를 받으면 스스로 비활성화 상태가 되기 -->
+					<node name="standby" limit="200" faceTarget="1" animation="Attack_Idle_B" isKeepBattle="true">
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,-45" />
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ActiveStatueHuman03" value="2">
+					<!--핑크빈에게 이 변수 2 신호를 받으면 파괴가능 석상으로 교체하기 -->
+					<node name="standby" limit="200" faceTarget="1" animation="Attack_Idle_B" isKeepBattle="true">
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,-45" />
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ActiveStatueHuman03" value="1">
+					<!--핑크빈에게 이 변수 1 신호를 받으면 스스로 90% 회복하기, 원래 변수 1은 비활성화를 활성화 상태로 변경하기 위한 것인데 이미 활성화 되어 있다면 스스로 HP 회복하도록 함-->
+					<node name="buff" type="add" id="50000364" level="1">
+						<!-- HP 90% 회복-->
+						<node name="standby" limit="2200" faceTarget="0">
+							<node name="SetValue" key="ActiveStatueHuman03" value="-1" />
+							<!-- 이 변수를 -1로 셋팅하여 이 단계 빠져나오도록 함 -->
+						</node>
+					</node>
+				</condition>
+				<!-- 여기 아래 부분이 본격 공격 행동 정의 하는 부분,  핑크빈이 스카이콩콩 패턴과 2층 지붕 패턴때 이 석상이 나오는데, 핑크빈이 보내는 PositionNow 변수 신호에 의해 공격 패턴이 크게 달라지는 구조임 -->
+				<condition name="extraData" key="PositionNow" value="12">
+					<node name="select" prob="9999,0">
+						<!--현재 핑크빈이 2층 지붕 전투판 12시에 있으면, 버프 디버프류 스킬 적극적으로 사용하는 공격 패턴 사용 , 2층 독필드 무조건 설치하고 시작함, 이때는 1층 독필드 설치할 필요 없음 설치 해도 그만 안해도 그만임 -->
+						<node name="skill" faceTarget="0" cooltime="124000" idx="5">
+							<!--레벨2: 2층에 독필드 깔기, 독필드 유지 시간이 2분임 -->
+							<node name="standby" limit="1300" faceTarget="0" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="69,15,15,1">
+									<!--2층 지형 지붕의 넓은 지붕에 올라가 있으면,  좁은 난간에 있어도 이부분 실행함-->
+									<node name="skill" faceTarget="0" cooltime="42000" idx="7">
+										<!--레벨2: 자신에거 방업 50% 상승 버프 걸기-->
+										<node name="standby" limit="2100" faceTarget="0" />
+									</node>
+									<node name="skill" faceTarget="0" cooltime="22000" idx="6">
+										<!-- 레벨1: 핑크빈에게 공격반사 버프 걸기-->
+										<node name="standby" limit="2400" faceTarget="0" />
+									</node>
+									<node name="skill" faceTarget="0" cooltime="22000" idx="9">
+										<!--플레이어에게  디버프 걸기-->
+										<node name="standby" limit="2200" faceTarget="0" />
+									</node>
+									<node name="skill" faceTarget="0" idx="3">
+										<!--돌 드랍 공격, 레벨2: 랜덤 대상 최우선 공격함 -->
+										<node name="standby" limit="3800" faceTarget="0" />
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="1">
+								<!-- 1층 석상 배치되어 있는 곳 같은 높이에 올라가 있고, 노인석상 배치된 곳 경계선 안쪽으로 들어오게 되면-->
+								<node name="skill" faceTarget="0" idx="1">
+									<node name="select" prob="33,33,34">
+										<!-- 빛기둥 드랍-->
+										<node name="standby" limit="3700" faceTarget="0" />
+										<node name="standby" limit="4200" faceTarget="0" />
+										<node name="standby" limit="5100" faceTarget="0" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="3600" faceTarget="0" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<!--핑크빈이 2에서 3페이지 넘어갈 때 여신 석상이 살아있을 때 잘못 설정하면 독필드를 두겹으로 설치하는 상황이 생길 수 있어서  PositionNow >=1 과   PositionNow = -1 을 통합으로 관리하는 형태로 로직을 구성함-->
+						<node name="skill" faceTarget="0" cooltime="124000" idx="4">
+							<!--레벨1: 1층에 독필드 깔기, 독필드 유지 시간이 2분임, PositionNow = 12 신호가 아니면 무조건 1층에 독필드 설치하고 시작함   -->
+							<node name="standby" limit="1100" faceTarget="0" />
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="PositionNow" value="1" op="greaterEqual">
+								<!--현재 핑크빈이 2층 지붕 11시 혹은 1시에 있으면, 평이한 형태의 공격 패턴 사용  이 변수에 대한 신호를 받았으면 무조건 1 이상이기 때문, 1층 독필드 무조건 설치하고 시작함 -->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="9">
+										<node name="select" prob="70,30">
+											<!--2층 지형 좁은 난간 부분에 플레이어가 있으면 -->
+											<node name="skill" faceTarget="0" cooltime="11000" idx="2">
+												<!--돌 드랍 공격, 레벨1: 제일 가까운 대상 최우선 공격함 -->
+												<node name="standby" limit="1200" faceTarget="0" />
+											</node>
+											<node name="standby" limit="1000" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="40,30,30">
+											<!--2층 지형의 넓은 지붕에 올라가 있으면, 버프 디버프로 상당히 짜증나게 하기 -->
+											<node name="skill" faceTarget="0" cooltime="24000" idx="9">
+												<!--플레이어에게  디버프 걸기-->
+												<node name="standby" limit="2300" faceTarget="0" />
+												<!--이 석상이 계속 살아있을 때 핑크빈이 다른 지붕으로 점프 이동하면 HP회복 신호를 받게 되는데 바로바로 반응할 수 있도록 standby 시간 짧게 설정함-->
+											</node>
+											<node name="skill" faceTarget="0" cooltime="10000" idx="6">
+												<!-- 핑크빈에게 공격반사 버프 걸기-->
+												<node name="standby" limit="2600" faceTarget="0" />
+											</node>
+											<node name="standby" limit="2600" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="90,10">
+											<!-- 1층 석상 배치되어 있는 곳 같은 높이에 올라가 있고, 노인석상 배치된 곳 경계선 안쪽으로 들어오게 되면-->
+											<node name="skill" faceTarget="0" cooltime="9800" idx="1" />
+											<!-- 빛기둥 드랍-->
+											<node name="standby" limit="1000" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="standby" limit="1000" faceTarget="0" />
+									</condition>
+								</node>
+							</condition>
+							<condition name="extraData" key="PositionNow" value="-1">
+								<node name="select" prob="99,1">
+									<!--핑크빈이 스카이콩콩 모드일 때도 이 변수에 -1을 넣어서 이 부분이 작동되도록 함 -->
+									<node name="skill" faceTarget="0" cooltime="605000" idx="8">
+										<!--레벨3: 자신에거 방업 80% 상승 버프 걸기, 버프 유지 시간은 10분임, 즉 이 버프 걸면서 이 상황에는 플레이어는 아리엘 석상 공격하지 말라는 뜻임-->
+										<node name="standby" limit="1200" faceTarget="0" />
+									</node>
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<!--아직 핑크빈한테 몇시 지형에 있는지 정확한 신호를 못받았으면, 가만히 있기 -->
+								<node name="standby" limit="1000" faceTarget="0" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

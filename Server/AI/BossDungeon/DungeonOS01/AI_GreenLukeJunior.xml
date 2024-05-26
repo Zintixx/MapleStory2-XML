@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="101">
+			<node name="MinimumHp" hpPercent="1" />
+			<!--큰 대미지로 인한 자폭없는 사망을 막기 위해 체력하한(1%) 설정-->
+			<node name="SetValue" key="KillSelf" value="0" />
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,100">
+			<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+				<node name="target" type="far" from="10" to="3000" />
+				<node name="target" type="hasAdditional" additionalId="40600090" additionalLevel="1" target="hostile" />
+				<!-- 에디셔널 타겟이 없으면 far 타겟으로 진행 -->
+			</node>
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="select" prob="100,0">
+					<node name="standby" limit="500" faceTarget="0" initialCooltime="15000">
+						<aiPreset name="PresetKillSelf" />
+					</node>
+					<node name="conditions">
+						<condition name="hpLess" value="2">
+							<!--체력 2% 이하로 떨어지면 체력하한 제거 및 자폭-->
+							<node name="standby" limit="1300" faceTarget="0" />
+							<aiPreset name="PresetKillSelf" />
+						</condition>
+						<!-- Stun 여부 상관없이 한번이라도 범위내에 들어가면 자폭 시전-->
+						<condition name="extraData" key="KillSelf" value="1">
+							<aiPreset name="PresetKillSelf" />
+						</condition>
+						<condition name="skillRange" skillIdx="1" skillLev="1">
+							<node name="SetValue" key="KillSelf" value="1" />
+							<aiPreset name="PresetKillSelf" />
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="trace" limit="2000" skillIdx="1" />
+							<node name="standby" limit="100" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="PresetKillSelf">
+			<node name="skill" idx="1" level="1" />
+			<node name="MinimumHp" />
+			<node name="Suicide" />
+		</aiPreset>
+	</aiPresets>
+</npcAi>

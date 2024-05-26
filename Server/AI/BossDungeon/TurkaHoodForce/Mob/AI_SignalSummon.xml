@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 두번째 맵에서 투르카 최종 페이지에서  AI_TurkaHoodForce_Phase03.xml 신호 받아서 소환몹을 지속적으로 소환하는 역할을 하는 페이크 몬스터임 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" key="SummonCallOk" value="0">
+				<!--   이 변수 0으로 초기, 이 변수가 0 이면 두번재 맵 3페이즈에서 초반부용 졸몹 소환함, 이 변수가 1이면 후반부용 졸몹 소환함 -->
+				<node name="SetValue" key="MonsterMany" value="0">
+					<!--   이 변수 0으로 초기, 소환몹 21502291 호출할 때 마리수 체크하기 위한 변수  AI_TurkaReaperCostume_SummonTypeA.xml로 부터 신호 받음-->
+					<!--  최초 딱 한번 아래 ElementSignal 변수 1~6 까지 랜덤 설정 받음 -->
+					<node name="SetValue" key="ElementSignal" value="1" />
+					<!--   ElementSignal = 1 인 경우임, 화염약점 속성 신호-->
+					<node name="SetValue" key="ElementSignal" value="2" />
+					<!--   ElementSignal = 2 인 경우임, 빙결약점 속성 신호-->
+					<node name="SetValue" key="ElementSignal" value="3" />
+					<!--   ElementSignal = 3 인 경우임, 전격약점 속성 신호-->
+					<node name="SetValue" key="ElementSignal" value="4" />
+					<!--   ElementSignal = 4 인 경우임, 신성약점 속성 신호-->
+					<node name="SetValue" key="ElementSignal" value="5" />
+					<!--   ElementSignal = 5 인 경우임, 암흑약점 속성 신호-->
+					<node name="SetValue" key="ElementSignal" value="6" />
+					<!--   ElementSignal = 6 인 경우임, 독약점 속성 신호-->
+				</node>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="SummonCallOk" value="0">
+				<node name="select" prob="9999,1">
+					<!--   SummonCallOk = 0, 두번째 전투판에서 처음 페이즈에서의 소환몹 호출 패턴-->
+					<node name="standby" limit="170" faceTarget="1" cooltime="41500">
+						<aiPreset name="SummonCall" />
+						<!-- 졸몹 소환 하기-->
+					</node>
+					<node name="skill" idx="1">
+						<!--   Attack_Idle 동작만 취하는 단순 형식상의 스킬임 -->
+						<aiPreset name="FrequencySignalSend" />
+						<!--  21502291 코드의 소녀ver 투르카에게 공격행동 얼만큼 자주 하게 할지를 경정하게 하는 변수 신호 보내기,  AI_TurkaReaperCostume_SummonTypeA.xml에게 신호 보내기-->
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="99999,9999,1">
+					<!--  AI_TurkaHoodForce_Phase03.xml 신호 받아서  SummonCallOk = 1 인 경우로, 소환몹 지속적으로 계속 호출함-->
+					<node name="SetSlaveValue" cooltime="99999" key="DeathSummon" value="1" />
+					<!--  SummonCallOk = 0 때 호출했던 소환몹들 스스로 사라지도록 하는 신호 보내기 -->
+					<node name="standby" limit="170" faceTarget="1" cooltime="15200">
+						<aiPreset name="SummonCall_Final" />
+						<!-- 졸몹 소환 하기-->
+					</node>
+					<node name="skill" idx="1">
+						<!--   Attack_Idle 동작만 취하는 단순 형식상의 스킬임 -->
+						<node name="standby" limit="100" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="SummonCall">
+			<node name="select" prob="99999,33,33,33,1">
+				<!-- 모든 졸몹 소환하기 -->
+				<node name="standby" limit="150" faceTarget="1" cooltime="145000" isKeepBattle="true">
+					<!-- 1시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="1350, -1350, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="1200, -1800, 1210" summonRot="0,0,0" />
+					<!-- 3시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="1200, -2400, 1360" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="1050, -3000, 1510" summonRot="0,0,0" />
+					<!-- 5시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="300, -3000, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="106" summonPos="-450, -3150, 1210" summonRot="0,0,0" />
+					<!-- 6시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="107" summonPos="-1350, -2850, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="108" summonPos="-1950, -2250, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="109" summonPos="-1800, -3000, 1360" summonRot="0,0,0" />
+					<!-- 9시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="110" summonPos="-2100, -1050, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="111" summonPos="-1800, -600, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="112" summonPos="-1350, -150, 1210" summonRot="0,0,0" />
+					<!-- 10시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="113" summonPos="-750, 150, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="114" summonPos="-150, 300, 1210" summonRot="0,0,0" />
+					<!-- 12시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="115" summonPos="450, 0, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="116" summonPos="900, -450, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="117" summonPos="1200, -900, 1210" summonRot="0,0,0" />
+				</node>
+				<!-- 북쪽 지점 모든 졸몹 소환하기 -->
+				<node name="standby" limit="150" faceTarget="1" cooltime="108000" isKeepBattle="true">
+					<!-- 1시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="1350, -1350, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="1200, -1800, 1210" summonRot="0,0,0" />
+					<!-- 10시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="113" summonPos="-750, 150, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="114" summonPos="-150, 300, 1210" summonRot="0,0,0" />
+					<!-- 12시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="115" summonPos="450, 0, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="116" summonPos="900, -450, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="117" summonPos="1200, -900, 1210" summonRot="0,0,0" />
+				</node>
+				<!-- 오른쪽지점 졸몹 소환하기 -->
+				<node name="standby" limit="150" faceTarget="1" cooltime="108000" isKeepBattle="true">
+					<!-- 3시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="1200, -2400, 1360" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="1050, -3000, 1510" summonRot="0,0,0" />
+					<!-- 5시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="300, -3000, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="106" summonPos="-450, -3150, 1210" summonRot="0,0,0" />
+					<!-- 6시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="107" summonPos="-1350, -2850, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="108" summonPos="-1950, -2250, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="109" summonPos="-1800, -3000, 1360" summonRot="0,0,0" />
+				</node>
+				<!-- 왼쪽지점 졸몹 소환하기 -->
+				<node name="standby" limit="150" faceTarget="1" cooltime="108000" isKeepBattle="true">
+					<!-- 9시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="110" summonPos="-2100, -1050, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="111" summonPos="-1800, -600, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="112" summonPos="-1350, -150, 1210" summonRot="0,0,0" />
+					<!-- 10시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="113" summonPos="-750, 150, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="114" summonPos="-150, 300, 1210" summonRot="0,0,0" />
+					<!-- 12시쪽 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="115" summonPos="450, 0, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="116" summonPos="900, -450, 1210" summonRot="0,0,0" />
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="117" summonPos="1200, -900, 1210" summonRot="0,0,0" />
+				</node>
+				<!-- 위 모두 쿨타임 걸렸을 때 이거 실행 -->
+				<node name="standby" limit="120" faceTarget="1" />
+			</node>
+		</aiPreset>
+		<aiPreset name="SummonCall_Final">
+			<node name="standby" limit="150" faceTarget="1" isKeepBattle="true">
+				<!-- 1시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" summonPos="1050, -1200, 1060" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="202" summonPos="1050, -1650, 1060" summonRot="0,0,0" />
+				<!-- 2시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="203" summonPos="900, -2100, 1060" summonRot="0,0,0" />
+				<!-- 3시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="204" summonPos="750, -2400, 1060" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="205" summonPos="300, -2700, 1060" summonRot="0,0,0" />
+				<!-- 4시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="206" summonPos="-150, -2850, 1060" summonRot="0,0,0" />
+				<!-- 5시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="207" summonPos="-600, -2850, 1060" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="208" summonPos="-1050, -2700, 1060" summonRot="0,0,0" />
+				<!-- 6시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="209" summonPos="-1350, -2550, 1060" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="210" summonPos="-1800, -2100, 1060" summonRot="0,0,0" />
+				<!-- 7시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="211" summonPos="-1950, -1650, 1060" summonRot="0,0,0" />
+				<!-- 8시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="212" summonPos="-1950, -1200, 1060" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="213" summonPos="-1650, -750, 1060" summonRot="0,0,0" />
+				<!-- 9시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="214" summonPos="-1350, -450, 1060" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="215" summonPos="-1050, -150, 1060" summonRot="0,0,0" />
+				<!-- 10시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="216" summonPos="-600, -150, 1060" summonRot="0,0,0" />
+				<!-- 11시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="217" summonPos="-150, 0, 1060" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="218" summonPos="150, -150, 1060" summonRot="0,0,0" />
+				<!-- 12시쪽 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="219" summonPos="450, -300, 1060" summonRot="0,0,0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="220" summonPos="750, -750, 1060" summonRot="0,0,0" />
+			</node>
+		</aiPreset>
+		<aiPreset name="FrequencySignalSend">
+			<node name="conditions">
+				<condition name="extraData" key="MonsterMany" value="8" op="greaterEqual">
+					<!--   greaterEqual = 8 이상인 경우 즉  21502291 졸몹이 9마리 이상인 경우, 21502291 졸몹에게   Frequency = 1 신호를 보내서 더 자주 방업 버프 부여 행동 하도록 하기 -->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetSlaveValue" key="Frequency" value="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!--   greaterEqual = 8 보다 작을 경우  경우 즉  21502291 졸몹이 9마리 적을  경우, 21502291 졸몹에게   Frequency = 0 신호를 보내서  방업 버프 부여 행동 빈도 낮게 설정하기 -->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetSlaveValue" key="Frequency" value="0" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="ElementSignalSend">
+			<node name="conditions">
+				<condition name="extraData" key="ElementSignal" value="1">
+					<!--   ElementSignal = 1 인 경우임, 화염약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetSlaveValue" key="ElementSignalCall" value="1" />
+						<!--  소녀ver 투르카에게 속성 설정 변수 신호 보내기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="2">
+					<!--   ElementSignal = 2 인 경우임, 빙결약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetSlaveValue" key="ElementSignalCall" value="2" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="3">
+					<!--   ElementSignal = 3 인 경우임, 전격약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetSlaveValue" key="ElementSignalCall" value="3" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="4">
+					<!--   ElementSignal = 4 인 경우임, 신성약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetSlaveValue" key="ElementSignalCall" value="4" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="5">
+					<!--   ElementSignal = 5 인 경우임, 암흑약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="SetSlaveValue" key="ElementSignalCall" value="5" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="6">
+					<!--   ElementSignal = 6 인 경우임, 독약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetSlaveValue" key="ElementSignalCall" value="6" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 이론적으로 여기 올일 없음 -->
+					<node name="standby" limit="300" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

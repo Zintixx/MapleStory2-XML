@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 두번째 스테이지(2), 오른쪽 구역(3)  -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<!--main.xml 트리거에 설정된  변수 1 더하기, TriggerMesh??: 첫번째 숫자: 1단계는 1  2단계는 2  3단계는 3, 두번째 숫자: 왼쪽 1  가운데 2  오른쪽 3-->
+				<node name="TriggerModifyUserValue" triggerID="101" key="TriggerMesh23" value="1" />
+				<!-- 전투 상태가 되면 트리거가 졸몹 마리수 체크할 때 +1 하기,   TriggerModelID =  101 -->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="near" from="10" to="1500" cooltime="4000" />
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<!-- 거리 850 이내 있으면, 공격 행동하기, 큐브 한칸 아래 포함되지 않음 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="90,10">
+								<node name="skill" idx="1">
+									<node name="standby" limit="1600" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" skillIdx="1" limit="900" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="500" faceTarget="1" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="TriggerModifyUserValue" triggerID="101" key="TriggerMesh23" value="-1" />
+				<!--이 몬스터가 죽으면 main.xml 트리거에 설정된 MonsterMany 변수 1 빼기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

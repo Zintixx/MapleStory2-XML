@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="buff" type="add" id="69000501" />
+			<node name="standby" limit="4000" faceTarget="0" />
+			<node name="buff" type="remove" id="69000501" />
+			<node name="standby" limit="2000" faceTarget="0" />
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="100,55,45,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1200" />
+			</node>
+			<!--일정 시간 마다, 양념뿌리기, 추적을 사용 (추작을 넣은 이유는 무분별하게 양념뿌리기를 사용 하는 것을 막기 위함)-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="13000" initialCooltime="6000">
+				<node name="select" prob="50,50">
+					<node name="skill" idx="3">
+						<!-- 양념뿌리기 -->
+						<node name="standby" limit="1200" faceTarget="1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<!-- 추적 -->
+						<node name="trace" limit="2000" skillIdx="1" />
+					</node>
+				</node>
+			</node>
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<!-- 추적  -->
+				<node name="trace" limit="2000" skillIdx="1" />
+			</node>
+			<!-- 평타페이즈-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="standby" limit="10" faceTarget="1">
+						<!-- 평타공격 "프라이팬으로 타격함"-->
+						<node name="skill" idx="1">
+							<node name="standby" limit="250" zfaceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="55,45">
+						<!--평타보다 대상이 멀 경우, 신속배달, 양념 뿌리기(가끔) 사용 (추적과 양념뿌리기를 추가한 이유는 무분별하게 신속배달만 사용 하는 것을 막기 위함)-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+							<node name="select" prob="15,70,15">
+								<node name="skill" idx="3">
+									<!-- 양념뿌리기 -->
+									<node name="standby" limit="1200" faceTarget="1" />
+								</node>
+								<node name="skill" idx="2">
+									<!-- 신속배달 -->
+									<node name="standby" limit="250" faceTarget="1" />
+								</node>
+								<node name="standby" limit="10" faceTarget="1">
+									<!-- 추적 -->
+									<node name="trace" limit="2000" skillIdx="1" />
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+							<!-- 추적 -->
+							<node name="trace" limit="2000" skillIdx="1" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

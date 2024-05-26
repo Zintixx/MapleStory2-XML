@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 솔로몬 활성화-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<!--param4 = "5750" 무척 높게 설정한 이유는 핑크빈의 기본 컬리전이 특정 동작에서 4500 높이로 올라가기 때문에  이 것을 감안하기 위해 이렇게 설정하였음-->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetValueRangeTarget" key="ReflectionMode" value="1" radius="3800" height="5750" isModify="1" />
+				<!--석상이 전투 상태가 되면  ReflectionMode 변수 +1 하게 하여, 5개 석상 제거에 의해 버프가 풀리도록 하는 기반 설정 최초 시작함-->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<!--등장하자마자 바로 공격하면 어색해 보여 약 4~6초 대기 상태로 있게 하기 -->
+			<node name="standby" limit="5000" faceTarget="0" cooltime="9999999" />
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="target" type="near" from="10" to="2500" cooltime="9000" />
+			<!--이 죽을수 있는 석상하고는 주로 1층 지형에서 전투를 하기 때문에 좌표 타겟팅 할 필요 없음 -->
+			<node name="conditions">
+				<condition name="extraData" key="ActiveStatueHuman01" value="4">
+					<!--핑크빈에게 이 변수 4 신호를 받으면 스스로 비활성화 상태가 되기 -->
+					<node name="standby" limit="200" faceTarget="1" animation="Attack_Idle_B" isKeepBattle="true">
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<!-- 여기 아래 부분이 본격 공격 행동 정의 하는 부분 -->
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="80,20">
+						<node name="skill" faceTarget="0" idx="2">
+							<!-- 창 내려찍기-->
+							<node name="standby" limit="2500" faceTarget="0" />
+						</node>
+						<node name="skill" faceTarget="0" cooltime="15000" idx="1">
+							<!-- 책펴기-->
+							<node name="standby" limit="2500" faceTarget="0" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="skill" faceTarget="0" idx="1">
+						<!-- 책펴기-->
+						<node name="standby" limit="2500" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1000" faceTarget="0" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="999111" key="StatueHuman01Death" value="1">
+			<!-- 노인석상이 죽으면 트리거 박스 제거하는 신호 보내기 -->
+			<node name="conditions">
+				<condition name="extraData" key="BattleOn" value="1">
+					<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+					<node name="SetValueRangeTarget" key="ReflectionMode" value="-1" radius="3800" height="5750" isModify="1" />
+					<!--석상이 죽으면서  ReflectionMode 변수 -1 하게 하여 5개 석상 제거에 의해 버프가 풀리도록 설정함-->
+				</condition>
+				<condition name="true">
+					<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+					<node name="SetValue" key="Temp" value="0" />
+					<!--아무것도 안한다는 뜻임 -->
+				</condition>
+			</node>
+		</node>
+	</battleEnd>
+</npcAi>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 2페이지에 발록과 함께 메인 전투판에서 싸우는 졸병, 한손 예시 레이저 공격 위주, 돌진 공격때 이동 없음 -->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="200" faceTarget="0" cooltime="5000">
+				<node name="select" prob="25,25,25,25">
+					<!-- 2페이지 메인 전투판에 있는 대상을 최우선으로 타겟팅 함-->
+					<node name="target" type="near" center="1800, 1650, 2850" />
+					<node name="target" type="near" center="1800, 900, 2850" />
+					<node name="target" type="near" center="1450, 1275, 2850" />
+					<node name="target" type="near" center="1050, 1650, 2850" />
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath_2Phase" value="1">
+					<!-- 2페이즈 전용 자살 명령 신호 변수-->
+					<node name="skill" idx="3" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!-- 2페이지 기준 같은 높이의 전투판에 있으면, 평상시 공격 행동 함, 캐논 레이저포 설치 우호적 NPC의 컬리전 높이는 40인데, 이 범위는 벗어나게 설정했음 -->
+							<aiPreset name="Normal_Attack" />
+							<!-- 평상시 공격 행동을 정의한 부분 -->
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="select" prob="25,25,25,25">
+									<node name="target" type="near" center="1800, 1650, 2850" />
+									<node name="target" type="near" center="1800, 900, 2850" />
+									<node name="target" type="near" center="1450, 1275, 2850" />
+									<node name="target" type="near" center="1050, 1650, 2850" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<!--창 찌르기 사정거리 이내이면, 레벨2 같은 높이의 전투판 대상만 포함-->
+					<node name="skill" idx="1">
+						<!--창 찌르기 -->
+						<node name="SetValue" key="AttackDelay" value="7">
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="target" type="near" from="2" to="1800" />
+						</node>
+					</node>
+					<!-- 2페이지 전투판은 바닥 일부가 파괴되어서 이동하면 공중을 걸어다니기 때문에 어색해 보여, 이동 관련 설정 없음-->
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="33,33,33,1">
+						<!--예시 레이저 공격 사정거리, 같은 높이의 대상만 범위 안에 들어옴-->
+						<node name="skill" cooltime="8000" idx="2">
+							<!-- 예시 레이저 공격 -->
+							<node name="SetValue" key="AttackDelay" value="11" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+						<node name="standby" limit="1100" faceTarget="1" cooltime="17000">
+							<node name="skill" idx="2">
+								<!-- 예시 레이저 공격 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+						<node name="standby" limit="2000" faceTarget="1" cooltime="17000">
+							<node name="skill" idx="2">
+								<!-- 예시 레이저 공격 -->
+								<node name="SetValue" key="AttackDelay" value="3" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+						<node name="standby" limit="900" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1500" faceTarget="1">
+						<node name="select" prob="25,25,25,25">
+							<node name="target" type="near" center="1800, 1650, 2850" />
+							<node name="target" type="near" center="1800, 900, 2850" />
+							<node name="target" type="near" center="1450, 1275, 2850" />
+							<node name="target" type="near" center="1050, 1650, 2850" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

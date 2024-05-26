@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="350" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="ZakumArmNumber" value="6" />
+				<node name="buff" type="add" id="50004403" level="1" />
+				<!--자쿰팔이 버프 스킬을 사용할 때 자쿰 몸에 붙는 아이콘 애디셔널은 팔에 붙지 않게 하기 위해 이 애디셔널을 부여함 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="30">
+			<node name="buff" type="add" id="50006006" level="1" />
+			<!-- HP 30% 이하로 급 감소되면 이 애디셔널 부여하여 모든 속성 버프 제거하기 -->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 오른쪽 2층 지형 -->
+			<node name="target" type="near" center="3150, -1675, 2450" cooltime="8000" />
+			<node name="conditions">
+				<condition name="extraData" key="ElementsDecision05" value="1" op="greaterEqual">
+					<!-- 자쿰 몸체로 부터 ElementsDecision05 변수 신호를 받았으면-->
+					<aiPreset name="ElementsBarrier" />
+					<!-- 자쿰팔 2개 이하가 되면 무조건 AI_ZakumBrownImitation.xml 에서 ElementsDecision05 = 99 신호를 보내기 때문에 속성 버프 제거될 것임-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+						<node name="standby" limit="100" faceTarget="0" />
+					</node>
+				</condition>
+				<!--여기 아래서 부터는 본격 공격 행동하는 부분임 -->
+				<condition name="extraData" key="ZakumArmNumber" value="6">
+					<node name="select" prob="99999,0">
+						<!-- 팔이 6개 있는 경우-->
+						<node name="standby" limit="7000" faceTarget="0" cooltime="9999999" />
+						<!--시작하자마자 바로 공격하는 것이 좀 어색해서 최초에만 몇초동안의 딜레이 설정을 넣음 -->
+						<aiPreset name="MainBattle06" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="5">
+					<!-- 팔이 5개 있는 경우-->
+					<aiPreset name="MainBattle06" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="4">
+					<!-- 팔이 4개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="3">
+					<!-- 팔이 3개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="2">
+					<!-- 팔이 2개 있는 경우-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+				<condition name="true">
+					<!-- 팔이 1개 있는 경우-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="VoiceDeathZakumArm" value="1">
+			<!-- 본체에게 팔이 죽음으로 인한 성우 목소리를 출력하라는 신호를 보냄-->
+			<node name="SetValueRangeTarget" key="ZakumArmNumber" value="-1" radius="2500" height="4000" isModify="1" />
+			<!-- 자쿰팔이 죽어서 본체와 다른 팔의 이 변수 -1을 하여 현재 팔이 몇개 남았는지 본체와 다른 팔에서 파악할 수 있도록 함-->
+			<!-- param3 은 좌우 영역, param4는 위아래 영역임, 자쿰몸체 컬리전 박스가 3600 높이에 어긋나게 있기 때문에 최소 param4=3600 이상이어야 함-->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<!--어떤  속성 보호를 받을지를 결정하는데 부분-->
+		<aiPreset name="ElementsBarrier">
+			<node name="conditions">
+				<condition name="extraData" key="ElementsDecision05" value="1">
+					<node name="buff" type="add" id="50006000" level="1">
+						<!-- 화명 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision05" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision05" value="2">
+					<node name="buff" type="add" id="50006001" level="1">
+						<!-- 빙결 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision05" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision05" value="3">
+					<node name="buff" type="add" id="50006002" level="1">
+						<!-- 전격 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision05" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision05" value="4">
+					<node name="buff" type="add" id="50006003" level="1">
+						<!-- 신성 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision05" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision05" value="5">
+					<node name="buff" type="add" id="50006004" level="1">
+						<!-- 암흑 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision05" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision05" value="6">
+					<node name="buff" type="add" id="50006005" level="1">
+						<!-- 독속 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision05" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="buff" type="add" id="50006006" level="1">
+						<!--이 애디셔널 부여하여 모든 속성 보호 버프 제거하기 -->
+						<node name="SetValue" key="ElementsDecision05" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle06">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="35,64,1">
+						<!--2층 오른쪽 전투판에 있으면, 암흑화살 번개 공격 위주 사용함-->
+						<!--전염병 투척, 레벨1  1개 투척-->
+						<node name="skill" cooltime="65000" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="47" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+						<!--암흑 화살-->
+						<node name="skill" cooltime="15000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="43" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="40,59,1">
+						<!--그외 다른 장소에 있으면 전염병 투척 2개 짜리 자주 사용함-->
+						<!--전염병 투척, 레벨2  2개 투척-->
+						<node name="skill" cooltime="25000" initialCooltime="12000" idx="3">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="47" />
+							</node>
+						</node>
+						<!--암흑 화살-->
+						<node name="skill" cooltime="11000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="43" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle04">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="35,64,1">
+						<!--2층 오른쪽 전투판에 있으면, 암흑화살 번개 공격 위주 사용함-->
+						<!--전염병 투척, 레벨1  1개 투척-->
+						<node name="skill" cooltime="58000" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<node name="SetValue" key="AttackDelay" value="33" />
+							</node>
+						</node>
+						<!--암흑 화살-->
+						<node name="skill" cooltime="12000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<node name="SetValue" key="AttackDelay" value="33" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="40,59,1">
+						<!--그외 다른 장소에 있으면 전염병 투척 2개 짜리 자주 사용함-->
+						<!--전염병 투척, 레벨2  2개 투척-->
+						<node name="skill" cooltime="22000" idx="3">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<node name="SetValue" key="AttackDelay" value="34" />
+							</node>
+						</node>
+						<!--암흑 화살-->
+						<node name="skill" cooltime="9000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="21" />
+								<node name="SetValue" key="AttackDelay" value="32" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle02">
+			<node name="select" prob="88,11,1">
+				<!--이때는 무조건 2개짜리 투척-->
+				<!--전염병 투척, 레벨2  2개 투척-->
+				<node name="skill" cooltime="22000" idx="3">
+					<node name="select" prob="50,50">
+						<!--쿨타임 조절 난이도 포인트-->
+						<node name="SetValue" key="AttackDelay" value="5" />
+						<node name="SetValue" key="AttackDelay" value="12" />
+					</node>
+				</node>
+				<!--암흑 화살-->
+				<node name="skill" cooltime="7000" idx="1">
+					<node name="select" prob="50,50">
+						<node name="SetValue" key="AttackDelay" value="6" />
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</node>
+				<node name="SetValue" key="AttackDelay" value="13" />
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

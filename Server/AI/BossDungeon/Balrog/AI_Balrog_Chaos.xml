@@ -1,0 +1,1549 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--#1페이즈, 바닥 파괴 조심 패턴-->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="1">
+				<!--이 변수를 통해 페이즈 전환 되었음을 알림-->
+				<node name="SetValue" key="1PhasePattern" value="0" />
+				<!--  1페이즈 전투 패턴 형태를 결정하는데 사용하는 변수,   0   1   2 이 3개 변수가 계속 변경되는 형태가 됨-->
+				<node name="SetValue" key="1PhaseBottomCheck" value="0" />
+				<!--  1페이즈 때 파티원 전원이 큐브 한칸 아래 지형으로 이동했는지를 체크하기 위해 사용하는 변수-->
+				<node name="SetValue" key="PatternConversion" value="0" />
+				<!--  이 변수가 일정 수치 이상이 되면 행동패턴이 변하도록 설정하는데 사용됨-->
+				<node name="SetValue" key="SummonVsPlayerBreakerOK" value="0" />
+				<!--  2페이즈에서 12시 지점에서 소환몹과 싸우는 플레이어를 방해하는 행동을 결정할때 사용하는 변수-->
+				<node name="SetValue" key="SummonMany" value="0" />
+				<!--  2페이즈에서 소환몹 몇마리 남았는지 알게 해주는 변수-->
+				<node name="SetValue" key="2PhasePushAttackOK" value="0" />
+				<!--&^&##  2페이즈 때 소환몹 나오자 마자 바로 밀치기 공격하면 전투가 쾌적하지 못해서, 이것을 막기위해 사용하는 변수-->
+				<node name="SetValue" key="3PhasePowerUpBuffOk" value="0" />
+				<!--  3페이즈 때 보스가 파워업 버프를 사용할지말지를 결정하는데 사용하는 변수-->
+				<node name="SetValue" key="DashAttackMode" value="0" />
+				<!--  3페이즈 파워업 버프 상태에서 돌진 공격 중 기둥 충돌 시 돌진 행위를 바로 끊고 기절 시키기 위해 사용하는 변수-->
+				<node name="SetValue" key="4PhaseAbsorbModeOk" value="0" />
+				<!--  흡수 공격 사용할지 말지를 결정하는데 사용하는 변수-->
+				<node name="SetValue" key="AbsorbPatternMode" value="0" />
+				<!--  흡수 공격 상태일 때 사용하는 변수-->
+				<node name="SetValue" key="TristanAppearance" value="0" isModify="1" />
+				<!-- 이 변수로 트리스탄이 등장했는지 알수있게 하는 변수, 혹시 극딜로 흡수 페이지 건너띄었을 경우 5페이지에 트리스탄 나오게 하기 위해 -->
+				<node name="SetValue" key="TristanStunAttack" value="0" />
+				<!--  흡수 공격 패턴때 트리스탄NPC에게 자신을 스턴 시키는 공격 행동을 하라고 신호 보낼때 사용하는 변수-->
+				<node name="SetValue" key="6PhaseBurstModeOk" value="0" />
+				<!--  마지막 페이즈에서 광역 폭발 공격  -> 바닥큐브 파괴 갈고리 휘두르기 -> 마지막 공격 패턴 형태로 전환할 때 사용되는 변수-->
+				<node name="SetValue" key="BurstPatternNumber" value="0" />
+				<!--  광역 폭발 공격 상태일 때 사용하는 변수-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="77">
+			<!--#2페이즈, 소환몹 패턴-->
+			<node name="SetValue" key="Phase" value="2">
+				<!--이 변수를 통해 페이즈 전환 되었음을 알림-->
+				<node name="SetValue" key="SummonVsPlayerBreakerOK" value="5" />
+				<!--이 변수를 5으로 셋팅해 1~2번 공격 후 바로 12시 소환몹 공격하고 있는 플레이어 견제하러 가게 하게기-->
+			</node>
+			<!--%&% 주의: 아래 숫자 7 수정하면 이 변수 5도 같이 수정해야 함 -->
+		</condition>
+		<condition name="hpLess" value="60">
+			<!--#3-1페이즈, 두번째 전투판으로 점프 이동함, 기둥 충돌 패턴-->
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<node name="TargetEffect" effectName="" />
+				<!--3페이즈에서는 타겟팅 이펙트 사용 안한다는 설정을 함-->
+				<node name="move" destination="1650, 1650, 760" limit="1660" />
+				<node name="SetValueRangeTarget" key="DeathSummonMob" value="1" radius="3800" height="1000" />
+				<!-- 지란트가 등장하여 신호 보내 자살 명령 내리기, 여기서는 쾌적한 진행을 위해 소환몹 남아있을 경우 그냥 제거하는 것이 좋음-->
+				<node name="skill" facePos="4425, 4425, 2750" idx="5" />
+				<!--점프 도약 -->
+				<node name="TriggerSetUserValue" triggerID="1122330" key="NextMove" value="1" />
+				<!--트리거 신호 보내서 두번째 전투판으로 가는 다리 생성 -->
+				<!--툴벤치 맵에 설치하는 MSTriggerModel 의 TriggerModelID 코드를  "1122330" 으로 해야 함-->
+				<node name="jump" pos="4425, 4425, 2750" speed="1800" heightMultiplier="1.3" />
+				<!--점프중 -->
+				<node name="teleport" pos="4425, 4425, 2750" />
+				<!--혹시 몰라 점프이동 버그를 예방하기 위해 순간이동 기능도 넣었음 -->
+				<node name="SetValueRangeTarget" key="DeathSummonMob" value="1" radius="7500" height="4000" />
+				<!-- 앞에서 보낸 자살 신호 못받는 경우 있을 수 있어서 혹시 몰라 자살 신호 다시 한번 보내기-->
+				<node name="skill" faceTarget="0" idx="6" />
+				<!--점프 착지 -->
+				<node name="standby" limit="1500" faceTarget="0" />
+				<node name="skill" faceTarget="1" idx="42" />
+				<!--기둥충돌 지뢰 센서 설치하기 -->
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="SetValue" key="Phase" value="3" />
+				<!--이 변수를 통해 페이즈 전환 되었음을 알림-->
+				<node name="SetValue" key="3PhasePowerUpBuffOk" value="1" />
+				<!--중요: 이 변수에 1을 넣어 보스가 파워업 버프 사용하도록 함-->
+				<node name="standby" limit="1000" faceTarget="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="52">
+			<!--#3-2페이즈, 기둥 충돌 패턴-->
+			<!--다음 파워업 버프 사용하도록 하기, 전투판 중앙 이동은 고민중 -->
+			<node name="SetValue" key="3PhasePowerUpBuffOk" value="1" />
+			<!--중요: 이 변수에 1을 넣어 보스가 파워업 버프 사용하도록 함-->
+		</condition>
+		<condition name="hpLess" value="44">
+			<!--#3-3페이즈, 기둥 충돌 패턴-->
+			<!--다음 파워업 버프 사용하도록 하기, 전투판 중앙 이동은 고민중 -->
+			<node name="SetValue" key="3PhasePowerUpBuffOk" value="1" />
+			<!--중요: 이 변수에 1을 넣어 보스가 파워업 버프 사용하도록 함-->
+		</condition>
+		<condition name="hpLess" value="40">
+			<!--#4페이즈, 흡수 공격 막기 패턴-->
+			<node name="SetValue" key="Phase" value="4">
+				<!--이 변수를 통해 페이즈 전환 되었음을 알림-->
+				<node name="SetValue" key="4PhaseAbsorbModeOk" value="99">
+					<!-- 이 변수를 99로 만들어 4페이즈 들어서자마자 바로 흡수 공격 행동 하도록 함-->
+					<node name="buff" type="remove" id="50000309" level="1" prob="100" />
+					<!--이전 페이즈 기둥출동 패턴때 공방업 버프가 풀리지 않은 상태로 이 페이즈에 올 수 있기 때문에 4페이즈 들어서자마자 바로 이 버프 제거하도록 함-->
+				</node>
+			</node>
+		</condition>
+		<condition name="hpLess" value="20">
+			<!--#5페이즈, 평범한 공격 패턴 약간 쉬어가는 구간, 4페이즈 건너 띄어서 트리스탄 안나왔다면 여기서 TristanAppearance 변수 조건 체크 해서 트리스탄 등장시킴-->
+			<node name="SetValue" key="Phase" value="5">
+				<node name="SetValueRangeTarget" key="DeathSummonMob" value="1" radius="3800" height="1000">
+					<!-- 혹시 트리스탄 방해하는 지란트가 살아있을 경우 자살 처리 함-->
+					<node name="conditions">
+						<condition name="extraData" key="TristanAppearance" value="0">
+							<!-- 트리스탄이 등장 안했다면-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="301" summonPos="4500, 3150, 2600" master="None">
+								<!-- 트리스탄 호출  , master="None" 해야 발록이 죽을 때 트리스탄이 사라지지 않음  -->
+								<node name="SetValue" key="TristanAppearance" value="1" isModify="1" />
+								<!-- 이 변수를 1로 만들어 트리스탄 등장했음을 알림 -->
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 이미 트리스탄 등장했다면, 아무것도 안함-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</node>
+		</condition>
+		<condition name="hpLess" value="17">
+			<!--#6페이즈, 광역 공격 막기 패턴-->
+			<node name="SetValue" key="Phase" value="6">
+				<!--이 변수를 통해 페이즈 전환 되었음을 알림-->
+				<node name="SetValueRangeTarget" key="DeathSummonMob" value="1" radius="3800" height="1000" />
+				<!-- 혹시 트리스탄 방해하는 지란트가 살아있을 경우 자살 처리 함-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="Phase" value="1">
+				<!--#1페이즈,  바닥 파괴 조심 패턴-->
+				<node name="conditions">
+					<condition name="extraData" key="PatternConversion" value="5" op="greaterEqual">
+						<!-- 이 변수가 일정 수치 이상이 되면 1PhasePattern 변수의 숫자를 변경시켜  "일반", "바닥파괴", "밀치기" 행동을 번갈아 하도록 함 -->
+						<!-- *************************************************************** -->
+						<node name="conditions">
+							<condition name="extraData" key="1PhasePattern" value="1">
+								<!-- "바닥파괴" 패턴 상태였으면, "밀치기" 패턴으로 변경하기 -->
+								<node name="SetValue" key="1PhasePattern" value="2">
+									<node name="SetValue" key="PatternConversion" value="0" />
+									<!--  이 변수0으로 초기화 시킴, 이거 안하면 이 단계에서 무한루프 걸림-->
+								</node>
+							</condition>
+							<condition name="extraData" key="1PhasePattern" value="2">
+								<!-- "밀치기" 패턴 상태였으면, "일반" 혹은 "바닥파괴" 패턴으로 랜덤 변경하기 -->
+								<node name="SetValue" key="PatternConversion" value="0">
+									<!--  이 변수0으로 초기화 시킴, 이거 안하면 이 단계에서 무한루프 걸림-->
+									<node name="SetValue" key="1PhasePattern" value="1" />
+									<!-- "바닥파괴" 패턴 엄청 자주 발생하도록 함 -->
+									<!-- 	<event eventName="SetExtra" target="Me" param1="1PhasePattern" param2="0" prob="50"/>  "일반" 패턴  -->
+								</node>
+							</condition>
+							<condition name="true">
+								<!--1PhasePattern = 0 인 경우로  "일반" 패턴 상태였으면, "바닥파괴" 패턴으로 변경하기 -->
+								<node name="SetValue" key="1PhasePattern" value="1">
+									<node name="SetValue" key="PatternConversion" value="0" />
+									<!--  이 변수0으로 초기화 시킴, 이거 안하면 이 단계에서 무한루프 걸림-->
+								</node>
+							</condition>
+						</node>
+						<!-- *************************************************************** -->
+					</condition>
+					<condition name="extraData" key="1PhasePattern" value="1">
+						<!--이 변수가 1이 되면, 발록이 "바닥파괴" 패턴이 됨-->
+						<aiPreset name="BottomCrashPattern" />
+					</condition>
+					<condition name="extraData" key="1PhasePattern" value="2">
+						<!--이 변수가 2가 되면, 발록이 "밀치기" 패턴이 됨-->
+						<aiPreset name="PushDropPattern" />
+					</condition>
+					<condition name="true">
+						<!--이 변수가 0이 되면, 발록이 "일반" 패턴이 됨, 최초에는 이부분 부터 실행할 것임-->
+						<aiPreset name="NormalPattern" />
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="2">
+				<node name="select" prob="99999,0">
+					<!--#2페이즈  소환몹 패턴-->
+					<node name="standby" limit="200" faceTarget="1" cooltime="56000">
+						<node name="SetValue" key="2PhasePushAttackOK" value="0">
+							<!--&^&## 밀치기 공격 사용 관련 스킬 변수 초기화 하기:  2페이즈 때 소환몹 나오자 마자 바로 밀치기 공격하면 전투가 쾌적하지 못해서, 이것을 막기위해 사용하는 변수-->
+							<aiPreset name="SummonPattern02" />
+							<!--졸병 몬스터 소환하기, 최초 타겟팅 이펙트 나오게 하는 거 여기서 선언함-->
+						</node>
+					</node>
+					<!--%&% 주의: 이 숫자 7 수정하면 맵 위에도 같이 수정해야 함 -->
+					<node name="conditions">
+						<condition name="extraData" key="SummonVsPlayerBreakerOK" value="7" op="greaterEqual">
+							<!-- 이 변수가 7 이상이 되면 소환몹 지란트를 공격하는 플레이어에게 방해하는 행동 하도록 하기 -->
+							<node name="SetValue" key="SummonVsPlayerBreakerOK" value="0">
+								<!-- @#@#@  이 변수 0으로 초기화 하기, 이거 안하면 이곳에서 무한루프에 빠짐 -->
+								<node name="conditions">
+									<condition name="extraData" key="SummonMany" value="2" op="greaterEqual">
+										<node name="select" prob="60,40">
+											<!-- 소환몹 지란트가 두마리 이상 남아있으면, 견제 행동 하기 -->
+											<node name="standby" limit="100" faceTarget="0">
+												<aiPreset name="SummonVsPlayerBreakerLeft" />
+												<!-- 2페이즈 때 북쪽 왼쪽 지점의 소환몹을 공격하는 플레이어를 견제하는 행동에 대한 것을 정의함-->
+											</node>
+											<node name="standby" limit="100" faceTarget="0" cooltime="52000">
+												<aiPreset name="SummonVsPlayerBreakerRight" />
+												<!-- 2페이즈 때 북쪽 오른쪽 지점의 소환몹을 공격하는 플레이어를 견제하는 행동에 대한 것을 정의함-->
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,50">
+											<!-- 소환몹 지란트가 1마리 이하면, 1시 지점 소환몹 호출-->
+											<node name="standby" limit="100" faceTarget="1">
+												<node name="target" type="mid" from="10" to="1300">
+													<!-- 12시 지점의 소환몹과 싸우는 플레이어를  타겟팅 하지 않았으면 적당히 중간지점의 대상  타겟함-->
+													<node name="standby" limit="250" faceTarget="1" />
+												</node>
+											</node>
+											<node name="standby" limit="100" faceTarget="1" cooltime="42000" isKeepBattle="true">
+												<!-- 소환몹 지란트 1시 지점 소환몹 호출-->
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" summonPos="3020, 1200, 800" />
+												<!-- 주의 group="201" 꼭 사용-->
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="203" summonPos="3020, 750, 800" />
+												<!-- 주의 group="203" 꼭 사용-->
+												<node name="target" type="mid" from="10" to="1300" />
+												<!-- 12시 지점의 소환몹과 싸우는 플레이어를  타겟팅 하지 않았으면 적당히 중간지점의 대상  타겟함-->
+												<node name="standby" limit="250" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="26">
+							<!--주의: 아래는 전투 행동 패턴에 대한 정의인데, 타겟팅 설정을 함부로 하면 안됨, 소환몹 공격하는 플레이어를 주로 타겟팅하도록 설정되어야 하기 때문에 이 공격 행동때 섣불리 타겟팅 설정하면 의도되로 작동 안될것임-->
+							<node name="SetValue" key="SummonVsPlayerBreakerOK" value="1" isModify="1">
+								<!--@#@#@  일반 공격 행동 할때마다 이 변수 무조건 1씩 더하기-->
+								<node name="SetValue" key="2PhasePushAttackOK" value="1" isModify="1">
+									<node name="select" prob="40,20,20,20">
+										<!--&^&## 밀치기 공격 허용하는 변수도 일반 공격 행동 할때마다 이 변수 무조건 1씩 더하기-->
+										<!--갈고리 2연타-->
+										<node name="skill" faceTarget="1" idx="26">
+											<node name="select" prob="99,1">
+												<node name="standby" limit="500" faceTarget="1" cooltime="24000">
+													<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="1200, 2400, 950" />
+													<!-- 11시 지점에 소환몹 한마리씩 호출, 주의 group="102" 꼭 사용-->
+												</node>
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="SetValue" key="SummonVsPlayerBreakerOK" value="1" isModify="1" />
+													<!-- 추가로 1 더하기-->
+												</node>
+											</node>
+										</node>
+										<!--디버프 건 후 2~3연속 돌진 공격 -->
+										<node name="skill" cooltime="18000" idx="30">
+											<!--디버프 걸기 준비 동작 -->
+											<node name="skill" faceTarget="0" idx="31">
+												<!--돌진 공격 -->
+												<node name="standby" limit="350" faceTarget="1">
+													<node name="skill" faceTarget="1" idx="32">
+														<node name="select" prob="50,50">
+															<!--두번째 돌진 공격 -->
+															<!--두번만 하고 끝내기 -->
+															<node name="skill" faceTarget="0" idx="33">
+																<!--돌진 후 마무리 -->
+																<node name="target" type="near" from="50" to="1300">
+																	<node name="standby" limit="1100" faceTarget="1" />
+																</node>
+															</node>
+															<!--세번 돌진 더 하고 끝내기 -->
+															<node name="target" type="near" from="100" to="1300" isKeepBattle="true">
+																<!--제일 가까운 대상  -->
+																<node name="standby" limit="350" faceTarget="1" />
+																<node name="skill" faceTarget="0" idx="32" />
+																<!--두번째 돌진 공격 -->
+																<node name="skill" faceTarget="0" idx="33" />
+																<!--돌진 후 마무리 -->
+																<node name="standby" limit="1100" faceTarget="1" />
+																<node name="SetValue" key="SummonVsPlayerBreakerOK" value="2" isModify="1" />
+																<!-- 추가로 2 더하기-->
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="500" faceTarget="1" cooltime="22000">
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="600, 2400, 950">
+												<node name="conditions">
+													<condition name="extraData" key="2PhasePushAttackOK" value="3" op="greaterEqual">
+														<node name="select" prob="50,50">
+															<!--&^&## 괴성 지르며 바위 떨구기 : 소환몹 바로 소환한 다음에 바로 이어서 이 바람 밀어내는 기능이 있는 스킬을 사용하면 전투가 쾌적하지 못해서 2PhasePushAttackOK 변수가 3 이상이 되어야 사용하도록 설정하기-->
+															<node name="skill" idx="38">
+																<node name="standby" limit="500" faceTarget="1" />
+															</node>
+															<node name="skill" idx="39">
+																<node name="standby" limit="500" faceTarget="1" />
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="standby" limit="200" faceTarget="1" />
+													</condition>
+												</node>
+											</node>
+										</node>
+										<!--괴성질러 밀치기-->
+										<node name="skill" faceTarget="1" cooltime="14000" isKeepBattle="true" idx="1">
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="1050, 1950, 950" />
+											<!-- 11시 지점에 소환몹 한마리씩 호출, 주의! group="103" 꼭 사용-->
+											<node name="standby" limit="800" faceTarget="0" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,99,100">
+								<node name="trace" till="430" limit="3000" cooltime="8000" />
+								<!--거리 430까지 추적하기, 2페이즈는 6시 쪽으로 유인을 더 쉽게 하기위해 430 거리로 추적하게 함  -->
+								<node name="trace" till="430" limit="3000" cooltime="8000">
+									<!--거리 430까지 추적하기, 2페이즈는 6시 쪽으로 유인을 더 쉽게 하기위해 430 거리로 추적하게 함  -->
+									<node name="target" type="near" from="10" to="1300" />
+									<!--너무 추적 어뷰징을 막기 위한 장치-->
+								</node>
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="near" from="10" to="1300" />
+									<!--계속  trace 2번 연속하면, 제일 가까운 대상 타겟팅 하기-->
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="3">
+				<!--#3페이즈  두번째 전투판으로 점프 이동함, 기둥 충돌 패턴-->
+				<node name="conditions">
+					<condition name="additional" id="50004511">
+						<!--기둥 충돌 하면 보스몸에 50004511 레벨1 애디셔널에 붙는데 3페이즈에서 가장 높은 우선순위로 이 부분을 실행해야 하기 때문에 여기에 if 조건을 넣음-->
+						<node name="skill" faceTarget="0" idx="34">
+							<!--레벨6: 돌진 후 기절하는 동작-->
+							<node name="say" message="$Balrog_PillarBroken$" durationTick="9000">
+								<node name="standby" limit="1200" faceTarget="0">
+									<node name="buff" type="remove" id="50004511" level="1">
+										<!--기둥 충돌때의 몸에 붙는 애디셔널 여기서 제거하기, 이거 제거 안하면 무한 루프에 걸릴 수 있음-->
+										<node name="SetValue" key="DashAttackMode" value="0">
+											<node name="select" prob="35,65">
+												<!--  #중요: 이 변수 0으로 초기화 하여 돌진 공격 로직 조건문을 실행하지 않도록 함-->
+												<node name="skill" facePos="4425, 4425, 2750" isKeepBattle="true" idx="5">
+													<!--점프로 신속하게 중앙으로 이동하기-->
+													<node name="jump" pos="4425, 4425, 2750" speed="1800" heightMultiplier="1.3" />
+													<!--전투판 중앙쪽으로 점프 뛰기, 도약 동작 없이 신속하게 바로 뛰기 -->
+													<node name="skill" faceTarget="0" idx="6" />
+													<!--점프 착지 -->
+													<node name="target" type="near" from="10" to="1500" />
+													<node name="standby" limit="1350" faceTarget="1" />
+												</node>
+												<node name="move" destination="4425, 4425, 2750" limit="6000" cooltime="9999000">
+													<!--중앙으로 걸어서 이동하기-->
+													<node name="target" type="near" from="10" to="1500">
+														<node name="standby" limit="300" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="23">
+						<!--레벨16: 두번째 전투판의 전투판 내에 있을 경우 아래 내용 실행함  큐브 한칸 아래까지 커버함-->
+						<node name="conditions">
+							<condition name="additional" id="50000309">
+								<!--파워업 버프 상태일 때 몸통 돌진 공격 하는 부분, 50000309 레벨1 이 애디셔널이 파워업 버프임-->
+								<aiPreset name="3Phase_DashAttackPattern" />
+								<!--몸통 돌진 주력 공격 패턴 대한 내용이 있음-->
+							</condition>
+							<condition name="true">
+								<!--기둥 충돌이거나 시간이 다 되어서 버프가 사라졌을 때의 행동 패턴 부분-->
+								<node name="conditions">
+									<condition name="extraData" key="3PhasePowerUpBuffOk" value="1">
+										<!--보스 HP가 일정 이하로 줄어들면, 위쪽에 선언한 예약에 의해 이 변수가 1이 되면 아래 내용을 실행함-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="37">
+												<!--같은 높이 전투판에 있어야 파워업 버프 사용하도록 함-->
+												<node name="skill" facePos="3150, 3150, 2750" idx="37">
+													<!--파워업 버프 사용하기, 즉  50000309 이 버프가 보스 몸에 붙음-->
+													<node name="say" message="$Balrog_PowerUp$" durationTick="9000">
+														<node name="standby" limit="2500" faceTarget="1">
+															<node name="SetValue" key="3PhasePowerUpBuffOk" value="0" />
+															<!--이 변수에 0으로 초기화, 초기화 안하면 무한루프에 빠짐-->
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="near" from="10" to="1500" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+									<condition name="true">
+										<!--기둥 충돌로 인해 버프가 사라졌을 때 이후 평범한 공격을 하는 공격패턴 부분-->
+										<aiPreset name="3Phase_NormalPattern" />
+										<!--평이한 형태의 공격 패턴 대한 내용이 있음-->
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--모든 플레이어가 두번째 전투판의 전투판 밖에 있으면 서있으면서 제알 가까운 대상 타겟팅 함-->
+						<node name="standby" limit="500" faceTarget="1">
+							<node name="target" type="near" center="4425, 4425, 2750" />
+							<!--두번째 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="4">
+				<!--#4페이즈  흡수 공격 막기 패턴-->
+				<node name="conditions">
+					<condition name="additional" id="50004511" level="2">
+						<!--흡수 공격 중 트리스탄의 스턴 공격에 맞으면, 무조건 이 부분 실행시켜 흡수 공격 행동 멈추도록 함-->
+						<node name="SetValue" isKeepBattle="true" key="4PhaseAbsorbModeOk" value="0">
+							<!--  흡수 공격 사용할지 말지를 결정하는데 사용하는 변수 0으로 초기화 하기-->
+							<node name="SetValue" key="AbsorbPatternMode" value="0" />
+							<!--  흡수 공격 반복 사용 관련 변수 0으로 초기화 하기-->
+							<node name="buff" type="remove" id="50004511" level="2" />
+							<!--트리스탄한테 받은 기절 공격 알림 애디셔널을 여기서 제거, 이거 안하면 이 구간에서 무한루프에 빠짐, 꼭 제거해야 함 -->
+							<node name="say" message="$Balrog_TristanBroken01$" durationTick="8000" />
+							<node name="standby" limit="1900" faceTarget="0" />
+							<node name="HideVibrateAll" />
+							<!--트리스탄이 Hide 큐브 파괴했고  이후 Hide큐브 제거 명령을 여기서 진행, 이거 안하면 파괴된 Hide 큐브 리젠될 것임-->
+						</node>
+					</condition>
+					<condition name="extraData" key="AbsorbPatternMode" value="1" op="greaterEqual">
+						<node name="select" prob="99999,0">
+							<!--이 부분 이 페이즈에서 난이도 조절 측면에서 제일 중요한 부분-->
+							<node name="standby" limit="200" faceTarget="0" animation="Attack_02_D_Loop" cooltime="10000">
+								<node name="target" type="near" center="4800, 3750, 3400">
+									<!--트리스탄이 지란트한테 방해 받는 지점, 이곳에 있는 플레이어를 타겟팅하여 한큐브 높은 곳에 위치해 있다면 바로 방해 동작을 하게 하려고 낮은 확률로 특정 위치 지정 타겟팅을 부여함-->
+									<!--주의: 이 좌표 타겟팅 할 경우 무조건 트리스탄 우선 타겟팅을 하기 때문에 원하는 대로 작동 안됨, 트리스탄을 꼭 타겟팅 예외 처리 해야함, 그리고 삼각 큐브 위의 대상을 최우선으로 잡아야 하기 때문에 일부러 좌표값 높이를 바닥보다 5~600 정도 더 높게 잡았음 -->
+									<!--	<say message="$Balrog_Test01$" durationTick="2200" prob="100"/> 테스트를 위한 말풍선-->
+									<node name="standby" limit="300" faceTarget="0" animation="Attack_02_D_Loop" />
+								</node>
+							</node>
+							<aiPreset name="4Phase_AbsorbPattern" />
+							<!--흡수 공격 반복 할 수록 공격력이 점점 강해지는 설정에 대한 내용 정의-->
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- 4페이즈에 들어서면  이 부분 부터 최초 실행함, 위 예약 시스템에 의해 4PhaseAbsorbModeOk 변수를 무조건 99로 만들어 버리기 때문에 흡수 공격부터 시작할 것임 -->
+						<node name="conditions">
+							<condition name="extraData" key="4PhaseAbsorbModeOk" value="5" op="greaterEqual">
+								<!--4페이즈에서 평범하게 공격 해동 할때마다  4PhaseAbsorbModeOk 변수 1씩 더하는데 5 이상이 되면 흡수 공격 패턴으로 넘거가게 설정했음-->
+								<node name="jump" pos="4725, 4725, 2750" speed="1800" heightMultiplier="1.3" isKeepBattle="true">
+									<!--전투판 중앙쪽으로 점프 뛰기, 도약 동작 없이 신속하게 바로 뛰기 -->
+									<node name="skill" faceTarget="0" idx="6" />
+									<!--레벨2: 점프 착지 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="skill" facePos="3150, 3150, 2750" idx="7" />
+									<!--피 흡수 공격 시작 -->
+									<node name="SetValue" key="AbsorbPatternMode" value="1" isModify="1" />
+									<node name="SetValueRangeTarget" key="TristanStunAttack" value="1" radius="3500" height="3000" />
+									<!--변수 1 신호를 보내 우호적NPC 트리스탄한테 흡수 공격을 끊기 위한 공격 행동을 하라고 신호를 보냄-->
+								</node>
+							</condition>
+							<condition name="true">
+								<!--4페이즈에서 평범하게 공격행동하는 부분-->
+								<node name="standby" limit="200" faceTarget="1">
+									<aiPreset name="MiddlePhase_NormalPattern" />
+									<!--4페이즈 일반 공격 패턴 정의하는 부분-->
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="5">
+				<node name="select" prob="99999,0">
+					<!--#5페이즈  일반 공격 패턴_약간 쉬어가는 구간-->
+					<node name="standby" limit="220" faceTarget="1" cooltime="4000" isKeepBattle="true">
+						<!--흡수 공격 도중에 바로 5페이즈 넘어오는 경우가 있어서, 지란트 소환몹 자살 신호와 트리스탄 스턴 공격 모드 그만하라고 지속적으로 계속 보내기-->
+						<node name="SetValueRangeTarget" key="DeathSummonMob" value="1" radius="3800" height="1000" />
+						<!-- 혹시 트리스탄 방해하는 지란트가 살아있을 경우 자살 처리 함, 흡수 공격 패턴때의 지란트는 트리스탄이 소환한 것이기 때문에 Distance 형태로 신호를 보내야 함-->
+						<node name="SetValueRangeTarget" key="TristanStunAttack" value="0" radius="3800" height="1000" />
+						<!-- 위 흡수 공격 도중에 5페이즈로 넘어왔을 경우 트리스탄한테 신호 보내 스턴 공격 모드 그만하고 평상시 상태로 돌아오도록 신호를 보냄-->
+					</node>
+					<aiPreset name="MiddlePhase_NormalPattern" />
+					<!--5페이즈 일반 공격 패턴 정의하는 부분-->
+				</node>
+			</condition>
+			<condition name="true">
+				<!--#6페이즈  광역 폭발 공격 막기 패턴-->
+				<node name="conditions">
+					<condition name="additional" id="50004511" level="2">
+						<!--광역 폭발 공격 중 트리스탄의 스턴 공격에 맞으면, 무조건 이 부분 실행시켜 광역 폭발 공격 행동 멈추도록 함, 50004511 레벨2 애디셔널에서 이펙트 붙이기 위한 50001073 애디셔널을 제거함-->
+						<node name="SetValue" isKeepBattle="true" key="6PhaseBurstModeOk" value="2">
+							<!--  트리스탄에 의해 스턴 당하면 이 변수  2로 만들어 "전투판 밖으로 점프 이동해서 전투판 바닥 큐브 파괴하기" 단계로 넘어가게 하기-->
+							<node name="SetValue" key="BurstPatternNumber" value="0" />
+							<!--  광역 폭발 공격 반복 사용 관련 변수 0으로 초기화 하기-->
+							<node name="buff" type="remove" id="50004511" level="2" />
+							<!--트리스탄한테 받은 기절 공격 알림 애디셔널을 여기서 제거, 이거 안하면 이 구간에서 무한루프에 빠짐, 꼭 제거해야 함 -->
+							<node name="say" message="$Balrog_TristanBroken02$" durationTick="6000" />
+							<node name="standby" limit="1800" faceTarget="0" />
+							<node name="HideVibrateAll" />
+							<!--트리스탄이 Hide 큐브 파괴했고  이후 Hide큐브 제거 명령을 여기서 진행, 이거 안하면 파괴된 Hide 큐브 리젠될 것임-->
+						</node>
+					</condition>
+					<condition name="extraData" key="6PhaseBurstModeOk" value="0">
+						<!-- 6페이즈에 들어서면  이 부분 부터 최초 실행함 -->
+						<node name="jump" pos="4650, 4650, 2750" speed="1800" heightMultiplier="1.3" isKeepBattle="true">
+							<!--전투판 중앙쪽으로 점프 뛰기, 도약 동작 없이 신속하게 바로 뛰기 -->
+							<node name="skill" faceTarget="0" idx="6" />
+							<!--점프 착지 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+							<node name="buff" type="add" id="50001073" level="1" />
+							<!--광역 폭발 공격 할때 몸에 이펙트를 자연스럽게 출력하기 위해 애디셔널 방식을 사용함, 방어력 50% 상승 기능도 있음, 이 애디셔널 제거는 트리스탄의 스턴스킬에 의해서 이루어 지도록 함-->
+							<node name="skill" facePos="3150, 3150, 2750" idx="43" />
+							<!--광역 폭발 공격 시작 -->
+							<node name="SetValue" key="6PhaseBurstModeOk" value="1" isModify="1" />
+							<!--이 변수 1로 만들어 광역 폭발 공격 행동패턴 단계로 넘어가게 하기 -->
+							<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1" />
+							<!--이 변수 1로 만들어 광역 폭발 공격 행동 몇번했는지 체크할 수 있도록 하기 -->
+							<node name="SetValueRangeTarget" key="TristanStunAttack" value="2" radius="3500" height="3000" />
+							<!--변수 2 신호를 보내 우호적NPC 트리스탄한테 광역 폭발 공격을 끊기 위한 공격 행동을 하라고 신호를 보냄-->
+						</node>
+					</condition>
+					<condition name="extraData" key="6PhaseBurstModeOk" value="1">
+						<aiPreset name="6Phase_BurstPattern" />
+						<!--광역 폭발 공격 행동에 대해 정의-->
+					</condition>
+					<condition name="extraData" key="6PhaseBurstModeOk" value="2">
+						<!--광역 폭발 공격 패턴 중 트리스탄에 의해 공격이 끊기고 스턴 당하면 이 단계로 오게 됨-->
+						<!--전투판 밖으로 점프 이동해서 전투판 바닥 큐브 파괴하기-->
+						<node name="jump" pos="5375, 5375, 2600" speed="1800" heightMultiplier="1.3" isKeepBattle="true">
+							<!--전투판 중앙쪽으로 점프 뛰기, 도약 동작 없이 신속하게 바로 뛰기 -->
+							<node name="skill" faceTarget="0" idx="6" />
+							<!--점프 착지 -->
+							<node name="SetValueRangeTarget" key="TristanStunAttack" value="3" radius="3500" height="3000" />
+							<!--변수 3 신호를 보내 우호적NPC 트리스탄이 전투판 12시 방향으로 이동하도록 함, 전투판 70%가 파괴되는데 이거 안하면 공중에 떠있는 모습이 되어 어색하기  때문에, 이 상횡에서 트리스탄에게 별도 특수 행동 하도록 설정해야 함-->
+							<node name="standby" limit="1500" faceTarget="1" />
+							<node name="ShowVibrate" groupID="5" />
+							<!--피할수 있는 큐브 지형 Type05 생성 -->
+							<node name="say" message="$Balrog_FinalBroken01$" durationTick="8000" />
+							<node name="skill" facePos="3150, 3150, 2750" idx="4" />
+							<!--갈고리 기력을 모아서 전투판 70% 정도 파괴해버리기 -->
+							<node name="SetValue" key="6PhaseBurstModeOk" value="3" isModify="1" />
+							<!--이 변수 1로 만들어 광역 폭발 공격 행동패턴 단계로 넘어가게 하기 -->
+							<node name="standby" limit="500" faceTarget="0" />
+							<node name="say" message="$Balrog_FinalBroken02$" durationTick="8000" />
+							<node name="standby" limit="200" faceTarget="0" />
+							<node name="HideVibrateAll" />
+							<!--이거 안넣으면 Hide큐브 다시 리젠되기 때문에 꼭 넣어야 함-->
+							<node name="SetValueRangeTarget" key="TristanStunAttack" value="4" radius="3500" height="3000" />
+							<!--변수 4 신호를 보내 우호적NPC 트리스탄에 보내서, 트리스탄이 살아있다면 안도하는 행동을 하도록 함-->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<!--6PhaseBurstModeOk = 3 인 경우임-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="25">
+								<node name="select" prob="38,38,24">
+									<!--레벨18: 845 거리 즉 휘두르기 공격 사정거리 안에 있으면-->
+									<node name="skill" faceTarget="1" idx="26">
+										<!--레벨1: 2연타 휘두르기만 하기, 후딜 무척 잛게-->
+										<node name="target" type="rand" from="100" to="1300">
+											<node name="standby" limit="350" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" idx="27">
+										<!--레벨2: 2연타 휘두르기후 찍기-->
+										<node name="target" type="rand" from="100" to="1300">
+											<node name="standby" limit="1100" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" cooltime="14000" idx="3">
+										<!--레벨3: 강력하게 기폭발  밀치기 (마지막 페이즈용, 뒤로 밀치는 거리 줄이고 디버프 시간도 줄이고)-->
+										<node name="target" type="rand" from="100" to="1300">
+											<node name="select" prob="33,34,33">
+												<node name="standby" limit="600" faceTarget="1" />
+												<node name="standby" limit="900" faceTarget="1" />
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="100,100">
+									<!--레벨2: 강력하게 기폭발  밀치기 공격 사정거리 안에 있으면-->
+									<node name="skill" faceTarget="1" cooltime="5500" idx="3">
+										<!--레벨3: 강력하게 기폭발  밀치기 (마지막 페이즈용, 뒤로 밀치는 거리 줄이고 디버프 시간도 줄이고)-->
+										<node name="target" type="near" from="100" to="1300">
+											<node name="select" prob="33,34,33">
+												<node name="standby" limit="600" faceTarget="1" />
+												<node name="standby" limit="900" faceTarget="1" />
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="900" faceTarget="1">
+										<node name="target" type="near" from="100" to="1200" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--여기는 아마 모든 플레이어가 전멸된 경우 혹은 파괴된 전투판에서 멀리 떨어져 있는 경우-->
+								<node name="standby" limit="900" faceTarget="1">
+									<node name="target" type="near" from="100" to="1200" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="NormalPattern">
+			<node name="select" prob="99999,0">
+				<node name="standby" limit="27" faceTarget="0" cooltime="7000">
+					<node name="target" type="rand" from="100" to="1300">
+						<node name="standby" limit="301" faceTarget="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="26">
+						<node name="select" prob="34,33,33">
+							<!--레벨1: 같은 높이에 있고 휘두르기 공격 사정거리 안에 있으면-->
+							<node name="skill" faceTarget="1" idx="26">
+								<!--레벨1: 2연타 휘두르기만 하기-->
+								<node name="standby" limit="350" faceTarget="1">
+									<node name="SetValue" key="PatternConversion" value="2" isModify="1" />
+									<!--공격 행동 후 항상 2씩 더하여 "NormalPattern" 부분 공격 2~3번만 하면 바로 넘어가게 하기-->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="17000" isKeepBattle="true" idx="29">
+								<!--준비동작 -->
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--돌진 공격 -->
+								<node name="target" type="near" center="900, 900, 750" />
+								<!--돌진 공격 끝나고 큐브 한칸 아래쪽으로 오면 안되기 때문에 메인 전투판 중앙 약간 위쪽 대상을 최우선 타겟팅 하도록 함 -->
+								<node name="standby" limit="350" faceTarget="1" />
+								<node name="skill" faceTarget="0" idx="32" />
+								<!--두번째 이후 돌진 공격 -->
+								<node name="skill" faceTarget="0" idx="33" />
+								<!--돌진 후 마무리 -->
+								<node name="standby" limit="900" faceTarget="1" />
+								<node name="SetValue" key="PatternConversion" value="3" isModify="1" />
+							</node>
+							<!--괴성 지르며 바위 떨구기-->
+							<node name="standby" limit="200" faceTarget="1" cooltime="13000" initialCooltime="18000">
+								<node name="SetValue" key="PatternConversion" value="2" isModify="1">
+									<node name="select" prob="50,50">
+										<node name="skill" idx="38">
+											<node name="standby" limit="350" faceTarget="1" />
+										</node>
+										<node name="skill" idx="39">
+											<node name="standby" limit="350" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="30">
+						<node name="select" prob="33,33,34">
+							<!--돌진 공격 사정거리 안에 있으면, 큐브 한칸 아래 범위도 포함-->
+							<node name="trace" limit="9000" skillIdx="26" />
+							<node name="skill" isKeepBattle="true" idx="30">
+								<!--디버프 걸기 준비 동작 -->
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--돌진 공격 -->
+								<node name="target" type="near" center="900, 900, 750" />
+								<!--돌진 공격 끝나고 큐브 한칸 아래쪽으로 오면 안되기 때문에 메인 전투판 중앙 약간 위쪽 대상을 최우선 타겟팅 하도록 함 -->
+								<node name="standby" limit="350" faceTarget="1" />
+								<node name="skill" faceTarget="0" idx="32" />
+								<!--두번째 돌진 공격 -->
+								<node name="skill" faceTarget="0" idx="33" />
+								<!--돌진 후 마무리 -->
+								<node name="standby" limit="800" faceTarget="1" />
+								<node name="SetValue" key="PatternConversion" value="2" isModify="1" />
+							</node>
+							<node name="skill" cooltime="24000" isKeepBattle="true" idx="29">
+								<!--준비동작 -->
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--돌진 공격 -->
+								<node name="target" type="near" from="100" to="1300" />
+								<node name="standby" limit="350" faceTarget="1" />
+								<node name="skill" faceTarget="0" idx="32" />
+								<!--두번째 이후 돌진 공격 -->
+								<node name="target" type="near" center="900, 900, 750" />
+								<!--돌진 공격 끝나고 큐브 한칸 아래쪽으로 오면 안되기 때문에 메인 전투판 중앙 약간 위쪽 대상을 최우선 타겟팅 하도록 함 -->
+								<node name="standby" limit="350" faceTarget="1" />
+								<node name="skill" faceTarget="0" idx="32" />
+								<!--두번째 이후 돌진 공격 -->
+								<node name="skill" faceTarget="0" idx="33" />
+								<!--돌진 후 마무리 -->
+								<node name="standby" limit="800" faceTarget="1" />
+								<node name="SetValue" key="PatternConversion" value="3" isModify="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="2000" skillIdx="30" />
+						<!--돌진 공격 사정거리까지 추적-->
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BottomCrashPattern">
+			<node name="select" prob="99999,99999,0">
+				<node name="standby" limit="27" faceTarget="0" cooltime="7000">
+					<node name="target" type="rand" from="100" to="1300">
+						<node name="standby" limit="301" faceTarget="1" />
+					</node>
+				</node>
+				<!-- 3연타 휘두르기 전에 말풍선을 출력해서 예시 경고 메시지 보여주기-->
+				<node name="say" message="$Balrog_HookSmash$" durationTick="6000" cooltime="6000">
+					<node name="select" prob="99,1">
+						<node name="standby" limit="2400" faceTarget="1" cooltime="27000" />
+						<node name="standby" limit="900" faceTarget="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="19">
+						<!--  레벨11: 같은 높이에 있고 휘두르기 공격 사정거리 안에 있으면, 50100371 레벨11~14 는 거리체크용 스킬임-->
+						<node name="conditions">
+							<condition name="extraData" key="1PhaseBottomCheck" value="0">
+								<node name="select" prob="43,42,15">
+									<!-- !중요: 이 변수가 0 이라는 것은 파티원 전원이 큐브 한칸 아래로 내려가야 하는데, 그렇지 않았다는 뜻임-->
+									<!-- !중요: 즉 이 때는 PatternConversion 이 변수 조금씩 더하기, 즉 무한으로 바닥 파괴 행위를 하도록 함-->
+									<node name="skill" faceTarget="1" idx="27">
+										<!--레벨2: 2연타 휘두르기 바닥 내려찍기-->
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="standby" limit="700" faceTarget="1">
+												<node name="SetValue" key="PatternConversion" value="1" isModify="1" />
+											</node>
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" idx="28">
+										<!--레벨3: 바로 바닥 내려찍기-->
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="standby" limit="900" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" cooltime="21000" isKeepBattle="true" idx="29">
+										<!-- 준비 동작 -->
+										<node name="skill" faceTarget="0" idx="31" />
+										<!--돌진 공격 -->
+										<node name="skill" faceTarget="0" idx="33" />
+										<!--돌진 후 마무리 -->
+										<node name="target" type="near" from="100" to="1300" />
+										<node name="SetValue" key="PatternConversion" value="1" isModify="1" />
+										<node name="standby" limit="900" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,35,15">
+									<!--이 변수가 0 이 아니라는 것은 모든 파티원이 큐브 한칸 아래로 이동해서 이것을 체크하였다는 뜻, PatternConversion 변수 많이 자주 더하기-->
+									<node name="skill" faceTarget="1" idx="27">
+										<!--레벨2: 2연타 휘두르기 바닥 내려찍기-->
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="standby" limit="900" faceTarget="1">
+												<node name="SetValue" key="PatternConversion" value="1" isModify="1" />
+											</node>
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" idx="28">
+										<!--레벨3: 바로 바닥 내려찍기-->
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="standby" limit="900" faceTarget="1">
+												<node name="SetValue" key="PatternConversion" value="1" isModify="1" />
+											</node>
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" cooltime="12000" idx="26">
+										<!--레벨1: 2연타 휘두르기만 하기-->
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="standby" limit="900" faceTarget="1">
+												<node name="SetValue" key="PatternConversion" value="1" isModify="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--  이렇게 번거롭게 50100371 레벨11과 레벨13 으로 큐브 한칸 높이 차이 거리체크를 세부적으로 하는 이유는 플레이어가 전투판 5시 지점 계단 아래쪽으로 내려오면 발록도 확실히 계단 아래로 내려오게 하려고 이렇게 설정한 것임-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="20">
+								<node name="select" prob="9999,9,1">
+									<!--  레벨13: 모든 파티원이 큐브 한칸 아래 쪽으로 이동했다면 , 50100371 레벨11~16 는 거리체크용 스킬임-->
+									<node name="say" message="$Balrog_Runaway$" durationTick="8000" cooltime="42000">
+										<!--  이 말풍선이 무한정 출력되는 것을 막기 위해 쿨타임 설정을 넉넉히 함-->
+										<node name="trace" limit="15000" skillIdx="26">
+											<node name="SetValue" key="1PhaseBottomCheck" value="1" />
+											<!-- !중요: 1PhaseBottomCheck 이 변수를 0이 아닌 숫자를 넣어서 바닥 내려찍기 후 PatternConversion 변수 변경하도록 함, ### 이 변수 0으로 초기화는 다음 패턴 행동해서 이루어 지도록 함-->
+										</node>
+									</node>
+									<node name="trace" limit="12000" cooltime="3000" skillIdx="26">
+										<node name="SetValue" key="1PhaseBottomCheck" value="1" />
+										<!-- !중요: 1PhaseBottomCheck 이 변수를 0이 아닌 숫자를 넣어서 바닥 내려찍기 후 PatternConversion 변수 변경하도록 함, ### 이 변수 0으로 초기화는 다음 패턴 행동해서 이루어 지도록 함-->
+									</node>
+									<node name="trace" limit="5000" skillIdx="26">
+										<!--버그주의!: 플레이어가 계단 맨 끝단에 결쳐 있을 경우 발록이  skillId="50100371" skillLev="11"  범위까지 계속 무한으로 걸어가려는 버그가 있어서 위 trace 쿨타임 3초짜리 실행해도 계속 trace 상태라면 이거 실행시켜 무조건 공격하게 하여 계단 맨 끝단 버그 유발 플레이를 막을 수 있게 함-->
+										<node name="skill" faceTarget="1" idx="27">
+											<node name="select" prob="40,60">
+												<!--레벨2: 2연타 휘두르기 바닥 내려찍기-->
+												<node name="SetValue" key="PatternConversion" value="0" isModify="1" />
+												<node name="SetValue" key="PatternConversion" value="1" isModify="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<!-- 파티원 중 한명이라도 큐브 한칸 아래에 있지 않다면 1PhaseBottomCheck 변수 변경 없이 그냥 평범한 추적을 함-->
+									<node name="trace" limit="12000" cooltime="3000" skillIdx="26" />
+									<!--레벨1: 같은 높이의 근거리 거리까지 추적 즉 계단 아래까지 내려와 추적하는 형태-->
+									<node name="trace" limit="5000" skillIdx="26">
+										<!--버그주의!: 플레이어가 계단 맨 끝단에 결쳐 있을 경우 발록이  skillId="50100371" skillLev="11"  범위까지 계속 무한으로 걸어가려는 버그가 있어서 위 trace 쿨타임 3초짜리 실행해도 계속 trace 상태라면 이거 실행시켜 무조건 공격하게 하여 계단 맨 끝단 버그 유발 플레이를 막을 수 있게 함-->
+										<node name="skill" faceTarget="1" idx="27">
+											<node name="select" prob="40,60">
+												<!--레벨2: 2연타 휘두르기 바닥 내려찍기-->
+												<node name="SetValue" key="PatternConversion" value="0" isModify="1" />
+												<node name="SetValue" key="PatternConversion" value="1" isModify="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="PushDropPattern">
+			<node name="select" prob="99999,9999,0">
+				<!--밀치기 공격전에 말풍선을 출력해서 예시 경고 메시지 보여주기-->
+				<node name="say" message="$Balrog_PushOut$" durationTick="6000" cooltime="6000">
+					<node name="select" prob="99,1">
+						<node name="standby" limit="3200" faceTarget="1" cooltime="27000" />
+						<node name="standby" limit="1100" faceTarget="1" />
+					</node>
+				</node>
+				<node name="target" type="rand" from="10" to="1500" cooltime="9000">
+					<node name="SetValue" key="1PhaseBottomCheck" value="0" />
+					<!--  ### 이 변수 0으로 초기화는 여기서 진행, 다음 정상적인 사용을 위해 변수 초기화 함-->
+				</node>
+				<!--  !중요: 바닥파괴 패턴에서 항상 밀치기 패턴으로 전환되기 때문에, 밀치기 패턴 되면  바닥파괴 패턴때 사용했던 중요 변수를 항상 초기화 시켜야 함-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="27">
+						<node name="select" prob="25,25,25,25">
+							<node name="skill" faceTarget="1" idx="1">
+								<!--괴성질러 밀치기-->
+								<node name="standby" limit="900" faceTarget="1">
+									<node name="select" prob="50,50">
+										<node name="SetValue" key="PatternConversion" value="1" isModify="1" />
+										<node name="SetValue" key="PatternConversion" value="2" isModify="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="22000" isKeepBattle="true" idx="30">
+								<!--디버프 걸기 준비 동작 -->
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--돌진 공격 -->
+								<node name="target" type="near" from="100" to="1300" />
+								<node name="standby" limit="350" faceTarget="1" />
+								<node name="skill" faceTarget="0" idx="32" />
+								<!--두번째 돌진 공격 -->
+								<node name="skill" faceTarget="0" idx="33" />
+								<!--돌진 후 마무리 -->
+								<node name="standby" limit="900" faceTarget="1" />
+								<node name="SetValue" key="PatternConversion" value="2" isModify="1" />
+								<!--밀치기 공격 단계는 비교적 빨리 넘어가게 하기 위해서 PatternConversion 이 변수 2씩 더함-->
+							</node>
+							<node name="skill" cooltime="18000" isKeepBattle="true" idx="30">
+								<!--디버프 걸기 준비 동작 -->
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--돌진 공격 -->
+								<node name="target" type="near" from="100" to="1300" />
+								<node name="standby" limit="350" faceTarget="1" />
+								<node name="skill" faceTarget="0" idx="32" />
+								<!--두번째 돌진 공격 -->
+								<node name="target" type="near" from="100" to="1300" />
+								<node name="standby" limit="350" faceTarget="1" />
+								<node name="skill" faceTarget="0" idx="32" />
+								<!--두번째이후 돌진 공격 -->
+								<node name="skill" faceTarget="0" idx="33" />
+								<!--돌진 후 마무리 -->
+								<node name="standby" limit="950" faceTarget="1" />
+								<node name="SetValue" key="PatternConversion" value="2" isModify="1" />
+							</node>
+							<!--괴성 지르며 바위 떨구기-->
+							<node name="standby" limit="200" faceTarget="1" cooltime="15000">
+								<node name="SetValue" key="PatternConversion" value="2" isModify="1">
+									<node name="select" prob="50,50">
+										<node name="skill" idx="38">
+											<node name="standby" limit="250" faceTarget="1" />
+										</node>
+										<node name="skill" idx="39">
+											<node name="standby" limit="250" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="2000" skillIdx="27" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="SummonVsPlayerBreakerLeft">
+			<!-- 2페이즈 때 북쪽의 왼쪽 지점의 소환몹을 공격하는 플레이어를 견제하는 행동에 대한 것을 정의함-->
+			<node name="target" type="near" center="1050, 2450, 950">
+				<!-- 전투판 10~11시 지점 소환몹 등장하는 지점을 자주 타겟팅 하도록 함, 이 페이즈의 핵심임 -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="21">
+						<node name="select" prob="50,50">
+							<!--  레벨14: 큐브 한칸 높은 곳에 있는 플레이어를 타겟팅 위한 거리 체크-->
+							<!-- 전투판 10~11시 지점 소환몹 등장하는 지점에 플레이어가 있으면, 이곳의 플레이어 공격하기 -->
+							<node name="standby" limit="130" faceTarget="1" isKeepBattle="true">
+								<!-- 발록이 걸어가서 방해하기-->
+								<node name="say" message="$Balrog_TargetWarnning$" durationTick="9000" />
+								<node name="announce" message="$Balrog_TargetWarnningSystem$" durationTick="9000" />
+								<!-- 발록이 11시 지점으로 간다는 것을 시스템 메시지로 경고 알림 -->
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="1200, 2400, 950" />
+								<!-- 소환몹 한마리씩 가끔 호출하는 행동 -->
+								<node name="move" destination="800, 1400, 760" limit="9000" />
+								<node name="target" type="near" center="1050, 2450, 950" />
+								<!-- 전투판 10~11시 지점 소환몹 등장하는 지점을 자주 타겟팅 하도록 함, 이 페이즈의 핵심임 -->
+								<node name="standby" limit="1700" faceTarget="1" />
+								<node name="skill" faceTarget="1" idx="1" />
+								<node name="trace" till="430" limit="6000" />
+								<!-- 전투판 6시 쪽으로 쉽게 유인할 수 있게 추척 거리 300~500 정도 설정함, 추적 거리 너무 가깝게 하면 12시 불큐브 위에 있는 대상 쫓아갈 때 어색하게 보임-->
+							</node>
+							<node name="standby" limit="130" faceTarget="1" isKeepBattle="true">
+								<!-- 발록이 점프이동해서 방해하기-->
+								<node name="say" message="$Balrog_TargetWarnning$" durationTick="9000" />
+								<node name="announce" message="$Balrog_TargetWarnningSystem$" durationTick="9000" />
+								<!-- 발록이 11시 지점으로 간다는 것을 시스템 메시지로 경고 알림 -->
+								<node name="skill" facePos="800, 1400, 760" idx="5" />
+								<!--점프 도약 -->
+								<node name="jump" pos="800, 1400, 760" speed="1800" heightMultiplier="1.3" />
+								<!--전투판 중앙쪽으로 점프 뛰기, 도약 동작 없이 신속하게 바로 뛰기 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지 -->
+								<node name="target" type="near" center="1050, 2450, 950" />
+								<!-- 전투판 10~11시 지점 소환몹 등장하는 지점을 자주 타겟팅 하도록 함, 이 페이즈의 핵심임 -->
+								<node name="standby" limit="1700" faceTarget="1" />
+								<node name="skill" faceTarget="1" idx="1" />
+								<node name="trace" till="430" limit="6000" />
+								<!-- 전투판 6시 쪽으로 쉽게 유인할 수 있게 추척 거리 300~500 정도 설정함, 추적 거리 너무 가깝게 하면 12시 불큐브 위에 있는 대상 쫓아갈 때 어색하게 보임-->
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- 소환몹 등장하는 지점에 플레이어가 없으면 맵 중앙 약간 아래 지점의 대상 타겟팅 하기 -->
+						<node name="standby" limit="27" faceTarget="0">
+							<node name="target" type="near" center="450, 450, 750">
+								<!--맵 중앙 약간 아래쪽 지점에서 제일 가까운 대상을 타겟팅 함-->
+								<node name="trace" limit="3500" skillIdx="26" />
+								<!--갈고리 공격  사정권으로 추적하기 -->
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="SummonVsPlayerBreakerRight">
+			<!-- 2페이즈 때 북쪽의 오른쪽 지점의 소환몹을 공격하는 플레이어를 견제하는 행동에 대한 것을 정의함-->
+			<!-- 타겟팅 좌표를 적당히 12시 언저리 지점으로 설정했음 그 이유는 여기 아래 설명 -->
+			<node name="target" type="near" center="2250, 1950, 1050">
+				<!-- 원래 전투판 1~2시 소환몹 공격하는 플레이어를 견제하는 것이 목적인데, 1~2시 지점에 소환몹이 없는 상태에서 이거 실행할 수 있는데 이때는 10~11시 소환몹 지점의 대상을 대신 타겟팅 잡는 것이 좋기 때문에 타겟팅 좌표를 적당히 12시 언저리 지점으로 설정했음  -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="21">
+						<node name="select" prob="50,50">
+							<!--  레벨14: 큐브 한칸 높은 곳에 있는 플레이어를 타겟팅 위한 거리 체크-->
+							<!-- 전투판 10~11시 지점 소환몹 등장하는 지점에 플레이어가 있으면, 이곳의 플레이어 공격하기 -->
+							<node name="standby" limit="130" faceTarget="1" isKeepBattle="true">
+								<!-- 발록이 걸어가서 방해하기-->
+								<node name="say" message="$Balrog_TargetWarnning$" durationTick="9000" />
+								<node name="announce" message="$Balrog_TargetWarnningSystem$" durationTick="9000" />
+								<!-- 발록이 11시 지점으로 간다는 것을 시스템 메시지로 경고 알림 -->
+								<node name="standby" limit="300" faceTarget="1" />
+								<node name="move" destination="1400, 1250, 760" limit="9000" />
+								<!-- 이 위치는 원래 1~2시 지점을 견제하는 최적의 위치나 1~2시 지점 플레이어가 없으면 대신 10~11시 지점의 플레이이도 견제할 수 도 있는 두가지 목적이 있는 최적의 좌표 위치임 -->
+								<node name="target" type="near" center="2250, 1950, 1050" />
+								<!-- 전투판 1~2시 지점 소환몹 등장하는 지점을 자주 타겟팅 하도록 함, 이 페이즈의 핵심임 -->
+								<node name="standby" limit="1700" faceTarget="1" />
+								<node name="skill" faceTarget="1" idx="1" />
+								<node name="trace" till="430" limit="6000" />
+								<!-- 전투판 6시 쪽으로 쉽게 유인할 수 있게 추척 거리 300~500 정도 설정함, 추적 거리 너무 가깝게 하면 12시 불큐브 위에 있는 대상 쫓아갈 때 어색하게 보임-->
+							</node>
+							<node name="standby" limit="130" faceTarget="1" isKeepBattle="true">
+								<!-- 발록이 점프이동해서 방해하기-->
+								<node name="say" message="$Balrog_TargetWarnning$" durationTick="9000" />
+								<node name="announce" message="$Balrog_TargetWarnningSystem$" durationTick="9000" />
+								<!-- 발록이 11시 지점으로 간다는 것을 시스템 메시지로 경고 알림 -->
+								<node name="skill" facePos="1400, 1250, 760" idx="5" />
+								<!--점프 도약 -->
+								<node name="jump" pos="1400, 1250, 760" speed="1800" heightMultiplier="1.3" />
+								<!-- 이 위치는 원래 1~2시 지점을 견제하는 최적의 위치나 1~2시 지점 플레이어가 없으면 대신 10~11시 지점의 플레이이도 견제할 수 도 있는 두가지 목적이 있는 최적의 좌표 위치임 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지 -->
+								<node name="target" type="near" center="2250, 1950, 1050" />
+								<!-- 전투판 1~2시 지점 소환몹 등장하는 지점을 자주 타겟팅 하도록 함, 이 페이즈의 핵심임 -->
+								<node name="standby" limit="1700" faceTarget="1" />
+								<node name="skill" faceTarget="1" idx="1" />
+								<node name="trace" till="430" limit="6000" />
+								<!-- 전투판 6시 쪽으로 쉽게 유인할 수 있게 추척 거리 300~500 정도 설정함, 추적 거리 너무 가깝게 하면 12시 불큐브 위에 있는 대상 쫓아갈 때 어색하게 보임-->
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- 소환몹 등장하는 지점에 플레이어가 없으면 맵 중앙 약간 아래 지점의 대상 타겟팅 하기 -->
+						<node name="standby" limit="27" faceTarget="0">
+							<node name="target" type="near" center="450, 450, 750">
+								<!--맵 중앙 약간 아래쪽 지점에서 제일 가까운 대상을 타겟팅 함-->
+								<node name="trace" limit="3500" skillIdx="26" />
+								<!--갈고리 공격  사정권으로 추적하기 -->
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="SummonPattern02">
+			<node name="select" prob="99999,6,4">
+				<!-- 2페이즈 때 소환몹 호출 형태-->
+				<node name="standby" limit="150" faceTarget="0" cooltime="9999999">
+					<!-- 최초 딱 한번만 실행함, 이부분 실행될 때 타겟팅 이펙트가 나오게 됨-->
+					<node name="say" message="$Balrog_SummonCall$" durationTick="9000">
+						<node name="skill" facePos="2400, 2400, 900" isKeepBattle="true" idx="18">
+							<!-- 전투판 10~11시 지형에 소환몹 호출, 핵심 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="600, 2400, 950" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="1200, 2400, 950" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="1050, 1950, 950" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="104" summonPos="450, 2100, 800" />
+							<!-- 전투판 1~2시 지형에 소환몹 호출 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" summonPos="3020, 1200, 800" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="202" summonPos="3035, 975, 800" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="203" summonPos="3020, 750, 800" />
+							<node name="target" type="near" center="200, 200, 750" />
+							<!-- 일부러 6시 근처의 플레이어를 우선 타겟팅 하도록 설정했음 -->
+							<node name="standby" limit="1000" faceTarget="0" />
+							<node name="TargetEffect" effectName="Etc/Eff_Battle_Target_Balrog.xml" />
+							<!-- 2페이즈때 최초 타겟팅 이펙트 이 이후부터 나오게 하기-->
+							<node name="standby" limit="900" faceTarget="1" />
+							<node name="trace" till="430" limit="6000" />
+							<!-- 전투판 6시 쪽으로 쉽게 유인할 수 있게 추척 거리 300~500 정도 설정함, 추적 거리 너무 가깝게 하면 12시 불큐브 위에 있는 대상 쫓아갈 때 어색하게 보임-->
+						</node>
+					</node>
+				</node>
+				<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+					<!-- 전투판 10~11시 지형에 소환몹 호출, 핵심 -->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="600, 2400, 950" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="1200, 2400, 950" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="1050, 1950, 950" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="104" summonPos="450, 2100, 800" />
+					<node name="standby" limit="2100" faceTarget="1" />
+				</node>
+				<node name="standby" limit="200" faceTarget="1" cooltime="195000" isKeepBattle="true">
+					<!-- 전투판 10~11시 지형에 소환몹 호출, 핵심, 이곳 좌표는 다른 패턴으로 등장함 -->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="750, 2250, 950" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="1050, 2400, 950" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="1500, 2250, 950" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="104" summonPos="450, 2550, 950" />
+					<!-- 전투판 1~2시 지형에 소환몹 호출 -->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" summonPos="3020, 1200, 800" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="202" summonPos="3030, 975, 800" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="203" summonPos="3020, 750, 800" />
+					<node name="standby" limit="2100" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="3Phase_DashAttackPattern">
+			<!--몸통 돌진 주력 공격 패턴 대한 내용이 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="DashAttackMode" value="2" op="greaterEqual">
+					<!--#중요: 돌진 공격 중 기둥 출돌하면 바로 돌진공격 멈추고 기절 행동을 해야하기 때문에 변수 설정에 의한 연속 행동 설정을 하였음 -->
+					<node name="standby" limit="350" faceTarget="1" isKeepBattle="true">
+						<node name="skill" faceTarget="0" idx="36" />
+						<!--두번째 이후 돌진 공격, 레벨44: 파워업 버프 돌진공격 전용 -->
+						<node name="target" type="near" from="100" to="1500" />
+						<node name="SetValue" key="DashAttackMode" value="-1" isModify="1" />
+						<!--  이 변수 -1 빼서  최종 1이 되면 돌진 공격 멈추도록 함-->
+					</node>
+				</condition>
+				<condition name="extraData" key="DashAttackMode" value="1">
+					<!--#중요: 돌진 공격 중 기둥 출돌하면 바로 돌진공격 멈추고 기절 행동을 해야하기 때문에 변수 설정에 의한 연속 행동 설정을 하였음 -->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="33">
+						<!--돌진 후 마무리 -->
+						<node name="target" type="rand" from="100" to="2100" />
+						<node name="SetValue" key="DashAttackMode" value="0" />
+						<!--  #중요: 이 변수 0으로 초기화 하여 돌진 공격 로직 조건문을 실행하지 않도록 함-->
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="22">
+					<!--  레벨15: 전투판 위에 있는 대상 거리체크 그러나 큐브 한칸 아래 기둥지점에 있는 대상은 예외-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="19">
+							<node name="select" prob="30,30,28,12">
+								<!--  레벨11: 같은 높이에 있고 휘두르기 공격 사정거리 안에 있으면, 50100371 레벨11~17 은 거리체크용 스킬임-->
+								<node name="skill" faceTarget="1" cooltime="25000" idx="27">
+									<!--레벨2: 2연타 휘두르기 바닥 내려찍기-->
+									<node name="target" type="rand" from="100" to="2100">
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="15000" idx="28">
+									<!--레벨3: 바로 바닥 쾅  내려찍기-->
+									<node name="target" type="rand" from="100" to="2100">
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="9000" idx="27">
+									<!--레벨2: 2연타 휘두르기 바닥 내려찍기-->
+									<node name="target" type="rand" from="100" to="2100">
+										<!--휘두르기 근접 공격 3번 연속 사용하면 쿨타임에 걸려 돌진공격 하도록 하기 위해 이렇게 서정함-->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" idx="29">
+									<!--몸통 돌진 공격 3연속 시작, 디버프 걸기는 사용 안함, #중요: 돌진 공격 중 기둥 출돌하면 바로 돌진공격 멈추고 기절 행동을 해야하기 때문에 변수 설정에 의한 연속 행동 설정을 하였음 -->
+									<node name="skill" faceTarget="0" idx="35">
+										<!--첫번째 돌진 공격, 레벨33: 파워업 버프 돌진공격 전용 -->
+										<node name="target" type="near" from="50" to="1500">
+											<node name="SetValue" key="DashAttackMode" value="3" />
+											<!--돌진 공격 총 3회 실행-->
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="33,33,33,1">
+								<!--  레벨2: 같은 높이에 있고 밀치기 스킬 공격 범위 안에 있으면, 즉 이 스킬코드의 레벨2 거리체크는 한큐브 아래 대상 포함 시키지 않음-->
+								<node name="skill" faceTarget="1" cooltime="14000" idx="2">
+									<!--레벨2: 밀치기 디버프 공격, 파워업 버프 상태에서 레벨2 사용함-->
+									<node name="standby" limit="1100" faceTarget="1">
+										<node name="target" type="rand" from="100" to="1500" />
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="15000" idx="28">
+									<!--레벨3: 바로 바닥 쾅 공격-->
+									<node name="target" type="rand" from="100" to="2100">
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+								</node>
+								<node name="trace" limit="2000" cooltime="12000" skillIdx="19">
+									<!--레벨11: 같은 높이에 있고 휘두르기 공격 사정거리까지 추적-->
+									<node name="target" type="near" from="5" to="1500">
+										<node name="standby" limit="600" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" idx="29">
+									<!--몸통 돌진 공격 3연속 시작, 디버프 걸기는 사용 안함, #중요: 돌진 공격 중 기둥 출돌하면 바로 돌진공격 멈추고 기절 행동을 해야하기 때문에 변수 설정에 의한 연속 행동 설정을 하였음 -->
+									<node name="skill" faceTarget="0" idx="35">
+										<!--첫번째 돌진 공격, 레벨33: 파워업 버프 돌진공격 전용 -->
+										<node name="target" type="near" from="5" to="1500">
+											<node name="SetValue" key="DashAttackMode" value="3" />
+											<!--돌진 공격 총 3회 실행-->
+											<!--	<announce message="$KanduraBigBurster_DarkSoulAbsorb$" durationTick="6000"/>	-->
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--  ### 이거 엄청 중요: 여기서의 거리체크는 꼭 레벨1로 설정해야 함 ###     레벨1은 한큐브 아래 범위까지 포함시킴,  레벨2는 한큐브 아래 범위 포함하지 않음-->
+							<node name="trace" limit="1500" skillIdx="1" />
+							<!--밀치기 공격 사정권으로 추적   50100364 레벨1: 이 스킬은 인지 범위 히트박스가 큐브 한칸 아래까지 커버해야 적절한 거리까지 잘 추적할 것임-->
+						</condition>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="24">
+					<!--  레벨17: 모든 플레이어가 큐브 한칸 아래 지점에 있다면, 즉 기둥에 있는지를 확인하기 위한 거리체크-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!--  레벨1: 밀치기 스킬 공격 범위 안에 있으면, 한큐브 아래 범위까지 커버함-->
+							<!--  ### 이거 엄청 중요: 여기서의 거리체크는 꼭 레벨1로 설정해야 함 ###     레벨1은 한큐브 아래 범위까지 포함시킴,  레벨2는 한큐브 아래 범위 포함하지 않음-->
+							<node name="say" message="$Balrog_PillarBeCareful$" durationTick="8000" isKeepBattle="true">
+								<!--기둥 구석 큐브 한칸 아래 지점에 짱박혀 있는 플레이어를 무시하는 말풍선 대화 하면서 밀치기 떨어뜨리기 공격을 함-->
+								<node name="standby" limit="800" faceTarget="1" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--레벨2: 밀치기 디버프 공격, 파워업 버프 상태에서 레벨2 사용함-->
+								<node name="standby" limit="1200" faceTarget="1" />
+								<node name="target" type="rand" from="100" to="1500" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!--  ### 이거 엄청 중요: 여기서의 거리체크는 꼭 레벨1로 설정해야 함 ###     레벨1은 한큐브 아래 범위까지 포함시킴,  레벨2는 한큐브 아래 범위 포함하지 않음-->
+							<node name="trace" limit="1500" skillIdx="1" />
+							<!--밀치기 공격 사정권으로 추적   50100364 레벨1: 이 스킬은 인지 범위 히트박스가 큐브 한칸 아래까지 커버해야 적절한 거리까지 잘 추적할 것임-->
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="90,10">
+						<!--  전투판에 아무도 없으면 이부분 실행-->
+						<node name="move" destination="4425, 4425, 2750" limit="8000" cooltime="13000">
+							<!--  전투판 중앙으로 이동하기-->
+							<node name="target" type="near" from="100" to="1500" />
+						</node>
+						<node name="standby" limit="500" faceTarget="1">
+							<node name="target" type="near" center="4425, 4425, 2750" />
+							<!--두번째 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="3Phase_NormalPattern">
+			<!--평이한 형태의 공격 패턴 대한 내용이 있음-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="26">
+					<node name="select" prob="33,37,30">
+						<!--레벨1: 같은 높이에 있고 휘두르기 공격 사정거리 안에 있으면-->
+						<node name="skill" faceTarget="1" cooltime="18000" idx="26">
+							<!--레벨1: 2연타 휘두르기만 하기-->
+							<node name="target" type="rand" from="50" to="1000">
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="27">
+							<!--레벨2: 2연타 휘두르기 바닥 내려찍기-->
+							<node name="target" type="rand" from="50" to="1000">
+								<node name="standby" limit="600" faceTarget="1" />
+							</node>
+						</node>
+						<!--괴성 지르며 바위 떨구기, 레벨 21~22는 바람 밀치기 기능 없음-->
+						<node name="standby" limit="200" faceTarget="1" cooltime="11000">
+							<node name="select" prob="50,50">
+								<node name="skill" idx="40">
+									<node name="standby" limit="250" faceTarget="0">
+										<node name="move" destination="4425, 4425, 2750" limit="8000" />
+									</node>
+								</node>
+								<node name="skill" cooltime="34000" idx="41">
+									<node name="standby" limit="250" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="40">
+					<!--  레벨21: 거리 1200 이내 같은 높이 이상 전투판에 있으면-->
+					<node name="trace" limit="3500" skillIdx="26">
+						<!--갈고리 공격  사정권으로 추적하기 -->
+						<node name="target" type="near" from="50" to="1500" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="90,10">
+						<!-- 모든 플레이어가 큐브 한칸 아래 지점에 있다면, 즉 기둥에 있는지를 확인하기 위한 거리체크 &  전투판에 아무도 없으면 이부분 실행-->
+						<node name="move" destination="4425, 4425, 2750" limit="8000" cooltime="13000">
+							<!--  전투판 중앙으로 이동하기-->
+							<node name="target" type="near" from="100" to="1500" />
+						</node>
+						<node name="standby" limit="500" faceTarget="1">
+							<node name="target" type="near" center="4425, 4425, 2750" />
+							<!--두번째 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MiddlePhase_NormalPattern">
+			<!--4~5페이즈에서 평이한 형태의 공격 패턴 대한 내용이 있음-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="27">
+					<node name="select" prob="22,19,36,22,1">
+						<!--갈고리 3연타 사정권에 들어오면 공격 행동을 하도록 한다 -->
+						<!--레벨2: 갈고리 3연타 후 바닥 불큐브-->
+						<node name="skill" cooltime="9000" idx="27">
+							<node name="target" type="rand" from="10" to="1500">
+								<!--갈고리 공격 후 타겟을 변경하지 않으면 제자리에서만 휘두를 가능성이 있어서 타겟 변경 설정함-->
+								<node name="standby" limit="400" faceTarget="0">
+									<node name="SetValue" key="4PhaseAbsorbModeOk" value="1" isModify="1" />
+									<!--이 변수가 일정 이상 되면 흡수 공격 패턴으로 넘어가게 함-->
+								</node>
+							</node>
+						</node>
+						<!--레벨2: 갈고리 3연타 후 바닥 불큐브-->
+						<node name="skill" cooltime="9000" idx="27">
+							<node name="target" type="rand" from="10" to="1500">
+								<!--갈고리 공격 후 타겟을 변경하지 않으면 제자리에서만 휘두를 가능성이 있어서 타겟 변경 설정함-->
+								<node name="standby" limit="400" faceTarget="0">
+									<node name="SetValue" key="4PhaseAbsorbModeOk" value="1" isModify="1" />
+									<!--이 변수가 일정 이상 되면 흡수 공격 패턴으로 넘어가게 함-->
+								</node>
+							</node>
+						</node>
+						<!--괴성 지르며 바위 떨구기  이것을 더 주력으로 사용함-->
+						<node name="standby" limit="200" faceTarget="0" cooltime="9000">
+							<node name="SetValue" key="4PhaseAbsorbModeOk" value="1" isModify="1">
+								<node name="select" prob="50,50">
+									<!--이 변수가 일정 이상 되면 흡수 공격 패턴으로 넘어가게 함-->
+									<node name="skill" idx="40">
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="standby" limit="250" faceTarget="0" />
+										</node>
+									</node>
+									<node name="skill" idx="41">
+										<node name="standby" limit="250" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--디버프 건 후 3연속 돌진 공격, 기절 동작 없음  -->
+						<node name="skill" cooltime="24000" isKeepBattle="true" idx="30">
+							<!--디버프 걸기 +첫번째 돌지 -->
+							<node name="target" type="near" from="100" to="1300" />
+							<node name="skill" faceTarget="0" idx="31" />
+							<!--첫번째 돌진 공격 -->
+							<node name="target" type="rand" from="100" to="1300" />
+							<node name="standby" limit="350" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<!--두번째 이후의 돌진 공격 -->
+							<node name="target" type="rand" from="100" to="1300" />
+							<node name="standby" limit="350" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="32" />
+							<!--두번째 이후의 돌진 공격 -->
+							<node name="skill" faceTarget="0" idx="33" />
+							<!--마무리 동작 -->
+							<node name="SetValue" key="4PhaseAbsorbModeOk" value="2" isModify="1" />
+							<!--이 변수가 일정 이상 되면 흡수 공격 패턴으로 넘어가게 함-->
+						</node>
+						<node name="standby" limit="500" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="23">
+					<!--레벨16: 두번째 전투판의 전투판 내에 있을 경우 아래 내용 실행함  큐브 한칸 아래 기둥있는곳 까지 커버함-->
+					<node name="trace" limit="2500" skillIdx="27" />
+					<!--돌진 공격 사정권으로 추적 -->
+				</condition>
+				<condition name="true">
+					<!--모든 플레이어가 두번째 전투판 밖에 벗어나 있으면 가만히 서있으면서 제일 가까운 대상 타겟팅 함 -->
+					<node name="standby" limit="600" faceTarget="1">
+						<node name="target" type="near" from="10" to="1500" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="4Phase_AbsorbPattern">
+			<!--흡수 공격 반복 할 수록 공격력이 점점 강해지는 설정에 대한 내용 정의-->
+			<node name="conditions">
+				<condition name="extraData" key="AbsorbPatternMode" value="5" op="lessEqual">
+					<!--흡수 공격 반복 1~5회 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="12">
+							<!--타겟팅 대상이 큐브 한칸 높이에 있다면, 즉 Hide 큐브 위에 올라가 지란트를 공격하고 있으면 -->
+							<!--참고로 타겟팅은  메인 설정 단계에서 이 함수인 "4Phase_AbsorbPattern" 실행하기 직전 단계에 랜덤 타겟팅 하도록 설정했음 -->
+							<node name="SetValue" key="AbsorbPatternMode" value="1" isModify="1">
+								<node name="skill" facePos="4800, 3750, 2750" idx="15">
+									<!--흡수 공격 중 괴성 밀치기, 레벨32-->
+									<node name="target" type="rand" from="30" to="1500">
+										<!--		<say message="$Balrog_Test02$" durationTick="2200" prob="100"/> 테스트용 말풍선-->
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--타겟팅 대상이 Hide 큐브에 올라가 있지 않다면 -->
+							<node name="SetValue" key="AbsorbPatternMode" value="1" isModify="1">
+								<node name="skill" faceTarget="0" idx="8" />
+								<!--흡수 공격 진행, 레벨12는 1단계-->
+								<!--	<skill id="50100369" level="22" facePos = "3150, 3150, 2750" prob="50" cooltime = "6000"/>	 이거까지 사용하면 넘 어려워서 일딴 빼기로,  흡수 공격 중 바위 드랍, 레벨22, 타겟팅 대상이 Hide큐브에 올라가 있지 않아도 타겟팅 안된 플레이어가 올라가 있을 수 있어서 즉 Hide 큐브에 올라간 논타겟팅을 대상으로 공격하는 효과를 부여하기 위해-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="AbsorbPatternMode" value="23" op="lessEqual">
+					<node name="select" prob="99999,0">
+						<!--흡수 공격 반복 6~23회 -->
+						<!--이 스킬 13레벨에 기둥큐브 파괴하는 기능 넣었음, 이전 페이즈에서 사용하다 남은 기둥큐브 이 스킬 사용하면서 파괴시킴-->
+						<node name="skill" faceTarget="0" cooltime="9999999" isKeepBattle="true" idx="9">
+							<!--흡수 공격 진행, 레벨13는 2단계: 이 부분에서 트리스탄 호출함, 최초 딱 한번만 실행하고 이후 실행하지 않음 그래서 쿨타임 설정 넣었음-->
+							<node name="SetValue" key="AbsorbPatternMode" value="1" isModify="1" />
+							<node name="SetValue" key="TristanAppearance" value="1" isModify="1" />
+							<!-- 이 변수를 1로 만들어 트리스탄 등장했음을 알림 -->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="301" summonPos="4500, 3150, 2600" master="None" />
+							<!-- 트리스탄 호출  , master="None" 해야 발록이 죽을 때 트리스탄이 사라지지 않음  -->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="13">
+								<!--타겟팅 대상이 큐브 한칸 높이에 있다면, 즉 Hide 큐브 위에 올라가 지란트를 공격하고 있으면 -->
+								<!--참고로 타겟팅은  메인 설정 단계에서 이 함수인 "4Phase_AbsorbPattern" 실행하기 직전 단계에 랜덤 타겟팅 하도록 설정했음 -->
+								<node name="SetValue" key="AbsorbPatternMode" value="1" isModify="1">
+									<node name="skill" facePos="4800, 3750, 2750" idx="16">
+										<!--흡수 공격 중 괴성 밀치기, 레벨33-->
+										<node name="target" type="rand" from="30" to="1500">
+											<!--	<say message="$Balrog_Test02$" durationTick="2200" prob="100"/> 테스트용 말풍선-->
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--타겟팅 대상이 Hide 큐브에 올라가 있지 않다면 -->
+								<node name="SetValue" key="AbsorbPatternMode" value="1" isModify="1">
+									<node name="skill" faceTarget="0" idx="9" />
+									<!--흡수 공격 진행, 레벨13는 2단계-->
+									<!--	<skill id="50100369" level="23" facePos = "3150, 3150, 2750" prob="50" cooltime = "6000"/>	 이거까지 사용하면 넘 어려워서 일딴 빼기로,  흡수 공격 중 바위 드랍, 레벨23, 타겟팅 대상이 Hide큐브에 올라가 있지 않아도 타겟팅 안된 플레이어가 올라가 있을 수 있어서 즉 Hide 큐브에 올라간 논타겟팅을 대상으로 공격하는 효과를 부여하기 위해-->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="AbsorbPatternMode" value="32" op="lessEqual">
+					<!--흡수 공격 반복 24~32회 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="14">
+							<!--타겟팅 대상이 큐브 한칸 높이에 있다면, 즉 Hide 큐브 위에 올라가 지란트를 공격하고 있으면 -->
+							<!--참고로 타겟팅은  메인 설정 단계에서 이 함수인 "4Phase_AbsorbPattern" 실행하기 직전 단계에 랜덤 타겟팅 하도록 설정했음 -->
+							<node name="SetValue" key="AbsorbPatternMode" value="1" isModify="1">
+								<node name="skill" facePos="4800, 3750, 2750" idx="17">
+									<!--흡수 공격 중 괴성 밀치기, 레벨34-->
+									<node name="target" type="rand" from="30" to="1500">
+										<!--		<say message="$Balrog_Test02$" durationTick="2200" prob="100"/> 테스트용 말풍선-->
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--타겟팅 대상이 Hide 큐브에 올라가 있지 않다면 -->
+							<node name="SetValue" key="AbsorbPatternMode" value="1" isModify="1">
+								<node name="skill" faceTarget="0" idx="10" />
+								<!--흡수 공격 진행, 레벨14는 3단계-->
+								<!--	<skill id="50100369" level="24" facePos = "3150, 3150, 2750" prob="50" cooltime = "6000"/>	 이거까지 사용하면 넘 어려워서 일딴 빼기로,  흡수 공격 중 바위 드랍, 레벨24, 타겟팅 대상이 Hide큐브에 올라가 있지 않아도 타겟팅 안된 플레이어가 올라가 있을 수 있어서 즉 Hide 큐브에 올라간 논타겟팅을 대상으로 공격하는 효과를 부여하기 위해-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--33회 이상-->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="11">
+						<!--흡수 공격 멈추기, 레벨15는 마무리 동작-->
+						<node name="SetValue" key="4PhaseAbsorbModeOk" value="0" />
+						<!--  흡수 공격 사용할지 말지를 결정하는데 사용하는 변수 0으로 초기화 하기-->
+						<node name="SetValue" key="AbsorbPatternMode" value="0" />
+						<!--  흡수 공격 반복 사용 관련 변수 0으로 초기화 하기-->
+						<node name="buff" type="remove" id="50000309" level="2" />
+						<!--흡수 공격으로 생성된 공격력 상승 중첩 버프 제거하기-->
+						<node name="standby" limit="2300" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="6Phase_BurstPattern">
+			<!--광역 폭발 공격 행동에 대해 정의-->
+			<node name="conditions">
+				<condition name="extraData" key="BurstPatternNumber" value="7" op="lessEqual">
+					<node name="select" prob="27,19,27,27">
+						<!--반복 1차 1~7회 : 바위 드랍 공격 위주-->
+						<node name="skill" faceTarget="0" cooltime="4000" idx="44">
+							<!--레벨2: 공격 안하고 가만히 있기  -->
+							<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1" />
+						</node>
+						<node name="skill" faceTarget="0" idx="45">
+							<!--레벨3: 바위 4개 드랍  -->
+							<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1" />
+						</node>
+						<node name="skill" faceTarget="0" cooltime="4000" idx="44">
+							<!--레벨2: 공격 안하고 가만히 있기  -->
+							<node name="skill" faceTarget="0" idx="45">
+								<!--레벨3: 바위 4개 드랍  -->
+								<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1" />
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="8000" idx="44">
+							<!--레벨2: 공격 안하고 가만히 있기  -->
+							<node name="skill" faceTarget="0" idx="46">
+								<!--레벨4: 바위 5개 드랍  -->
+								<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="BurstPatternNumber" value="8" op="lessEqual">
+					<!--반복 8회 : Hide 큐브 생성하여 광역 폭발 공격 준비 단계 시작-->
+					<node name="SetValueRangeTarget" key="BurstInterruptionMode" value="1" radius="3800" height="1000">
+						<!--트리스탄 한테 이 신호를 보내 광역 폭발공격 끊기 시도 혹은 발동 행동을 하도록 함, 이 신호를 4~5 이상 보내야 트리스탄이 끊기 발동 행동을 할 것임-->
+						<node name="skill" faceTarget="0" idx="44">
+							<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1">
+								<node name="say" message="$Balrog_BurstWarnning$" durationTick="8000">
+									<node name="select" prob="33,34,33">
+										<!--아래 3개 Type 큐브 중 랜덤 선택함 -->
+										<node name="ShowVibrate" cooltime="82000" groupID="1" />
+										<!--피할수 있는 큐브 지형 Type01 생성 -->
+										<node name="ShowVibrate" cooltime="82000" groupID="2" />
+										<!--피할수 있는 큐브 지형 Type02 생성 -->
+										<node name="ShowVibrate" cooltime="82000" groupID="3" />
+										<!--피할수 있는 큐브 지형 Type03 생성 -->
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="BurstPatternNumber" value="11" op="lessEqual">
+					<node name="select" prob="99999,99,1">
+						<!--반복 9~11회 : 폭발 공격 준비 카운드 다운 중-->
+						<!--이 단계에 오면 최초에 이부분 딱 한번 실행함, 트리스탄이 기력 모으기 행동때 그 타이밍에 돌 드랍 공격을 하기 위한 장치임-->
+						<node name="skill" faceTarget="0" cooltime="15000" idx="44">
+							<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1" />
+						</node>
+						<node name="skill" faceTarget="0" cooltime="3500" idx="48">
+							<!--트리스탄을 끊기 공격을 막기 위한 바위 드랍 공격, 이 스킬은 히트박스 높이가 400 정도 올라가 있어서 컬리전 박스 높이가 420인 오직 트리스탄만 공격하는 용도임-->
+							<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1" />
+						</node>
+						<node name="skill" faceTarget="0" idx="44">
+							<node name="SetValue" key="BurstPatternNumber" value="1" isModify="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--16회 이상 : 일정 이상 카운드 하면  광역 폭발 공격하고, 다시 처음부터 시작-->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="47">
+						<!--레벨5: 광역 폭발!!~ 공격-->
+						<node name="SetValue" key="BurstPatternNumber" value="1" />
+						<!--  광역 폭발 공격 반복 사용 관련 변수 1로 만들어 다시  반복 1~8회 단계로 가도록 함, 즉 트리스탄의 스턴공격이 있을 때까지 이 행위 무한 반복 하도록 함-->
+						<node name="HideVibrateAll" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+	<battleEnd>
+		<node name="SetValueRangeTarget" key="BalrogDead" value="1" radius="3500" height="3000" />
+		<!--발록이 죽으면서 이 신호 트리스탄한테 보내기-->
+	</battleEnd>
+</npcAi>

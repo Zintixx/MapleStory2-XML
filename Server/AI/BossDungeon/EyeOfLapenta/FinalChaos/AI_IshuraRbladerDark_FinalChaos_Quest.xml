@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" key="PhasePatternTrigger" value="1" />
+			<!-- 이 변수는 몬스터의 페이즈를 결정하는 것으로  PhasePatternTrigger.xml  트리거에 의해  이 숫자가 1씩 늘어나게 설정하였음 -->
+		</condition>
+		<condition name="hpLess" value="80">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="20">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="rand" from="10" to="1800" cooltime="8000" />
+			<node name="conditions">
+				<condition name="extraData" key="PhasePatternTrigger" value="1">
+					<!-- 1페이즈 때의 공격 형태, 이 변수 PhasePatternTrigger.xml  트리거에 의해 결정됨 -->
+					<aiPreset name="1Phase_AttackPattern" />
+				</condition>
+				<condition name="extraData" key="PhasePatternTrigger" value="2">
+					<!-- 2페이즈 때의 공격 형태 -->
+					<aiPreset name="2Phase_AttackPattern" />
+				</condition>
+				<condition name="true">
+					<!-- PhasePatternTrigger = 3, 즉 3페이즈 때의 공격 형태 -->
+					<aiPreset name="FinalPhase_AttackPattern" />
+					<!--최종 페이즈 전투 패턴-->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="6">
+			<!-- 죽으면 MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 6 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 우뮤를 경정하게 함, 즉 죽어서 +6 해서 다른 보스들이 빨리 패턴 변화이 되도록 함-->
+			<node name="TriggerSetUserValue" triggerID="992" key="DeathIshuraRbladerDark" value="1" />
+			<!-- 이슈라가 죽었으면 트리거를 통해서 죽었음을 알리는 메시지를 보여주기    -->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="1Phase_AttackPattern">
+			<!--1페이즈 전투 형태-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="15">
+					<node name="select" prob="18,17,24,18">
+						<node name="skill" idx="15">
+							<node name="select" prob="90,10">
+								<!--한번 베기 공격 -->
+								<node name="standby" limit="1500" faceTarget="1" cooltime="9000">
+									<node name="select" prob="33,33,33,1">
+										<node name="move" destination="3600, 4200, 5860" limit="2400" cooltime="25000" />
+										<node name="move" destination="4275, 4275, 5860" limit="2400" cooltime="25000" />
+										<node name="move" destination="4200, 3750, 5860" limit="2400" cooltime="25000" />
+										<node name="move" destination="3975, 3975, 5860" limit="2400" />
+									</node>
+								</node>
+								<node name="standby" limit="3200" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="11000" idx="16">
+							<!--2연혹 베기 공격 -->
+							<node name="skill" idx="17">
+								<node name="standby" limit="3300" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="12000" idx="6">
+							<!--마법 채찍공격  정면-->
+							<node name="skill" idx="7">
+								<!--마법 채찍공격  측면-->
+								<node name="standby" limit="3400" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="9000" idx="8">
+							<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+							<node name="standby" limit="3200" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="12">
+					<node name="select" prob="30,35,35">
+						<!-- 거리 2320, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+						<node name="trace" limit="1500" skillIdx="15" />
+						<node name="skill" idx="8">
+							<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+							<node name="standby" limit="3200" faceTarget="1" />
+						</node>
+						<node name="skill" idx="6">
+							<!--마법 채찍공격  정면-->
+							<node name="standby" limit="3500" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99,1">
+						<node name="move" destination="3975, 3975, 5860" limit="6000" cooltime="6000">
+							<!--맵 정 중앙으로 이동함  -->
+							<node name="standby" limit="1800" faceTarget="1">
+								<node name="target" type="near" from="10" to="2300" />
+							</node>
+						</node>
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="near" from="10" to="2300" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="2Phase_AttackPattern">
+			<!--2페이즈 전투 형태-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="15">
+					<node name="select" prob="18,17,35,18">
+						<node name="skill" cooltime="7000" idx="15">
+							<!--한번 베기 공격 -->
+							<node name="standby" limit="3200" faceTarget="1" />
+						</node>
+						<node name="skill" idx="16">
+							<!--2연혹 베기 공격 -->
+							<node name="skill" idx="17">
+								<node name="standby" limit="2800" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="6">
+							<node name="select" prob="65,35">
+								<!--마법 채찍공격  정면 공격 후 순간이동 2연타 공격-->
+								<node name="skill" idx="14">
+									<node name="select" prob="25,25,25,25">
+										<!--순간이동 동작-->
+										<node name="teleport" pos="4200, 4200, 5860" cooltime="31000">
+											<!--12시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="6">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="3200" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="4350, 3600, 5860" cooltime="31000">
+											<!--3시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="6">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="3300" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="3600, 4350, 5860" cooltime="31000">
+											<!--6시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="6">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="3400" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="3600, 3600, 5860" cooltime="31000">
+											<!--9시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="6">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="3600" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="2400" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="8">
+							<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="8">
+					<node name="select" prob="30,35,35">
+						<!-- 레벨5: 10인 최종 던전 1셋트 전투판 크기에 맞는 정밀한 거리체크 용도 -->
+						<node name="trace" limit="1500" skillIdx="15" />
+						<node name="skill" idx="8">
+							<node name="select" prob="50,50">
+								<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+								<node name="standby" limit="3300" faceTarget="1" />
+								<node name="trace" limit="2200" skillIdx="15" />
+							</node>
+						</node>
+						<node name="skill" cooltime="12000" idx="6">
+							<node name="select" prob="60,40">
+								<!--마법 채찍공격  정면-->
+								<node name="skill" idx="14">
+									<node name="select" prob="50,50">
+										<!--순간이동 동작-->
+										<node name="teleport" pos="4425, 3975, 5860" cooltime="25000">
+											<!--2~3시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="6">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="3400" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="3525, 3975, 5860" cooltime="25000">
+											<!--7~8시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="6">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="3600" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="7">
+									<!--마법 채찍공격  측면-->
+									<node name="standby" limit="3400" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="12">
+					<node name="select" prob="90,10">
+						<!-- 거리 2320, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+						<node name="move" destination="3975, 3975, 5860" limit="2200" cooltime="9500">
+							<!--맵 정 중앙으로 이동함  -->
+							<node name="standby" limit="1200" faceTarget="1">
+								<node name="target" type="near" from="10" to="2300" />
+							</node>
+						</node>
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="near" from="10" to="2300" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1200" faceTarget="1">
+						<node name="target" type="near" from="10" to="2300" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="FinalPhase_AttackPattern">
+			<node name="conditions">
+				<condition name="extraData" key="ShotPattern" value="1">
+					<node name="skill" faceTarget="1" isKeepBattle="true" idx="9">
+						<node name="skill" faceTarget="1" idx="10" />
+						<!-- 대기 -->
+						<node name="skill" faceTarget="1" idx="11" />
+						<!-- 발사 -->
+						<node name="target" type="rand" from="10" to="2100" />
+						<node name="skill" faceTarget="1" idx="10" />
+						<node name="skill" faceTarget="1" idx="10" />
+						<node name="skill" faceTarget="1" idx="11" />
+						<!-- 발사 -->
+						<node name="target" type="rand" from="10" to="2100" />
+						<node name="skill" faceTarget="1" idx="10" />
+						<node name="skill" pfaceTarget="1" rob="100" idx="11" />
+						<!-- 발사 -->
+						<node name="target" type="rand" from="10" to="2100" />
+						<node name="skill" faceTarget="1" idx="10" />
+						<node name="skill" faceTarget="0" idx="12" />
+						<!-- 거대발사 -->
+						<node name="SetValue" key="ShotPattern" value="0" />
+						<node name="standby" limit="2300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="9">
+					<node name="select" prob="99999,999,299,0">
+						<!-- 거리 1200 -->
+						<node name="skill" faceTarget="1" cooltime="54000" idx="13">
+							<node name="standby" limit="2800" faceTarget="1" />
+						</node>
+						<!-- 투척 연속 패턴, 넓은 대미지 필드설치 -->
+						<node name="skill" cooltime="75000" idx="14">
+							<!-- 순간이동 -->
+							<node name="SetValue" key="ShotPattern" value="1">
+								<node name="select" prob="33,34,33">
+									<node name="teleport" pos="4650, 4650, 5860" cooltime="151000" />
+									<!-- 12시 -->
+									<node name="teleport" pos="4650, 3300, 5860" cooltime="151000" />
+									<!-- 3시 -->
+									<node name="teleport" pos="3300, 4650, 5860" cooltime="151000" />
+									<!-- 9시 -->
+								</node>
+							</node>
+						</node>
+						<!-- 돌진 연속 패턴, 자주 사용하면 근거리 클래스가 넘 불편하니 가끔 사용하도록 -->
+						<node name="skill" faceTarget="1" cooltime="42000" isKeepBattle="true" idx="1">
+							<node name="skill" faceTarget="1" idx="2" />
+							<node name="skill" faceTarget="1" idx="5" />
+							<!--돌진 전 투척 바닥 공격 -->
+							<node name="target" type="rand" from="10" to="2100" />
+							<node name="skill" faceTarget="1" idx="2" />
+							<node name="skill" faceTarget="1" idx="2" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<!--돌진 공격 발동 -->
+							<node name="skill" faceTarget="1" idx="2" />
+							<node name="target" type="rand" from="10" to="2100" />
+							<node name="skill" faceTarget="1" idx="5" />
+							<!--돌진 전 투척 바닥 공격 -->
+							<node name="skill" faceTarget="1" idx="2" />
+							<node name="skill" faceTarget="1" idx="2" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<!--돌진 공격 발동 -->
+							<node name="skill" faceTarget="0" idx="4" />
+							<node name="standby" limit="3300" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="15">
+								<node name="select" prob="34,33,33">
+									<node name="skill" cooltime="7000" idx="15">
+										<!--한번 베기 공격 -->
+										<node name="standby" limit="2700" faceTarget="1" />
+									</node>
+									<node name="skill" idx="16">
+										<!--2연혹 베기 공격 -->
+										<node name="skill" idx="17">
+											<node name="standby" limit="3300" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" cooltime="9700" idx="6">
+										<!--마법 채찍공격  정면-->
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="2500" skillIdx="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1100" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

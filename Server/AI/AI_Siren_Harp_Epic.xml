@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="95">
+			<node name="TriggerSetUserValue" triggerID="99999103" key="wave01" value="1" />
+			<!--파도 몬스터 소환-->
+		</condition>
+		<condition name="hpLess" value="60">
+			<node name="skill" idx="9" />
+			<node name="teleport" pos="1415, 85, 2250" />
+			<node name="TriggerSetUserValue" triggerID="99999102" key="SummonSister" value="1" />
+			<!--자매 소환-->
+			<node name="standby" limit="1500" faceTarget="1" animation="Regen_A" />
+		</condition>
+		<condition name="hpLess" value="15">
+			<node name="TriggerSetUserValue" triggerID="99999103" key="EndDungeon" value="1" />
+			<!--파도 몬스터 해제-->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,1000,0">
+			<!--최초 1회-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="999999999">
+				<node name="say" message="$AI__AI_SIREN_HARP__0$" durationTick="6000" delayTick="0" />
+				<node name="target" type="rand" from="10" to="2000" />
+				<node name="trace" limit="2000" skillIdx="1" />
+				<node name="skill" idx="1" />
+				<node name="standby" limit="1000" faceTarget="1" />
+			</node>
+			<!--주기적인 타겟 전환-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="15000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="60">
+					<node name="select" prob="45,100,5,5,3,10,10,20">
+						<node name="trace" limit="1500" cooltime="5000" skillIdx="1">
+							<!--음파 공격-->
+							<node name="skill" idx="1" />
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="8000" idx="9">
+							<!--순간이동 -->
+							<node name="standby" limit="1" faceTarget="1">
+								<node name="select" prob="30,30,30">
+									<node name="teleport" pos="950, 0, 2250" />
+									<node name="teleport" pos="-225, -825, 2250" />
+									<node name="teleport" pos="225, 825, 2250" />
+								</node>
+							</node>
+							<node name="standby" limit="1500" faceTarget="1" animation="Regen_A" />
+						</node>
+						<node name="skill" cooltime="15000" idx="2">
+							<!--근접 공격-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" idx="3">
+							<!--근접 공격-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="0" cooltime="30000" idx="4">
+							<!--회복-->
+							<node name="say" message="$AI__AI_SIREN_HARP__1$" durationTick="2500" delayTick="0" />
+							<node name="skill" faceTarget="0" idx="5">
+								<node name="select" prob="50,50">
+									<node name="skill" faceTarget="0" idx="5">
+										<node name="select" prob="25,75">
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="20000" idx="4">
+							<!--자장가-->
+							<node name="say" message="$AI__AI_SIREN_HARP__2$" durationTick="2500" delayTick="0" />
+							<node name="skill" faceTarget="0" idx="6">
+								<node name="select" prob="90,10">
+									<node name="skill" faceTarget="0" idx="6">
+										<node name="select" prob="50,50">
+											<node name="skill" faceTarget="0" idx="6" />
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="15000" idx="4">
+							<!--현혹 -->
+							<node name="say" message="$AI__AI_SIREN_HARP__3$" durationTick="2500" delayTick="0" />
+							<node name="skill" faceTarget="0" idx="7">
+								<node name="select" prob="30,70">
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="10000" idx="4">
+							<!--파도-->
+							<node name="standby" limit="1000" faceTarget="1" />
+							<node name="say" message="$AI__AI_SIREN_HARP__4$" durationTick="2500" delayTick="0" />
+							<node name="skill" faceTarget="0" idx="8" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="60,10,5,5,15,15,15,10">
+						<!--60%이하-->
+						<node name="skill" cooltime="3000" idx="9">
+							<!--순간이동2 -->
+							<node name="standby" limit="1" faceTarget="1">
+								<node name="select" prob="5,5,5,5,5,5,50,50,50">
+									<node name="teleport" pos="-950, 400, 2250" />
+									<node name="teleport" pos="-225, 1250, 2250" />
+									<node name="teleport" pos="825, 825, 2250" />
+									<node name="teleport" pos="-950, -550, 2250" />
+									<node name="teleport" pos="75, -1250, 2250" />
+									<node name="teleport" pos="1435, -360, 2250" />
+									<node name="teleport" pos="950, 0, 2250" />
+									<node name="teleport" pos="-225, -825, 2250" />
+									<node name="teleport" pos="225, 825, 2250" />
+								</node>
+							</node>
+							<node name="standby" limit="1500" faceTarget="1" animation="Regen_A" />
+						</node>
+						<node name="trace" limit="1500" skillIdx="1">
+							<!--음파 공격-->
+							<node name="skill" idx="1" />
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="10000" idx="2">
+							<!--근접 공격-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="10000" idx="3">
+							<!--근접 공격-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="0" cooltime="10000" idx="4">
+							<!--회복-->
+							<node name="say" message="$AI__AI_SIREN_HARP__5$" durationTick="2500" delayTick="0" />
+							<node name="skill" faceTarget="0" idx="5">
+								<node name="select" prob="50,50">
+									<node name="skill" faceTarget="0" idx="5">
+										<node name="select" prob="25,75">
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="10000" idx="4">
+							<!--자장가-->
+							<node name="say" message="$AI__AI_SIREN_HARP__6$" durationTick="2500" delayTick="0" />
+							<node name="skill" faceTarget="0" idx="6">
+								<node name="select" prob="50,50">
+									<node name="skill" faceTarget="0" idx="6">
+										<node name="select" prob="25,75">
+											<node name="skill" faceTarget="0" idx="6" />
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="10000" idx="4">
+							<!--현혹 -->
+							<node name="say" message="$AI__AI_SIREN_HARP__7$" durationTick="2500" delayTick="0" />
+							<node name="skill" faceTarget="0" idx="7">
+								<node name="select" prob="30,70">
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="5000" idx="4">
+							<!--파도-->
+							<node name="standby" limit="1000" faceTarget="1" />
+							<node name="say" message="$AI__AI_SIREN_HARP__8$" durationTick="2500" delayTick="0" />
+							<node name="skill" faceTarget="0" idx="8" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="99999102" key="SummonSister" value="1" />
+		<!--순삭 대비 자매 소환-->
+		<node name="say" message="$AI__AI_SIREN_HARP__9$" durationTick="3000" delayTick="0" />
+		<node name="TriggerSetUserValue" triggerID="99999103" key="EndDungeon" value="1" />
+		<!--파도 몬스터 해제-->
+	</battleEnd>
+</npcAi>

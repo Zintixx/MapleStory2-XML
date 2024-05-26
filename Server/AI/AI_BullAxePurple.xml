@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--30초 마다 가까운 유저로 타겟을 변경 
+		<standby limit="10"  faceTarget="1"  prob="9999" cooltime = "30000" initialCooltime = "1">
+			<target type="near" prob="100" from="10" to="1500" />
+		</standby>		
+		<standby limit="10"  faceTarget="1"  prob="9999" cooltime = "45000" initialCooltime = "20000" sequence="true">
+			<move destination="-4238,-522,2101" prob="100">
+				<skill id="60044061" level="2" prob="40"/>
+			</move>
+		</standby> -->
+			<!--타겟팅 갱신 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="30000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<!-- HP 80% 이상 -->
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="55,45">
+								<!-- 근거리 스킬 사거리 체크 -->
+								<node name="skill" idx="3">
+									<!--내려찍기 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="1">
+									<!--내려찍기 1타 -->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="11">
+											<!--1타 공격 후 공격 대상이 가까이 있으면 근거리 범위 내려찍기 -->
+											<node name="skill" idx="11">
+												<!--근거리 스킬2 -->
+												<node name="trace" limit="5000" skillIdx="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<!--1타 공격 후 공격 대상이 멀리 있으면 원거리  범위 내려찍기 -->
+											<node name="skill" cooltime="10000" idx="5">
+												<!--근접 이동 스킬 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="5">
+									<node name="select" prob="60,30">
+										<!--원거리 내려찍기 범위 안에 있으면-->
+										<node name="skill" cooltime="10000" idx="5">
+											<!--원거리 내려찍기 범위-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="5000" skillIdx="11" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="5000" skillIdx="3" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- hp 80% 미만 패턴 시작-->
+				<condition name="hpOver" value="30">
+					<node name="select" prob="9999,0">
+						<node name="skill" cooltime="999999" idx="16" />
+						<!--버서커 모드-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="55,45,1">
+									<!-- 근거리 스킬 사거리 체크 -->
+									<node name="skill" idx="4">
+										<!--내려찍기 -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" idx="2">
+										<!--내려찍기 1타 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="2">
+												<!--1타 공격 후 공격 대상이 가까이 있으면 근거리 범위 내려찍기 -->
+												<node name="skill" idx="2">
+													<node name="select" prob="100,30,100">
+														<!--근거리 스킬2 -->
+														<node name="skill" idx="12" />
+														<!--근거리 스킬2 -->
+														<node name="trace" limit="2500" skillIdx="4" />
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!--1타 공격 후 공격 대상이 멀리 있으면 원거리  범위 내려찍기 -->
+												<node name="skill" idx="6">
+													<!--근접 이동 스킬 -->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="8">
+										<node name="select" prob="60,60,60,100,30,10">
+											<!--원거리 내려찍기 범위 안에 있으면-->
+											<node name="skill" idx="8" />
+											<!--원거리 내려찍기 범위-->
+											<node name="skill" idx="8" />
+											<!--원거리 내려찍기 범위-->
+											<node name="skill" cooltime="5000" idx="8">
+												<!--원거리 내려찍기 범위-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="skill" cooltime="15000" idx="10" />
+											<!--원거리 내려찍기 범위-->
+											<node name="trace" limit="5000" skillIdx="12" />
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="20,80">
+											<node name="trace" limit="3500" skillIdx="6" />
+											<node name="trace" limit="3500" skillIdx="12" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!-- hp 30% 미만 패턴 시작-->
+				<condition name="true">
+					<node name="select" prob="99999,9999,80">
+						<node name="standby" limit="10" faceTarget="1" cooltime="999999" initialCooltime="1">
+							<node name="TriggerSetUserValue" triggerID="999991" key="LuminaArmyJoin" value="1" />
+						</node>
+						<node name="skill" cooltime="999999" idx="17">
+							<!--버서커 모드-->
+							<node name="standby" limit="100" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="80,100,100">
+									<node name="skill" cooltime="5000" idx="10">
+										<!--도끼 공격을 2번 사용 후 내려치기-->
+										<node name="skill" idx="4" />
+										<node name="skill" idx="6" />
+										<node name="standby" limit="100" faceTarget="1" />
+									</node>
+									<node name="target" type="far" from="10" to="1100" cooltime="10000" isKeepBattle="true">
+										<!--돌진 이후 회전공격 -->
+										<node name="skill" faceTarget="1" idx="10" />
+										<node name="skill" faceTarget="1" idx="8" />
+										<node name="skill" faceTarget="1" idx="9" />
+										<node name="skill" faceTarget="1" idx="9" />
+										<node name="skill" faceTarget="0" idx="12" />
+										<node name="standby" limit="100" faceTarget="1" />
+									</node>
+									<node name="target" type="rand" cooltime="10000" isKeepBattle="true">
+										<!--이동 회전공격 이후 광역폭발 -->
+										<node name="skill" faceTarget="1" idx="8" />
+										<node name="skill" faceTarget="1" idx="9" />
+										<node name="skill" faceTarget="1" idx="9" />
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="1" idx="14" />
+										<node name="skill" faceTarget="1" idx="14" />
+										<node name="skill" faceTarget="1" idx="14" />
+										<node name="skill" faceTarget="1" idx="15" />
+										<node name="standby" limit="100" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="20,30,50,20">
+									<node name="trace" limit="5000" skillIdx="3" />
+									<node name="skill" idx="8" />
+									<node name="skill" cooltime="60000" idx="18">
+										<node name="select" prob="100,50">
+											<node name="skill" faceTarget="1" idx="7" />
+											<node name="trace" limit="5000" skillIdx="3" />
+											<!--도끼 휘두르기까지 추적하기-->
+										</node>
+									</node>
+									<node name="standby" limit="100" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

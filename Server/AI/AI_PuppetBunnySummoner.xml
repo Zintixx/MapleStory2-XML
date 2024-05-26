@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetMasterValue" isKeepBattle="true" key="CntSlaves" value="-1" isModify="1">
+				<!--  소환몹 네펜투스 마리수 체크하는데 사용하는 변수, 초기화는 -1로 하기-->
+				<node name="SetMasterValue" key="CntSlavesStrong" value="-1" isModify="1" />
+				<!--  소환몹 바야르 마리수 체크하는데 사용하는 변수, 초기화는 -1로 하기-->
+				<node name="SetMasterValue" key="CntBuffLev" value="-1" isModify="1" />
+				<!-- 소환몹 바야르로 부터 1 이상의 숫자 신호 받으면 버프 발동하는데 사용하는 변수, 초기화는 -1로 하기-->
+				<node name="SetValue" key="SummonIdx" value="0" />
+				<!--소환몹 네펜투스 혹은 바야르 둘 중 한마리라도 있는지 체크하기 위한 변수, 초기화는 0으로 하기 -->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<!-- CntSlaves 변수가 0이 되었다는 뜻은 소환몹 네펜투스가 다 죽어서, 자기 자신에게 걸린 무적 버프를 제거하라는 뜻임 -->
+		<node name="conditions">
+			<condition name="extraData" key="CntSlaves" value="0">
+				<node name="skill" cooltime="15000" initialCooltime="10000" idx="8">
+					<!-- 자기 자신에게 걸려있던 무적 버프 제거하는 스킬임 -->
+					<node name="standby" limit="1000" faceTarget="1">
+						<node name="SetValue" key="CntSlaves" value="-1" />
+						<!-- 이 변수에 -1 설정해서 이 단계 한번 실행하고 빠져 나오게 함 -->
+						<node name="SetValue" key="SummonIdx" value="0" />
+						<!-- 이 변수에 0 으로 해서 소환몹이 -소환몹 네펜투스 혹은 바야르 둘다 없음을 자기 자신에게 알림-->
+					</node>
+				</node>
+			</condition>
+			<!-- CntSlavesStrong 변수가 0이 되었다는 뜻은 소환몹 바야르가 죽어서, 자기 자신에게 걸린 무적 버프를 제거하라는 뜻임 -->
+			<condition name="extraData" key="CntSlavesStrong" value="0">
+				<node name="skill" cooltime="15000" initialCooltime="10000" idx="8">
+					<!-- 자기 자신에게 걸려있던 무적 버프 제거하는 스킬임 -->
+					<node name="standby" limit="1000" faceTarget="1">
+						<node name="SetValue" key="CntSlavesStrong" value="-1" />
+						<!-- 이 변수에 -1 설정해서 이 단계 한번 실행하고 빠져 나오게 함 -->
+						<node name="SetValue" key="SummonIdx" value="0" />
+						<!-- 이 변수에 0 으로 해서 소환몹이 -소환몹 네펜투스 혹은 바야르 둘다 없음을 자기 자신에게 알림-->
+					</node>
+				</node>
+			</condition>
+			<!-- CntBuffLev   이 변수는  자신이 소환한 바야르  AI_SummonStoneGolem.xml AI에서 이 변수 1 혹은 2 혹은 3 신호를 받는데, 이 숫자에 따라서 1단계 강화 버프 부여 스킬을 사용 할지 혹은 2 or 3 단계 강화 버프 부여 스킬을 사용할지 결정할 것임-->
+			<condition name="extraData" key="CntBuffLev" value="0">
+				<node name="SetValue" key="CntBuffLev" value="-1">
+					<!-- 이 변수에 -1 설정해서 이 단계 한번 실행하고 빠져 나오게 함 -->
+					<node name="skill" idx="4">
+						<!-- 자신이 소환한 졸몹에게 1단계 강화 버프 부여하는 스킬 사용하기 -->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="CntBuffLev" value="1">
+				<node name="SetValue" key="CntBuffLev" value="-1">
+					<!-- 이 변수에 -1 설정해서 이 단계 한번 실행하고 빠져 나오게 함 -->
+					<node name="skill" idx="5">
+						<!-- 자신이 소환한 졸몹에게 1단계 강화 버프 부여하는 스킬 사용하기 -->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="CntBuffLev" value="2">
+				<node name="SetValue" key="CntBuffLev" value="-1">
+					<!-- 이 변수에 -1 설정해서 이 단계 한번 실행하고 빠져 나오게 함 -->
+					<node name="skill" idx="6">
+						<!-- 자신이 소환한 졸몹에게 1단계 강화 버프 부여하는 스킬 사용하기 -->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,0">
+					<!--SummonIdx = 0 이라는 뜻은 현재 네펜투스 혹은 바야르 소환몹이 없다는 뜻이므로 소환 행위를 하도록 함,  SummonIdx = 0 이 아니라는 것은 이미 소환몹이 있다는 뜻임-->
+					<node name="conditions" cooltime="60000" initialCooltime="10000">
+						<condition name="extraData" key="SummonIdx" value="0">
+							<node name="select" prob="50,50">
+								<!--네펜투스 소환 후 무적 모드 패턴-->
+								<node name="skill" cooltime="80000" initialCooltime="8600" isKeepBattle="true" idx="3">
+									<node name="SetValue" key="CntSlaves" value="0" />
+									<!--  CntSlaves 이 변수는 소환돤 네펜투스가 현재 몇마리인제 체크하기 위한 변수인데, 소환 직전에 0으로 초기화 하고, 이후 소한된 네펜투스가 전투상태로 넘어와 이 변수 +1 신호를 받게 될 것임 -->
+									<node name="SetValue" key="SummonIdx" value="1" />
+									<!-- 이 변수 1 설정해서  소환몹이 등장했음을 자기자신 AI에게 알림-->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="3900, 4050, 7050" />
+									<!-- 네펜투스 4마리 소환하기-->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="2950, 4050, 7050" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="3450, 3550, 7050" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="3450, 4450, 7050" />
+									<node name="skill" idx="7" />
+									<!--자기 자신 몸에 부적 보호막 버프 사용하는 스킬임-->
+									<node name="standby" limit="2650" faceTarget="1" />
+									<!--소환몹 AI가 전투 상태로 넘어와서 CntSlaves = CntSlaves+1 신호 받을때까지 이 단계에서 standby 상태로 2~3초 정도 있는 것이 안정적임 -->
+								</node>
+								<!--바야르 소환 후 무적 모드 패턴-->
+								<node name="skill" cooltime="110000" initialCooltime="50000" isKeepBattle="true" idx="3">
+									<node name="SetValue" key="CntSlavesStrong" value="0" />
+									<!--  CntSlavesStrong 이 변수는 소환돤 바야르가 현재 몇마리인제 체크하기 위한 변수인데, 소환 직전에 0으로 초기화 하고, 이후 소한된 바야르가 전투상태로 넘어와 이 변수 +1 신호를 받게 될 것임 -->
+									<node name="SetValue" key="SummonIdx" value="1" />
+									<!-- 이 변수 1 설정해서 소환몹이 등장했음을 자기자신 AI에게 알림-->
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="110" summonPos="3450, 4050, 7050" />
+									<!-- 바야르 한마리 소환하기-->
+									<node name="skill" idx="7" />
+									<!--자기 자신 몸에 부적 보호막 버프 사용하는 스킬임-->
+									<node name="standby" limit="2650" faceTarget="1" />
+									<!--소환몹 AI가 전투 상태로 넘어와서 CntSlavesStrong = CntSlavesStrong+1 신호 받을때까지 이 단계에서 standby 상태로 2~3초 정도 있는 것이 안정적임 -->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="50,50,50">
+										<!-- 거리 650 임  -->
+										<node name="skill" idx="1">
+											<node name="select" prob="33,33,33">
+												<node name="standby" limit="1500" faceTarget="1" />
+												<node name="runaway" till="550" limit="2000" />
+												<node name="skill" idx="2" />
+											</node>
+										</node>
+										<node name="skill" idx="1">
+											<node name="target" type="near" from="10" to="1300">
+												<node name="skill" idx="1">
+													<node name="select" prob="50,50">
+														<node name="standby" limit="1500" faceTarget="1" />
+														<node name="runaway" till="550" limit="2000" />
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="skill" idx="2">
+											<node name="select" prob="33,33,33">
+												<node name="standby" limit="1500" faceTarget="1" />
+												<node name="runaway" till="550" limit="2000" />
+												<node name="skill" idx="1" />
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="30,70">
+										<node name="standby" limit="600" faceTarget="1" cooltime="9000" />
+										<node name="target" type="near" from="10" to="500">
+											<node name="trace" till="550" limit="2200" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="50,50,50">
+								<!-- 거리 650 임  -->
+								<node name="skill" idx="1">
+									<node name="select" prob="33,33,33">
+										<node name="standby" limit="1500" faceTarget="1" />
+										<node name="runaway" till="550" limit="2000" />
+										<node name="skill" idx="2" />
+									</node>
+								</node>
+								<node name="skill" idx="1">
+									<node name="target" type="near" from="10" to="1300">
+										<node name="skill" idx="1">
+											<node name="select" prob="50,50">
+												<node name="standby" limit="1500" faceTarget="1" />
+												<node name="runaway" till="550" limit="2000" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="2">
+									<node name="select" prob="33,33,33">
+										<node name="standby" limit="1500" faceTarget="1" />
+										<node name="runaway" till="550" limit="2000" />
+										<node name="skill" idx="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="30,100">
+								<node name="standby" limit="600" faceTarget="1" cooltime="9000" />
+								<node name="target" type="near" from="10" to="70">
+									<node name="trace" till="550" limit="2200" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

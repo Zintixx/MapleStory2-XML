@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<!-- 어떤 강력한 공격을 받더라도 다음 체력 페이즈만큼만 피해를 입고 추가 피해를 한동안 방지 한다. -->
+			<node name="standby" limit="10" faceTarget="1" initialCooltime="0">
+				<node name="MinimumHp" hpPercent="79" />
+				<node name="buff" type="add" id="69000501" />
+				<node name="standby" limit="3000" faceTarget="0" />
+				<node name="buff" type="remove" id="69000501" />
+				<node name="standby" limit="1000" faceTarget="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="80">
+			<!--우산비-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="move" destination="-76.87,-220.52,1501.00" animation="Run_A" speed="1200" />
+				<node name="say" message="$COLOSSEUM__AI_MIKAWADES_COLOSSEUM__0$" durationTick="3000" delayTick="0" />
+				<node name="sidePopup" type="cutin" illust="Cutin_Mika_01" duration="2000" />
+				<node name="buff" type="add" id="49289011" />
+				<node name="skill" idx="5" />
+				<node name="skill" idx="6" />
+				<node name="skill" idx="10" />
+				<node name="skill" idx="7" />
+				<node name="skill" idx="10" />
+				<node name="skill" idx="8" />
+				<node name="MinimumHp" />
+				<node name="MinimumHp" hpPercent="19" />
+				<node name="skill" idx="9" />
+				<!-- 해제-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="60">
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="say" message="$COLOSSEUM__AI_MIKAWADES_COLOSSEUM__1$" durationTick="3000" delayTick="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="40">
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="say" message="$COLOSSEUM__AI_MIKAWADES_COLOSSEUM__2$" durationTick="3000" delayTick="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="20">
+			<!--우산비-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="move" destination="-76.87,-220.52,1501.00" animation="Run_A" speed="1200" />
+				<node name="say" message="$COLOSSEUM__AI_MIKAWADES_COLOSSEUM__3$" durationTick="3000" delayTick="0" />
+				<node name="sidePopup" type="cutin" illust="Cutin_Mika_01" duration="2000" />
+				<node name="buff" type="add" id="49289011" />
+				<node name="skill" idx="5" />
+				<node name="skill" idx="6" />
+				<node name="skill" idx="10" />
+				<node name="skill" idx="7" />
+				<node name="skill" idx="10" />
+				<node name="skill" idx="8" />
+				<node name="MinimumHp" />
+				<node name="skill" idx="9" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="10">
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="say" message="$COLOSSEUM__AI_MIKAWADES_COLOSSEUM__4$" durationTick="3000" delayTick="0" />
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="100,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--체력80%이상**************************************************************************************************************************** -->
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<node name="select" prob="9999,0">
+						<!--공기팡스킬 패턴-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="8000" initialCooltime="10000">
+							<node name="target" type="far" from="400" to="1500">
+								<node name="select" prob="50,20">
+									<node name="skill" faceTarget="1" cooltime="5000" idx="3"></node>
+									<node name="trace" limit="1000" skillIdx="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<aiPreset name="Normal_Attack_1" />
+								<!--기본 평타 프리셋 -->
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,100">
+									<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+										<node name="skill" idx="2"></node>
+									</node>
+									<node name="trace" limit="3000" skillIdx="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--체력60%이상**************************************************************************************************************************** -->
+				<condition name="hpOver" value="60">
+					<node name="select" prob="9999,0">
+						<!--공기팡, 저리가 스킬 패턴-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+							<node name="target" type="far" from="400" to="1500">
+								<node name="select" prob="50,50,40,20">
+									<node name="skill" faceTarget="1" cooltime="5000" idx="3"></node>
+									<node name="skill" faceTarget="1" cooltime="8000" idx="4"></node>
+									<!--일반 공격, 찌르기 돌진, 저리가 스킬-->
+									<node name="skill" cooltime="14000" idx="1">
+										<node name="skill" idx="2" />
+										<node name="target" type="far" />
+										<node name="skill" idx="4" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="trace" limit="1000" skillIdx="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<aiPreset name="Normal_Attack_1" />
+								<!--기본 평타 프리셋 -->
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,100">
+									<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+										<node name="skill" idx="2"></node>
+									</node>
+									<node name="trace" limit="3000" skillIdx="14" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--체력40%이상**************************************************************************************************************************** -->
+				<condition name="hpOver" value="40">
+					<node name="select" prob="9999,0">
+						<!--공기팡, 저리가 스킬 패턴-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+							<node name="target" type="far" from="400" to="1500">
+								<node name="select" prob="50,50,20">
+									<node name="skill" faceTarget="1" cooltime="5000" idx="3"></node>
+									<!--2회 찌르기 후, 저리가,공기팡 -->
+									<node name="skill" cooltime="14000" idx="2">
+										<node name="skill" idx="2" />
+										<node name="skill" idx="4" />
+										<node name="target" type="far" />
+										<node name="skill" idx="3" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="trace" limit="1000" skillIdx="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<aiPreset name="Normal_Attack_1" />
+								<!--기본 평타 프리셋 -->
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,100">
+									<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+										<node name="skill" idx="2"></node>
+									</node>
+									<node name="trace" limit="3000" skillIdx="14" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--체력20%이상**************************************************************************************************************************** -->
+				<condition name="hpOver" value="20">
+					<node name="select" prob="9999,0">
+						<!--스킬 패턴-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+							<node name="target" type="far" from="400" to="1500">
+								<node name="select" prob="50,50,50,20">
+									<!--공기팡-->
+									<node name="skill" faceTarget="1" cooltime="5000" idx="3"></node>
+									<!--4회 찌르기 후, 저리가 패턴-->
+									<node name="skill" cooltime="16000" idx="2">
+										<node name="skill" idx="2" />
+										<node name="target" type="far" />
+										<node name="skill" idx="2" />
+										<node name="target" type="far" />
+										<node name="skill" idx="2" />
+										<node name="skill" idx="4" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<!--우산토네이도-->
+									<node name="skill" cooltime="12000" idx="11">
+										<node name="skill" idx="12" />
+										<node name="skill" idx="13" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="trace" limit="1000" skillIdx="1" />
+								</node>
+							</node>
+						</node>
+						<!--일반 공격 패턴 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<aiPreset name="Normal_Attack_1" />
+								<!--기본 평타 프리셋 -->
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,100">
+									<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+										<node name="skill" idx="2"></node>
+									</node>
+									<node name="trace" limit="3000" skillIdx="14" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--체력20%이하**************************************************************************************************************************** -->
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="10" faceTarget="1" cooltime="8000" initialCooltime="10000">
+							<node name="target" type="far" from="400" to="1500">
+								<node name="select" prob="50,50,50,20">
+									<!--공기팡, 돌진 찌르기 2회  -->
+									<node name="skill" faceTarget="1" cooltime="5000" idx="3">
+										<node name="skill" idx="2" />
+										<node name="skill" idx="2" />
+									</node>
+									<!--저리가 -->
+									<node name="skill" faceTarget="1" cooltime="8000" idx="4"></node>
+									<!--돌진 찌르기, 우산토네이도, 돌진 찌르기, 저리가  -->
+									<node name="skill" cooltime="14000" idx="2">
+										<node name="skill" idx="11" />
+										<node name="skill" idx="12" />
+										<node name="skill" idx="13" />
+										<node name="skill" idx="2" />
+										<node name="skill" idx="4" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="trace" limit="1000" skillIdx="1" />
+								</node>
+							</node>
+						</node>
+						<!--일반 공격 패턴 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<aiPreset name="Normal_Attack_1" />
+								<!--기본 평타 프리셋 -->
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,100">
+									<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+										<node name="skill" idx="2"></node>
+									</node>
+									<node name="trace" limit="3000" skillIdx="14" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<!--ai프리셋 모음 **************************************************************************************************************************************************************-->
+	<aiPresets>
+		<!--기본 평타 프리셋 -->
+		<aiPreset name="Normal_Attack_1">
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<!-- 평타페이즈-->
+						<!--기본공격 패턴-->
+						<node name="standby" limit="10" faceTarget="1">
+							<node name="select" prob="45,55">
+								<node name="skill" idx="1">
+									<node name="standby" limit="200" faceTarget="1" />
+								</node>
+								<node name="skill" idx="2">
+									<node name="standby" limit="800" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+							<node name="trace" limit="100" skillIdx="1" />
+							<!--빠른 추적-->
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

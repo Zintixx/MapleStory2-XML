@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="65">
+			<!--***reserved**** -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="35000000" initialCooltime="0">
+				<node name="buff" type="add" id="60164001" level="1" />
+				<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__0$" durationTick="3000" delayTick="0" />
+				<node name="skill" idx="3" />
+				<node name="skill" idx="8" />
+				<node name="TriggerSetUserValue" triggerID="203902" key="Ground" value="1" />
+				<node name="TriggerSetUserValue" triggerID="203904" key="Error" value="1" />
+				<node name="teleport" pos="600, -150, 450" />
+				<node name="skill" idx="9" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,100,0">
+			<!--최초 1회만 대사 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="999999999">
+				<node name="move" destination="1950, -300, 900" animation="Run_A" speed="1800" />
+				<node name="TriggerSetUserValue" triggerID="203903" key="Summon" value="1" />
+				<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__1$" durationTick="3000" delayTick="1000" />
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="65">
+					<!-- #1페이즈 (슈팅파트) -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="11">
+							<node name="select" prob="25,25,25,9999,80,50,25,25">
+								<!-- 해당 스킬 범위에 들어오면 전투 진행 -->
+								<node name="skill" idx="11">
+									<!-- 물폭탄 연사 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="12">
+									<!-- 레이져 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="13">
+									<!-- 파도 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<!-- #1페이즈 대사 (인간불신) -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="10000">
+									<node name="select" prob="0,0,0,0,0,0,0">
+										<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__2$" durationTick="3000" delayTick="0" />
+										<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__3$" durationTick="3000" delayTick="0" />
+										<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__4$" durationTick="3000" delayTick="0" />
+										<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__5$" durationTick="3000" delayTick="0" />
+										<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__6$" durationTick="3000" delayTick="0" />
+										<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__7$" durationTick="3000" delayTick="0" />
+										<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__8$" durationTick="3000" delayTick="0" />
+									</node>
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="5000">
+									<node name="select" prob="70,70,70">
+										<!-- 랜덤한 위치로 배회 -->
+										<node name="move" destination="1950, 0, 900" animation="Run_A" speed="1200" />
+										<node name="move" destination="1950, 450, 900" animation="Run_A" speed="1200" />
+										<node name="move" destination="1950, -300, 900" animation="Run_A" speed="1200" />
+									</node>
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="15000">
+									<node name="select" prob="0,0">
+										<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__9$" durationTick="3000" delayTick="0" />
+										<node name="TriggerSetUserValue" triggerID="203903" key="Summon" value="1" />
+										<!-- 쫄 소환 -->
+									</node>
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="20000">
+									<node name="move" destination="0, 0, 900" animation="Run_A" speed="1600" />
+									<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__10$" durationTick="3000" delayTick="0" />
+									<node name="skill" idx="11" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="move" destination="1950, -300, 900" animation="Run_A" speed="1800" />
+								</node>
+								<!-- 기습 공격 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="35000">
+									<node name="skill" idx="8" />
+									<node name="TriggerSetUserValue" triggerID="203903" key="Summon" value="1" />
+									<!-- 쫄 소환 -->
+									<node name="teleport" pos="0, 0, 900" />
+									<node name="skill" idx="9" />
+									<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__11$" durationTick="3000" delayTick="2000" />
+									<node name="skill" idx="11" />
+									<node name="move" destination="1950, -300, 900" animation="Run_A" speed="1800" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="runaway" till="400" limit="10" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="10">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="45,45,65,45,25,55,25">
+								<!-- 해당 스킬 범위에 들어오면 전투 진행 -->
+								<!-- 물기 패턴 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="0">
+									<node name="trace" limit="2000" skillIdx="7" />
+									<node name="skill" idx="7" />
+									<node name="move" destination="450, -300, 450" animation="Run_A" speed="1200" />
+									<node name="skill" idx="10" />
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="20000">
+									<node name="move" destination="1500, -150, 450" animation="Run_A" speed="1200" />
+									<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__12$" durationTick="3000" delayTick="0" />
+									<node name="skill" idx="4" />
+								</node>
+								<!-- 평타 1 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="15000" initialCooltime="0">
+									<node name="trace" limit="2000" skillIdx="1" />
+									<node name="skill" idx="1" />
+								</node>
+								<!-- 평타 1+2 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="15000" initialCooltime="0">
+									<node name="trace" limit="2000" skillIdx="2" />
+									<node name="skill" idx="2" />
+									<node name="skill" idx="14" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" cooltime="35000" initialCooltime="0">
+									<node name="trace" limit="2000" skillIdx="6" />
+									<node name="skill" idx="6" />
+								</node>
+								<!-- 박치기 -->
+								<node name="standby" limit="1000" faceTarget="1" cooltime="35000" initialCooltime="0">
+									<node name="trace" limit="2000" skillIdx="5" />
+									<node name="skill" idx="5" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" cooltime="35000" initialCooltime="0">
+									<node name="trace" limit="2000" skillIdx="3" />
+									<node name="skill" idx="3" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" skillIdx="1" />
+							<!-- 범위안에 안들어오면 추격 -->
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1000" faceTarget="1" cooltime="3500000" initialCooltime="0">
+						<node name="move" destination="1500, -150, 450" animation="Run_A" speed="1200" />
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="TriggerSetUserValue" triggerID="203904" key="Error" value="1" />
+						<node name="TriggerSetUserValue" triggerID="203902" key="Ending" value="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="say" message="$AI__AI_MEVIDIC_PARTYDUNGEON__13$" durationTick="3000" delayTick="0" />
+		<node name="TriggerSetUserValue" triggerID="203904" key="Error" value="1" />
+		<node name="TriggerSetUserValue" triggerID="203902" key="Ending" value="1" />
+	</battleEnd>
+</npcAi>

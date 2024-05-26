@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 그리폰 -->
+	<battle>
+		<node name="select" prob="9999,9999,9999,9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1200" />
+			</node>
+			<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="32000" initialCooltime="30000">
+				<node name="target" type="far" from="10" to="1000">
+					<node name="trace" limit="3000" skillIdx="6" />
+					<!--distance 200짜리 가짜 스킬 데이터-->
+				</node>
+			</node>
+			<node name="skill" cooltime="24000" initialCooltime="18000" idx="2">
+				<!-- 3연속 돌진공격-->
+				<node name="target" type="rand" from="100" to="1500">
+					<node name="skill" idx="2">
+						<!-- 돌진공격 2Lv 준비동작 속도 2배 빠름-->
+						<node name="target" type="near" from="300" to="1200">
+							<node name="skill" idx="2">
+								<!-- 돌진공격 2Lv 준비동작 속도 2배 빠름-->
+								<node name="standby" limit="2500" faceTarget="0" />
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+			<node name="skill" cooltime="50000" initialCooltime="38000" idx="3">
+				<!-- 3연속 돌진공격-->
+				<node name="target" type="rand" from="100" to="1500" />
+				<node name="skill" faceTarget="0" idx="4" />
+				<!-- 돌진공격 2Lv 준비동작 속도 2배 빠름-->
+				<node name="skill" faceTarget="0" idx="5" />
+				<!-- 돌진공격 2Lv 준비동작 속도 2배 빠름-->
+				<node name="standby" limit="2500" faceTarget="0" />
+			</node>
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<!-- 평타페이즈-->
+					<node name="standby" limit="10" faceTarget="1" cooltime="6000">
+						<!-- 평타공격 2타 -->
+						<node name="skill" idx="1">
+							<node name="standby" limit="250" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="state" targetState="holdme">
+							<!-- 타겟팅 된 대상이 매달려 있다면 돌진 할퀴기 공격을 하여 무조건 떨구게 함-->
+							<node name="skill" idx="2" />
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99,1">
+								<node name="trace" limit="2000" skillIdx="1" />
+								<!--횡베기 스킬  거리 좁히기-->
+								<node name="standby" limit="600" faceTarget="0" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

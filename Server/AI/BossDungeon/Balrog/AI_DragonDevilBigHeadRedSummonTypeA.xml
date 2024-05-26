@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="1">
+				<node name="SetMasterValue" key="SummonMany" value="1" isModify="1" />
+				<!-- 발록한테 소환몹 몇마리 남았는지 알려주는 변수 설정임, 참고로 트리스탄이 사용하는 소환몹 수량체크 변수는 CheckSummonMany 임-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="200" faceTarget="1" cooltime="8000">
+				<node name="target" type="rand" from="10" to="2400" />
+			</node>
+			<!--플레이어가 가까이 다가가는 형태로만 불발사 공격 빈도 줄이는 효과 설정임-->
+			<node name="standby" limit="200" faceTarget="1" cooltime="9000">
+				<node name="target" type="near" from="10" to="2000">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="5">
+							<node name="select" prob="50,50">
+								<!--레벨2: 거리 600 정도 같은 큐브 같은 높이에 플레이어가 같으면 근거리 할퀴기 공격 사용-->
+								<node name="skill" isKeepBattle="true" idx="4">
+									<!--근거리 할퀴기 공격-->
+									<node name="skill" idx="5" />
+									<node name="target" type="near" from="10" to="700" />
+									<node name="skill" idx="5" />
+									<node name="skill" idx="6" />
+									<node name="standby" limit="3500" faceTarget="1" />
+								</node>
+								<node name="skill" isKeepBattle="true" idx="4">
+									<!--근거리 할퀴기 공격-->
+									<node name="skill" idx="5" />
+									<node name="target" type="near" from="10" to="700" />
+									<node name="skill" idx="6" />
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="200" faceTarget="1">
+								<node name="skill" idx="2">
+									<!--레벨3 카오스 던전 용도로 화상 중첩 상태이상에 걸기임, 투사체 3개 발사 -->
+									<node name="standby" limit="200" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="DeathSummonMob" value="1">
+					<!-- 지란트가 등장하여 신호 보내기 직전에 트리스탄이 발록 공격 끊기 공격 행동을 해서 상황이 꼬이는 경우가 가끔 있기 때문에 이럴 경우 트리스탄이 자살 신호를 보내서 제거하도록 함-->
+					<node name="skill" idx="3" />
+					<!-- 트리스탄한테  명령을 받고 자살 스킬 사용하기-->
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="33,33,33,1">
+						<!--레벨2 카오스 던전 용도로 화상 중첩 상태이상에 걸기임 -->
+						<node name="standby" limit="100" faceTarget="1">
+							<node name="skill" idx="1">
+								<!--레벨2 카오스 던전 용도로 화상 중첩 상태이상에 걸기임, 투사체 2개 발사 -->
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="1">
+							<!--레벨2 카오스 던전 용도로 화상 중첩 상태이상에 걸기임 -->
+							<node name="standby" limit="700" faceTarget="1" />
+						</node>
+						<node name="standby" limit="300" faceTarget="1">
+							<node name="skill" idx="1">
+								<!--레벨2 카오스 던전 용도로 화상 중첩 상태이상에 걸기임, 투사체 2개 발사 -->
+								<node name="standby" limit="400" faceTarget="1" />
+							</node>
+						</node>
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="800" faceTarget="1" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="SummonMany" value="-1" isModify="1" />
+		<!-- 발록한테 소환몹 몇마리 남았는지 알려주는 변수 설정임-->
+		<!-- param3 은 좌우 영역, param4는 위아래 영역임, 자쿰몸체 컬리전 박스가 3600 높이에 어긋나게 있기 때문에 최소 param4=3600 이상이어야 함-->
+	</battleEnd>
+</npcAi>

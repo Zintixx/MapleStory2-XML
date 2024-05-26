@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<reserved>
+		<condition name="hpLess" value="70">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--소환몹에게 자살 명령 내리기-->
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="SetSlaveValue" key="ActionMode" value="2" />
+				<!--설눈이한테 소환몹 생성시켜서 소환몹과 싸우게 하고, 말풍선으로 플레이어한테 위로 올라가서 싸우라고 말하게 함-->
+				<node name="skill" facePos="375, 525, 1450" idx="6" />
+				<node name="teleport" pos="375, 525, 1450" />
+				<!--12시 부근으로 순긴이동-->
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="say" message="$SnowQueen_1PhaseEnd$" durationTick="5000" delayTick="0" />
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="skill" facePos="-1650, -1500, 1350" idx="23" />
+				<!--퇴장전 대기, 레벨1-->
+				<node name="skill" faceTarget="0" idx="23" />
+				<!--퇴장전 대기, 레벨1-->
+				<node name="TriggerSetUserValue" triggerID="1122330" key="ElevatorOn" value="1" />
+				<!-- 다음 보스방의 117 지점으로 가기 위한 포탈 생성-->
+				<node name="skill" facePos="-1650, -1500, 1350" idx="24" />
+				<!--위로 올라가면서 퇴장, 레벨3-->
+				<node name="teleport" pos="900, 1050, 3700" />
+				<node name="standby" limit="1000" faceTarget="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="45">
+			<node name="SetSlaveValue" key="ActionMode" value="3" />
+			<!--설눈이한테 소환몹 제거하고 자신도 제거하고, 2층으로 설눈이 소환하라고 명령내림-->
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="buff" type="add" id="50005009" />
+				<!-- 설눈이 불 상태이상에 무조건 면역-->
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!-- 졸병이 몇마리 남았는지 체크하기 위한 변수-->
+				<node name="SetValue" key="LaserMode" value="1" />
+				<!-- 3페이즈 때 레이저 공격 모드에서 사용하기 위한 변수-->
+			</node>
+			<node name="target" type="rand" from="10" to="1500" cooltime="8000" />
+			<node name="conditions">
+				<condition name="hpOver" value="70">
+					<node name="select" prob="99999,0">
+						<!--#1페이즈-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="teleport" pos="750, 900, 1450" />
+							<!--  전투판 12시쪽 구석으로  순간이동-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="999" summonPos="-1950, -1500, 1300" summonRot="0,0,135" />
+							<!--  설눈이 생성 -->
+							<!--  스노퀸을 보호하는 졸병 몬스터 소환-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="450, 1200, 1450" summonRot="0,0,-50" />
+							<!--방패, 보디가드-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="525, 975, 1450" summonRot="0,0,-50" />
+							<!--방패, 보디가드-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="103" summonPos="600, 750, 1450" summonRot="0,0,-50" />
+							<!--방패, 보디가드-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="104" summonPos="825, 675, 1450" summonRot="0,0,-50" />
+							<!--방패, 보디가드-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="105" summonPos="1050, 600, 1450" summonRot="0,0,-50" />
+							<!--방패, 보디가드-->
+							<node name="skill" facePos="-1650, -1500, 1350" idx="8" />
+							<node name="skill" faceTarget="0" idx="8" />
+							<node name="skill" faceTarget="0" idx="8" />
+							<node name="skill" faceTarget="0" idx="8" />
+							<node name="skill" faceTarget="0" idx="8" />
+							<node name="skill" faceTarget="0" idx="8" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<node name="standby" limit="1000" faceTarget="0" />
+							<!--  플레이어와 싸우는  졸병 몬스터 소환-->
+							<node name="SetValue" key="MonsterNumber" value="6" />
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="111" summonPos="900, -150, 1450" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="112" summonPos="450, -600, 1450" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="113" summonPos="-300, -600, 1450" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="114" summonPos="-750, -150, 1450" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="115" summonPos="-750, 600, 1450" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="116" summonPos="-300, 1050, 1450" summonRot="0,0,-50" />
+							<!--방패-->
+							<node name="standby" limit="5000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="MonsterNumber" value="1" op="greaterEqual">
+								<node name="select" prob="50,50,100">
+									<node name="skill" cooltime="7000" idx="1" />
+									<node name="skill" cooltime="13000" idx="22" />
+									<!--  유도탄 바닥 냉기 폭발 공격-->
+									<node name="standby" limit="100" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99999,199,999,0">
+									<!--  플레이어와 싸우는  졸병 몬스터  다 죽으면 본격 전투 시작-->
+									<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+										<node name="SetSlaveValue" key="ActionMode" value="1" />
+										<node name="standby" limit="2000" faceTarget="1" />
+										<node name="say" message="$SnowQueen_Order$" durationTick="4000" delayTick="0" />
+										<node name="standby" limit="6000" faceTarget="1" />
+									</node>
+									<!--맵 구석으로   순간이동 하기-->
+									<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+										<node name="select" prob="20,20,20,20,20">
+											<node name="skill" cooltime="65000" idx="6">
+												<node name="teleport" pos="150, 1050, 1450">
+													<!--10~11시 쪽-->
+													<node name="skill" faceTarget="1" idx="1">
+														<!--큰 투척-->
+														<node name="standby" limit="2500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="65000" idx="6">
+												<node name="teleport" pos="-900, 600, 1450">
+													<!--8시 쪽-->
+													<node name="skill" faceTarget="1" idx="1">
+														<!--큰 투척-->
+														<node name="standby" limit="2500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="65000" idx="6">
+												<node name="teleport" pos="-750, -600, 1450">
+													<!--6시 쪽-->
+													<node name="skill" faceTarget="1" idx="1">
+														<!--큰 투척-->
+														<node name="standby" limit="2500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="65000" idx="6">
+												<node name="teleport" pos="450, -750, 1450">
+													<!--4시 쪽-->
+													<node name="skill" faceTarget="1" idx="1">
+														<!--큰 투척-->
+														<node name="standby" limit="2500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="65000" idx="6">
+												<node name="teleport" pos="900, 150, 1450">
+													<!--2~3시 쪽-->
+													<node name="skill" faceTarget="1" idx="1">
+														<!--큰 투척-->
+														<node name="standby" limit="2500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+									<!--주기적으로 졸 소환-->
+									<node name="standby" limit="10" faceTarget="1" cooltime="30000" isKeepBattle="true">
+										<!--group 숫자는 보디가드 방패 몬스터와 같아야 함-->
+										<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="101" summonPos="300, 1050, 1450" summonRot="0,0,-50" />
+										<!--방패-->
+										<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="102" summonPos="900, 450, 1450" summonRot="0,0,-50" />
+										<!--방패-->
+										<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="103" summonPos="900, -150, 1450" summonRot="0,0,-50" />
+										<!--메이스-->
+										<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="104" summonPos="-300, 1050, 1450" summonRot="0,0,-50" />
+										<!--메이스-->
+										<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="105" summonPos="750, 900, 1450" summonRot="0,0,-50" />
+										<!--메이스-->
+									</node>
+									<!--통상적인 공격 행위-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="select" prob="30,30,40">
+												<!--거리 1100 이내-->
+												<node name="skill" faceTarget="1" idx="2">
+													<!--3개 와이드 투척-->
+													<node name="standby" limit="2400" faceTarget="1" />
+												</node>
+												<node name="trace" limit="1000" skillIdx="3">
+													<!--700 이내까지 추적해서-->
+													<node name="skill" faceTarget="0" idx="3">
+														<!--바닥 폭발-->
+														<node name="standby" limit="3100" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" faceTarget="1" cooltime="12000" idx="4">
+													<!--돌진 베기-->
+													<node name="skill" faceTarget="0" idx="5">
+														<node name="standby" limit="3400" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="50,50">
+												<node name="trace" limit="1000" skillIdx="2" />
+												<node name="skill" faceTarget="1" idx="1">
+													<!--큰 투척-->
+													<node name="standby" limit="3500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="55">
+					<!--#3페이즈, 분신 패턴 연속 검 휘두르기-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="20">
+							<!--사정거리 1400임-->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="9999,199,30,30,40">
+										<!--거리 1100 이내-->
+										<node name="standby" limit="10" faceTarget="1" cooltime="40000" isKeepBattle="true">
+											<!--  졸병 몬스터 소환-->
+											<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="111" summonPos="75, 900, 3700" summonRot="0,0,-50" />
+											<!--분신, 연속 검 휘두르기-->
+											<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="112" summonPos="900, 225, 3700" summonRot="0,0,-50" />
+											<!--분신, 연속 검 휘두르기-->
+											<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="113" summonPos="75, -600, 3700" summonRot="0,0,-50" />
+											<!--분신, 연속 검 휘두르기-->
+											<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="114" summonPos="-750, 225, 3700" summonRot="0,0,-50" />
+											<!--분신, 연속 검 휘두르기-->
+										</node>
+										<!--맵 구석으로   순간이동 하기-->
+										<node name="standby" limit="100" faceTarget="1" cooltime="17000">
+											<node name="select" prob="20,20,20,20">
+												<node name="skill" cooltime="35000" idx="6">
+													<node name="teleport" pos="-150, 900, 3700">
+														<!--9시 쪽-->
+														<node name="skill" faceTarget="1" idx="1">
+															<!--큰 투척-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="skill" cooltime="35000" idx="6">
+													<node name="teleport" pos="750, 900, 3700">
+														<!--12시 쪽-->
+														<node name="skill" faceTarget="1" idx="1">
+															<!--큰 투척-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="skill" cooltime="35000" idx="6">
+													<node name="teleport" pos="750, 0, 3700">
+														<!--3시 쪽-->
+														<node name="skill" faceTarget="1" idx="1">
+															<!--큰 투척-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="skill" cooltime="35000" idx="6">
+													<node name="teleport" pos="-450, -300, 3700">
+														<!--6시 쪽-->
+														<node name="skill" faceTarget="1" idx="1">
+															<!--큰 투척-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="skill" faceTarget="1" idx="2">
+											<!--3개 와이드 투척-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="1" idx="4">
+											<!--돌진 베기-->
+											<node name="skill" faceTarget="0" idx="5">
+												<node name="standby" limit="2200" faceTarget="1" />
+											</node>
+										</node>
+										<node name="trace" limit="1000" skillIdx="3">
+											<!--700 이내까지 추적해서-->
+											<node name="skill" faceTarget="0" idx="3">
+												<!--바닥 폭발-->
+												<node name="standby" limit="3100" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="40,60">
+										<node name="trace" limit="1000" skillIdx="2" />
+										<!--거리 1100 이내로 추적-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="near" from="10" to="1500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="40">
+					<!--#4페이즈, 분신 패턴 레이저 발사-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="20">
+							<!--사정거리 1400임-->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="9999,199,30,30,40">
+										<!--거리 1100 이내-->
+										<node name="standby" limit="10" faceTarget="1" cooltime="40000" isKeepBattle="true">
+											<!--  졸병 몬스터 소환-->
+											<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="111" summonPos="750, 900, 3700" summonRot="0,0,-50" />
+											<!--분신, 레이저-->
+											<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="112" summonPos="750, -450, 3700" summonRot="0,0,-50" />
+											<!--분신, 레이저-->
+											<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="113" summonPos="-600, -450, 3700" summonRot="0,0,-50" />
+											<!--분신, 레이저-->
+											<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="114" summonPos="-600, 900, 3700" summonRot="0,0,-50" />
+											<!--분신, 레이저-->
+										</node>
+										<!--맵 구석으로   순간이동 하기-->
+										<node name="standby" limit="100" faceTarget="1" cooltime="17000">
+											<node name="select" prob="20,20,20,20">
+												<node name="skill" cooltime="35000" idx="6">
+													<node name="teleport" pos="-150, 900, 3700">
+														<!--9시 쪽-->
+														<node name="skill" faceTarget="1" idx="1">
+															<!--큰 투척-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="skill" cooltime="35000" idx="6">
+													<node name="teleport" pos="750, 900, 3700">
+														<!--12시 쪽-->
+														<node name="skill" faceTarget="1" idx="1">
+															<!--큰 투척-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="skill" cooltime="35000" idx="6">
+													<node name="teleport" pos="750, 0, 3700">
+														<!--3시 쪽-->
+														<node name="skill" faceTarget="1" idx="1">
+															<!--큰 투척-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="skill" cooltime="35000" idx="6">
+													<node name="teleport" pos="-450, -300, 3700">
+														<!--6시 쪽-->
+														<node name="skill" faceTarget="1" idx="1">
+															<!--큰 투척-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="skill" faceTarget="1" idx="2">
+											<!--3개 와이드 투척-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="1" idx="4">
+											<!--돌진 베기-->
+											<node name="skill" faceTarget="0" idx="5">
+												<node name="standby" limit="2200" faceTarget="1" />
+											</node>
+										</node>
+										<node name="trace" limit="1000" skillIdx="3">
+											<!--700 이내까지 추적해서-->
+											<node name="skill" faceTarget="0" idx="3">
+												<!--바닥 폭발-->
+												<node name="standby" limit="3100" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="40,60">
+										<node name="trace" limit="1000" skillIdx="2" />
+										<!--거리 1100 이내로 추적-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="near" from="10" to="1500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="25">
+					<!--#5페이즈, 허리케인 패턴-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="20">
+							<node name="select" prob="99999,799,199,0">
+								<!--사정거리 1400임-->
+								<node name="standby" limit="1500" faceTarget="1" cooltime="40000" isKeepBattle="true">
+									<node name="skill" faceTarget="1" idx="6" />
+									<node name="teleport" pos="300, 450, 3700" />
+									<!--중앙으로 순간이동 하기-->
+									<node name="skill" facePos="-900, -750, 3650" idx="20" />
+									<!--4개 허리캐인 생성-->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="47000" isKeepBattle="true">
+									<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="301" summonPos="300, 1200, 3700" summonRot="0,0,-50" />
+									<!--바람기둥 위치에 냉기 법사 소환하기-->
+									<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="302" summonPos="1050, 450, 3700" summonRot="0,0,-50" />
+									<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="303" summonPos="300, -300, 3700" summonRot="0,0,-50" />
+									<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="304" summonPos="-450, 450, 3700" summonRot="0,0,-50" />
+								</node>
+								<!--맵 구석으로   순간이동 하기-->
+								<node name="standby" limit="100" faceTarget="1" cooltime="17000">
+									<node name="select" prob="20,20,20,20">
+										<node name="skill" cooltime="50000" idx="6">
+											<node name="teleport" pos="-150, 900, 3700">
+												<!--9시 쪽-->
+												<node name="skill" faceTarget="1" idx="1">
+													<!--큰 투척-->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" cooltime="50000" idx="6">
+											<node name="teleport" pos="750, 900, 3700">
+												<!--12시 쪽-->
+												<node name="skill" faceTarget="1" idx="1">
+													<!--큰 투척-->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" cooltime="50000" idx="6">
+											<node name="teleport" pos="750, 0, 3700">
+												<!--3시 쪽-->
+												<node name="skill" faceTarget="1" idx="1">
+													<!--큰 투척-->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" cooltime="50000" idx="6">
+											<node name="teleport" pos="-450, -300, 3700">
+												<!--6시 쪽-->
+												<node name="skill" faceTarget="1" idx="1">
+													<!--큰 투척-->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<!--통상적인 공격 행위-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="30,30,40">
+											<!--거리 1100 이내-->
+											<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+												<!--3개 와이드 투척-->
+												<node name="standby" limit="2300" faceTarget="1" />
+											</node>
+											<node name="trace" limit="1000" skillIdx="3">
+												<!--700 이내까지 추적해서-->
+												<node name="skill" faceTarget="0" idx="3">
+													<!--바닥 폭발-->
+													<node name="standby" limit="2000" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" faceTarget="1" cooltime="8000" idx="4">
+												<!--돌진 베기-->
+												<node name="skill" faceTarget="0" idx="5">
+													<node name="standby" limit="2600" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,50">
+											<node name="trace" limit="1000" skillIdx="2" />
+											<node name="skill" faceTarget="1" idx="1">
+												<!--큰 투척-->
+												<node name="standby" limit="3500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="near" from="10" to="1500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,499,0">
+						<!--#6페이즈 보디가드 패턴-->
+						<node name="SetSlaveValue" cooltime="999999" key="SummonDeath" value="1" />
+						<!--이 페이지 들어서면 제일 먼저 소환몹에게 자살 명령 내리기-->
+						<node name="standby" limit="2000" faceTarget="1" cooltime="62000" isKeepBattle="true">
+							<node name="SetValueRangeTarget" key="ActionMode" value="4" radius="9000" />
+							<!-- 설눈이한테 신호 보내 허리케인 버티기 패턴 행동을 하라고 알림-->
+							<node name="skill" idx="6" />
+							<node name="teleport" pos="1050, 1200, 3700" />
+							<!--  전투판 12시쪽 구석으로  순간이동-->
+							<node name="skill" facePos="300, 450, 3700" idx="7" />
+							<!--  순간이동 도착, 바라보는 방향 지정하기-->
+							<!--  스노퀸을 보호하는 보디가드 소환몹 몬스터 소환-->
+							<node name="SetValue" key="MonsterNumber" value="3" />
+							<!-- MonsterNumber = 3 은 방패 보디가드 몬스터 숫자만 체크함 -->
+							<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="501" summonPos="900, 1300, 3700" summonRot="0,0,-50" />
+							<!--방패, 보디가드-->
+							<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="502" summonPos="920, 1070, 3700" summonRot="0,0,-50" />
+							<!--방패, 보디가드-->
+							<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="503" summonPos="1150, 1050, 3700" summonRot="0,0,-50" />
+							<!--방패, 보디가드-->
+							<node name="standby" limit="2000" faceTarget="0" />
+							<!--  21420314 코드는 죽으면 MonsterNumber 변수 -1 하지 않음-->
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="504" summonPos="525, 1250, 3700" summonRot="0,0,-50" />
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="505" summonPos="675, 1125, 3700" summonRot="0,0,-50" />
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="506" summonPos="975, 825, 3700" summonRot="0,0,-50" />
+							<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="507" summonPos="1125, 675, 3700" summonRot="0,0,-50" />
+							<node name="skill" idx="21" />
+							<node name="standby" limit="12000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="MonsterNumber" value="1" op="greaterEqual">
+								<node name="select" prob="40,40,20">
+									<!--보디가드 소환몹 몬스터가 1마리라도 있으면-->
+									<node name="skill" cooltime="7000" idx="1" />
+									<!--  큰 관통 투척-->
+									<node name="skill" cooltime="13000" idx="2" />
+									<!--  3개 와이드 투척-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="9999,0">
+									<!--보디가드 소환몹 전멸했으면면-->
+									<!--구석으로  순간이동 하기-->
+									<node name="standby" limit="100" faceTarget="1" cooltime="21000">
+										<node name="SetValueRangeTarget" key="ActionMode" value="0">
+											<node name="select" prob="25,25,25,25">
+												<!--설눈이 다시 평소 상대로 셋팅시킴, 즉 기절 망치 공격 빈도 낮추는 행동을 하게 함-->
+												<node name="skill" cooltime="70000" idx="6">
+													<node name="teleport" pos="0, 1050, 3750" />
+													<!--왼쪽 지점-->
+												</node>
+												<node name="skill" cooltime="70000" idx="6">
+													<node name="teleport" pos="-150, 450, 3750" />
+													<!--왼쪽 중앙 지점-->
+												</node>
+												<node name="skill" cooltime="70000" idx="6">
+													<node name="teleport" pos="1050, 150, 3750" />
+													<!--오른쪽 지점-->
+												</node>
+												<node name="skill" cooltime="70000" idx="6">
+													<node name="teleport" pos="300, 0, 3750" />
+													<!--왼쪽 중앙 지점-->
+												</node>
+											</node>
+										</node>
+									</node>
+									<!--통상적인 공격 행위-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="select" prob="25,35,40">
+												<!--거리 1100 이내-->
+												<node name="skill" faceTarget="1" idx="2">
+													<!--3개 와이드 투척-->
+													<node name="standby" limit="2400" faceTarget="1" />
+												</node>
+												<node name="trace" limit="1000" skillIdx="3">
+													<!--700 이내까지 추적해서-->
+													<node name="skill" faceTarget="0" idx="3">
+														<!--바닥 폭발-->
+														<node name="standby" limit="3100" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" faceTarget="1" cooltime="12000" idx="4">
+													<!--돌진 베기-->
+													<node name="skill" faceTarget="0" idx="5">
+														<node name="standby" limit="3400" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="50,50">
+												<node name="trace" limit="1000" skillIdx="2" />
+												<node name="skill" faceTarget="1" idx="1">
+													<!--큰 투척-->
+													<node name="standby" limit="3500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--  summon 에서 lifeTime 기능이 적용되려면 monsterMob.xlsx 의 ignoreExtendLifeTime 항목을 true로 해야함-->
+		<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="101" master="None" lifeTime="15" summonPos="1350, 1500, 5200" summonRot="0,0,-50">
+			<node name="SetValueRangeTarget" key="SummonDeath" value="1" radius="3000" height="1200" />
+			<!-- 자신의 소환몹 죽이고, 설눈이도 특수 처리 하기-->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="LaserBattle">
+			<node name="conditions">
+				<condition name="extraData" key="LaserMode" value="1">
+					<node name="skill" faceTarget="1" idx="10">
+						<node name="SetValue" key="LaserMode" value="2" />
+					</node>
+				</condition>
+				<condition name="extraData" key="LaserMode" value="2">
+					<node name="select" prob="30,30,30,10">
+						<node name="skill" faceTarget="1" idx="19">
+							<node name="select" prob="25,25,25,25">
+								<!--제자리 순간이동-->
+								<node name="teleport" pos="75, 950, 3750" cooltime="38000">
+									<node name="SetValue" key="LaserMode" value="3" />
+								</node>
+								<node name="teleport" pos="950, 225, 3750" cooltime="38000">
+									<node name="SetValue" key="LaserMode" value="3" />
+								</node>
+								<node name="teleport" pos="75, -525, 3750" cooltime="38000">
+									<node name="SetValue" key="LaserMode" value="3" />
+								</node>
+								<node name="teleport" pos="-750, 0, 3750" cooltime="38000">
+									<node name="SetValue" key="LaserMode" value="3" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="17">
+							<!--이동-->
+							<node name="target" type="rand" from="10" to="1600">
+								<node name="skill" faceTarget="1" idx="17">
+									<node name="select" prob="25,25,25,25">
+										<!--이동-->
+										<node name="SetValue" key="LaserMode" value="3" />
+										<node name="SetValue" key="LaserMode" value="4" />
+										<node name="SetValue" key="LaserMode" value="5" />
+										<node name="SetValue" key="LaserMode" value="6" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" cooltime="25000" idx="18">
+							<node name="select" prob="25,25,25,25">
+								<!--바닥 바람 공격-->
+								<node name="SetValue" key="LaserMode" value="3" />
+								<node name="SetValue" key="LaserMode" value="4" />
+								<node name="SetValue" key="LaserMode" value="5" />
+								<node name="SetValue" key="LaserMode" value="6" />
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" cooltime="12000" idx="11">
+							<node name="select" prob="25,25,25,25">
+								<!--그냥 제자리-->
+								<node name="SetValue" key="LaserMode" value="3" />
+								<node name="SetValue" key="LaserMode" value="4" />
+								<node name="SetValue" key="LaserMode" value="5" />
+								<node name="SetValue" key="LaserMode" value="6" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="LaserMode" value="3">
+					<node name="skill" faceTarget="0" idx="12">
+						<node name="select" prob="64,12,12,12">
+							<node name="SetValue" key="LaserMode" value="2" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="4" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="5" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="6" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="LaserMode" value="4">
+					<node name="skill" faceTarget="0" idx="13">
+						<node name="select" prob="64,12,12,12">
+							<node name="SetValue" key="LaserMode" value="2" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="3" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="5" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="6" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="LaserMode" value="5">
+					<node name="skill" faceTarget="0" idx="14">
+						<node name="select" prob="64,12,12,12">
+							<node name="SetValue" key="LaserMode" value="2" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="3" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="4" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="6" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="LaserMode" value="6">
+					<node name="skill" faceTarget="0" idx="15">
+						<node name="select" prob="64,12,12,12">
+							<node name="SetValue" key="LaserMode" value="2" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="3" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="4" />
+							<node name="SetValue" cooltime="35000" key="LaserMode" value="5" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="LaserMode" value="7">
+					<node name="skill" faceTarget="0" idx="16">
+						<node name="standby" limit="1000" faceTarget="1">
+							<node name="select" prob="65,35">
+								<node name="SetValue" key="LaserMode" value="1" />
+								<!-- LaserMode = 1: 공격 시작 셋팅하기-->
+								<node name="SetValue" key="LaserMode" value="0" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1000" faceTarget="1">
+						<node name="SetValue" key="LaserMode" value="1" />
+						<!-- LaserMode = 1: 공격 시작 셋팅하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

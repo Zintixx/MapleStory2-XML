@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--보스 전투판에서 보스와 함께 거대 투사체 발사 협력 공격을 함, 1페이지 전투판 좌표 기준 타겟팅함 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="StageSummonMany" value="1" isModify="1" />
+				<!--전투 상태가 되면 소환몹 마리수 체크 +1 신호 보냄-->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<!-- 인페르녹 보스 전투 1페이지 전투판의 메인 전투판 좌표 기준으로 타겟팅 함-->
+			<node name="standby" limit="200" faceTarget="0" cooltime="3200">
+				<!--이 몬스터한테 거리 450 이내로 가까이 붙으면 근거리 휘두르기 공격하고, 그렇지 않으면 메인 전투판 쪽 발사 공격함-->
+				<node name="target" type="near" from="10" to="2200">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!-- 거리 450-->
+							<node name="target" type="near" from="10" to="2200" />
+						</condition>
+						<condition name="true">
+							<node name="select" prob="20,20,20,20,20">
+								<node name="target" type="near" center="3210, 3650, 6450" />
+								<node name="target" type="near" center="2920, 3300, 6450" />
+								<node name="target" type="near" center="3380, 2772, 6450" />
+								<node name="target" type="near" center="3773, 3115, 6450" />
+								<node name="target" type="near" center="3375, 3225, 6450" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 보스한테 받는 자살 명령 신호 변수-->
+					<node name="skill" idx="3" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- 등장하자마자 모든 몬스터 무리가 한꺼번에 같은 타이밍에 공격하는 것이 아닌 다소 어긋나게 공격하게 하기 위한 최초 딱 한번 강제 standby 설정하기 -->
+						<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+							<node name="select" prob="20,20,20,20,20">
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<node name="SetValue" key="AttackDelay" value="11" />
+								<node name="SetValue" key="AttackDelay" value="15" />
+								<node name="SetValue" key="AttackDelay" value="21" />
+								<node name="SetValue" key="AttackDelay" value="25" />
+							</node>
+						</node>
+						<aiPreset name="Normal_Attack" />
+						<!-- 평상시 공격 행동을 정의한 부분 -->
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="StageSummonMany" value="-1" isModify="1" />
+				<!--죽으면  소환몹 마리수 체크 -1 신호 보냄-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<!-- 거리 450-->
+					<node name="skill" idx="1">
+						<node name="select" prob="100,100,100">
+							<!-- 할퀴기, 레벨4 돌진 없음, 근거리 거리체크 기준-->
+							<node name="SetValue" key="AttackDelay" value="4" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="AttackDelay" value="7" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="AttackDelay" value="11" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<!-- 보스 전투판 1페이지에서는 레벨1 사용함-->
+					<node name="skill" idx="2">
+						<node name="select" prob="100,100,100">
+							<!-- 거대 투사체 발사, 레벨1는 레벨2보다 투사체 발사 죄표 높이가 다소 낮음, 매직패스: 5764-->
+							<node name="SetValue" key="AttackDelay" value="27" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="AttackDelay" value="35" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="AttackDelay" value="41" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="800" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

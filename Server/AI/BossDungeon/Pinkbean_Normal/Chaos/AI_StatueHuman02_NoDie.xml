@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 렉스 활성화 안죽음-->
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="5">
+			<!--HP 5% 이하로 줄어들면 비활성화 상태로 들어감-->
+			<!--***reserved**** -->
+			<node name="standby" limit="300" faceTarget="0" animation="Attack_Idle_B" isKeepBattle="true">
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,-90" />
+				<node name="RemoveMe" />
+				<!-- 자기 자신 스스로 제거하기 -->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<!--등장하자마자 바로 공격하면 어색해 보여 약 3~4초 대기 상태로 있게 하기 -->
+			<node name="standby" limit="3600" faceTarget="0" cooltime="9999999" />
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="target" type="near" center="2250, 600, 2100" cooltime="4000" />
+			<!--2층 난간 지형을 최우선 타겟으로  설정함 -->
+			<node name="conditions">
+				<condition name="extraData" key="ActiveStatueHuman02" value="4">
+					<!--핑크빈에게 이 변수 4 신호를 받으면 스스로 비활성화 상태가 되기 -->
+					<node name="standby" limit="200" faceTarget="1" animation="Attack_Idle_B" isKeepBattle="true">
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,-90" />
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ActiveStatueHuman02" value="2">
+					<!--핑크빈에게 이 변수 2 신호를 받으면 파괴가능 석상으로 교체하기 -->
+					<node name="standby" limit="200" faceTarget="1" animation="Attack_Idle_B" isKeepBattle="true">
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,-90" />
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ActiveStatueHuman02" value="1">
+					<!--핑크빈에게 이 변수 1 신호를 받으면 스스로 90% 회복하기, 원래 변수 1은 비활성화를 활성화 상태로 변경하기 위한 것인데 이미 활성화 되어 있다면 스스로 HP 회복하도록 함-->
+					<node name="buff" type="add" id="50000364" level="1">
+						<!-- HP 90% 회복-->
+						<node name="standby" limit="2200" faceTarget="0">
+							<node name="SetValue" key="ActiveStatueHuman02" value="-1" />
+							<!-- 이 변수를 -1로 셋팅하여 이 단계 빠져나오도록 함 -->
+						</node>
+					</node>
+				</condition>
+				<!-- 여기 아래 부분이 본격 공격 행동 정의 하는 부분 -->
+				<condition name="skillRange" skillIdx="4">
+					<node name="select" prob="70,30">
+						<!-- 공격 대상이 전투판 전체 오른쪽 영역 1층 지형에 있는 경우-->
+						<node name="skill" faceTarget="0" idx="4">
+							<!-- 창 내려찍기-->
+							<node name="standby" limit="4100" faceTarget="0" />
+						</node>
+						<node name="skill" faceTarget="0" cooltime="15000" idx="3">
+							<!-- 책펴기-->
+							<node name="standby" limit="3500" faceTarget="0" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="3">
+					<!-- 공격 대상이 전투판 전체 오른쪽 영역 1~2층 지형에 있는 경우, ##즉 핑크빈 지붕 전투판 패턴때 주로 작동되는 부분-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="99,1">
+								<!--2층 지형 좁은 난간 부분에 플레이어가 있으면 -->
+								<!--처음에는 레벨1 이 작동되고 두번째 이후는 레벨2가 작동 되도록 함 -->
+								<node name="standby" limit="300" faceTarget="0" cooltime="20000">
+									<node name="select" prob="1,99">
+										<!--이 석상 20초 안에 안잡으면 핑크빈 방업 버프 부여하는 형태임 -->
+										<node name="skill" faceTarget="0" idx="1">
+											<!--레벨1: 입에서 유도 투사체 플레이어 공격 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="0" initialCooltime="8000" idx="2">
+											<!--레벨2: 입에서 유도 투사체 핑크빈 버프 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+											<!--처음에는 레벨1 이 작동되고 두번째 이후는 레벨2가 작동 되도록 함 -->
+										</node>
+									</node>
+								</node>
+								<node name="skill" faceTarget="0" idx="3">
+									<!-- 책펴기-->
+									<node name="standby" limit="3600" faceTarget="0" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="99,1">
+								<!--2층 지형 넓은 전투판에 플레이어가 있으면 -->
+								<node name="skill" faceTarget="0" cooltime="11000" idx="2">
+									<!--입에서 유도 투사체 핑크빈 버프 -->
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" idx="3">
+									<!-- 책펴기-->
+									<node name="standby" limit="3500" faceTarget="0" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" faceTarget="0" idx="3">
+								<!-- 책펴기-->
+								<node name="standby" limit="3600" faceTarget="0" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="99,1">
+						<!-- 플레이어가 2층 지붕쪽 난간 왼쪽이든 오른쪽이든  2층 어디에 있는 경우, ##즉 핑크빈 지붕 전투판 패턴때 주로 작동되는 부분-->
+						<!--이때는 핑크빈 버프 부여 엄청 자주 하도록 함, 즉 노인석상을 계속 방치할 경우 저쪽 끝에 있는 노인석상에서 핑크빈 버프 부여 스킬을 자주 난사하게 됨 -->
+						<node name="skill" faceTarget="0" cooltime="5000" idx="2" />
+						<node name="standby" limit="1000" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="50,50">
+						<!-- 공격 대상이 전투판 전체 오른족 영역에 있는 경우, 가만히 있거나 종종 플레이어에게 디버프 투사체 발사 행위를 함-->
+						<node name="skill" faceTarget="0" cooltime="12000" idx="1">
+							<!--입에서 유도 투사체 플레이어 공격 -->
+							<node name="standby" limit="2100" faceTarget="1" />
+						</node>
+						<node name="standby" limit="1000" faceTarget="0" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

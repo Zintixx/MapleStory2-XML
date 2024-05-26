@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="ActionMode" value="0" />
+				<!-- 1: 보스한테 이 변수를 전해 받아 바람 공격 모드로 알림, 0: 평상시 상태-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="ActionMode" value="2">
+					<!-- 망치 파괴 해서 중앙 전투판으로 들어서는 부분, 스노퀸 보스한테 ActionMode = 2 신호를 받아서 이 행동 하도록 함 -->
+					<node name="standby" limit="3000" faceTarget="1" isKeepBattle="true">
+						<node name="move" destination="-75, -1750, 3800" limit="15900" />
+						<node name="skill" facePos="0, -900, 3650" idx="6" />
+						<node name="SetValue" key="ActionMode" value="0" />
+						<!--   0: 평상시 상태 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="100" master="None" summonPos="-75, -1270, 3700" summonRot="0,0,175" />
+						<!--   망치 파괴하고 본인은 퇴장, 그리고 또다른 설눈이를 중앙 전투판 하단에 스폰시킴 -->
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="1">
+					<node name="standby" limit="2000" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+						<node name="move" destination="-75, -2850, 3800" limit="9000" />
+						<!--회오리 바람 나오는 근처로 이동하기-->
+						<node name="standby" limit="500" faceTarget="1" />
+						<node name="say" message="$Seolnunyi_Hang$" durationTick="15000" delayTick="800" />
+						<node name="skill" facePos="150, 0, 3700" idx="1" />
+						<node name="skill" facePos="150, 0, 3700" idx="2" />
+						<node name="skill" faceTarget="0" idx="2" />
+						<node name="skill" faceTarget="0" idx="2" />
+						<node name="skill" faceTarget="0" idx="2" />
+						<node name="SetValue" key="ActionMode" value="0" />
+						<!--보스한테 1로 전해 받은 이 변수 다시 초기화 함  -->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!--단상 위에 있는 스노우퀸을 타겟팅하고 하고 있지 않으면  일반적인 공격 행위를 함  -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="85,2,10,3">
+										<!--망치 휘두르기 사정거리까지 다가가기 -->
+										<node name="skill" cooltime="3000" idx="4" />
+										<!--망치 휘두르기 -->
+										<node name="skill" cooltime="33000" idx="5" />
+										<!--망치 강력 내려치기 -->
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="target" type="rand" from="10" to="650" cooltime="20000" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="5000" skillIdx="4" />
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<!--단상 위에 있는 스노우퀸을 타겟팅하고 있지면 타겟팅 다시 잡기  -->
+								<node name="move" destination="0, -2225, 3800" limit="8000" cooltime="12000" />
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="target" type="rand" from="10" to="2600" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="100" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+		<!--에바고르 소환됨, 원활한 테스트를 위해 확률을 엄청 높임, 원래는 33임-->
+	</battleEnd>
+</npcAi>

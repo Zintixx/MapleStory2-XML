@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="101">
+			<node name="MinimumHp" hpPercent="1" />
+			<!--큰 대미지로 인한 자폭없는 사망을 막기 위해 체력하한 설정-->
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,9999,10">
+			<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+				<node name="target" type="far" from="10" to="3000" />
+				<node name="target" type="hasAdditional" additionalId="40600089" additionalLevel="1" target="hostile" />
+				<!-- 에디셔널 타겟이 없으면 far 타겟으로 진행 -->
+			</node>
+			<node name="select" prob="100,0">
+				<node name="standby" limit="10" faceTarget="0" initialCooltime="20000">
+					<aiPreset name="PresetKillSelf" />
+				</node>
+				<node name="conditions">
+					<condition name="hpLess" value="2">
+						<aiPreset name="PresetKillSelf" />
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="10" faceTarget="1" />
+						<node name="skill" idx="1" level="1" />
+						<node name="standby" limit="10" faceTarget="1" />
+						<!--<node name="skill" idx="2" level="1" />-->
+						<node name="trace" limit="1100" till="-1" animation="Walk_A" />
+						<!-- 1.1초동안 무조건 쫓아간다 -->
+					</condition>
+				</node>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="PresetKillSelf">
+			<node name="standby" limit="500" faceTarget="0" />
+			<node name="skill" idx="3" level="1" />
+			<node name="skill" idx="4" level="1" />
+			<node name="MinimumHp" />
+			<node name="Suicide" />
+		</aiPreset>
+	</aiPresets>
+</npcAi>

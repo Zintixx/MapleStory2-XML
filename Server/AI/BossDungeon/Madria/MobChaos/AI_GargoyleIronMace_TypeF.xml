@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 2스테이지 엘리트 가고일 전용AI임-->
+	<battle>
+		<node name="select" prob="9999,999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="100" faceTarget="1" cooltime="8000">
+				<node name="target" type="near" from="10" to="900" />
+			</node>
+			<!--12시 방향에 쫄몹 소환 -->
+			<node name="standby" limit="100" faceTarget="1" cooltime="38000" isKeepBattle="true">
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-750, -900, 4250" summonRot="0,0,-50" />
+				<!--버프 부여, 오른쪽 견제 -->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="-925, -1325, 4250" summonRot="0,0,-50" />
+				<!--버프 부여, 오른쪽 견제 -->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="-1350, -1500, 4250" summonRot="0,0,-50" />
+				<!--버프 부여, 오른쪽 견제 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="111" summonPos="-1500, -150, 4250" summonRot="0,0,-50" />
+				<!--버프 부여, 왼쪽 견제-->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="112" summonPos="-1925, -325, 4250" summonRot="0,0,-50" />
+				<!--버프 부여, 왼쪽 견제-->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="113" summonPos="-2100, -750, 4250" summonRot="0,0,-50" />
+				<!--버프 부여, 왼쪽 견제-->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="121" summonPos="-450, 450, 4250" summonRot="0,0,-50" />
+				<!--노말 가고일, 12시 지형에 등장하여 원거리 공격만 사용함-->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="122" summonPos="-900, 750,4250" summonRot="0,0,-50" />
+				<!--노말 가고일, 12시 지형에 등장하여 원거리 공격만 사용함-->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="98">
+					<!--#1페이즈, 최초 전투 시작때는 Trace 안하고 제자리를 지키게 함, Trace 땜에 진형이 흐트러 지는 것을 막기 위해 초반에 이렇게 설정-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="55,45">
+								<!--거리 380 이내 -->
+								<node name="skill" idx="1">
+									<!--근접  -->
+									<node name="standby" limit="1400" faceTarget="1" />
+								</node>
+								<node name="skill" idx="2">
+									<!--돌진 휘두르기  -->
+									<node name="standby" limit="1700" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="55,45">
+										<!--거리 680 이내 -->
+										<node name="skill" idx="2">
+											<!--돌진 휘두르기  -->
+											<node name="standby" limit="1700" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="56000" idx="4">
+											<!--전방 폭발 기절 시키기-->
+											<node name="standby" limit="1600" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="300" faceTarget="1">
+										<node name="target" type="near" from="10" to="1300" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--#2페이즈, 여기부터 본격 전투-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="9999,99,0">
+								<!--같은 영역의 전투판 내에 있어야만 전투 행위를 하도록 함, 사정거리 1300, 사다리 한칸 아래까지 커버함-->
+								<node name="standby" limit="100" faceTarget="1" cooltime="45000" initialCooltime="35000">
+									<node name="move" destination="-1200, -600, 4400" limit="3000">
+										<node name="skill" idx="3">
+											<!--바람 끌어당긴 후 휘두르기 공격-->
+											<node name="standby" limit="2300" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="trace" limit="2700" cooltime="37000" initialCooltime="27000" skillIdx="4">
+									<node name="select" prob="50,50">
+										<node name="skill" idx="4">
+											<!--전방 폭발 기절 시키기-->
+											<node name="standby" limit="1800" faceTarget="1" />
+										</node>
+										<node name="skill" idx="4">
+											<!--전방 폭발 기절 시키기-->
+											<node name="skill" idx="4">
+												<!--전방 폭발 기절 시키기-->
+												<node name="standby" limit="2100" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="50,50">
+											<!--거리 380 이내 -->
+											<node name="skill" idx="1">
+												<!--근접  -->
+												<node name="standby" limit="1400" faceTarget="1" />
+											</node>
+											<node name="skill" idx="2">
+												<!--돌진 휘두르기  -->
+												<node name="standby" limit="1600" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="4">
+												<node name="select" prob="33,33,33,1">
+													<!--거리 680 이내 -->
+													<node name="skill" cooltime="31000" idx="4">
+														<!--전방 폭발 기절 시키기-->
+														<node name="standby" limit="1800" faceTarget="1" />
+													</node>
+													<node name="skill" idx="2">
+														<!--돌진 휘두르기  -->
+														<node name="standby" limit="1600" faceTarget="1" />
+													</node>
+													<node name="trace" limit="2500" skillIdx="1" />
+													<!--거리 380 이내로 추적하기 -->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="trace" limit="1000" skillIdx="4" />
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetValueRangeTarget" key="MobClearTwoStage" value="-1" radius="9800" height="9800" isModify="1" />
+		<!--자신이 죽으면 마드리아+루카락스 한테 신호를 보내서 자신의 죽음을 알림 -->
+	</battleEnd>
+</npcAi>

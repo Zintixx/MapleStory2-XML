@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,9999,0">
+			<node name="standby" limit="10" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="DeathCrossbowShot" value="1" />
+			</node>
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="target" type="near" center="-1300, -750, 1700" />
+				<!-- 그림자 군던의 제단 맵  7시 전투판 중앙의 대상 우선시함-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="DeathCrossbowShot" value="1">
+					<node name="select" prob="9999,1">
+						<node name="standby" limit="1800" faceTarget="0" cooltime="40000" isKeepBattle="true">
+							<node name="move" destination="-300, -900, 1900" limit="12000" />
+							<node name="standby" limit="1000" faceTarget="0" />
+							<node name="skill" faceTarget="0" idx="2" />
+							<!-- 석궁설치 동작-->
+							<node name="standby" limit="600" faceTarget="0" />
+							<node name="skill" faceTarget="0" idx="2" />
+							<!-- 석궁설치 동작-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="0, 0, 0" summonRot="0,0,-50" />
+							<node name="SetValue" key="DeathCrossbowShot" value="0" />
+							<node name="move" destination="-1500, -1200, 1900" limit="12000" />
+							<!--좌표 중요-->
+						</node>
+						<node name="skill" idx="1">
+							<node name="select" prob="33,33,34">
+								<!--와이드 화살 발사, 레벨2는 자경단원 전용-->
+								<node name="runaway" till="515" limit="3000" />
+								<node name="trace" till="505" limit="9000" />
+								<node name="runaway" till="620" limit="3000" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="70,30">
+								<node name="skill" idx="1">
+									<node name="select" prob="30,20,20,20">
+										<!--와이드 화살 발사, 레벨2는 자경단원 전용-->
+										<node name="move" destination="-1500, -1200, 1900" limit="12000" />
+										<!--좌표 중요-->
+										<node name="runaway" till="515" limit="3000" />
+										<node name="trace" till="505" limit="9000" />
+										<node name="runaway" till="620" limit="3000" />
+									</node>
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+									<node name="select" prob="33,33,34">
+										<node name="trace" till="525" limit="9000" />
+										<node name="runaway" till="550" limit="3000" />
+										<node name="runaway" till="425" limit="3000" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="trace" till="760" limit="500" cooltime="6000" />
+								<!--다수 우호적 NPC 무리가 너무 같은 위치에서 공격하는 것을 피하기 위해 다양한 경우의 trace 넣었음-->
+								<node name="standby" limit="700" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

@@ -1,0 +1,1132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="90">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999">
+				<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__0$" duration="4544" voice="ko/Npc/00002208" />
+				<!--체력 90%가 되면 시작-->
+				<node name="TriggerSetUserValue" triggerID="900002" key="Debuff" value="1" />
+				<!--플레이어에게 체력이 닳는 디버프 걸어줌-->
+				<node name="TriggerSetUserValue" triggerID="900004" key="Plant" value="1" />
+				<!--네펜투스 몬스터 등장 4마리-->
+				<node name="TriggerSetUserValue" triggerID="900008" key="Dummy" value="1" />
+				<!--죽음의 꽃에 사용될 더미 미리 소환-->
+				<!-- <announce message="식물 몬스터를 모두 잡으면 등장하는 생명의 씨앗으로, 그린 라펜타의 저주를 막을 수 있는 나무를 성장 시키세요!!" durationTick="4000"/>				 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="70">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999">
+				<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__1$" duration="4000" voice="ko/Npc/00002209" />
+				<node name="TriggerSetUserValue" triggerID="900002" key="Debuff" value="1" />
+				<node name="TriggerSetUserValue" triggerID="900004" key="Plant" value="1" />
+				<!-- <announce message="식물 몬스터를 모두 잡으면 등장하는 생명의 씨앗으로, 그린 라펜타의 저주를 막을 수 있는 나무를 성장 시키세요!!" durationTick="4000"/>					 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999">
+				<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__0$" duration="4544" voice="ko/Npc/00002208" />
+				<node name="TriggerSetUserValue" triggerID="900002" key="Debuff" value="1" />
+				<node name="TriggerSetUserValue" triggerID="900004" key="Plant" value="1" />
+				<!-- <announce message="식물 몬스터를 모두 잡으면 등장하는 생명의 씨앗으로, 그린 라펜타의 저주를 막을 수 있는 나무를 성장 시키세요!!" durationTick="4000"/>					 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="30">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999">
+				<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__3$" duration="5926" voice="ko/Npc/00002210" />
+				<node name="TriggerSetUserValue" triggerID="900002" key="Debuff" value="1" />
+				<node name="TriggerSetUserValue" triggerID="900004" key="Plant" value="1" />
+				<!-- <announce message="식물 몬스터를 모두 잡으면 등장하는 생명의 씨앗으로, 그린 라펜타의 저주를 막을 수 있는 나무를 성장 시키세요!!" durationTick="4000"/>					 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+				<node name="target" type="rand" from="100" to="3000" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="90">
+					<!--#1페이즈 -->
+					<!--*****************HP 90% 이상 *****************************************************************************-->
+					<!-- <standby limit="10"  faceTarget="0"  prob="9999" cooltime = "9999999" sequence="true"> -->
+					<!-- <event eventName="TriggerEvent" target="SetUserValue" param1="900008" param2="Dummy" param3="1" prob="100"/> -->
+					<!-- </standby> -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="130,100,200">
+								<!-- 평타공격 2타 거리에 있으면 아래 스킬들을 사용-->
+								<node name="skill" idx="1">
+									<!-- 평타공격 2타 130의 비중으로 사용-->
+									<node name="standby" limit="1000" faceTarget="1" />
+									<!-- 0.7초간 대기-->
+								</node>
+								<node name="skill" isKeepBattle="true" idx="2">
+									<!-- 찌르기 100의 비중으로 사용-->
+									<node name="skill" faceTarget="0" idx="3" />
+									<!-- 1타 찌르고 빠지기 사용-->
+									<node name="standby" limit="1000" faceTarget="1" />
+									<!-- 0.7초간 대기-->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000" initialCooltime="10000">
+									<!-- 색적하기, 쿨15초 전투시작 후 10초 이후부터 사용 -->
+									<node name="skill" idx="5">
+										<!--채찍공격-->
+										<node name="standby" limit="1300" faceTarget="1" />
+										<!-- 1초 대기 -->
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,120,120,200">
+								<!--평타공격 2타 거리 밖에 있으면 아래 스킬들을 사용-->
+								<node name="trace" limit="2000" skillIdx="1" />
+								<!-- 평타공격 거리로 다가감 2초간 지속, 100의 비중으로 사용-->
+								<node name="trace" limit="2000" skillIdx="4">
+									<!-- 추적 스킬 거리로 다가감 2초간 지속, 120의 비중으로 사용-->
+									<node name="skill" isKeepBattle="true" idx="4">
+										<!-- 추적스킬 사용-->
+										<!-- 추적스킬 사용 후, 순서대로 사용-->
+										<node name="skill" faceTarget="1" idx="1" />
+										<!-- 추적스킬 사용하여 다가가 평타공격 2타 사용-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+								<node name="trace" limit="2000" skillIdx="4">
+									<node name="skill" idx="4">
+										<!-- 추적스킬 -->
+										<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+											<node name="skill" faceTarget="0" idx="3" />
+											<!-- 1타 찌르고 빠지기-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+									<!-- 색적하기, 쿨15초 전투시작 후 10초 이후부터 사용 -->
+									<node name="trace" limit="1000" skillIdx="5">
+										<!-- 스킬 사용 가능 거리로 쫓아감 1초간 -->
+										<node name="skill" idx="5">
+											<!-- 채찍공격 -->
+											<node name="standby" limit="1300" faceTarget="1" />
+											<!-- 1초 대기 -->
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!--*****************HP 90~80% *****************************************************************************-->
+				<condition name="hpOver" value="80">
+					<!-- <standby limit="10"  faceTarget="1"  prob="9999" cooltime = "9999999" sequence="true">		 -->
+					<!-- <sidePopup type="talk" illust="Neirin_serious" script="그 장비로도 버틸 수 없는 고통을 드리겠습니다." duration="4000"/> -->
+					<!-- <event eventName="TriggerEvent" target="SetUserValue" param1="900004" param2="Plant" param3="1" prob="100"/> -->
+					<!-- <event eventName="TriggerEvent" target="SetUserValue" param1="900002" param2="Debuff" param3="1" prob="100"/> -->
+					<!-- <event eventName="TriggerEvent" target="SetUserValue" param1="900009" param2="Seed" param3="1" prob="100"/>					 -->
+					<!-- </standby>	 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="130,100,200,200">
+								<node name="skill" idx="1">
+									<!-- 평타공격 2타 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" isKeepBattle="true" idx="2">
+									<node name="skill" faceTarget="0" idx="3" />
+									<!-- 1타 찌르고 빠지기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="15000" initialCooltime="10000">
+									<!-- 색적하기, 쿨15초 전투시작 후 10초 이후부터 사용 -->
+									<node name="skill" idx="5">
+										<!--채찍공격-->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="10000" initialCooltime="10000">
+									<!-- 색적하기, 쿨10초 전투시작 후 10초 이후부터 사용 -->
+									<node name="skill" idx="9">
+										<!--다크 인피니트 컷-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,120,120,200,200">
+								<node name="trace" limit="2000" skillIdx="1" />
+								<!-- 평타공격2타 거리로 추적-->
+								<node name="trace" limit="2000" skillIdx="4">
+									<node name="skill" isKeepBattle="true" idx="4">
+										<!-- 추적스킬 후 평타공격 2타-->
+										<node name="skill" faceTarget="1" idx="1" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+								<node name="trace" limit="2000" skillIdx="4">
+									<node name="skill" idx="4">
+										<!-- 추적스킬 -->
+										<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+											<node name="skill" faceTarget="0" idx="3" />
+											<!-- 1타 찌르고 빠지기-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="10000">
+									<!-- 색적하기, 쿨10초 -->
+									<node name="trace" limit="2000" skillIdx="4">
+										<!-- 스킬 사용 가능 거리로 쫓아감 1초간 -->
+										<node name="skill" isKeepBattle="true" idx="4">
+											<!-- 추적스킬 사용-->
+											<node name="skill" faceTarget="1" idx="9" />
+											<!-- 추적 스킬 사용 후, 다크 인피니트 컷 사용 -->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+									<node name="trace" limit="1000" skillIdx="5">
+										<node name="skill" idx="5">
+											<!--채찍공격-->
+											<node name="standby" limit="1300" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!--*****************HP 80~60% *****************************************************************************-->
+				<condition name="hpOver" value="60">
+					<node name="select" prob="99999,0">
+						<!-- 체력 80퍼되면 전멸기 사용 -->
+						<node name="SetValue" cooltime="9999999" key="SpecialPattern" value="1" />
+						<!-- 전멸기 패턴으로 들어가기 위한 변수 값 지정 -->
+						<node name="conditions">
+							<condition name="extraData" key="SpecialPattern" value="1">
+								<node name="select" prob="99999,0">
+									<!-- 위의 변수 값으로 조건문 진입 -->
+									<!-- <standby limit="1000"  faceTarget="1"  prob="9999" cooltime = "9999999">		 -->
+									<node name="SetValue" cooltime="9999999" key="BreakPattern" value="0">
+										<!-- 세부 전투 변경사항을 체크하기 위한 두 번째 변수 지정 -->
+										<node name="sidePopup" type="cutin" illust="Cutin_Turned_Yuperia_01" duration="3000" />
+									</node>
+									<node name="conditions">
+										<condition name="extraData" key="BreakPattern" value="0">
+											<!-- BreakPattern 변수가 0일 때, -->
+											<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+												<!-- 색적하기 -->
+												<node name="target" type="rand" from="100" to="2000" />
+												<!-- 100에서 2000사이 거리에 랜덤하게 타겟 선정 -->
+												<node name="buff" type="add" id="62100024" level="1" isKeepBattle="true" />
+												<!--레벨1이 4인 던전용: 특정 라텐타 스킬로만 공격 해야만 공격이 먹히도록 하기 위한 애디셔널 부여하기 -->
+												<node name="skill" faceTarget="0" idx="15" />
+												<!-- 근처의 적 튕겨내기 스킬 발동 -->
+												<node name="skill" facePos="142, 129, 2251" isKeepBattle="true" idx="19">
+													<!-- 전멸기 사용 전 중앙으로 이동하기 위한 점프 스킬 시작 -->
+													<node name="skill" faceTarget="0" idx="20" />
+													<!-- 점프 스킬 2번 째 동작 -->
+													<node name="jump" pos="142, 129, 2251" speed="2100" heightMultiplier="0.7" />
+													<!-- 실제 옮겨가야 할 위치 -->
+													<node name="skill" faceTarget="0" idx="21" />
+													<!-- 점프 스킬 3번 째 동작 -->
+													<node name="skill" faceTarget="0" idx="22" />
+													<!-- 점프 스킬 4번 째 동작 -->
+													<node name="skill" faceTarget="0" idx="16" />
+													<!-- 전멸기 사용 전 기모으기 동작 스킬 -->
+												</node>
+												<node name="SetValue" key="BreakPattern" value="1" />
+												<!--  변수 1로 셋팅해여 아래 부분 실행하도록 하기 -->
+											</node>
+										</condition>
+										<condition name="extraData" key="BreakPattern" value="1">
+											<!--  BreakPattern 변수가  0이 아닌 경우 이 부분 실행, 즉 이 몬스터가 쉴드 애디셔널이 붙고 난 다음에 이 쉴드 애디셔널이 사라질 때까지 계속 이부분 반복 실행함 -->
+											<node name="conditions">
+												<condition name="extraData" key="brokenShieldFail" value="1">
+													<!-- brokenShieldFail = 1  이라는 것은, 쉴드 애디셔널 파괴 실패했다는 뜻임  (1이면 true, 0이면 false임)  -->
+													<!-- 몬스터의 쉴드 애디셔널 유지 시간이 다 되었는데, 쉴드 애디셔널 HP를 전부 깎는데 실패하면, 이 부분 실행하여 플레이어에게 극 광역스킬 난사함 -->
+													<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+														<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__4$" duration="4000" voice="ko/Npc/00002211" />
+														<node name="SetValue" key="BreakPattern" value="2" />
+														<!-- 변수 초기화 -->
+														<node name="SetValue" key="SpecialPattern" value="0" />
+														<!-- 변수 초기화 -->
+														<node name="skill" faceTarget="0" idx="17">
+															<!-- 전멸기 스킬 플레이어 전멸-->
+															<node name="standby" limit="5000" faceTarget="0" />
+														</node>
+													</node>
+												</condition>
+												<condition name="extraData" key="remainShieldHP" value="1" op="greaterEqual">
+													<!--쉴드 애디셔널의 HP가 1 이상인 경우:  remainShieldHP 는 쉴드 애디셔널의 HP 수치로 이 수치가 0이 되면 해당 애디셔널 제거되는데, 즉 이 쉴드 애디셔널이 남아있는지를 조건  체크 하는 것임  -->
+													<!--쉴드 애디셔널이 이 몬스터 몸에 존재하는 동안 이 부분을 계속 반복 실행함 -->
+													<node name="skill" faceTarget="0" idx="16" />
+													<!--기력 모으기 바닥 스킬 -->
+												</condition>
+												<condition name="extraData" key="brokenShieldSuccess" value="1">
+													<!-- brokenShieldSuccess = 1  이라는 것은, 쉴드 애디셔널 파괴 성공했다는 뜻임  (1이면 true, 0이면 false임)  -->
+													<!-- 몬스터의 쉴드 애디셔널의 HP를 전부 깎아서 이 쉴드 애디셔널 강제 제거를 성공하면, 이 부분 실행함 -->
+													<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+														<node name="say" message="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__5$" durationTick="4000" delayTick="0" />
+														<!--스킬브레이킹 성공 시 유페리아 대사-->
+														<node name="buff" type="add" id="70002171" />
+														<node name="TriggerSetUserValue" triggerID="900003" key="summon" value="1" />
+														<!-- 쫄 몬스터 소환-->
+														<!-- <announce message="그린 라펜타 저지에 성공하자 블레이더들이 지친 유페리아를 지원하기 위해 나타났습니다!!!"  durationTick="4000"/>									 -->
+														<node name="skill" faceTarget="0" idx="18">
+															<!-- 기절 동작-->
+															<node name="SetValue" key="BreakPattern" value="2" />
+															<!-- 변수 초기화 -->
+															<node name="SetValue" key="SpecialPattern" value="0" />
+															<!-- 변수 초기화 -->
+															<node name="standby" limit="1000" faceTarget="0" />
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<!-- 이론적으로 여기 부분 올일 없음 -->
+													<node name="standby" limit="2000" faceTarget="0">
+														<node name="SetValue" key="BreakPattern" value="0" />
+														<!-- 변수 초기화 -->
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="130,100,200,300,200">
+									<node name="skill" idx="1">
+										<!-- 평타공격 2타 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="2">
+										<node name="skill" faceTarget="0" idx="3" />
+										<!-- 1타 찌르고 빠지기-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="10000" initialCooltime="10000">
+										<node name="skill" idx="9">
+											<!--다크 인피니트 컷-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="20000" initialCooltime="10000" isKeepBattle="true">
+										<!-- 색적하기, 쿨25초 전투시작 후 10초 이후부터 사용 -->
+										<node name="skill" idx="5" />
+										<!--채찍공격1타-->
+										<node name="skill" idx="6" />
+										<!--채찍공격2타-->
+										<node name="skill" idx="7" />
+										<!--채찍공격3타-->
+										<node name="skill" idx="8" />
+										<!--채찍공격4타-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="target" type="far" from="100" to="2000">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,120,200,300">
+									<node name="trace" limit="2000" skillIdx="1" />
+									<!-- 평타공격2타 거리로 추적-->
+									<node name="trace" limit="2000" skillIdx="4">
+										<!-- 추적스킬 후 평타공격 2타-->
+										<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+											<node name="skill" faceTarget="0" idx="3" />
+											<!-- 1타 찌르고 빠지기-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="10000">
+										<node name="trace" limit="2000" skillIdx="4">
+											<node name="skill" isKeepBattle="true" idx="4">
+												<!-- 추적스킬 후 다크 인피니트 컷-->
+												<node name="skill" faceTarget="1" idx="9" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="25000" initialCooltime="10000">
+										<node name="trace" limit="1000" isKeepBattle="true" skillIdx="5">
+											<node name="skill" idx="5" />
+											<!--채찍공격1타-->
+											<node name="skill" idx="6" />
+											<!--채찍공격2타-->
+											<node name="skill" idx="7" />
+											<!--채찍공격3타-->
+											<node name="skill" idx="8" />
+											<!--채찍공격4타-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--*****************HP 60~40% *****************************************************************************-->
+				<condition name="hpOver" value="40">
+					<node name="select" prob="99999,0">
+						<!-- 체력 60퍼 되면 전멸기 사용 -->
+						<node name="SetValue" cooltime="9999999" key="SpecialPattern" value="1" />
+						<node name="conditions">
+							<condition name="extraData" key="SpecialPattern" value="1">
+								<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+									<node name="SetValue" key="BreakPattern" value="2" />
+									<!-- 변수 초기화 -->
+									<node name="SetValue" key="SpecialPattern" value="0" />
+									<!-- 변수 초기화 -->
+									<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__6$" duration="5946" voice="ko/Npc/00002213" />
+									<node name="skill" idx="13" />
+									<!-- 죽음의 꽃 스킬 사용-->
+									<node name="TriggerSetUserValue" triggerID="900007" key="flower" value="1" />
+									<!--죽음의 꽃 관련 변수 1로 바꿔줌 이후는 맵 트리거에서 진행-->
+									<node name="TriggerSetUserValue" triggerID="900003" key="summon" value="1" />
+									<!--쫄 몬스터 소환-->
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="130,100,200,300,200">
+									<node name="skill" idx="1">
+										<!-- 평타공격 2타 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="2">
+										<node name="skill" faceTarget="0" idx="3" />
+										<!-- 1타 찌르고 빠지기-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="10000" initialCooltime="10000">
+										<node name="skill" idx="9">
+											<!--다크 인피니트 컷-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="20000" initialCooltime="10000" isKeepBattle="true">
+										<!-- 색적하기, 쿨25초 전투시작 후 10초 이후부터 사용 -->
+										<node name="skill" idx="5" />
+										<!--채찍공격1타-->
+										<node name="skill" idx="6" />
+										<!--채찍공격2타-->
+										<node name="skill" idx="7" />
+										<!--채찍공격3타-->
+										<node name="skill" idx="8" />
+										<!--채찍공격4타-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="target" type="far" from="100" to="2000">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,120,200,300,200,400">
+									<node name="trace" limit="2000" skillIdx="1" />
+									<!-- 평타공격2타 거리로 추적-->
+									<node name="trace" limit="2000" skillIdx="4">
+										<node name="skill" idx="4">
+											<!-- 추적스킬 후 평타공격 2타-->
+											<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+												<node name="skill" faceTarget="0" idx="3" />
+												<!-- 1타 찌르고 빠지기-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="10000">
+										<node name="trace" limit="2000" skillIdx="4">
+											<node name="skill" isKeepBattle="true" idx="4">
+												<!-- 추적스킬 후 다크 인피니트 컷-->
+												<node name="skill" faceTarget="1" idx="9" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="25000" initialCooltime="10000">
+										<node name="trace" limit="1000" isKeepBattle="true" skillIdx="5">
+											<node name="skill" idx="5" />
+											<!--채찍공격1타-->
+											<node name="skill" idx="6" />
+											<!--채찍공격2타-->
+											<node name="skill" idx="7" />
+											<!--채찍공격3타-->
+											<node name="skill" idx="8" />
+											<!--채찍공격4타-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="target" type="far" from="100" to="2000">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="300" faceTarget="1" cooltime="70000" initialCooltime="20000">
+										<node name="target" type="rand" from="100" to="2000" isKeepBattle="true">
+											<!--랜덤 타겟을 찾음 400의 비중으로 사용, 전투시작 20초 후 사용, 쿨타임 40초-->
+											<!-- <target type="far" prob="100" from="100" to="2000">					 -->
+											<node name="skill" idx="11" />
+											<!--텔레포트 스킬 사용-->
+											<node name="teleport" pos="150, 1200, 2251" />
+											<!--실제 몬스터를 지정한 좌표로 보냄-->
+											<node name="skill" idx="12" />
+											<!--텔레포트 스킬 사용 지점에 바닥 생김-->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<!--텔레포트 사용하여 이동 후, 타겟 방향으로 라펜타 웨이브 스킬을 사용-->
+											<node name="standby" limit="1500" faceTarget="1" />
+											<node name="target" type="far" from="100" to="2000" />
+											<!-- 100에서 2000거리 사이 가장 멀리있는 타겟 잡음-->
+											<node name="skill" idx="11" />
+											<!--텔레포트 스킬 사용-->
+											<node name="teleport" pos="900, 150, 2251" />
+											<!--실제 몬스터를 지정한 좌표로 보냄-->
+											<node name="skill" idx="12" />
+											<!--텔레포트 스킬 사용 지점에 바닥 생김-->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<!--텔레포트 사용하여 이동 후, 타겟 방향으로 라펜타 웨이브 스킬을 사용-->
+											<node name="standby" limit="1500" faceTarget="1" />
+											<!-- 한 번 더 반복 총3번-->
+											<node name="target" type="far" from="100" to="2000" />
+											<node name="skill" idx="11" />
+											<node name="teleport" pos="-600, 150, 2251" />
+											<node name="skill" idx="12" />
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--*****************HP 40~20% *****************************************************************************-->
+				<condition name="hpOver" value="20">
+					<node name="select" prob="99999,0">
+						<!-- 체력 40퍼 되면 전멸기 사용 -->
+						<node name="SetValue" cooltime="9999999" key="SpecialPattern" value="1" />
+						<node name="conditions">
+							<condition name="extraData" key="SpecialPattern" value="1">
+								<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+									<node name="SetValue" key="BreakPattern" value="2" />
+									<!-- 변수 초기화 -->
+									<node name="SetValue" key="SpecialPattern" value="0" />
+									<!-- 변수 초기화 -->
+									<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__6$" voice="ko/Npc/00002213" duration="5946" />
+									<node name="skill" idx="13" />
+									<node name="TriggerSetUserValue" triggerID="900007" key="flower" value="1" />
+									<node name="TriggerSetUserValue" triggerID="900003" key="summon" value="1" />
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="130,100,200,200,300,200,400">
+									<node name="skill" idx="1">
+										<!-- 평타공격 2타 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="2">
+										<node name="skill" faceTarget="0" idx="3" />
+										<!-- 1타 찌르고 빠지기-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="skill" idx="5">
+											<!--채찍공격-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="10000" initialCooltime="10000">
+										<node name="skill" idx="9">
+											<!--다크 인피니트 컷-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="20000" initialCooltime="10000" isKeepBattle="true">
+										<!-- 색적하기, 쿨25초 전투시작 후 10초 이후부터 사용 -->
+										<node name="skill" idx="5" />
+										<!--채찍공격1타-->
+										<node name="skill" idx="6" />
+										<!--채찍공격2타-->
+										<node name="skill" idx="7" />
+										<!--채찍공격3타-->
+										<node name="skill" idx="8" />
+										<!--채찍공격4타-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="target" type="far" from="100" to="2000">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="70000" initialCooltime="20000">
+										<node name="select" prob="100,100">
+											<!--채찍 무차별 난사 시작-->
+											<node name="target" type="rand" from="100" to="2000" />
+											<node name="skill" isKeepBattle="true" idx="5">
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,120,200,200,300,200,400">
+									<node name="trace" limit="2000" skillIdx="1" />
+									<!-- 평타공격2타 거리로 추적-->
+									<node name="trace" limit="2000" skillIdx="4">
+										<node name="skill" idx="4">
+											<!-- 추적스킬 후 평타공격 2타-->
+											<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+												<node name="skill" faceTarget="0" idx="3" />
+												<!-- 1타 찌르고 빠지기-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="10000">
+										<node name="trace" limit="2000" skillIdx="4">
+											<node name="skill" isKeepBattle="true" idx="4">
+												<!-- 추적스킬 후 다크 인피니트 컷-->
+												<node name="skill" faceTarget="1" idx="9" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="trace" limit="1000" skillIdx="5">
+											<node name="skill" idx="5">
+												<!--채찍공격-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="25000" initialCooltime="10000">
+										<node name="trace" limit="1000" isKeepBattle="true" skillIdx="5">
+											<node name="skill" idx="5" />
+											<!--채찍공격1타-->
+											<node name="skill" idx="6" />
+											<!--채찍공격2타-->
+											<node name="skill" idx="7" />
+											<!--채찍공격3타-->
+											<node name="skill" idx="8" />
+											<!--채찍공격4타-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="target" type="far" from="100" to="2000">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="300" faceTarget="1" cooltime="70000" initialCooltime="20000">
+										<node name="target" type="rand" from="100" to="2000" isKeepBattle="true">
+											<!--랜덤 타겟을 찾음 400의 비중으로 사용, 전투시작 20초 후 사용, 쿨타임 40초-->
+											<!-- <target type="far" prob="100" from="100" to="2000">					 -->
+											<node name="skill" idx="11" />
+											<!--텔레포트 스킬 사용-->
+											<node name="teleport" pos="150, 1200, 2251" />
+											<!--실제 몬스터를 지정한 좌표로 보냄-->
+											<node name="skill" idx="12" />
+											<!--텔레포트 스킬 사용 지점에 바닥 생김-->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<!--텔레포트 사용하여 이동 후, 타겟 방향으로 라펜타 웨이브 스킬을 사용-->
+											<node name="standby" limit="1500" faceTarget="1" />
+											<node name="target" type="far" from="100" to="2000" />
+											<!-- 100에서 2000거리 사이 가장 멀리있는 타겟 잡음-->
+											<node name="skill" idx="11" />
+											<!--텔레포트 스킬 사용-->
+											<node name="teleport" pos="900, 150, 2251" />
+											<!--실제 몬스터를 지정한 좌표로 보냄-->
+											<node name="skill" idx="12" />
+											<!--텔레포트 스킬 사용 지점에 바닥 생김-->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<!--텔레포트 사용하여 이동 후, 타겟 방향으로 라펜타 웨이브 스킬을 사용-->
+											<node name="standby" limit="1500" faceTarget="1" />
+											<!-- 한 번 더 반복 총3번-->
+											<node name="target" type="far" from="100" to="2000" />
+											<node name="skill" idx="11" />
+											<node name="teleport" pos="-600, 150, 2251" />
+											<node name="skill" idx="12" />
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--*****************HP 20~10% *****************************************************************************-->
+				<condition name="hpOver" value="10">
+					<node name="select" prob="99999,0">
+						<!-- 체력 20퍼 되면 전멸기 사용 -->
+						<node name="SetValue" cooltime="9999999" key="SpecialPattern" value="1" />
+						<!-- 전멸기 패턴으로 들어가기 위한 변수 값 지정 -->
+						<node name="conditions">
+							<condition name="extraData" key="SpecialPattern" value="1">
+								<node name="select" prob="99999,0">
+									<!-- <standby limit="1000"  faceTarget="1"  prob="9999" cooltime = "9999999">		 -->
+									<node name="SetValue" cooltime="9999999" key="BreakPattern" value="0">
+										<!-- 세부 전투 변경사항을 체크하기 위한 두 번째 변수 지정 -->
+										<node name="sidePopup" type="cutin" illust="Cutin_Turned_Yuperia_01" duration="3000" />
+									</node>
+									<node name="conditions">
+										<condition name="extraData" key="BreakPattern" value="0">
+											<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="buff" type="add" id="62100024" level="1" isKeepBattle="true" />
+												<!--레벨1이 4인 던전용: 특정 라텐타 스킬로만 공격 해야만 공격이 먹히도록 하기 위한 애디셔널 부여하기 -->
+												<node name="skill" faceTarget="0" idx="15" />
+												<!--기력 모으기 시작 동작-->
+												<node name="skill" facePos="142, 129, 2251" isKeepBattle="true" idx="19">
+													<node name="skill" faceTarget="0" idx="20" />
+													<node name="jump" pos="142, 129, 2251" speed="2100" heightMultiplier="0.7" />
+													<node name="skill" faceTarget="0" idx="21" />
+													<node name="skill" faceTarget="0" idx="22" />
+													<node name="skill" faceTarget="0" idx="16" />
+												</node>
+												<node name="SetValue" key="BreakPattern" value="1" />
+												<!--  변수 1로 셋팅해여 아래 부분 실행하도록 하기 -->
+											</node>
+										</condition>
+										<condition name="extraData" key="BreakPattern" value="1">
+											<!--  BreakPattern 변수가  0이 아닌 경우 이 부분 실행, 즉 이 몬스터가 쉴드 애디셔널이 붙고 난 다음에 이 쉴드 애디셔널이 사라질 때까지 계속 이부분 반복 실행함 -->
+											<node name="conditions">
+												<condition name="extraData" key="brokenShieldFail" value="1">
+													<!-- brokenShieldFail = 1  이라는 것은, 쉴드 애디셔널 파괴 실패했다는 뜻임  (1이면 true, 0이면 false임)  -->
+													<!-- 몬스터의 쉴드 애디셔널 유지 시간이 다 되었는데, 쉴드 애디셔널 HP를 전부 깎는데 실패하면, 이 부분 실행하여 플레이어에게 극 광역스킬 난사함 -->
+													<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+														<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__8$" voice="ko/Npc/00002214" duration="4000" />
+														<node name="SetValue" key="BreakPattern" value="2" />
+														<!-- 변수 초기화 -->
+														<node name="SetValue" key="SpecialPattern" value="0" />
+														<!-- 변수 초기화 -->
+														<node name="skill" faceTarget="0" idx="17">
+															<!-- 전멸기 스킬 플레이어 전멸-->
+															<node name="standby" limit="5000" faceTarget="0" />
+														</node>
+													</node>
+												</condition>
+												<condition name="extraData" key="remainShieldHP" value="1" op="greaterEqual">
+													<!--쉴드 애디셔널의 HP가 1 이상인 경우:  remainShieldHP 는 쉴드 애디셔널의 HP 수치로 이 수치가 0이 되면 해당 애디셔널 제거되는데, 즉 이 쉴드 애디셔널이 남아있는지를 조건  체크 하는 것임  -->
+													<!--쉴드 애디셔널이 이 몬스터 몸에 존재하는 동안 이 부분을 계속 반복 실행함 -->
+													<node name="skill" faceTarget="0" idx="16" />
+													<!--기력 모으기 바닥 스킬 -->
+												</condition>
+												<condition name="extraData" key="brokenShieldSuccess" value="1">
+													<!-- brokenShieldSuccess = 1  이라는 것은, 쉴드 애디셔널 파괴 성공했다는 뜻임  (1이면 true, 0이면 false임)  -->
+													<!-- 몬스터의 쉴드 애디셔널의 HP를 전부 깎아서 이 쉴드 애디셔널 강제 제거를 성공하면, 이 부분 실행함 -->
+													<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+														<node name="buff" type="add" id="70002171" />
+														<node name="say" message="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__5$" durationTick="4000" delayTick="0" />
+														<node name="TriggerSetUserValue" triggerID="900003" key="summon" value="1" />
+														<!-- <announce message="그린 라펜타 저지에 성공하자 블레이더들이 지친 유페리아를 지원하기 위해 나타났습니다!!!"  durationTick="4000"/>								 -->
+														<node name="skill" faceTarget="0" idx="18">
+															<!-- 기절 동작-->
+															<node name="SetValue" key="BreakPattern" value="2" />
+															<!-- 변수 초기화 -->
+															<node name="SetValue" key="SpecialPattern" value="0" />
+															<!-- 변수 초기화 -->
+															<node name="standby" limit="1000" faceTarget="0" />
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<!-- 이론적으로 여기 부분 올일 없음 -->
+													<node name="standby" limit="2000" faceTarget="0">
+														<node name="SetValue" key="BreakPattern" value="0" />
+														<!-- 변수 초기화 -->
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="130,100,200,200,300,200,400">
+									<node name="skill" idx="1">
+										<!-- 평타공격 2타 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="2">
+										<node name="skill" faceTarget="0" idx="3" />
+										<!-- 1타 찌르고 빠지기-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="skill" idx="5">
+											<!--채찍공격-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="10000" initialCooltime="10000">
+										<node name="skill" idx="9">
+											<!--다크 인피니트 컷-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="20000" initialCooltime="10000" isKeepBattle="true">
+										<!-- 색적하기, 쿨25초 전투시작 후 10초 이후부터 사용 -->
+										<node name="skill" idx="5" />
+										<!--채찍공격1타-->
+										<node name="skill" idx="6" />
+										<!--채찍공격2타-->
+										<node name="skill" idx="7" />
+										<!--채찍공격3타-->
+										<node name="skill" idx="8" />
+										<!--채찍공격4타-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="target" type="far" from="100" to="2000">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="70000" initialCooltime="20000">
+										<node name="select" prob="100,100">
+											<node name="target" type="rand" from="100" to="2000" />
+											<node name="skill" isKeepBattle="true" idx="5">
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="target" type="rand" from="100" to="2000" />
+												<node name="skill" idx="5" />
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,120,200,200,300,200,400">
+									<node name="trace" limit="2000" skillIdx="1" />
+									<!-- 평타공격2타 거리로 추적-->
+									<node name="trace" limit="2000" skillIdx="4">
+										<node name="skill" idx="4">
+											<!-- 추적스킬 후 평타공격 2타-->
+											<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+												<node name="skill" faceTarget="0" idx="3" />
+												<!-- 1타 찌르고 빠지기-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="100" faceTarget="1" cooltime="10000">
+										<node name="trace" limit="2000" skillIdx="4">
+											<node name="skill" isKeepBattle="true" idx="4">
+												<!-- 추적스킬 후 다크 인피니트 컷-->
+												<node name="skill" faceTarget="1" idx="9" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="trace" limit="1000" skillIdx="5">
+											<node name="skill" idx="5">
+												<!--채찍공격-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="25000" initialCooltime="10000">
+										<node name="trace" limit="1000" isKeepBattle="true" skillIdx="5">
+											<node name="skill" idx="5" />
+											<!--채찍공격1타-->
+											<node name="skill" idx="6" />
+											<!--채찍공격2타-->
+											<node name="skill" idx="7" />
+											<!--채찍공격3타-->
+											<node name="skill" idx="8" />
+											<!--채찍공격4타-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+										<node name="target" type="far" from="100" to="2000">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="300" faceTarget="1" cooltime="70000" initialCooltime="20000">
+										<node name="target" type="rand" from="100" to="2000" isKeepBattle="true">
+											<!--랜덤 타겟을 찾음 400의 비중으로 사용, 전투시작 20초 후 사용, 쿨타임 40초-->
+											<!-- <target type="far" prob="100" from="100" to="2000">					 -->
+											<node name="skill" idx="11" />
+											<!--텔레포트 스킬 사용-->
+											<node name="teleport" pos="150, 1200, 2251" />
+											<!--실제 몬스터를 지정한 좌표로 보냄-->
+											<node name="skill" idx="12" />
+											<!--텔레포트 스킬 사용 지점에 바닥 생김-->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<!--텔레포트 사용하여 이동 후, 타겟 방향으로 라펜타 웨이브 스킬을 사용-->
+											<node name="standby" limit="1500" faceTarget="1" />
+											<node name="target" type="far" from="100" to="2000" />
+											<!-- 100에서 2000거리 사이 가장 멀리있는 타겟 잡음-->
+											<node name="skill" idx="11" />
+											<!--텔레포트 스킬 사용-->
+											<node name="teleport" pos="900, 150, 2251" />
+											<!--실제 몬스터를 지정한 좌표로 보냄-->
+											<node name="skill" idx="12" />
+											<!--텔레포트 스킬 사용 지점에 바닥 생김-->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<!--텔레포트 사용하여 이동 후, 타겟 방향으로 라펜타 웨이브 스킬을 사용-->
+											<node name="standby" limit="1500" faceTarget="1" />
+											<!-- 한 번 더 반복 총3번-->
+											<node name="target" type="far" from="100" to="2000" />
+											<node name="skill" idx="11" />
+											<node name="teleport" pos="-600, 150, 2251" />
+											<node name="skill" idx="12" />
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="10" />
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--*****************HP 10~0% *****************************************************************************-->
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- 체력 10퍼 되면 폭주 사용 -->
+						<node name="SetValue" cooltime="9999999" key="SpecialPattern" value="1">
+							<node name="TriggerSetUserValue" triggerID="900003" key="summon" value="1" />
+						</node>
+						<node name="conditions">
+							<condition name="extraData" isKeepBattle="true" key="SpecialPattern" value="1">
+								<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__10$" voice="ko/Npc/00002215" duration="3000" />
+								<node name="skill" faceTarget="0" idx="14" />
+								<!--폭주 스킬 사용-->
+								<node name="SetValue" key="SpecialPattern" value="2" />
+								<!--  변수 1로 셋팅해여 아래 부분 실행하도록 하기 -->
+								<node name="standby" limit="1000" faceTarget="0" />
+								<node name="sidePopup" type="talk" illust="Turned_Yuperia_normal" script="$EYEOFLAPENTA__AI_YUPERIARBLADERDARK__11$" duration="3267" voice="ko/Npc/00002216" />
+								<node name="skill" idx="13" />
+								<!--죽음의 꽃 스킬 사용-->
+								<node name="TriggerSetUserValue" triggerID="900007" key="flower" value="1" />
+							</condition>
+							<condition name="extraData" isKeepBattle="true" key="SpecialPattern" value="2">
+								<node name="standby" limit="1500" faceTarget="0" />
+								<node name="SetValue" key="SpecialPattern" value="3" />
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="130,100,200,200,300,200,400">
+											<node name="skill" idx="1">
+												<!-- 평타공격 2타 -->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="skill" isKeepBattle="true" idx="2">
+												<node name="skill" faceTarget="0" idx="3" />
+												<!-- 1타 찌르고 빠지기-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="standby" limit="100" faceTarget="1" cooltime="15000" initialCooltime="10000">
+												<node name="skill" idx="5">
+													<!--채찍공격-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="standby" limit="100" faceTarget="1" cooltime="10000" initialCooltime="10000">
+												<node name="skill" idx="9">
+													<!--다크 인피니트 컷-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+											<node name="standby" limit="200" faceTarget="1" cooltime="20000" initialCooltime="10000" isKeepBattle="true">
+												<!-- 색적하기, 쿨25초 전투시작 후 10초 이후부터 사용 -->
+												<node name="skill" idx="5" />
+												<!--채찍공격1타-->
+												<node name="skill" idx="6" />
+												<!--채찍공격2타-->
+												<node name="skill" idx="7" />
+												<!--채찍공격3타-->
+												<node name="skill" idx="8" />
+												<!--채찍공격4타-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+												<node name="target" type="far" from="100" to="2000">
+													<node name="skill" idx="10">
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="200" faceTarget="1" cooltime="70000" initialCooltime="20000">
+												<node name="select" prob="100,100">
+													<node name="target" type="rand" from="100" to="2000" />
+													<node name="skill" isKeepBattle="true" idx="5">
+														<node name="target" type="rand" from="100" to="2000" />
+														<node name="skill" idx="5" />
+														<node name="standby" limit="100" faceTarget="1" />
+														<node name="target" type="rand" from="100" to="2000" />
+														<node name="skill" idx="5" />
+														<node name="standby" limit="100" faceTarget="1" />
+														<node name="target" type="rand" from="100" to="2000" />
+														<node name="skill" idx="5" />
+														<node name="standby" limit="100" faceTarget="1" />
+														<node name="target" type="rand" from="100" to="2000" />
+														<node name="skill" idx="5" />
+														<node name="standby" limit="100" faceTarget="1" />
+														<node name="target" type="rand" from="100" to="2000" />
+														<node name="skill" idx="5" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="100,120,200,200,300,200,400">
+											<node name="trace" limit="2000" skillIdx="1" />
+											<!-- 평타공격2타 거리로 추적-->
+											<node name="trace" limit="2000" skillIdx="4">
+												<node name="skill" idx="4">
+													<!-- 추적스킬 후 평타공격 2타-->
+													<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+														<node name="skill" faceTarget="0" idx="3" />
+														<!-- 1타 찌르고 빠지기-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="100" faceTarget="1" cooltime="10000">
+												<node name="trace" limit="2000" skillIdx="4">
+													<node name="skill" isKeepBattle="true" idx="4">
+														<!-- 추적스킬 후 다크 인피니트 컷-->
+														<node name="skill" faceTarget="1" idx="9" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+												<node name="trace" limit="1000" skillIdx="5">
+													<node name="skill" idx="5">
+														<!--채찍공격-->
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="200" faceTarget="1" cooltime="25000" initialCooltime="10000">
+												<node name="trace" limit="1000" isKeepBattle="true" skillIdx="5">
+													<node name="skill" idx="5" />
+													<!--채찍공격1타-->
+													<node name="skill" idx="6" />
+													<!--채찍공격2타-->
+													<node name="skill" idx="7" />
+													<!--채찍공격3타-->
+													<node name="skill" idx="8" />
+													<!--채찍공격4타-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="10000">
+												<node name="target" type="far" from="100" to="2000">
+													<node name="skill" idx="10">
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="300" faceTarget="1" cooltime="70000" initialCooltime="20000">
+												<node name="target" type="rand" from="100" to="2000" isKeepBattle="true">
+													<!--랜덤 타겟을 찾음 400의 비중으로 사용, 전투시작 20초 후 사용, 쿨타임 40초-->
+													<!-- <target type="far" prob="100" from="100" to="2000">					 -->
+													<node name="skill" idx="11" />
+													<!--텔레포트 스킬 사용-->
+													<node name="teleport" pos="150, 1200, 2251" />
+													<!--실제 몬스터를 지정한 좌표로 보냄-->
+													<node name="skill" idx="12" />
+													<!--텔레포트 스킬 사용 지점에 바닥 생김-->
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="skill" faceTarget="1" idx="10" />
+													<!--텔레포트 사용하여 이동 후, 타겟 방향으로 라펜타 웨이브 스킬을 사용-->
+													<node name="standby" limit="1500" faceTarget="1" />
+													<node name="target" type="far" from="100" to="2000" />
+													<!-- 100에서 2000거리 사이 가장 멀리있는 타겟 잡음-->
+													<node name="skill" idx="11" />
+													<!--텔레포트 스킬 사용-->
+													<node name="teleport" pos="900, 150, 2251" />
+													<!--실제 몬스터를 지정한 좌표로 보냄-->
+													<node name="skill" idx="12" />
+													<!--텔레포트 스킬 사용 지점에 바닥 생김-->
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="skill" faceTarget="1" idx="10" />
+													<!--텔레포트 사용하여 이동 후, 타겟 방향으로 라펜타 웨이브 스킬을 사용-->
+													<node name="standby" limit="1500" faceTarget="1" />
+													<!-- 한 번 더 반복 총3번-->
+													<node name="target" type="far" from="100" to="2000" />
+													<node name="skill" idx="11" />
+													<node name="teleport" pos="-600, 150, 2251" />
+													<node name="skill" idx="12" />
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="skill" faceTarget="1" idx="10" />
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

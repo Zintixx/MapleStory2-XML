@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<node name="SetValue" cooltime="999999" key="CloseRange" value="0" />
+			<!--원거리 몬스터에게 가까이 다가가면 이후 쫓아오는 행동을 하도록 하기 위해 이 변수 필요 -->
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<!--냉기 보호막 버프 부여하기     , 이 기능 제거하기
+		<buff type ="add" id = "50004502" level="2" prob="9999" cooltime = "8000"/>  -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<!--레벨2: 같은 영역의 전투판 이내에 있어야만 전투 행위를 하도록 함, 원거리 견제용은 레벨2  한칸 아래까지 커버-->
+					<node name="conditions">
+						<condition name="extraData" key="CloseRange" value="0">
+							<aiPreset name="LongRangeMode" />
+						</condition>
+						<condition name="true">
+							<!--CloseRange = 1 인 경우임 -->
+							<aiPreset name="CloseRangeMode" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="800" faceTarget="1">
+						<node name="target" type="near" from="10" to="1300" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+	</battleEnd>
+	<aiPresets>
+		<!--원거리 전용 움직임-->
+		<aiPreset name="LongRangeMode">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<!--거리 320 이내 -->
+					<node name="SetValue" key="CloseRange" value="1" />
+					<!--플레이어가 가까이 붙으면 이 변수 1로 만들어 이후 무조건 가끼이 붙으려고 함 -->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="97,1">
+								<!--거리 1100 이내 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="7000">
+									<node name="select" prob="34,33,33">
+										<!--다수 레이저 눈골렘이 너무 일정하게 레이저 쏘는 상황을 피하기 위해 번갈아 레이저 쏘도록 설정함-->
+										<node name="standby" limit="200" faceTarget="1">
+											<node name="skill" idx="2" />
+											<!--원거리 투척 공격 -->
+										</node>
+										<node name="standby" limit="400" faceTarget="1">
+											<node name="skill" idx="2" />
+											<!--원거리 투척 공격 -->
+										</node>
+										<node name="skill" idx="2" />
+										<!--원거리 투척 공격 -->
+									</node>
+								</node>
+								<!--다수 눈골렘이 너무 일정하게 투척 쏘는 상황을 피하기 위해 번갈아 투척 쏘도록 설정함-->
+								<node name="standby" limit="300" faceTarget="3" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="5000" skillIdx="2" />
+							<!--거리 1100 이내 -->
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--근거리 전용 움직임-->
+		<aiPreset name="CloseRangeMode">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="54,35,1">
+						<!--거리 320 이내 -->
+						<node name="skill" cooltime="5000" idx="3" />
+						<!--주먹 공격 -->
+						<node name="skill" cooltime="21000" initialCooltime="20000" idx="4" />
+						<!--점프 쾅 공격, 이 공격은 설눈이를 기절시키는데 설눈이가 바닥 불판 깔기 전에 이거 맞아 기절하면 상황이 꼬일 수 있어서 initialCooltime 을 넣음  -->
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="5000" skillIdx="3" />
+					<!--거리 320 이내 쫓아가기 -->
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

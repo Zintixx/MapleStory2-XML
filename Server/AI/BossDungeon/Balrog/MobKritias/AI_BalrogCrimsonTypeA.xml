@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 1페이지에서 등장 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="SummonMany" value="1" isModify="1" />
+				<!--전투 상태가 되면 자쿰AI에게 토템소환몹 마리수 체크 +1 신호 보냄-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투 -->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="200" faceTarget="0" cooltime="7000">
+				<node name="select" prob="25,25,25,25">
+					<node name="target" type="near" center="-2250, -2400, 2300" />
+					<!-- 1페이지 전투판 중앙 지점 기준으로 타겟팅, 2페이지 전투판에 있는 경비병을 타겟팅 하면 안되기 때문에  -->
+					<node name="target" type="near" center="-2550, -2250, 2300" />
+					<!-- 1페이지 전투판 중앙 지점 기준으로 타겟팅, 2페이지 전투판에 있는 경비병을 타겟팅 하면 안되기 때문에  -->
+					<node name="target" type="near" center="-2100, -2700, 2300" />
+					<!-- 1페이지 전투판 중앙 지점 기준으로 타겟팅, 2페이지 전투판에 있는 경비병을 타겟팅 하면 안되기 때문에  -->
+					<node name="target" type="near" center="-2550, -2700, 2300" />
+					<!-- 1페이지 전투판 중앙 지점 기준으로 타겟팅, 2페이지 전투판에 있는 경비병을 타겟팅 하면 안되기 때문에  -->
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<node name="skill" idx="4" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="5">
+							<!-- 1페이지 기준 같은 높이의 전투판에 있으면, 평상시 공격 행동 함 -->
+							<aiPreset name="Normal_Attack" />
+							<!-- 평상시 공격 행동을 정의한 부분 -->
+						</condition>
+						<condition name="true">
+							<node name="select" prob="1,99">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="near" from="10" to="2500" />
+								</node>
+								<!-- 등장하자마자 바로 이동하면 어색해 보여서 initialCooltime 넣음 -->
+								<node name="standby" limit="300" faceTarget="1" cooltime="8500" initialCooltime="8000">
+									<node name="select" prob="5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5">
+										<!-- 플레이어가 1페이지 전투판 벗어나면 1페이지 중앙 전투판으로 이동하도록 설정함, 일부러 크림슨 발록 끌고와서 얍샵이 플레이 하는 것을 막기위한 장치 -->
+										<node name="move" destination="-2550, -1800, 2250" limit="5000" />
+										<node name="move" destination="-2400, -2100, 2250" limit="5000" />
+										<node name="move" destination="-2100, -2100, 2250" limit="5000" />
+										<node name="move" destination="-1950, -2400, 2250" limit="5000" />
+										<node name="move" destination="-1800, -2700, 2250" limit="5000" />
+										<node name="move" destination="-2100, -2850, 2250" limit="5000" />
+										<node name="move" destination="-2700, -2250, 2250" limit="5000" />
+										<node name="move" destination="-2250, -2400, 2250" limit="5000" />
+										<node name="move" destination="-2700, -2475, 2250" limit="5000" />
+										<node name="move" destination="-2325, -2850, 2250" limit="5000" />
+										<node name="move" destination="-2850, -2100, 2250" limit="5000" />
+										<node name="move" destination="-1950, -3000, 2250" limit="5000" />
+										<node name="move" destination="-2550, -2250, 2250" limit="5000" />
+										<node name="move" destination="-2100, -2700, 2250" limit="5000" />
+										<node name="move" destination="-3000, -2100, 2250" limit="5000" />
+										<node name="move" destination="-1950, -3150, 2250" limit="5000" />
+										<node name="move" destination="-2325, -2025, 2250" limit="5000" />
+										<node name="move" destination="-1875, -2475, 2250" limit="5000" />
+										<node name="move" destination="-1875, -2025, 2250" limit="5000" />
+										<node name="move" destination="-2625, -2775, 2250" limit="5000" />
+										<node name="move" destination="-3250, -2282, 2250" limit="5000" />
+										<node name="move" destination="-2150, -3375, 2250" limit="5000" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="SummonMany" value="-1" isModify="1" />
+				<!--죽으면 발록AI에게 소환몹 마리수 체크 -1 신호 보냄-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="50,30,20">
+						<!-- 할퀴기 사정거리 이내면 -->
+						<node name="skill" idx="2">
+							<!--할퀴기 -->
+							<node name="SetValue" key="AttackDelay" value="18">
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="target" type="near" from="2" to="1800" />
+							</node>
+						</node>
+						<node name="skill" cooltime="12000" idx="1">
+							<!--  설치 투척, 레벨3은 바닥 대미지 필드 없음, 거리 900~1000 정도-->
+							<node name="SetValue" key="AttackDelay" value="15" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+						<node name="skill" cooltime="15000" idx="3">
+							<!--몸통 돌진 -->
+							<node name="SetValue" key="AttackDelay" value="21">
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="target" type="near" from="2" to="1800" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="30,40,30">
+						<!-- 몸통 돌진 사정거리 이내에 있으면-->
+						<node name="skill" cooltime="9000" idx="3">
+							<!--몸통 돌진 -->
+							<node name="SetValue" key="AttackDelay" value="14">
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="target" type="near" from="2" to="1800" />
+							</node>
+						</node>
+						<node name="skill" cooltime="12000" idx="1">
+							<!--  설치 투척, 레벨3은 바닥 대미지 필드 없음, 거리 900~1000 정도-->
+							<node name="SetValue" key="AttackDelay" value="13" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+						<node name="trace" limit="2000" skillIdx="2">
+							<!--할퀴기 거리까지 추적 -->
+							<node name="target" type="near" from="2" to="1800" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="2000" skillIdx="3">
+						<!--몸통 돌진 거리까지 추적 -->
+						<node name="target" type="near" from="2" to="1800" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

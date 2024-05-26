@@ -1,0 +1,964 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="Phase" value="1" />
+				<!--Phase = 1 변수 셋팅하여 1페이즈 시작함-->
+				<node name="skill" facePos="-50, 450, 2000" idx="18" />
+				<!--기폭발 동작 때 바라보는 방향이 정면을 향하도록 facePos 죄표 설정-->
+				<node name="say" message="$BalrogMagicBursterEventAppearance$" durationTick="6000" delayTick="0" />
+				<node name="skill" faceTarget="0" idx="19" />
+				<!--레벨3이 NA 전용 기폭발 공격, 레벨2는 디폴트 -->
+				<node name="standby" limit="1500" faceTarget="1" />
+				<node name="skill" facePos="-225, 450, 1962" idx="20" />
+				<!--배 상단 중앙으로 점프 이동후 연속기 공격 시작하기-->
+				<node name="jump" pos="-225, 300, 1962" speed="1200" heightMultiplier="0.3" />
+				<node name="standby" limit="500" faceTarget="1" />
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				<node name="SetValue" key="AttackMode" value="0" />
+				<!-- 연속 공격 동작 모드일때 사용하는 변수 -->
+				<node name="SetValue" key="AttackModeEndCheck" value="0" />
+				<!-- 연속 공격 행휘 몇번 이상하면 공격을 멈추는데, 그때 사용하는 변수 -->
+				<node name="SetValue" key="FinalAttackMode" value="0" />
+				<!-- 최종 페이즈에서 연속 공격 동작 모드일때 사용하는 변수 -->
+				<node name="SetValue" key="FinalAttackModeEndCheck" value="0" />
+				<!-- 최종 페이즈에서 연속 공격 행휘 몇번 이상하면 공격을 멈추는데, 그때 사용하는 변수 -->
+				<node name="SetValue" key="2PhaseConversion" value="0" />
+				<!-- 2페이지에서 패턴 전환할때 사용하는 변수 -->
+				<node name="TriggerSetUserValue" triggerID="9990" key="BalrogMagicBursterBattlePhase" value="1" />
+				<!--    맵트리거에게 BalrogMagicBursterBattlePhase = 1  신호 보내서, 맵트리거가 인페르녹과 전투 시작 되었음을 알림, 이 신호는 트리거와 몬스터가 신호 주고 받는 형태로 이루어 지는데 AI 진행 초반에 설정하면 트리거에서 이 신호 못받을 수 있어서 적당히 늦은 타이밍에 보내는 것이 안정적임  -->
+				<node name="standby" limit="2000" faceTarget="1" />
+				<node name="buff" type="remove" id="50004405" level="1" />
+				<!--혹시 몰라서 석궁 오프젝트에 맞아서 생기는 애디셔널 초반 연출 상황에는 제거하기, 레벨1이 왼쪽 석궁 오브젝트-->
+				<node name="buff" type="remove" id="50004405" level="2" />
+				<!--혹시 몰라서 석궁 오프젝트에 맞아서 생기는 애디셔널 초반 연출 상황에는 제거하기, 레벨2가 왼쪽 석궁 오브젝트-->
+				<node name="setData" key="aiBattleTime" value="0" />
+				<!--시간 기준 페이즈 전환 기능 사용할 때  battleTimeBegin="0" 초기화 하는 부분 꼭 필요-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="42">
+			<node name="SetValue" key="Phase" value="2">
+				<node name="TriggerSetUserValue" triggerID="9994" key="WorldInvasionScene" value="4" />
+				<!--  PopUpCinema.xml 에 있는  WorldInvasionScene = 4 신호를 보내서 팝업 영상을 띄움      param1="9994" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<!-- 석궁에 맞아서 타겟팅 변경시키는 부분, NA버전 1인 퀘스트용 던전에서는 이 부분 사용 안함-->
+		<node name="conditions">
+			<condition name="additional" id="50004405">
+				<!-- 레벨1: 왼쪽 지점의 석궁에 맞아서 이 에디셔널이 몸에 걸렸을 때 타겟팅 체크하기-->
+				<!--기본 standy 동작이 꼭 Attack_Idle 아니기 때문에, standy 설정 넣지 않음  -->
+				<node name="conditions">
+					<condition name="extraData" key="AttackMode" value="1" op="greaterEqual">
+						<!--AttackMode 숫자가 1 이상이면 연속 공격 모드이기 때문에 standby  Attack_02_C 동작을 취하도록 함 -->
+						<node name="standby" limit="150" faceTarget="1" animation="Attack_02_C" isKeepBattle="true">
+							<node name="buff" type="add" id="50004406" level="1" />
+							<!--중요!:  이 애디셔널 부여해서 <aiPreset name="TargetRenew"/> 실행해도 무시하도록 함-->
+							<node name="target" type="near" center="-1350, -600, 2400" />
+							<!--왼쪽 지점의 석궁 있는 위치에 제일 가까운 대상을 최우선 타겟팅 함-->
+							<node name="standby" limit="300" faceTarget="1" animation="Attack_02_C" />
+							<!-- 설정 중간중간에 animation="Attack_02_C" standby 셋팅이 없으면 동작이 튀는 어색한 상황이 생김-->
+							<node name="TargetEffect" effectName="Etc/Eff_Battle_Target_Balrog.xml" />
+							<!-- 타겟팅 이펙트 등장-->
+							<node name="say" message="$BalrogMagicBurster_CrossbowTargetChange$" durationTick="8000" delayTick="0" />
+							<node name="SetValue" key="AttackDelay" value="0" />
+							<!--	석궁 맞으면 이 변수 초기화 시켜 바로 행동하도록 함-->
+							<node name="buff" type="remove" id="50004405" level="1" />
+							<node name="standby" limit="150" faceTarget="1" animation="Attack_02_C" />
+							<node name="SetSlaveValue" key="DeathCrossbowShotLeft" value="1" />
+							<!--	왼쪽 석궁  제거	-->
+							<node name="buff" type="add" id="50004412" level="1" />
+							<!--	석궁에 의해 타겟팅 변경될때의 성우 음성 출력, 애디셔널 방식으로 나오도록 설정했음	-->
+						</node>
+					</condition>
+					<condition name="extraData" key="FinalAttackMode" value="1" op="greaterEqual">
+						<!--FinalAttackMode 숫자가 1 이상이면 마지막 페이즈 연속 공격 상태로, 아무것도 안하는 설정-->
+						<node name="standby" limit="300" faceTarget="1" animation="Attack_02_D">
+							<node name="buff" type="remove" id="50004405" level="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<!--이 경우는 평상시 공격 상태임-->
+						<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+							<node name="buff" type="add" id="50004406" level="1" />
+							<!--중요!:  이 애디셔널 부여해서 <aiPreset name="TargetRenew"/> 실행해도 무시하도록 함-->
+							<node name="target" type="near" center="-1350, -600, 2400" />
+							<!--왼쪽 지점의 석궁 있는 위치에 제일 가까운 대상을 최우선 타겟팅 함-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="TargetEffect" effectName="Etc/Eff_Battle_Target_Balrog.xml" />
+							<!-- 타겟팅 이펙트 등장-->
+							<node name="say" message="$BalrogMagicBurster_CrossbowTargetChange$" durationTick="8000" delayTick="0" />
+							<node name="SetValue" key="AttackDelay" value="0" />
+							<!--	석궁 맞으면 이 변수 초기화 시켜 바로 행동하도록 함-->
+							<node name="buff" type="remove" id="50004405" level="1" />
+							<node name="standby" limit="150" faceTarget="1" />
+							<node name="SetSlaveValue" key="DeathCrossbowShotLeft" value="1" />
+							<!--	왼쪽 석궁  제거	-->
+							<node name="buff" type="add" id="50004412" level="1" />
+							<!--	석궁에 의해 타겟팅 변경될때의 성우 음성 출력, 애디셔널 방식으로 나오도록 설정했음	-->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="additional" id="50004405" level="2">
+				<!--레벨2: 오른쪽 지점의 석궁에 맞아서 이 에디셔널이 몸에 걸렸을 때 타겟팅 체크하기-->
+				<node name="conditions">
+					<condition name="extraData" key="AttackMode" value="1" op="greaterEqual">
+						<!--AttackMode 숫자가 1 이상이면 연속 공격 모드이기 때문에 standby  Attack_02_C 동작을 취하도록 함 -->
+						<node name="standby" limit="150" faceTarget="1" animation="Attack_02_C" isKeepBattle="true">
+							<node name="buff" type="add" id="50004406" level="1" />
+							<!--  지속적으로 한명만 타겟팅 25초 짜리,  중요!:  이 애디셔널 부여해서 <aiPreset name="TargetRenew"/> 실행해도 무시하도록 함-->
+							<node name="target" type="near" center="750, -600, 2400" />
+							<!--오른쪽 지점의 석궁 있는 위치에 제일 가까운 대상을 최우선 타겟팅 함-->
+							<node name="standby" limit="300" faceTarget="1" animation="Attack_02_C" />
+							<!-- 설정 중간중간에 animation="Attack_02_C" standby 셋팅이 없으면 동작이 튀는 어색한 상황이 생김-->
+							<node name="TargetEffect" effectName="Etc/Eff_Battle_Target_Balrog.xml" />
+							<!-- 타겟팅 이펙트 등장-->
+							<node name="say" message="$BalrogMagicBurster_CrossbowTargetChange02$" durationTick="8000" delayTick="0" />
+							<node name="SetValue" key="AttackDelay" value="0" />
+							<!--	석궁 맞으면 이 변수 초기화 시켜 바로 행동하도록 함-->
+							<node name="buff" type="remove" id="50004405" level="2" />
+							<node name="standby" limit="150" faceTarget="1" animation="Attack_02_C" />
+							<node name="SetSlaveValue" key="DeathCrossbowShotRight" value="1" />
+							<!--	오른쪽 석궁  제거	-->
+							<node name="buff" type="add" id="50004412" level="1" />
+							<!--	석궁에 의해 타겟팅 변경될때의 성우 음성 출력, 애디셔널 방식으로 나오도록 설정했음	-->
+						</node>
+					</condition>
+					<condition name="extraData" key="FinalAttackMode" value="1" op="greaterEqual">
+						<!--FinalAttackMode 숫자가 1 이상이면 마지막 페이즈 연속 공격 상태로, 아무것도 안하는 설정-->
+						<node name="standby" limit="300" faceTarget="1" animation="Attack_02_D">
+							<node name="buff" type="remove" id="50004405" level="2" />
+						</node>
+					</condition>
+					<condition name="true">
+						<!--이 경우는 평상시 공격 상태임-->
+						<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+							<node name="buff" type="add" id="50004406" level="1" />
+							<!--  지속적으로 한명만 타겟팅 25초 짜리,    중요!:  이 애디셔널 부여해서 <aiPreset name="TargetRenew"/> 실행해도 무시하도록 함-->
+							<node name="target" type="near" center="750, -600, 2400" />
+							<!--오른쪽 지점의 석궁 있는 위치에 제일 가까운 대상을 최우선 타겟팅 함-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<node name="TargetEffect" effectName="Etc/Eff_Battle_Target_Balrog.xml" />
+							<!-- 타겟팅 이펙트 등장-->
+							<node name="say" message="$BalrogMagicBurster_CrossbowTargetChange02$" durationTick="8000" delayTick="0" />
+							<node name="SetValue" key="AttackDelay" value="0" />
+							<!--	석궁 맞으면 이 변수 초기화 시켜 바로 행동하도록 함-->
+							<node name="buff" type="remove" id="50004405" level="2" />
+							<node name="standby" limit="150" faceTarget="1" />
+							<node name="SetSlaveValue" key="DeathCrossbowShotRight" value="1" />
+							<!--	오른쪽 석궁  제거	-->
+							<node name="buff" type="add" id="50004412" level="1" />
+							<!--	석궁에 의해 타겟팅 변경될때의 성우 음성 출력, 애디셔널 방식으로 나오도록 설정했음	-->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<!-- 대포에 맞으면 원거리 공격 견제하는 부분, NA버전 1인 퀘스트용 던전에서는 이 부분 사용 안함-->
+			<condition name="additional" id="50004409">
+				<!-- 왼쪽 지점의 대포에 맞아서 이 에디셔널이 몸에 걸렸을 때 타겟팅하여 견제하기 여부 결정-->
+				<node name="conditions">
+					<condition name="extraData" key="AttackMode" value="1" op="greaterEqual">
+						<!--AttackMode 숫자가 1 이상이면 연속 공격 모드로, 이때는 아무것도 안하게 설정 -->
+						<node name="standby" limit="300" faceTarget="1" animation="Attack_02_C">
+							<!--아무것도 안하는 설정 -->
+							<node name="buff" type="remove" id="50004409" level="1" />
+							<!-- 왼쪽 대포 맞아서 몸에 붙는 애디셔널 제거하기-->
+						</node>
+					</condition>
+					<condition name="extraData" key="FinalAttackMode" value="1" op="greaterEqual">
+						<!--FinalAttackMode 숫자가 1 이상이면 마지막 페이즈 연속 공격 상태로, 이때는 아무것도 안하게 설정-->
+						<node name="standby" limit="300" faceTarget="1" animation="Attack_02_D">
+							<!--아무것도 안하는 설정 -->
+							<node name="buff" type="remove" id="50004409" level="1" />
+							<!-- 왼쪽 대포 맞아서 몸에 붙는 애디셔널 제거하기-->
+						</node>
+					</condition>
+					<condition name="true">
+						<!--이 때는 평상시 Attack_Idle 상태로 석궁에 맞으면 원거리 투척 공격 행동 하도록 함 -->
+						<node name="buff" type="remove" id="50004409" level="1">
+							<node name="select" prob="200,100,100,50,1">
+								<!-- 왼쪽 대포 맞아서 몸에 붙는 애디셔널 제거하기-->
+								<node name="standby" limit="100" faceTarget="1" cooltime="25000" />
+								<!-- 아무것도 안 하기 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="25000" />
+								<!-- 아무것도 안 하기 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+									<aiPreset name="CanonCheck_Left" />
+									<!-- 왼쪽 지점 대포 근처에 있는 플레이이 견제하기, 이거 너무 자주 하면 안되니 적당히 안무것도 안하는 행동하고 혼용해서 설정함 -->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="95000">
+									<aiPreset name="CanonCheckJump_Left" />
+									<!-- 왼쪽 지점 대포 근처에 있는 플레이이 견제하기 위해 점프 이동하기, 이거 너무 자주 하면 안되니 적당히 안무것도 안하는 행동하고 혼용해서 설정함 -->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" />
+								<!-- 아무것도 안 하기 -->
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="additional" id="50004410">
+				<!--오른쪽 지지점의 대포에 맞아서 이 에디셔널이 몸에 걸렸을 때 타겟팅하여 견제하기 여부 결정-->
+				<node name="conditions">
+					<condition name="extraData" key="AttackMode" value="1" op="greaterEqual">
+						<!--AttackMode 숫자가 1 이상이면 연속 공격 모드로, 이때는 아무것도 안하게 설정 -->
+						<node name="standby" limit="300" faceTarget="1" animation="Attack_02_C">
+							<!--아무것도 안하는 설정 -->
+							<node name="buff" type="remove" id="50004410" level="1" />
+							<!--오른쪽 대포 맞아서 몸에 붙는 애디셔널 제거하기-->
+						</node>
+					</condition>
+					<condition name="extraData" key="FinalAttackMode" value="1" op="greaterEqual">
+						<!--FinalAttackMode 숫자가 1 이상이면 마지막 페이즈 연속 공격 상태로, 이때는 아무것도 안하게 설정-->
+						<node name="standby" limit="300" faceTarget="1" animation="Attack_02_D">
+							<!--아무것도 안하는 설정 -->
+							<node name="buff" type="remove" id="50004410" level="1" />
+							<!--오른쪽 대포 맞아서 몸에 붙는 애디셔널 제거하기-->
+						</node>
+					</condition>
+					<condition name="true">
+						<!--이 때는 평상시 Attack_Idle 상태로 석궁에 맞으면 원거리 투척 공격 행동 하도록 함 -->
+						<node name="buff" type="remove" id="50004410" level="1">
+							<node name="select" prob="200,100,100,50,1">
+								<!--오른쪽 대포 맞아서 몸에 붙는 애디셔널 제거하기-->
+								<node name="standby" limit="100" faceTarget="1" cooltime="25000" />
+								<!-- 아무것도 안 하기 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="25000" />
+								<!-- 아무것도 안 하기 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+									<aiPreset name="CanonCheck_Right" />
+									<!-- 오른쪽 지점 대포 근처에 있는 플레이이 견제하기, 이거 너무 자주 하면 안되니 적당히 안무것도 안하는 행동하고 혼용해서 설정함 -->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="95000">
+									<aiPreset name="CanonCheckJump_Right" />
+									<!-- 오른쪽 지점 대포 근처에 있는 플레이이 견제하기 위해 점프 이동하기, 이거 너무 자주 하면 안되니 적당히 안무것도 안하는 행동하고 혼용해서 설정함 -->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" />
+								<!-- 아무것도 안 하기 -->
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+				<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+					<node name="standby" limit="100" faceTarget="1" />
+				</node>
+			</condition>
+			<!--## 여기 아래부터 공격 행동 부분 정의 하는 부분 ##-->
+			<condition name="extraData" key="Phase" value="1">
+				<!--#1페이즈 -->
+				<node name="conditions">
+					<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="50000" battleTimeLoop="127500">
+						<!-- 초반 50초 정도는 워밍업 전투, NA버전 1인 퀘스트용 던전 전용 -->
+						<node name="conditions">
+							<condition name="extraData" key="AttackMode" value="1" op="greaterEqual">
+								<!-- 혹시  <aiPreset name="1Phase_SequenceAttackBattle"/> 부분에서 공격중인 상태에서 <aiPreset name="1Phase_NormalBattle"/> 넘어올 경우 동작이 중간과정 없이 바로 Attack_Idle이 되어 어색해 보이는 분제가 있어서 이럴 경우 마무리 공격 동작 취하도록 함	-->
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="5">
+									<node name="standby" limit="2300" faceTarget="1" />
+									<node name="SetValue" key="AttackMode" value="0" />
+									<node name="SetValue" key="AttackModeEndCheck" value="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,0">
+									<!--주기적으로 보호막 생성 체크 로직, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+					<standby limit="200"  faceTarget="1"  prob="99999" cooltime = "5000">
+						<aiPreset name="DefenceUpBuff_CheckLogic"/>
+					</standby>	-->
+									<!--주기적으로 타겟팅 다시 체크, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+					<standby limit="200"  faceTarget="1"  prob="99999" cooltime = "3000">
+						<aiPreset name="TargetRenew"/>
+					</standby>	-->
+									<!--아주 가끔 12시 짱박혀 있는 너덜너덜해진 전함에게 대포 쏘라고 명령 내림-->
+									<node name="standby" limit="200" faceTarget="1" cooltime="180000" initialCooltime="32000">
+										<node name="SetValueRangeTarget" key="CannonShotOK" value="1" radius="15500" height="3500" />
+										<!--!!석궁발사신호!!:  이떄 낮은 확률로 대포 발사 신호보내는 행위를 함-->
+									</node>
+									<node name="conditions">
+										<condition name="additional" id="50004406">
+											<!-- 석궁 맞아서 한명 추적 상태여서 이  50004406 애디셔널이 몸에 붙어 있는 상황이라면  -->
+											<aiPreset name="CanonAngerBattle" />
+											<!-- 근접 공격 위주 공격 패턴을 함 -->
+										</condition>
+										<condition name="additional" id="50004407">
+											<!-- 대포 맞아서 한명 추적 상태여서 이  50004407 애디셔널이 몸에 붙어 있는 상황이라면  -->
+											<aiPreset name="CanonAngerBattle" />
+											<!-- 근접 공격 위주 공격 패턴을 함 -->
+										</condition>
+										<condition name="true">
+											<aiPreset name="1Phase_NormalBattle" />
+											<!-- 1페이즈 일반공격 행동 패턴 정의 부분, 이곳에 석궁 딱 한번 소환 기능 있음-->
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- 70초 이후는 위협인 전투 진행함,  battleTimeLoop="990000"  시간 아주 길게 설정해서 던전시간 끌날때 까지 계속 유지하도록 함-->
+						<node name="conditions">
+							<condition name="extraData" key="AttackMode" value="0">
+								<!--이 부분으로 넘어오면 최초 여기부터 실행함-->
+								<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+									<!--강제 죽음의 위협 디버프 투사체 공격 후 연속공격 패턴 모드 시작하기-->
+									<!--	NA용 퀘스트용 1인 던전은 이 스킬 사용 안함   <skill id="50001281" level="2" faceTarget="1" prob="100"/> 레벨2: 저주의 불꽃 디버프 투사체 공격, 레벨2가 NA 전용임 -->
+									<node name="standby" limit="800" faceTarget="1" />
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="SetValue" key="AttackDelay" value="0" />
+									<!--	혹시 나중에 문제 될 수 있으니 <aiPreset name="1Phase_NormalBattle"/> 에서 사용한 변수 초기화 하기-->
+									<!--	<standby limit="2300"  faceTarget="1"  prob="100"/>		-->
+									<node name="skill" faceTarget="1" idx="3" />
+									<!--최초 동작 시작-->
+									<node name="SetValue" key="AttackMode" value="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<!--AttackMode =  1 이상이 되면 연속공격 행동 모드로 전환됨-->
+								<!--주기적으로 보호막 생성 체크 로직, 발동 빈도 길게 설정, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+					<standby limit="800"  faceTarget="1" prob="99999" animation="Attack_02_C" cooltime = "10000">
+						<aiPreset name="DefenceUpBuff_CheckLogic"/>
+					</standby>	-->
+								<!--주기적으로 타겟팅 다시 체크, 발동 빈도 길게 설정, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+					<standby limit="200" faceTarget="1" prob="99999" animation="Attack_02_C" cooltime = "3000">
+						<aiPreset name="TargetRenew"/>
+					</standby>	-->
+								<aiPreset name="1Phase_SequenceAttackBattle" />
+								<!-- 1페이즈 연속공격 행동 패턴 정의 부분, 이곳에 석궁 딱 한번 소환 기능 있음-->
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="2">
+				<!--#2페이즈, HP 절반 이하로 떨어지면 Phase = 2 신호를 보내서 2페이즈 진행하도록 유도함 -->
+				<node name="conditions">
+					<condition name="extraData" key="2PhaseConversion" value="0">
+						<!--2페이즈 시작되면 최초 이 부분부터 실행됨-->
+						<node name="conditions">
+							<condition name="extraData" key="AttackMode" value="1" op="greaterEqual">
+								<!-- 혹시 1페이지에서 <aiPreset name="1Phase_SequenceAttackBattle"/>의 공격중인 상태에서 <aiPreset name="2Phase_SequenceAttackBattle"/> 넘어올 경우 동작이 중간과정 없이 바로 Attack_Idle이 되어 어색해 보이는 문제가 있어서 이럴 경우 마무리 공격 동작 취하도록 함	-->
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="5">
+									<!--Attack_02_C 동작에서 Attack_Idle 로 돌아오는 동작-->
+									<node name="standby" limit="2700" faceTarget="1" />
+									<node name="SetValue" key="AttackMode" value="0" />
+									<node name="SetValue" key="AttackModeEndCheck" value="0" />
+								</node>
+							</condition>
+							<condition name="extraData" key="FinalAttackMode" value="0">
+								<!--  위 AttackMode 변수가 1 이상이 아니라면 , 대부분 최초에 여기부터 시작-->
+								<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+									<node name="skill" facePos="-300, 450, 1962" idx="20" />
+									<!--배 상단 중앙으로 점프 이동후 연속기 공격 시작하기-->
+									<node name="jump" pos="-300, 450, 1962" speed="1200" heightMultiplier="0.3" />
+									<node name="skill" faceTarget="0" idx="21" />
+									<node name="standby" limit="300" faceTarget="1" />
+									<node name="skill" facePos="-300, -600, 2000" idx="7" />
+									<!--최초 동작 시작-->
+									<node name="SetValue" key="AttackDelay" value="0" />
+									<!--나중에 <aiPreset name="2Phase_NormalBattle"/> 에서 사용하니 여기서 이 변수 초기화 함-->
+									<node name="SetValue" key="FinalAttackMode" value="1" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--잠깐 대기 -->
+								</node>
+							</condition>
+							<condition name="true">
+								<!--주기적으로 보호막 생성 체크 로직, 근처에 대포가 있기 때문에 발동빈도 자주 해도 괜찮음, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+					<standby limit="200"  faceTarget="1" prob="99999" animation="Attack_02_D" cooltime = "5000">
+						<aiPreset name="DefenceUpBuff_CheckLogic"/>
+					</standby>	-->
+								<!--주기적으로 타겟팅 다시 체크, 발동 빈도 길게 설정, 근처에 대포가 있기 때문에 발동빈도 자주 해도 괜찮음, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+					<standby limit="200" faceTarget="1" prob="99999" animation="Attack_02_D" cooltime = "8000">
+						<aiPreset name="TargetRenew"/>
+					</standby>		-->
+								<aiPreset name="2Phase_SequenceAttackBattle" />
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="99,100">
+							<!--  2PhaseConversion = 1 이 되면서, 이 부분 실행됨 -->
+							<!--주기적으로 보호막 생성 체크 로직, 근처에 대포가 있기 때문에 발동빈도 자주 해도 괜찮음, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+				<standby limit="400"  faceTarget="1"  prob="99999" cooltime = "15000">
+					<aiPreset name="DefenceUpBuff_CheckLogic"/>
+				</standby>	-->
+							<!--주기적으로 타겟팅 다시 체크, 근처에 대포가 있기 때문에 발동빈도 자주 해도 괜찮음, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+				<standby limit="200"  faceTarget="1"  prob="99999" cooltime = "3000">
+					<aiPreset name="TargetRenew"/>
+				</standby>	-->
+							<!--아주 가끔 12시 짱박혀 있는 너덜너덜해진 전함에게 대포 쏘라고 명령 내림-->
+							<node name="standby" limit="200" faceTarget="1" cooltime="45000">
+								<node name="SetValueRangeTarget" key="CannonShotOK" value="1" radius="15500" height="3500" />
+								<!--!!대포발사신호!!:  이떄 낮은 확률로 석궁 발사 신호보내는 행위를 함-->
+							</node>
+							<node name="SetValue" key="FinalAttackMode" value="1" isModify="1">
+								<!-- <aiPreset name="2Phase_NormalBattle"/>	 행동 할때마다 이 변수 +1씩 해서 결국 0이 되면  <aiPreset name="2Phase_SequenceAttackBattle"/>	모드로 전환되도록 함 -->
+								<node name="conditions">
+									<condition name="additional" id="50004406">
+										<!-- 석궁 맞아서 한명 추적 상태여서 이  50004406 애디셔널이 몸에 붙어 있는 상황이라면  -->
+										<aiPreset name="CanonAngerBattle" />
+										<!-- 근접 공격 위주 공격 패턴을 함 -->
+										<!-- 그런데 2페이즈에서는 석궁 등장 안하기 때문에 이 부분 실행 할일 없음  -->
+									</condition>
+									<condition name="additional" id="50004407">
+										<!-- 대포 맞아서 한명 추적 상태여서 이  50004407 애디셔널이 몸에 붙어 있는 상황이라면  -->
+										<aiPreset name="CanonAngerBattle" />
+										<!-- 근접 공격 위주 공격 패턴을 함 -->
+										<!-- 그런데 2페이즈에서는 석궁 등장 안하기 때문에 이 부분 실행 할일 없음  -->
+									</condition>
+									<condition name="true">
+										<aiPreset name="2Phase_NormalBattle" />
+									</condition>
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="true">
+				<!--   Phase=1 신호 아직 안받았으면, 이부분 실행함-->
+				<!--주기적으로 보호막 생성 체크 로직, 근처에 대포가 있기 때문에 발동빈도 자주 해도 괜찮음, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+			<standby limit="800"  faceTarget="1"  prob="99999" cooltime = "5000">
+				<aiPreset name="DefenceUpBuff_CheckLogic"/>
+			</standby>	-->
+				<!--주기적으로 타겟팅 다시 체크, 근처에 대포가 있기 때문에 발동빈도 자주 해도 괜찮음, NA버전 1인 퀘스트용 던전에서는 이 기능 사용 안함
+			<standby limit="200"  faceTarget="1"  prob="99999" cooltime = "3000">
+				<aiPreset name="TargetRenew"/>
+			</standby>	-->
+				<node name="skill" idx="1">
+					<!-- 가끔 원거리 공격 사용함,  레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+					<node name="SetValue" key="AttackDelay" value="17" />
+					<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true" isKeepBattle="true">
+		<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="404" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+		<!-- 인페르녹이 죽음과 동시에 클리어 연출용도용 인페르녹을 호출함 -->
+		<node name="RemoveMe" />
+		<!-- 자기 자신 스스로 제거하기 -->
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="TargetRenew">
+			<node name="conditions">
+				<condition name="additional" id="50004406">
+					<!-- 석궁에 맞아서 한명 집중 타겟팅 상태라면 아무것도 안함-->
+					<node name="SetValue" key="Temp" value="0" />
+					<!--아무것도 안한다는 의미의  설정 -->
+				</condition>
+				<condition name="additional" id="50004407">
+					<!-- 함선석궁에 맞아서 한명 집중 타겟팅 상태라면 아무것도 안함-->
+					<node name="SetValue" key="Temp" value="0" />
+					<!--아무것도 안한다는 의미의  설정 -->
+				</condition>
+				<condition name="true">
+					<node name="TargetEffect" effectName="">
+						<!-- 타겟팅 이펙트 제거 초기화 여기서 주기적으로 설정함-->
+						<node name="target" type="rand" from="10" to="1300" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="DefenceUpBuff_CheckLogic">
+			<!--기본 standy 동작이 꼭 Attack_Idle 아니기 때문에, standy 설정 넣지 않음  -->
+			<node name="conditions">
+				<condition name="additional" id="50000297">
+					<!--보호막 1단계 상태이면, 보호막 2단계 애디셔널 부여하기-->
+					<node name="buff" type="add" id="50000298" level="1">
+						<!--보호막 2단계 -->
+						<node name="buff" type="add" id="50000294" level="1" />
+						<!--보호막 2단계, 아이콘 최종 2개 띄우기 위한 용도의 애디셔널 -->
+					</node>
+				</condition>
+				<condition name="additional" id="50000298">
+					<!--보호막 2단계 상태이면, 보호막 3단계 애디셔널 부여하기-->
+					<node name="buff" type="add" id="50000299" level="1">
+						<!--보호막 3단계, 여기서 방업 2단계 애디셔널을 제거함 -->
+						<node name="buff" type="add" id="50000296" level="1">
+							<!--보호막 3단계, 아이콘 최종 3개 띄우기 위한 용도의 애디셔널, 여기서 방업 2단계 아이콘 표시  애디셔널을 제거함  -->
+							<node name="buff" type="add" id="50000295" level="1" />
+							<!--보호막 3단계, 아이콘 최종 3개 띄우기 위한 용도의 애디셔널, 여기서 방업 2단계 아이콘 표시  애디셔널을 제거함  -->
+						</node>
+					</node>
+				</condition>
+				<condition name="additional" id="50000299">
+					<!--보호막 3단계 상태이면, 아무것도 안함-->
+					<node name="SetValue" key="Temp" value="0" />
+					<!--아무것도 안한다는 의미의  설정 -->
+				</condition>
+				<condition name="true">
+					<!--보호막이 없으면 보호막 1단계 애디셔널 부여하기-->
+					<node name="buff" type="add" id="50000297" level="1" />
+					<!--보호막 1단계 -->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="CanonCheck_Left">
+			<node name="target" type="near" center="-1425, 0, 2260">
+				<!--왼쪽 지점의 대포 위치에 제일 가까운 대상을 최우선 타겟팅 함-->
+				<node name="standby" limit="800" faceTarget="1">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<!-- 레벨23: 큐브 2칸 위 대상 견제용 거리체크, 즉 대포 지점에 플레이어가 있으면, 레벨23이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="say" message="$BalrogMagicBurster_CannonTargetChange$" durationTick="8000" delayTick="0" isKeepBattle="true">
+								<node name="skill" idx="2" />
+								<!-- 2층 대상에거 원거리 투척 공격하기, 레벨23이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+								<node name="SetValue" key="AttackDelay" value="0" />
+								<!--	대포 맞으면 이 변수 초기화 시켜 바로 행동하도록 함-->
+								<node name="standby" limit="2000" faceTarget="1" />
+								<node name="buff" type="remove" id="50004409" level="1" />
+								<!-- 왼쪽 대포 맞아서 몸에 붙는 애디셔널 제거하기-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 아니면 아무것도 안하기-->
+							<node name="standby" limit="200" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="CanonCheckJump_Left">
+			<node name="target" type="near" center="-1425, 0, 2260">
+				<!--왼쪽 지점의 대포 위치에 제일 가까운 대상을 최우선 타겟팅 함-->
+				<node name="standby" limit="300" faceTarget="1">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<!-- 레벨13: 큐브 2칸 위 대상 견제용 거리체크, 즉 대포 지점에 플레이어가 있으면, 레벨23이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="say" message="$BalrogMagicBurster_CannonTargetChange$" durationTick="8000" delayTick="0" isKeepBattle="true">
+								<node name="TargetEffect" effectName="Etc/Eff_Battle_Target_Balrog.xml" />
+								<!-- 타겟팅 이펙트 등장-->
+								<node name="buff" type="add" id="50004407" level="1" />
+								<!--  지속적으로 한명만 타겟팅 25초 짜리,  중요!:  이 애디셔널 부여해서 <aiPreset name="TargetRenew"/> 실행해도 무시하도록 함-->
+								<node name="standby" limit="300" faceTarget="1" />
+								<node name="skill" facePos="-1950, -150, 2262" idx="20" />
+								<!--왼쪽 대포 위치로 점프 이동-->
+								<node name="jump" pos="-1950, -150, 2262" speed="1200" heightMultiplier="0.3" />
+								<node name="skill" faceTarget="0" idx="21" />
+								<node name="buff" type="add" id="50004411" level="1" />
+								<!--	대포에 의해 타겟팅 변경될때의 성우 음성 출력, 애디셔널 방식으로 나오도록 설정했음	-->
+								<node name="SetValue" key="AttackDelay" value="0" />
+								<!--도착 하자마자 바로 공격 하도록-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 아니면 아무것도 안하기-->
+							<node name="standby" limit="200" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="CanonCheck_Right">
+			<node name="target" type="near" center="975, 150, 2260">
+				<!--오른쪽 지점의 대포  위치에 제일 가까운 대상을 최우선 타겟팅 함-->
+				<node name="standby" limit="800" faceTarget="1">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<!-- 레벨13: 큐브 2칸 위 대상 견제용 거리체크, 즉 대포 지점에 플레이어가 있으면, 레벨23이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="say" message="$BalrogMagicBurster_CannonTargetChange02$" durationTick="8000" delayTick="0" isKeepBattle="true">
+								<node name="skill" idx="2" />
+								<!-- 2층 대상에거 원거리 투척 공격하기, 레벨23이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+								<node name="SetValue" key="AttackDelay" value="0" />
+								<!--	대포 맞으면 이 변수 초기화 시켜 바로 행동하도록 함-->
+								<node name="standby" limit="2000" faceTarget="1" />
+								<node name="buff" type="remove" id="50004410" level="1" />
+								<!-- 오른쪽 대포 맞아서 몸에 붙는 애디셔널 제거하기-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 아니면 아무것도 안하기-->
+							<node name="standby" limit="200" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="CanonCheckJump_Right">
+			<node name="target" type="near" center="975, 150, 2260">
+				<!--오른쪽 지점의 대포  위치에 제일 가까운 대상을 최우선 타겟팅 함-->
+				<node name="standby" limit="300" faceTarget="1">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<!-- 레벨3: 큐브 2칸 위 대상 견제용 거리체크, 즉 대포 지점에 플레이어가 있으면, 레벨23이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="say" message="$BalrogMagicBurster_CannonTargetChange02$" durationTick="8000" delayTick="0" isKeepBattle="true">
+								<node name="TargetEffect" effectName="Etc/Eff_Battle_Target_Balrog.xml" />
+								<!-- 타겟팅 이펙트 등장-->
+								<node name="buff" type="add" id="50004407" level="1" />
+								<!--  지속적으로 한명만 타겟팅 25초 짜리,  중요!:  이 애디셔널 부여해서 <aiPreset name="TargetRenew"/> 실행해도 무시하도록 함-->
+								<node name="standby" limit="300" faceTarget="1" />
+								<node name="skill" facePos="1375, -180, 2262" idx="20" />
+								<!--오른쪽 대포 위치로 점프 이동-->
+								<node name="jump" pos="1375, -180, 2262" speed="1200" heightMultiplier="0.3" />
+								<node name="skill" faceTarget="0" idx="21" />
+								<node name="buff" type="add" id="50004411" level="1" />
+								<!--	대포에 의해 타겟팅 변경될때의 성우 음성 출력, 애디셔널 방식으로 나오도록 설정했음	-->
+								<node name="SetValue" key="AttackDelay" value="0" />
+								<!--도착 하자마자 바로 공격 하도록-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 아니면 아무것도 안하기-->
+							<node name="standby" limit="200" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="1Phase_NormalBattle">
+			<!-- 석궁 등장 확률 약간 낮게, 기능은 NA 버전 1인 퀘스트 던전에서는 사용 안함-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="17">
+					<node name="select" prob="70,30">
+						<!-- 할퀴기 공격 사정거리 이내에 있으면, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+						<node name="skill" idx="17">
+							<node name="select" prob="100,100,100">
+								<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+								<node name="SetValue" key="AttackDelay" value="12" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="24" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+						<node name="skill" idx="1">
+							<!-- 가끔 원거리 공격 사용함, 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="SetValue" key="AttackDelay" value="24" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="35,65">
+						<!-- 원거리 투척 공격 사정거리 이내에 있으면, 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+						<node name="trace" limit="3000" skillIdx="17" />
+						<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+						<node name="skill" idx="1">
+							<!-- 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="SetValue" key="AttackDelay" value="24" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="22">
+							<node name="select" prob="40,40,20">
+								<!--	50001288 은 전투판 안에 있는지를 판단하는 거리체크 용도	-->
+								<node name="trace" limit="3000" skillIdx="17" />
+								<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+								<node name="trace" limit="3000" skillIdx="1" />
+								<!-- 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!--	파티원 전원 스타팅 포인트에 있다면	-->
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="2500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="CanonAngerBattle">
+			<!-- 석궁이나 대포  공격한 플레이어 한명만 계속 쫓아가는 공격 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="17">
+					<node name="select" prob="70,30">
+						<!-- 할퀴기 공격 사정거리 이내에 있으면, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+						<node name="skill" idx="17">
+							<node name="select" prob="50,50">
+								<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+								<node name="SetValue" key="AttackDelay" value="4" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+						<node name="skill" idx="1">
+							<!-- 가끔 원거리 공격 사용함,  레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="SetValue" key="AttackDelay" value="5" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="45,55">
+						<!-- 원거리 투척 공격 사정거리 이내에 있으면, 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+						<node name="trace" limit="3000" skillIdx="17" />
+						<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+						<node name="skill" cooltime="45000" idx="1">
+							<!-- 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="SetValue" key="AttackDelay" value="3" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="22">
+							<node name="select" prob="99,1">
+								<!--	50001288 은 전투판 안에 있는지를 판단하는 거리체크 용도	-->
+								<node name="trace" limit="3000" skillIdx="17" />
+								<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!--	파티원 전원 스타팅 포인트에 있다면	-->
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="2500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="1Phase_SequenceAttackBattle">
+			<!-- 석궁 등장 확률 엄청 높게, 기능은 NA 버전 1인 퀘스트 던전에서는 사용 안함-->
+			<node name="conditions">
+				<condition name="extraData" key="AttackModeEndCheck" value="5" op="greaterEqual">
+					<!--이 변수 기준 이상이 즉 5번 공격하면 연속 공격 행동 그만 하기, 논리 순서상 제일 마지막에 실행되는 부분임 -->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="5">
+						<!--Attack_02_C 동작에서 Attack_Idle 로 돌아오는 동작-->
+						<node name="standby" limit="2300" faceTarget="1" />
+						<node name="SetValue" key="AttackMode" value="0" />
+						<node name="SetValue" key="AttackModeEndCheck" value="0" />
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackMode" value="1">
+					<!--논리 순서상 제일 먼서 실행되는 부분임-->
+					<node name="skill" faceTarget="0" idx="4">
+						<!--기력 모으기 양 손에 이펙트 생성하기-->
+						<node name="SetValue" key="AttackMode" value="2" />
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackMode" value="6" op="lessEqual">
+					<!--추척 하는 부분-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<node name="standby" limit="1323" faceTarget="1" animation="Attack_02_C">
+								<node name="select" prob="53,30,17">
+									<node name="SetValue" key="AttackMode" value="1" isModify="1" />
+									<node name="SetValue" cooltime="4000" key="AttackMode" value="2" isModify="1" />
+									<!--가끔 2씩 더하기-->
+									<node name="SetValueRangeTarget" cooltime="95000" key="CannonShotOK" value="1" radius="15500" height="3500" />
+									<!--!!전함에게 대포 발사신호!!:  이떄 낮은 확률로 전함에게 대포 발사 신호보내는 행위를 함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="22">
+									<!--	50001288 은 전투판 안에 있는지를 판단하는 거리체크 용도	-->
+									<node name="trace" limit="1323" animation="Attack_02_C" skillIdx="4">
+										<node name="SetValue" key="AttackMode" value="1" isModify="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--	파티원 전원 스타팅 포인트에 있다면	-->
+									<node name="standby" limit="1323" faceTarget="1" animation="Attack_02_C">
+										<node name="target" type="rand" from="10" to="2500" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackMode" value="7" op="greaterEqual">
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="6">
+						<!--레벨32: 에너지 발사 바닥 에너지볼 생성, 레벨32이 NA 1인 퀘스트용 던전 전용, 상태이상 효과가 없음-->
+						<node name="SetValue" key="AttackMode" value="1" />
+						<node name="SetValue" key="AttackModeEndCheck" value="1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!--이론적으로 이 부분 실행될 일 없음 -->
+					<node name="SetValue" key="Temp" value="0" />
+					<!--아무것도 안한다는 의미의  설정 -->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="2Phase_NormalBattle">
+			<node name="conditions">
+				<condition name="extraData" key="FinalAttackMode" value="0">
+					<!--  <aiPreset name="2Phase_NormalBattle"/> 가 실행될 때마다 FinalAttackMode 변수가 +1 씩 되어 결국 0이 되면, 참고로 <aiPreset name="2Phase_SequenceAttackBattle"/> 부분에서  FinalAttackMode 변수 -13로 셋팅되어  시작함 -->
+					<!-- 이 변수가 0이 되면 2PhaseConversion 변수 0으로 만들어, 다시 <aiPreset name="2Phase_SequenceAttackBattle"/>	 이거 실행하도록 함-->
+					<node name="SetValue" key="2PhaseConversion" value="0" />
+					<!-- #$중요!: 2페이지에서 패턴 전환할때 사용하는 변수 -->
+				</condition>
+				<condition name="skillRange" skillIdx="17">
+					<node name="select" prob="70,30">
+						<!-- 할퀴기 공격 사정거리 이내에 있으면-->
+						<node name="skill" idx="17">
+							<node name="select" prob="100,100,100">
+								<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+								<node name="SetValue" key="AttackDelay" value="12" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="24" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+						<node name="skill" idx="1">
+							<!-- 가끔 원거리 공격 사용함, 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="SetValue" key="AttackDelay" value="24" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="35,65">
+						<!-- 원거리 투척 공격 사정거리 이내에 있으면-->
+						<node name="trace" limit="3000" skillIdx="17" />
+						<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+						<node name="skill" idx="1">
+							<!-- 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+							<node name="SetValue" key="AttackDelay" value="24" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="22">
+							<node name="select" prob="40,40,20">
+								<!--	50001288 은 전투판 안에 있는지를 판단하는 거리체크 용도	-->
+								<node name="trace" limit="3000" skillIdx="17" />
+								<!-- 할퀴기 공격, 레벨2는 NA버전 퀘스트용 전용으로 출혈 상태이상 없음-->
+								<node name="trace" limit="3000" skillIdx="1" />
+								<!-- 레벨21이 NA 1인 퀘스트용 던전 전용, 상태이상 효과 없음-->
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!--	파티원 전원 스타팅 포인트에 있다면	-->
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="2500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="2Phase_SequenceAttackBattle">
+			<node name="conditions">
+				<condition name="extraData" key="FinalAttackModeEndCheck" value="30" op="greaterEqual">
+					<!--%#$%: 이 변수 기준 이상이 되면 연속 공격 행동 그만 하기, 논리 순서상 맨 마지막에서 두번째로 실행됨 -->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="9">
+						<!--Attack_02_D 동작에서 Attack_Idle 로 돌아오는 동작, 여기서 Hide큐브 파괴함-->
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="SetValue" key="FinalAttackMode" value="-13" />
+						<!--중요!: 이 변수에서 마이너스 값을 넣어서 연속 공격 행위 끝나고 평상시 공격 행동을 할 때 이 변수에 +1씩 해서 0이 되면 다시 연속 공격 모드 실행하도록 함 -->
+						<!--  즉 이 마이너스 값이 <aiPreset name="2Phase_NormalBattle"/>	행동 얼만큼 오래할지 결정하는 중요한 변수임-->
+						<node name="SetValue" key="FinalAttackModeEndCheck" value="0" />
+						<!--%#$% 이 부분 실행하면서, FinalAttackMode 변수가 마이너스 값을 가지면 이 부분 실행하면서  <aiPreset name="2Phase_NormalBattle"/>	모드로 전환되도록 설정함 -->
+						<node name="SetValue" key="2PhaseConversion" value="1" />
+						<!-- #$중요!: 2페이지에서 패턴 전환할때 사용하는 변수 -->
+						<!-- 즉 2PhaseConversion 변수가 1이 되면 이 부분 실행 멈추고 <aiPreset name="2Phase_NormalBattle"/>	 실행 하도록 함-->
+					</node>
+				</condition>
+				<condition name="extraData" key="FinalAttackMode" value="1">
+					<!--논리 순서상 제일 처음  실행됨-->
+					<node name="skill" faceTarget="1" isKeepBattle="true" idx="16">
+						<!--최초에 바닥 전체 독 대미지 깔기, 221레벨은 NA용, 특수아이템요구 상태이상 설정은 없은 버전임-->
+						<node name="SetValue" key="FinalAttackMode" value="2" />
+						<node name="standby" limit="1400" faceTarget="1" animation="Attack_02_D" />
+						<!--석궁 파괴하기, 석궁 자체 공격력이 높아 이때 파괴 안하면 대박 어뷰징 생길 수 도 있어서 혹시 석궁 남아있을 것을 대비히 이때 꼭 제거해야 함 -->
+						<node name="SetSlaveValue" key="DeathCrossbowShotLeft" value="1" />
+						<!--	왼쪽 석궁  제거	-->
+						<node name="SetSlaveValue" key="DeathCrossbowShotRight" value="1" />
+						<!--	오른쪽 석궁  제거	-->
+					</node>
+				</condition>
+				<condition name="extraData" key="FinalAttackMode" value="2">
+					<node name="select" prob="99,1">
+						<!--순간이동 하거나 잠시 대기하는 부분-->
+						<node name="standby" limit="1380" faceTarget="1" animation="Attack_02_D" cooltime="48000">
+							<node name="select" prob="49,50,1">
+								<node name="skill" faceTarget="0" cooltime="62000" isKeepBattle="true" idx="12">
+									<!--순간이동 시작, Hide큐브 파괴-->
+									<node name="teleport" pos="-1010, 120, 1960" />
+									<!--왼쪽지점 순간이동-->
+									<node name="standby" limit="400" faceTarget="1" animation="Attack_02_D" />
+									<node name="HideVibrateAll" />
+									<!--파괴한 Hide 큐브 제거-->
+									<node name="skill" faceTarget="0" idx="13" />
+									<!--왼쪽으로 순간이동 도착하여 계단에 대미지 필드 설치-->
+									<!--	<event eventName="ShowCube" param1="1"/> 왼쪽 지점 삼각 Hide큐브 생성-->
+									<node name="standby" limit="1400" faceTarget="1" animation="Attack_02_D" />
+									<node name="SetValue" key="FinalAttackMode" value="3" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="62000" isKeepBattle="true" idx="12">
+									<!--순간이동 시작, Hide큐브 파괴-->
+									<node name="teleport" pos="380, 390, 1960" />
+									<!--오른쪽 지점 순간이동 좌표 이 값보다 어긋나면 순간이동 안하는 문제 있음, 이 수치 절대 건들지 말것-->
+									<node name="standby" limit="400" faceTarget="1" animation="Attack_02_D" />
+									<node name="HideVibrateAll" />
+									<!--파괴한 Hide 큐브 제거-->
+									<node name="skill" faceTarget="0" idx="14" />
+									<!--오른쪽으로 순간이동 도착하여 계단에 대미지 필드 설치-->
+									<!--	<event eventName="ShowCube" param1="2"/>   왼쪽 지점 삼각 Hide큐브 생성-->
+									<node name="standby" limit="1400" faceTarget="1" animation="Attack_02_D" />
+									<node name="SetValue" key="FinalAttackMode" value="3" />
+								</node>
+								<node name="standby" limit="1400" faceTarget="1" animation="Attack_02_D">
+									<node name="SetValue" key="FinalAttackMode" value="3" />
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="1800" faceTarget="1" animation="Attack_02_D">
+							<node name="SetValue" key="FinalAttackMode" value="3" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--FinalAttackMode = 3인 경우로,  공격 행동 하는 부분-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="66,33,1">
+								<!--사정거리 1800 이내에 있으면 공격함-->
+								<node name="skill" faceTarget="0" cooltime="7200" isKeepBattle="true" idx="15">
+									<!--레벨29: 바닥 원 공격, 레벨29는 NA 1인 전용, 상태이상 없음, 쉬워야 하기 때문에_중요!!-->
+									<node name="standby" limit="700" faceTarget="1" animation="Attack_02_D" />
+									<node name="SetValue" key="FinalAttackMode" value="2" />
+									<!--이 변수를 2로 해야 다시 순간이동 하거나  대기 상태로 돌아감, 이 변수 1로 하면 독 장판 깔기 해서 대박 버그임-->
+									<node name="SetValue" key="FinalAttackModeEndCheck" value="1" isModify="1" />
+									<!--공격 행위 할때마다 이 변수 1씩 더함, 이 변수가 일정 이상 수치가 되면 이 공격 모드 해제함-->
+								</node>
+								<!--	<skill id="50001283" level="23" faceTarget="0" prob="33" cooltime = "18000">  레벨23: 유도 투척 스플레시, 이 스킬은 NA용 1인 퀘스트용 던전에서는 사용 안함-->
+								<node name="skill" faceTarget="0" cooltime="18000" isKeepBattle="true" idx="11">
+									<!--레벨24: 밀치기-->
+									<node name="standby" limit="700" faceTarget="1" animation="Attack_02_D" />
+									<!--Attack_02_D 애니 길이가 1.4초임-->
+									<node name="SetValue" key="FinalAttackMode" value="2" />
+									<!--이 변수를 2로 해야 다시 순간이동 하거나  대기 상태로 돌아감, 이 변수 1로 하면 독 장판 깔기 해서 대박 버그임-->
+									<node name="SetValue" key="FinalAttackModeEndCheck" value="1" isModify="1" />
+									<!--공격 행위 할때마다 이 변수 1씩 더함, 이 변수가 일정 이상 수치가 되면 이 공격 모드 해제함-->
+								</node>
+								<node name="standby" limit="700" faceTarget="1" animation="Attack_02_D">
+									<node name="SetValue" key="FinalAttackMode" value="2" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="100" faceTarget="1" animation="Attack_02_D">
+								<node name="target" type="near" from="2" to="3000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

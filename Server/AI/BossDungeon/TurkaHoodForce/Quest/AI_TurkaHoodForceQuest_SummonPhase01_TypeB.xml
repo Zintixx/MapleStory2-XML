@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 1페이즈 전투판 오른쪽지점에서 등장, 타겟팅 저주 디버프 우선 타겟 설정, 회전 레이저 합동 공격 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				<node name="SetValue" key="TeleportCheck" value="0" />
+				<!--	마지막 페이즈에서 다수 몬스터와 함께 합동 순간이동 할 때 사용 되는 변수 -->
+				<node name="SetValue" key="Combine" value="0" />
+				<!-- 본체 보스 하고 레이저 합동 공격 혹은 합동 순간이동 신호 주고 받을 때 사용하는 변수-->
+				<node name="standby" limit="2800" faceTarget="1" />
+				<!-- 플레이어가 전투판 진입하자마자 바로 공격 당하면 별로니, 등장 후 잠시  standby 상태로 있기-->
+			</node>
+		</condition>
+		<!-- 퀘스트용 1페이즈 투르카 보스는 타겟팅 디버프 패턴 사용하지 않음 (80%) -->
+		<!-- 퀘스트용 1페이즈 투르카 보스는 타겟팅 디버프 패턴 사용하지 않음 (40%) -->
+		<!-- 퀘스트용 1페이즈 트루카 보스는 마방 극강 상승 버프 50000371 이거 사용 안함 (30%)-->
+		<!-- 이 몬스터는 절대 죽지 않게 설정했음, HP 1% 이하가 되면 스스로 사라지게 함, 본체만 공격하고 분신 방치하면 이 분신 사라지지 않는 버그스러운 상황이 생길 수 있어서 스스로 사라지는 설정 넣음  -->
+		<condition name="hpLess" value="1">
+			<node name="RemoveMe">
+				<node name="standby" limit="3200" faceTarget="1" prob="100" />
+				<!-- Remove 로 사라지는 도중에 AI가 다음 턴으로 넘어가서 공격 동작 취하는 도중 사라지는 모습이 어색해서 이 단계에서 standby 넣어서 Attack_Idle 상태에서 사라지는 상황이 나오도록 함-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="0">
+			<!-- 예비용, 실제 이 기능 사용 안함 -->
+			<node name="conditions" cooltime="9000">
+				<condition name="extraData" key="TargetAdditionalEffect" value="1" op="greaterEqual">
+					<node name="target" type="hasAdditional" additionalId="50004418" additionalLevel="1" target="hostile">
+						<!--  본체 투르카에 의해 타겟팅 저주 디버프에 걸린 플레이어를 최우선 타겟팅 함 -->
+						<node name="SetValue" key="TargetAdditionalEffect" value="-1" />
+						<!--	타겟팅 로직 실행할 때마다 1 마이너스 하며, 50004418 걸린 플레이어 버프 사라질때 쯤 이 변수 0 이하가 되면 초기화 함	-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- TargetAdditionalEffect = 0 인 경우 -->
+					<node name="target" type="rand" from="10" to="1200" />
+				</condition>
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="rand" from="10" to="1300" cooltime="8000" />
+			<!--  기본은 랜덤 타겟팅 방식 -->
+			<node name="conditions">
+				<condition name="extraData" key="Combine" value="2">
+					<!-- Combine = 2 회전 레이저 , 변수 신호는 AI_TurkaHoodForce_Phase01.xml 로 부터 받음 -->
+					<node name="SetMasterValue" key="Combine" value="2">
+						<!-- 본체 보스에게  Combine= 2 신호를 보내서 같이 회전 레이저 합동 공격 하도록 함 -->
+						<node name="SetValue" key="Combine" value="0">
+							<!--	회전 레이저 공격 했으니, 이 변수 초기화	-->
+							<node name="SetValue" key="AttackDelay" value="25">
+								<node name="select" prob="50,50">
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									<node name="skill" facePos="-3525, -3225, 4800" idx="3" />
+									<!-- 회전 레이저, 반시계방향, 꼭 발사 방향이 1페이즈 전투판 중앙 기준이어야 함 -->
+									<node name="skill" facePos="-3525, -3225, 4800" idx="4" />
+									<!-- 회전 레이저, 시계방향, 꼭 발사 방향이 1페이즈 전투판 중앙 기준이어야 함 -->
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="Combine" value="10">
+					<!-- Combine = 10 합동 순간이동, 변수 신호는 AI_TurkaHoodForce_Phase01.xml 로 부터 받음 -->
+					<node name="SetMasterValue" key="Combine" value="5" isModify="1">
+						<!-- 본체 보스에게  Combine= Combine+5 신호를 보내서 같이 회전 레이저 합동 공격 하도록 함 -->
+						<node name="SetValue" key="Combine" value="0">
+							<!--	순간이동 했으니, 이 변수 초기화	-->
+							<node name="SetValue" key="AttackDelay" value="0">
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<aiPreset name="Teleport_Pattern" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<!-- 공격 후 standby 상태 -->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<!-- ##  여기서부터 본격 공격 행동 정의함  ## -->
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<!-- 1페이지 같은 전투판 안에 있는지 거리체크-->
+							<aiPreset name="Normal_AttackPattern" />
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="Normal_AttackPattern">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="33,33,34">
+						<!-- 사정거리 480 , 큐브 한칸 아래 미포함, 큐브 한칸 위는 미포함 -->
+						<node name="skill" faceTarget="1" idx="1">
+							<!-- 낫 휘둘기 2연타, 레벨2는 이동 없음 -->
+							<node name="SetValue" key="AttackDelay" value="45" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+						<node name="skill" faceTarget="1" cooltime="15000" idx="2">
+							<!-- 낫 내려찍기 -->
+							<node name="SetValue" key="AttackDelay" value="43" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+						<node name="skill" faceTarget="1" idx="5">
+							<!--얼굴 발사, 레벨11은 사정거리 650, 레벨11 저주 디버프 플레이어 우선 공격 용도임 -->
+							<node name="SetValue" key="AttackDelay" value="47" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="50,50">
+						<!-- 사정거리 1100, 큐브 한칸 아래 범위 포함, 큐브 한칸 위는 미포함 -->
+						<node name="skill" faceTarget="1" idx="2">
+							<!-- 낫 내려찍기 -->
+							<node name="SetValue" key="AttackDelay" value="39" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+						<node name="skill" faceTarget="1" initialCooltime="4000" idx="6">
+							<!-- 얼굴발사, 레벨12는 사정거리 1900, 레벨 12는 저주 플레이어 우선 공격 용도임-->
+							<node name="SetValue" key="AttackDelay" value="37" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<!--  이 몬스터를 멀리 방치하면 의도적으로 더 자주 공격하도록 설정함, 즉 standby 짧게함 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="6">
+					<node name="select" prob="99,1">
+						<!-- 레벨12: 사정거리 1900, 큐브 한칸 아래 범위 포함, 큐브 한칸 위는 미포함 -->
+						<node name="skill" faceTarget="1" initialCooltime="4000" idx="6">
+							<!-- 얼굴발사, 레벨12는 사정거리 1900, 레벨 12는 저주 플레이어 우선 공격 용도임-->
+							<node name="SetValue" key="AttackDelay" value="33" />
+							<!-- 공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수-->
+							<!--  이 몬스터를 멀리 방치하면 의도적으로 더 자주 공격하도록 설정함, 즉 standby 짧게함 -->
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+						<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="target" type="near" from="10" to="1200" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Teleport_Pattern">
+			<node name="skill" idx="8">
+				<node name="conditions">
+					<condition name="extraData" key="TeleportCheck" value="0">
+						<node name="teleport" pos="-4200, -3900, 5410">
+							<!-- 6시 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="SetValue" key="TeleportCheck" value="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportCheck" value="1">
+						<node name="teleport" pos="-2850, -2550, 5410">
+							<!-- 12시 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="SetValue" key="TeleportCheck" value="2" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportCheck" value="2">
+						<node name="teleport" pos="-3450, -2250, 5410">
+							<!-- 11시 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="SetValue" key="TeleportCheck" value="3" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- TeleportCheck = 3 인 경우 -->
+						<node name="teleport" pos="-2850, -3900, 5410">
+							<!-- 3시, 최초 제자리로 오기 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="SetValue" key="TeleportCheck" value="0" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

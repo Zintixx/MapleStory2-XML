@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,70,60,50,40">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="buff" type="add" id="49288026" />
+				<node name="target" type="rand" from="10" to="2500" />
+			</node>
+			<!--기본공격 패턴 근거리 패턴 1개 및 전방 광역 공격, 거리가 먼 경우 원거리 대상으로 공격-->
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="60,60,70">
+							<!--전방 1단 찍기-->
+							<node name="skill" idx="2">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<!--전방 1단 찍기 하는척 하다가 돌진-->
+							<node name="standby" limit="10" faceTarget="1" cooltime="7000">
+								<node name="select" prob="100,100">
+									<node name="skill" idx="3" />
+									<node name="standby" limit="1500" faceTarget="0" />
+								</node>
+							</node>
+							<!--전방 1단 찍기 3회 후, 전방 1단 찍기 하는척 하다가 돌진-->
+							<node name="standby" limit="10" faceTarget="1" cooltime="13000">
+								<node name="skill" idx="2" />
+								<node name="skill" idx="2" />
+								<node name="skill" idx="2" />
+								<node name="skill" idx="3" />
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="60,50">
+							<!--전방 레이저 발사 후 돌진-->
+							<node name="standby" limit="10" faceTarget="1" cooltime="6000">
+								<node name="skill" idx="1" />
+								<node name="skill" idx="3" />
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+							<!--전방 1단 찍기-->
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="select" prob="50,50">
+									<node name="skill" idx="2">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="3">
+										<node name="standby" limit="1500" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+			<!--중거리, 원거리 패턴-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="16000">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="4">
+						<node name="select" prob="60,50">
+							<!--드러누워 전기 빠직빠직-->
+							<node name="skill" cooltime="16000" idx="4">
+								<node name="standby" limit="2000" faceTarget="0" />
+							</node>
+							<!--전방 1단 찍기 하는척 하다가 돌진-->
+							<node name="standby" limit="10" faceTarget="1" cooltime="6000">
+								<node name="select" prob="100,100">
+									<node name="skill" idx="3" />
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="60,50">
+							<!--광력 레이저 포 후, 전방 레이저 발사, 돌진 -->
+							<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="10000">
+								<node name="target" type="near" from="250" to="1400" />
+								<node name="skill" faceTarget="0" idx="5" />
+								<node name="skill" idx="1" />
+								<node name="skill" idx="3" />
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+							<!--전방 1단 찍기-->
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="select" prob="50,50">
+									<node name="skill" idx="2">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="3">
+										<node name="standby" limit="1500" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+			<!--광역 함정 패턴-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="45000" initialCooltime="25000">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="6">
+						<node name="select" prob="70,50,60">
+							<!--상공 레이저포/전방위 함정 공격-->
+							<node name="standby" limit="10" faceTarget="1" cooltime="45000">
+								<node name="skill" idx="6" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" lifeTime="30" summonPosOffset="150, -300, 0" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" lifeTime="30" summonPosOffset="300, 300, 0" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" lifeTime="30" summonPosOffset="-150, -300, 0" />
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+							<!--전방 레이저 발사 -->
+							<node name="standby" limit="10" faceTarget="1" cooltime="6000" initialCooltime="1">
+								<node name="select" prob="100,55">
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="skill" idx="1">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<!--광역 레이저 포-->
+							<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="10000">
+								<node name="select" prob="100,100,100">
+									<node name="target" type="near" from="250" to="1400" />
+									<node name="skill" faceTarget="0" idx="5" />
+									<node name="standby" limit="2000" faceTarget="0" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="100" faceTarget="0" />
+					</condition>
+				</node>
+			</node>
+			<node name="standby" limit="2000" faceTarget="1" cooltime="12000"></node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="sidePopup" type="talk" illust="Neirin_smile" script="$AI__AI_GIGANTIKAHEAD_PHASE_6__0$" duration="4000" />
+	</battleEnd>
+</npcAi>

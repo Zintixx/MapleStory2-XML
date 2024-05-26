@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!-- 중요: 물방 마방 역할의 부기는 등장하여 전투상태가 되거나 죽을 때 자쿰AI에서 마리 수 체크 정밀하게 하기 때문에 이부분 매우 중요-->
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="BoogieWhiteManyMagical" value="1" isModify="1" />
+				<!-- 공격상태로 전환되면 자쿰AI에게 +1 신호보내서 마법저항용 부기 몇마리 남았는지 알수있게 하기-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="1">
+			<!-- 부기가 용암 있는 곳에서 등장해서 HP깍여 1%되면 스스로 죽게 하는 기능 인데, 지금은 용암에 의해 공격 받는 기능 없어서 지금은 별 의미 없는 기능임 -->
+			<!--***reserved**** -->
+			<node name="standby" limit="1500" faceTarget="1" animation="Stun_A">
+				<!-- 바로 죽음 동작 나오기 좀 그러니 1.5초 정도 기절 동작이 나온 다음에 스스로 자살하도록 함-->
+				<node name="skill" prob="100" idx="4" />
+				<!-- HP가 1% 이하가 되면 스스로 자살하기, 이거 넣는 이유는 부기는 자쿰의 용암파도 올라오는 공격에 HP가 깍기도록 설정했는데, 이 공격에 HP가 1이 되나 죽지 않을 수도 있어서 HP가 1%가 되면 스스로 자살하도록 설정함-->
+			</node>
+			<!-- 용암 파도에 공격 당하도록 설정한 이유는 용암 파도가 올라온 지점에 부기가 등장해서 자쿰에게 회복을 걸고 있으면 플레이어 입장에서는 대략난감이기 때문에 용암에 의헤 죽도록 설정함-->
+		</condition>
+		<!-- 테스트 해보니 용암파도 공격에 부기가 죽던어서 이 기능 필요없으나 나중에 버그로 인해 혹시 모르니 이 자살 기능 계속 넣기로 함-->
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="buff" type="add" id="50001058" cooltime="9999999">
+				<!-- 부기 머리 위에 마법방업 아이콘 띄우는 애디셔널 -->
+				<node name="buff" type="add" id="50001059" />
+				<!-- 회복 애디셔널 받지 않도록 예외 처리 넣음 -->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeathMagical" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="4" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="skillRange" skillIdx="3">
+					<!-- 같은 층에 있어고 거리 1000 이내에 있어야 공격 행동을 함-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="56,43,1">
+								<node name="skill" idx="1">
+									<!-- 불꽃투척 원거리용-->
+									<node name="standby" limit="850" faceTarget="1" />
+								</node>
+								<node name="trace" limit="2000" skillIdx="2">
+									<!-- 350 거리까지 추척하기-->
+									<node name="skill" idx="2">
+										<!-- 불꽃투척 근거리용-->
+										<node name="standby" limit="850" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="7000" skillIdx="1" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="target" type="near" from="10" to="1200">
+						<node name="select" prob="20,20,20,20,20">
+							<!--제일 가까운 대상 타겟팅 잡기 -->
+							<node name="standby" limit="300" faceTarget="1" />
+							<node name="standby" limit="800" faceTarget="1" />
+							<node name="standby" limit="1100" faceTarget="1" />
+							<node name="standby" limit="1200" faceTarget="1" />
+							<node name="standby" limit="1400" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="BoogieWhiteManyMagical" value="-1" isModify="1" />
+				<!-- 죽으면 자쿰AI에게 -1 신호보내서 마법저항용 부기 몇마리 남았는지 알수있게 하기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

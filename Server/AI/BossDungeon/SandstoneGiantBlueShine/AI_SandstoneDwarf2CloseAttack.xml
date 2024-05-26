@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="6000" initialCooltime="1">
+				<node name="target" type="near" from="10" to="1200" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<node name="skill" idx="2" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="99,1">
+								<!--가까이 붙으려는  움직임을 함-->
+								<node name="skill" idx="1" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99,1">
+								<node name="trace" skillIdx="1" limit="9000" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="CheckSummonMany" value="-1" isModify="1" />
+		<!-- 소환몹이 죽었음을 보스한테  알림-->
+	</battleEnd>
+</npcAi>

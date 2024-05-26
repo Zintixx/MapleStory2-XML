@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<!-- HP 90% 이상 -->
+			<node name="conditions">
+				<condition name="hpOver" value="95">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="select" prob="70,30">
+								<node name="skill" cooltime="3000" idx="7">
+									<node name="runaway" till="900" limit="3000" />
+								</node>
+								<node name="standby" limit="2500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="runaway" till="900" limit="3000" />
+						</condition>
+					</node>
+				</condition>
+				<!-- HP 80% 이상 -->
+				<condition name="true">
+					<node name="conditions">
+						<condition name="hpOver" value="80">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="5">
+									<node name="select" prob="55,44,1">
+										<!--음파 공격 거리 체크-->
+										<node name="skill" idx="5">
+											<!--음파 공격 -->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="skill" idx="2">
+											<!--음파 공격 -->
+											<node name="skill" idx="1" />
+											<!--타액 뱉기-->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="70,39,1">
+												<!--타액 뱉기 거리체크-->
+												<node name="skill" idx="1">
+													<!--타액 뱉기-->
+													<node name="target" type="rand" from="10" to="900">
+														<!--타겟팅 변경 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="trace" limit="2500" skillIdx="2">
+													<!-- 넝쿨씨앗 공격 사거리만큼 추적-->
+													<node name="skill" idx="2">
+														<!--넝쿨 씨앗 공격 -->
+														<node name="skill" idx="1" />
+														<!--타액 뱉기-->
+														<node name="skill" idx="1" />
+														<!--타액 뱉기-->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="trace" limit="5000" skillIdx="5">
+												<!-- 음파 공격 사거리만큼 추적-->
+												<node name="skill" idx="5">
+													<!--음파 공격 -->
+													<node name="standby" limit="2000" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<!-- HP 30% 이상 -->
+						<condition name="hpOver" value="30">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="5">
+									<node name="select" prob="70,34,25,1">
+										<!--넝쿨 씨앗 공격 거리 체크-->
+										<node name="skill" cooltime="20000" idx="3">
+											<!--꽃가루 뿌리기 -->
+											<node name="target" type="rand" from="10" to="900">
+												<!--타겟팅 변경 -->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" idx="2">
+											<!--넝쿨 씨앗 공격 -->
+											<node name="skill" idx="1" />
+											<!--타액 뱉기-->
+											<node name="skill" idx="1" />
+											<!--타액 뱉기-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="skill" idx="5">
+											<!--음파 공격-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="70,25,34,1">
+												<!--타액 뱉기-->
+												<node name="skill" cooltime="20000" idx="3">
+													<!--꽃가루 뿌리기 -->
+													<node name="target" type="rand" from="10" to="900">
+														<!--타겟팅 변경 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" idx="1">
+													<!--2연타 타액 뱉기 공격-->
+													<node name="skill" idx="1">
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" idx="6">
+													<!--연속 타액 뱉기 공격-->
+													<node name="target" type="rand" from="10" to="900">
+														<!--타겟팅 변경 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="trace" limit="5000" skillIdx="5">
+												<!--음파 공격-->
+												<node name="skill" cooltime="20000" idx="5">
+													<!--음파 공격 -->
+													<node name="standby" limit="2000" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<!-- HP 30% 이하 -->
+						<condition name="true">
+							<node name="select" prob="99999,0">
+								<!--if extraKey="CntSlaves" greater="0" prob="9999">
+                   	<skill id="60026071" level="2" prob="999"/>
+                </if>
+			
+                <else-->
+								<node name="SetValue" cooltime="9999999" initialCooltime="1" key="InHouse" value="0" />
+								<node name="conditions">
+									<condition name="extraData" key="InHouse" value="0">
+										<node name="select" prob="999,0">
+											<node name="skill" cooltime="30000" idx="4">
+												<node name="skill" initialCooltime="10000" idx="8" />
+												<node name="skill" idx="9" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="101" summonPos="-2850, 1950, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="102" summonPos="-3150, 2250, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="103" summonPos="-3750, 2350, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="104" summonPos="-3900, 2050, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="105" summonPos="-3600, 1350, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="106" summonPos="-3450, 1250, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="107" summonPos="-3350, 2150, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="108" summonPos="-3000, 1350, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="110" summonPos="-3300, 1650, 2850" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="10" group="111" summonPos="-3450, 2050, 2850" />
+												<node name="SetValue" key="CntSlaves" value="10" />
+												<node name="SetValue" key="InHouse" value="1" />
+											</node>
+											<!--3연속 공기방울 후 넝쿨 씨앗-->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="1">
+													<node name="select" prob="40,40,30">
+														<node name="skill" idx="1">
+															<!--공기방울 1타-->
+															<node name="skill" idx="1" />
+															<!--연속 타액-->
+															<node name="skill" idx="6" />
+															<!--넝쿨 씨앗 -->
+															<node name="standby" limit="2000" faceTarget="1" />
+														</node>
+														<!--3연속 공기방울 후 꽃가루-->
+														<node name="skill" idx="1">
+															<!--공기방울 1타-->
+															<node name="skill" idx="1" />
+															<!--연속 타액-->
+															<node name="skill" idx="2" />
+															<!--넝쿨 씨앗 -->
+															<node name="standby" limit="2000" faceTarget="1" />
+														</node>
+														<!--분진 공격-->
+														<node name="skill" cooltime="10000" idx="4">
+															<!--분진-->
+															<node name="skill" idx="4">
+																<!--2연속 분진-->
+																<node name="target" type="rand" from="10" to="900">
+																	<!--타겟팅 변경 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="conditions">
+														<condition name="skillRange" skillIdx="11">
+															<node name="skill" idx="11">
+																<!--스턴 음파 공격 -->
+																<node name="target" type="rand" from="10" to="900">
+																	<!--타겟팅 변경 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</condition>
+														<condition name="true">
+															<node name="trace" limit="5000" skillIdx="3">
+																<!--꽃가루 공격-->
+																<node name="skill" cooltime="20000" idx="3">
+																	<!--꽃가루 공격 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</condition>
+													</node>
+												</condition>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="skill" idx="10">
+											<node name="SetValue" key="InHouse" value="0" />
+										</node>
+									</condition>
+								</node>
+								<!--/else-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

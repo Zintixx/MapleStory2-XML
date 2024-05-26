@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" key="PhasePatternTrigger" value="1" />
+			<!-- 이 변수는 몬스터의 페이즈를 결정하는 것으로  PhasePatternTrigger.xml  트리거에 의해  이 숫자가 1씩 늘어나게 설정하였음 -->
+		</condition>
+		<condition name="hpLess" value="80">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="20">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="rand" from="10" to="1800" cooltime="8000" />
+			<node name="conditions">
+				<condition name="extraData" key="PhasePatternTrigger" value="1">
+					<!-- 1페이즈 때의 공격 형태, 이 변수 PhasePatternTrigger.xml  트리거에 의해 결정됨 -->
+					<aiPreset name="1Phase_AttackPattern" />
+				</condition>
+				<condition name="extraData" key="PhasePatternTrigger" value="2">
+					<!-- 2페이즈 때의 공격 형태 -->
+					<aiPreset name="2Phase_AttackPattern" />
+				</condition>
+				<condition name="true">
+					<!-- PhasePatternTrigger = 3, 즉 3페이즈 때의 공격 형태 -->
+					<aiPreset name="FinalPhase_AttackPattern" />
+					<!--최종 페이즈 전투 패턴-->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="6">
+			<!-- 죽으면 MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 6 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 우뮤를 경정하게 함, 즉 죽어서 +6 해서 다른 보스들이 빨리 패턴 변화이 되도록 함-->
+			<node name="TriggerSetUserValue" triggerID="992" key="DeathRenduebianRbladerDark" value="1" />
+			<!-- 렌듀비앙이 죽었으면 트리거를 통해서 죽었음을 알리는 메시지를 보여주기    -->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="1Phase_AttackPattern">
+			<!--1페이즈 전투 형태-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="199,25,37,37,1">
+						<!-- 평타페이즈, 거리 240 정도-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="28000" initialCooltime="14000">
+							<!-- 다크 그라인드 디바이드 -->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="6">
+								<node name="skill" faceTarget="0" idx="7" />
+								<!-- 바닥 큐브 불 깔기 -->
+								<node name="skill" faceTarget="0" idx="8" />
+								<node name="standby" limit="3200" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="68000" initialCooltime="16000" idx="9">
+							<!-- 바닥 쾅 공격 가끔 사용 -->
+							<node name="standby" limit="3300" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="4500" idx="3">
+							<!-- 검 휘두르기, 레벨2가 10인 최종 던전 전용임 -->
+							<node name="standby" limit="3400" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="4500" idx="4">
+							<!-- 휠윈드 -->
+							<node name="standby" limit="3300" faceTarget="1" />
+						</node>
+						<node name="standby" limit="900" faceTarget="1" />
+						<!-- 혹시 위 스킬 전부 쿨타임에 걸리면 이 부분 실행 -->
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="30,35,20,14,1">
+						<!-- 거리 2320, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+						<node name="trace" limit="2100" cooltime="15000" skillIdx="3" />
+						<!--근거리까지 추적하기-->
+						<node name="skill" cooltime="15000" isKeepBattle="true" idx="5">
+							<!-- 빠른 추적-->
+							<node name="skill" faceTarget="1" idx="3" />
+							<!-- 검 휘두르기, 레벨2가 10인 최종 던전 전용임 -->
+							<node name="standby" limit="3300" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="22000" isKeepBattle="true" idx="5">
+							<!-- 빠른 추적-->
+							<node name="skill" faceTarget="1" idx="4" />
+							<!-- 휠윈드 -->
+							<node name="standby" limit="3400" faceTarget="1" />
+						</node>
+						<node name="trace" limit="2100" cooltime="47000" initialCooltime="16000" skillIdx="9">
+							<!--바닥 쾅 공격 까지 추적하기-->
+							<node name="skill" idx="9">
+								<!-- 바닥 쾅 공격 가끔 사용 -->
+								<node name="standby" limit="3500" faceTarget="1" />
+							</node>
+						</node>
+						<node name="move" destination="4050, 3300, 5860" limit="2400" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99,1">
+						<node name="move" destination="4050, 3300, 5860" limit="6000" cooltime="6000">
+							<!--맵 4~5시 쪽으로 이동함  -->
+							<node name="standby" limit="1800" faceTarget="1">
+								<node name="target" type="near" from="10" to="2300" />
+							</node>
+						</node>
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="near" from="10" to="2300" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="2Phase_AttackPattern">
+			<!--2페이즈 전투 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="199,33,33,33,1">
+						<!-- 평타페이즈, 거리 240 정도-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="38600" initialCooltime="14000">
+							<!-- 다크 그라인드 디바이드 -->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="6">
+								<node name="skill" faceTarget="0" idx="7" />
+								<!-- 바닥 큐브 불 깔기 -->
+								<node name="skill" faceTarget="0" idx="8" />
+								<node name="standby" limit="3200" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="15000" idx="9">
+							<!-- 바닥 쾅 공격 가끔 사용, 레벨1이 근거리용 -->
+							<node name="standby" limit="3100" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="4500" idx="3">
+							<!-- 검 휘두르기, 레벨2가 10인 최종 던전 전용임 -->
+							<node name="standby" limit="3100" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="4500" idx="4">
+							<!-- 휠윈드 -->
+							<node name="standby" limit="3100" faceTarget="1" />
+						</node>
+						<node name="standby" limit="900" faceTarget="1" />
+						<!-- 혹시 위 스킬 전부 쿨타임에 걸리면 이 부분 실행 -->
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="39,40,10,1">
+						<!-- 레벨5: 거리 1100, 10인 최종 던전 1셋트 전투판 크기에 맞는 정밀한 거리체크 용도, 이거 이슈라용 데이터 인데 그냥 공용으로 사용 -->
+						<node name="trace" limit="2700" cooltime="7000" skillIdx="3" />
+						<!--근거리까지 추적하기-->
+						<node name="skill" cooltime="7000" isKeepBattle="true" idx="5">
+							<!-- 빠른 추적-->
+							<node name="skill" faceTarget="1" idx="3" />
+							<!-- 검 휘두르기, 레벨2가 10인 최종 던전 전용임 -->
+							<node name="standby" limit="3100" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="22000" isKeepBattle="true" idx="5">
+							<!-- 빠른 추적-->
+							<node name="skill" faceTarget="1" idx="4" />
+							<!-- 휠윈드 -->
+							<node name="standby" limit="3100" faceTarget="1" />
+						</node>
+						<node name="standby" limit="800" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="90,10">
+						<!-- 거리 2320, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+						<node name="standby" limit="200" faceTarget="1" cooltime="9500">
+							<node name="select" prob="85,10,5">
+								<node name="move" destination="3975, 3575, 5860" limit="2000" cooltime="23500">
+									<!--4~5시쪽, 이슈라의 순간이동 채찍공격 1~2시  7~8시 지점 겹치지 않게 설정하기, 4~5시쪽을 우선순위 높게 이동함 -->
+									<node name="standby" limit="1200" faceTarget="1">
+										<node name="target" type="near" from="10" to="2300" />
+									</node>
+								</node>
+								<node name="move" destination="3975, 4375, 5860" limit="2000" cooltime="23500">
+									<!--10~11시쪽, 이슈라의 순간이동 채찍공격 1~2시  7~8시 지점 겹치지 않게 설정하기 -->
+									<node name="standby" limit="1200" faceTarget="1">
+										<node name="target" type="near" from="10" to="2300" />
+									</node>
+								</node>
+								<node name="move" destination="3600, 3450, 5860" limit="2000" cooltime="23500">
+									<!--6시 아래쪽, 이슈라의 순간이동 채찍공격 1~2시  7~8시 지점 겹치지 않게 설정하기 -->
+									<node name="standby" limit="1200" faceTarget="1">
+										<node name="target" type="near" from="10" to="2300" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="near" from="10" to="2300" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1200" faceTarget="1">
+						<node name="target" type="near" from="10" to="2300" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="FinalPhase_AttackPattern">
+			<node name="select" prob="9999,0">
+				<!--최종 페이즈 전투 패턴-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="20500">
+					<!-- 점프 쾅 공격 일정 시간마다 패턴 공격 하기 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="9">
+							<node name="skill" idx="9">
+								<node name="standby" limit="3300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="10">
+							<node name="skill" idx="10">
+								<node name="standby" limit="3200" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="2">
+							<!-- 거리 2320, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+							<node name="trace" limit="1400" skillIdx="10">
+								<node name="skill" idx="10">
+									<node name="standby" limit="3200" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1200" faceTarget="1">
+								<node name="target" type="near" from="10" to="2300" />
+							</node>
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="3">
+						<node name="select" prob="199,39,30,30,1">
+							<!-- 평타페이즈, 거리 240 정도-->
+							<node name="standby" limit="10" faceTarget="1" cooltime="38600" initialCooltime="14000">
+								<!-- 다크 그라인드 디바이드 -->
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="6">
+									<node name="skill" faceTarget="0" idx="7" />
+									<!-- 바닥 큐브 불 깔기 -->
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="standby" limit="3200" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="4500" idx="9">
+								<!-- 바닥 쾅 공격 가끔 사용 -->
+								<node name="standby" limit="3300" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="4500" idx="3">
+								<!-- 검 휘두르기, 레벨2가 10인 최종 던전 전용임 -->
+								<node name="standby" limit="3300" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="4500" idx="4">
+								<!-- 휠윈드 -->
+								<node name="standby" limit="3400" faceTarget="1" />
+							</node>
+							<node name="standby" limit="900" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="24,25,26,25,1">
+							<!-- 레벨5: 거리 1100, 10인 최종 던전 1셋트 전투판 크기에 맞는 정밀한 거리체크 용도, 이거 이슈라용 데이터 인데 그냥 공용으로 사용 -->
+							<node name="trace" limit="2700" cooltime="9000" skillIdx="3" />
+							<!--근거리까지 추적하기-->
+							<node name="trace" limit="800" cooltime="9000" skillIdx="10">
+								<!-- 바닥 쾅 공격 가끔 사용, 레벨2이 원거리용 -->
+								<node name="skill" idx="10">
+									<node name="standby" limit="3500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="9000" isKeepBattle="true" idx="5">
+								<!-- 빠른 추적-->
+								<node name="skill" faceTarget="1" idx="3" />
+								<!-- 검 휘두르기, 레벨2가 10인 최종 던전 전용임 -->
+								<node name="standby" limit="3300" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="22000" isKeepBattle="true" idx="5">
+								<!-- 빠른 추적-->
+								<node name="skill" faceTarget="1" idx="4" />
+								<!-- 휠윈드 -->
+								<node name="standby" limit="3300" faceTarget="1" />
+							</node>
+							<node name="standby" limit="800" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="90,10">
+							<!-- 거리 2320, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+							<node name="standby" limit="200" faceTarget="1" cooltime="9500">
+								<node name="select" prob="85,10,5">
+									<node name="move" destination="3975, 3575, 5860" limit="2000" cooltime="23500">
+										<!--4~5시쪽, 이슈라의 순간이동 채찍공격 1~2시  7~8시 지점 겹치지 않게 설정하기, 4~5시쪽을 우선순위 높게 이동함 -->
+										<node name="standby" limit="1200" faceTarget="1">
+											<node name="target" type="near" from="10" to="2300" />
+										</node>
+									</node>
+									<node name="move" destination="3975, 4375, 5860" limit="2000" cooltime="23500">
+										<!--10~11시쪽, 이슈라의 순간이동 채찍공격 1~2시  7~8시 지점 겹치지 않게 설정하기 -->
+										<node name="standby" limit="1200" faceTarget="1">
+											<node name="target" type="near" from="10" to="2300" />
+										</node>
+									</node>
+									<node name="move" destination="3600, 3450, 5860" limit="2000" cooltime="23500">
+										<!--6시 아래쪽, 이슈라의 순간이동 채찍공격 1~2시  7~8시 지점 겹치지 않게 설정하기 -->
+										<node name="standby" limit="1200" faceTarget="1">
+											<node name="target" type="near" from="10" to="2300" />
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="standby" limit="1200" faceTarget="1">
+								<node name="target" type="near" from="10" to="2300" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="near" from="10" to="2300" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

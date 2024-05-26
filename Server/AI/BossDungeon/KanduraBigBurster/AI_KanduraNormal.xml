@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,0">
+			<!--AI에서 사용하는 각정 설정 변수 최초 선헌하는 부분, 소환몹 호출-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<!--여기에 animation="Idle_A" 넣으면 공격 상황에서도 이 애니가 출력 되기때문에 넣지 않음-->
+				<node name="SetValue" key="BattleOn" value="0" />
+				<!-- 전투에 참여할지 말지를 결정하는 변수 0: 전투 참전 안함, 1: 전투 참전을 위해 점프 뛰기, 2: 점프 참전, 3: 단상위로 다시 올라가기-->
+				<node name="SetValue" key="PlayerNotDropCheck" value="0" />
+				<!-- 플레이어가 전투를 잘해서 전투판 밖으로 떨어지지 않는 상황을 체크하기 위한 변수-->
+				<node name="SetValue" key="PlayerNotDropCheck_Max" value="0" />
+				<!-- 칸두라가 단상위에 있을때 PlayerNotDropCheck 변수가 기준 이상으로 커지면, 이 변수에 2을 넣어 전투에 참여하도록 함-->
+				<node name="SetValue" key="PlayerDropCheck" value="0" />
+				<!-- 전투판 밖으로 떨어진 플레이어 수를 체크하기 위해 사용하는 변수-->
+				<node name="SetValue" key="PlayerDropCheck_Max" value="0" />
+				<!-- 칸두라가 전투하고 있을때 PlayerDropCheck 변수가 기준 이상으로 커지면, 이 변수에 1을 넣어 단상 위로 올라가도록 함-->
+				<node name="SetValue" key="LeftRight" value="0" />
+				<!-- 전투 때 자신이 왼쪽 전투판에 있는지 오른쪽 전투판에 있는지를 판단하기 위한 변수, Left: 1, Right: 2,  단상위: 0-->
+				<node name="SetValue" key="SummonPhaseEnd" value="0" />
+				<!--소환 몹이 전부 죽어서 1페이즈 끝냄을 알리는데 사용하는 변수, 이 숫자가 2가 되면 소환몹이 다 죽었음을 의미함-->
+				<node name="SetValue" key="DeathSummon" value="0" />
+				<!--소환몹 자살 명령 보내는 변수-->
+				<node name="SetValue" key="HealCall" value="0" />
+				<!--  소환몹한테 HP회복 요청을 받았을 때 사용하는 변수  -->
+				<node name="SetValue" key="OtherSideJump" value="0" />
+				<!--  건너편 전투판으로 언제 점프뛸지 결정하는 변수-->
+				<node name="skill" facePos="-7800, -7800, 2750" idx="19" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-6230, -4570, 2460" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="-5018, -6225, 2460" summonRot="0,0,-50" />
+				<node name="move" destination="-5340, -5340, 2750" limit="3000" animation="Walk_A" />
+				<!--단상 약간 아래쪽으로 이동-->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="88">
+					<!-- SummonPhaseEnd = 2 면 소환몹이 전부 죽었다는 의미이기 때문에, 1페이즈 종료하고 2페이즈로 넘어감-->
+					<node name="conditions">
+						<condition name="extraData" key="SummonPhaseEnd" value="2">
+							<node name="conditions">
+								<condition name="extraData" key="BattleOn" value="0">
+									<!--칸두라가 단상 위에 있는 상태에서 졸몹이 다 죽은 경우 -->
+									<node name="standby" limit="3000" faceTarget="0" animation="Idle_A" isKeepBattle="true">
+										<!--졸몹 다 죽으면 일단 몇초간 대기 -->
+										<node name="skill" facePos="-7800, -7800, 2750" idx="17" />
+										<!--레벨1: 약간 화내는 동작을 취하며, 도발 행동 하기-->
+										<node name="standby" limit="1000" facePos="-2150, -2150, 2750" animation="Idle_A" />
+										<node name="move" destination="-2150, -2150, 2750" limit="5000" animation="Walk_A" />
+										<!--2페이즈 전투판으로 이동하기-->
+										<node name="skill" facePos="715, 715, 4070" idx="10" />
+										<!--2페이즈 점프판으로  점프 뛰기 -->
+										<node name="TriggerSetUserValue" triggerID="1112000" key="FirstPhaseEnd" value="1" />
+										<!-- 1페이지 종료 후 맵 트리거 설정 정의 부분 -->
+										<node name="jump" pos="715, 715, 4070" speed="2500" heightMultiplier="0.5" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11" />
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP" summonPos="715, 715, 4070" />
+										<!-- master = "None" 없으면 소환 모체가 사라지면, 소환몹이 같이 사라지기 때문에 꼭 있어야 함 -->
+										<node name="RemoveMe" />
+										<!-- 자기 자신 스스로 제거하기 -->
+									</node>
+								</condition>
+								<condition name="true">
+									<!--칸두라가 전투판에서 싸우고 있을 때 졸몹이 죽은 경우 -->
+									<node name="skill" facePos="-5340, -5340, 2750" isKeepBattle="true" idx="10">
+										<!--단상 위로 점프 뛰기 -->
+										<node name="jump" pos="-5340, -5340, 2750" speed="1200" heightMultiplier="0.5" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11" />
+										<!--점프 착지 -->
+										<node name="SetValue" key="BattleOn" value="0" />
+										<!--BattleOn = 0,  단상 위에서 올라갔음을 이 변수를 통해 알림-->
+										<node name="standby" limit="300" facePos="-7800, -7800, 2750" />
+										<node name="skill" facePos="-7800, -7800, 2750" idx="17" />
+										<!--레벨1: 약간 화내는 동작을 취하며, 도발 행동 하기-->
+										<node name="standby" limit="1000" faceTarget="0" />
+										<node name="move" destination="-2150, -2150, 2750" limit="5000" animation="Walk_A" />
+										<!--2페이즈 전투판으로 이동하기-->
+										<node name="skill" facePos="715, 715, 4070" idx="10" />
+										<!--2페이즈 점프판으로  점프 뛰기 -->
+										<node name="TriggerSetUserValue" triggerID="1112000" key="FirstPhaseEnd" value="1" />
+										<!-- 1페이지 종료 후 맵 트리거 설정 정의 부분 -->
+										<node name="jump" pos="715, 715, 4070" speed="2500" heightMultiplier="0.5" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11" />
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP" summonPos="715, 715, 4070" />
+										<!-- master = "None" 없으면 소환 모체가 사라지면, 소환몹이 같이 사라지기 때문에 꼭 있어야 함 -->
+										<node name="RemoveMe" />
+										<!-- 자기 자신 스스로 제거하기 -->
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<!-- 여기는 아래는  SummonPhaseEnd = 0 혹은 SummonPhaseEnd = 1 이 두가지 상황을 의미함,  SummonPhaseEnd 이 0 이면 소환몹 한마리도 안죽었고 SummonPhaseEnd 이 1 이면 한마리만 죽었음을 의미함-->
+						<condition name="true">
+							<!--  BattleOn=0 : 단상 위에서 비전투 상태로 있는 상황            BattleOn=1 : 비전투에서 전투 상태 전환을 위해 전투판으로 점프 뛰는 상황      -->
+							<!--  BattleOn=2 : 전투판에서 본격 전투 행위 하고 있는 상황     BattleOn=3 : 전투에서 비전투 상태 전환을 위해 단상 위로 점프 뛰는 상황        -->
+							<node name="conditions">
+								<condition name="extraData" key="BattleOn" value="1">
+									<!-- @@@  BattleOn = 1, 전투에 참여하기로 결정하여, 전투판으로 점프 뛰어 내리기 행동을 함-->
+									<node name="standby" limit="2500" faceTarget="0" animation="Attack_Idle_A">
+										<node name="select" prob="33,33">
+											<!--  전투 시작하는 최초 단계인 여기에  animation="Attack_Idle_A"를 넣어야  이후 전투 중 나오는  standby 동작때 Attack_Idle_A 동작이 나오게 됩니다.-->
+											<!--왼쪽 전투판으로 뛰기 -->
+											<node name="skill" facePos="-6200, -4850, 2480" isKeepBattle="true" idx="10">
+												<node name="jump" pos="-6200, -4850, 2480" speed="1200" heightMultiplier="0.5" />
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="12" />
+												<!--점프 착지, 레벨3: 전투참여 관련 성우 음성 -->
+												<node name="SetValue" key="BattleOn" value="2" />
+												<!--BattleOn = 2를 넣어 자신이  전투 상태임을 알림 -->
+												<node name="SetValue" key="LeftRight" value="1" />
+												<!-- 전투 때 자신이 왼쪽 전투판에 있는지 오른쪽 전투판에 있는지를 판단하기 위한 변수, Left: 1, Right: 2, 단상위: 0-->
+												<node name="SetValue" key="OtherSideJump" value="3" isModify="1" />
+												<!--건너편 전투판으로 점프뛰기 조건변수 3 기본 셋팅 하기 -->
+											</node>
+											<!--오른쪽 전투판으로 뛰기 -->
+											<node name="skill" facePos="-4850, -6500, 2480" isKeepBattle="true" idx="10">
+												<node name="jump" pos="-4850, -6500, 2480" speed="1200" heightMultiplier="0.5" />
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="12" />
+												<!--점프 착지, 레벨3: 전투참여 관련 성우 음성 -->
+												<node name="SetValue" key="BattleOn" value="2" />
+												<!--BattleOn = 2를 넣어 자신이 전투 상태임을 알림 -->
+												<node name="SetValue" key="LeftRight" value="2" />
+												<!-- 전투 때 자신이 왼쪽 전투판에 있는지 오른쪽 전투판에 있는지를 판단하기 위한 변수, Left: 1, Right: 2,  단상위: 0-->
+												<node name="SetValue" key="OtherSideJump" value="3" isModify="1" />
+												<!--건너편 전투판으로 점프뛰기 조건변수 3 기본 셋팅 하기 -->
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="extraData" key="BattleOn" value="2">
+									<node name="select" prob="999999,999,0">
+										<!-- @@@  BattleOn = 2, 본격 전투 행위를 진행함, ## 주 공격 행동 Main-->
+										<!-- ## 주 공격 행동 Main   -->
+										<!--칸두라가 전투하고 있을 때 플레이어가 전투판 밖으로 떨어졌는지 체크하여, 그와 관련 로직을 처리하는 부분-->
+										<node name="standby" limit="100" faceTarget="0" cooltime="4000">
+											<aiPreset name="Battle_DropCheck" />
+										</node>
+										<!-- ## 전투판 밖으로 떨어지는 플레이어가 많이 나오면 여기서  BattleOn = 3 으로 만들어서 다시 단상 위로 점프 뛰도록 처리하는 부분임-->
+										<node name="standby" limit="100" facePos="0" cooltime="4000">
+											<node name="conditions">
+												<condition name="extraData" key="PlayerDropCheck" value="4" op="greaterEqual">
+													<!--  전투판 떨어진 플레이어를 체크하여 4회 이상 나오면-->
+													<node name="standby" limit="300" facePos="0" isKeepBattle="true">
+														<node name="SetValue" key="BattleOn" value="3" />
+														<!-- PlayerNotDropCheck_Max 변수가 2가 되었기 때문에  BattleOn = 3로 설정해 칸두라가 단상으로 점프 뛰도록 함-->
+														<node name="SetValue" key="PlayerDropCheck" value="0" />
+														<!-- 전투판 밖으로 떨어진 경우를 체크하기 위해 사용하는 변수 초기화 하여, 다시 0부터 시작하게 하기-->
+														<node name="SetValue" key="PlayerDropCheck_Max" value="0" />
+														<!-- PlayerDropCheck_Max  값 초기화 함, 깔끔한 예측을 위해 왠만하면 중요 변수 초기화 하는 것으로 함-->
+														<node name="SetValue" key="PlayerNotDropCheck" value="0" />
+														<!-- 전투판 밖으로 떨어지지 않은 상황  체크하기 위해 사용하는 변수 초기화 하여, 다시 0부터 시작하게 하기,  BattleOn = 2 에서는 PlayerNotDropCheck를 사용하지 않아 초기화 할 필요는 없으나 숫자가 계속 커지는 것을 막기 위해 혹시 몰라 0 초기화 함-->
+														<node name="SetValue" key="PlayerNotDropCheck_Max" value="0" />
+														<!-- PlayerNotDropCheck_Max 값 초기화 함, 깔끔한 예측을 위해 왠만하면 중요 변수 초기화 하는 것으로 함-->
+													</node>
+												</condition>
+												<condition name="extraData" key="PlayerNotDropCheck" value="3" op="greaterEqual">
+													<!--  전투판 떨어진 플레이어를 체크 했는데 3회 이상 안나온 경우면-->
+													<node name="standby" limit="300" facePos="0" isKeepBattle="true">
+														<node name="SetValue" key="PlayerDropCheck" value="0" />
+														<!-- 전투판 밖으로 떨어진 경우를 체크하기 위해 사용하는 변수 초기화 하여, 다시 0부터 시작하게 하기-->
+														<node name="SetValue" key="PlayerDropCheck_Max" value="0" />
+														<!-- PlayerDropCheck_Max  값 초기화 함, 깔끔한 예측을 위해 왠만하면 중요 변수 초기화 하는 것으로 함-->
+														<node name="SetValue" key="PlayerNotDropCheck" value="0" />
+														<!-- 전투판 밖으로 떨어지지 않은 상황  체크하기 위해 사용하는 변수 초기화 하여, 다시 0부터 시작하게 하기,  BattleOn = 2 에서는 PlayerNotDropCheck를 사용하지 않아 초기화 할 필요는 없으나 숫자가 계속 커지는 것을 막기 위해 혹시 몰라 0 초기화 함-->
+														<node name="SetValue" key="PlayerNotDropCheck_Max" value="0" />
+														<!-- PlayerNotDropCheck_Max 값 초기화 함, 깔끔한 예측을 위해 왠만하면 중요 변수 초기화 하는 것으로 함-->
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="standby" limit="200" facePos="0" />
+												</condition>
+											</node>
+										</node>
+										<node name="conditions">
+											<condition name="extraData" key="LeftRight" value="1">
+												<!-- 왼쪽 전투판에 있는 경우-->
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="8">
+														<!--높이 차이 250 아래 이내에 있으면-->
+														<aiPreset name="MainBattle_Left" />
+														<!-- 여기서 실제 공격 행동을 정의함, 맨 아래쪽에 따로 설정해놓음-->
+													</condition>
+													<condition name="true">
+														<node name="standby" limit="500" faceTarget="0">
+															<node name="target" type="near" from="5" to="1000" />
+														</node>
+													</condition>
+												</node>
+											</condition>
+											<condition name="extraData" key="LeftRight" value="2">
+												<!-- 오른쪽 전투판에 있는 경우-->
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="8">
+														<!--높이 차이 250 아래 이내에 있으면-->
+														<aiPreset name="MainBattle_Right" />
+														<!-- 여기서 실제 공격 행동을 정의함, 맨 아래쪽에 따로 설정해놓음-->
+													</condition>
+													<condition name="true">
+														<node name="standby" limit="500" faceTarget="0">
+															<node name="target" type="near" from="5" to="1000" />
+														</node>
+													</condition>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- 1, 2 이외의 숫자인 경우, 전투 참여 없이 단상위에 있는 경우있데, 이론적으로 이 단계에 오면 안됨, 혹시 몰라 예외 처리를 넣음-->
+												<node name="skill" facePos="-5340, -5340, 2750" isKeepBattle="true" idx="10">
+													<!--단상 위로 점프 뛰기 -->
+													<node name="jump" pos="-5340, -5340, 2750" speed="1200" heightMultiplier="0.5" />
+													<!--점프중 -->
+													<node name="skill" faceTarget="0" idx="11" />
+													<!--점프 착지 -->
+													<node name="SetValue" key="BattleOn" value="0" />
+													<!--BattleOn = 0,  단상 위에서 올라갔음을 이 변수를 통해 알림-->
+													<node name="SetValue" key="LeftRight" value="0" />
+													<!-- 혹시 LeftRight 변수 설정이 꼬여 이상한 값이 들어갈 수있여 여기서 초기화 함, Left: 1, Right: 2,  단상위: 0-->
+													<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+												</node>
+											</condition>
+										</node>
+									</node>
+								</condition>
+								<condition name="extraData" key="BattleOn" value="3">
+									<!-- @@@  BattleOn = 3, 전투 중 플레이어가 자주 전투판 밖으로 떨어지는 경우 다시 단상 위로 점프 이동하도록 함-->
+									<node name="skill" facePos="-5340, -5340, 2750" isKeepBattle="true" idx="10">
+										<!--단상 위로 점프 뛰기 -->
+										<node name="jump" pos="-5340, -5340, 2750" speed="1200" heightMultiplier="0.5" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11" />
+										<!--점프 착지 -->
+										<node name="skill" facePos="-7800, -7800, 2750" idx="15" />
+										<!--레벨1: 플레이어 무시하는 도발 행동 하기-->
+										<!-- 각종 변수들 초기화 함 -->
+										<node name="SetValue" key="BattleOn" value="0" />
+										<!--BattleOn = 0,  단상 위에서 올라갔음을 이 변수를 통해 알림-->
+										<node name="SetValue" key="PlayerNotDropCheck" value="0" />
+										<!-- 플레이어가 전투를 잘해서 전투판 밖으로 떨어지지 않는 상황을 체크하기 위한 변수-->
+										<node name="SetValue" key="PlayerDropCheck" value="0" />
+										<!-- 전투판 밖으로 떨어진 플레이어 수를 체크하기 위해 사용하는 변수-->
+										<node name="SetValue" key="LeftRight" value="0" />
+										<!-- 전투 때 자신이 왼쪽 전투판에 있는지 오른쪽 전투판에 있는지를 판단하기 위한 변수, Left: 1, Right: 2,  단상위: 0-->
+										<node name="SetValue" key="HealCall" value="0" />
+										<!--  소환몹한테 HP회복 요청을 받은 것도 초기화 함, 즉 이 설정 때문에 졸몹 HP회복되는 것을  막기 위해 보스가 전투에 참전하도록 하는 전략적 전투 요소가 생기게 됨  -->
+										<!-- !!!중요!!!~: 이 페이즈에서  HealCall 변수를 여기서 초기화 시키는 것이 전투 컨셉의 메인 핵심임-->
+										<node name="standby" limit="500" faceTarget="0" animation="Idle_A" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="999999,99999,100,100,1">
+										<!-- @@@  BattleOn = 0, 전투에 참여하지 않고 단상 위에서 견제 행동만 함-->
+										<!-- ## 단상 위에서 도발  행동,  여기서 플레이어가 전투를 잘해서 전투판 밖으로 떨어지지 않는지를 세부 체크해야 함  -->
+										<!--칸두라가 단상위에 있을 때 플레이어가 전투판 밖으로 떨어졌는지 체크하여, 그와 관련 로직을 처리하는 부분-->
+										<node name="standby" limit="100" faceTarget="0" animation="Idle_A" cooltime="2000">
+											<aiPreset name="NonBattle_DropCheck" />
+										</node>
+										<!-- 졸몹한테 HP회복 요청 신호 받았으면 회복 행위 하고, 아니면 플레이어 견제 공격 하거나 가만히 서있음-->
+										<node name="standby" limit="500" facePos="-7800, -7800, 2750" animation="Idle_A" cooltime="3000" initialCooltime="10000">
+											<node name="target" type="near" from="10" to="2500">
+												<node name="conditions">
+													<condition name="extraData" key="HealCall" value="1" op="greaterEqual">
+														<!--  레이드 난이도는 회복 투사체 발사 행위 하지 않도록 함-->
+														<!-- 	<skill id="50000554" level="1" facePos = "-7800, -7800, 2750" prob="100"/>  단상 위에서 회복 투사체 발사-->
+														<node name="skill" idx="9">
+															<!-- 회복 행위 대신 원거리 견제 공격만 하도록 함-->
+															<node name="standby" limit="800" faceTarget="0" animation="Idle_A">
+																<node name="SetValue" key="HealCall" value="0" />
+																<!-- HealCall 변수 초기화 하기-->
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="conditions">
+															<condition name="skillRange" skillIdx="8">
+																<node name="select" prob="999,1">
+																	<node name="skill" cooltime="19000" idx="9">
+																		<!-- 단상 위에서 플레이어 견제 공격, 유도탁 바닥 폭발, 레벨2: 성우 음성 있음-->
+																		<node name="standby" limit="500" faceTarget="0" animation="Idle_A" />
+																	</node>
+																	<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+																</node>
+															</condition>
+															<condition name="true">
+																<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+															</condition>
+														</node>
+													</condition>
+												</node>
+											</node>
+										</node>
+										<!-- Check01: 전투판 밖으로 떨어진 플레이어가 있으면, 무시 발언 도발 행동을 함-->
+										<node name="standby" limit="500" faceTarget="0" animation="Idle_A" cooltime="3000">
+											<node name="conditions">
+												<condition name="extraData" key="PlayerDropCheck" value="3" op="greaterEqual">
+													<!--  PlayerDropCheck  변수 연산하는 곳은 aiPreset name="NonBattle_DropCheck" 여기서  진행함-->
+													<node name="skill" faceTarget="0" isKeepBattle="true" idx="15">
+														<!--레벨1: 플레이어 무시하는 도발 행동 하기-->
+														<node name="standby" limit="1000" facePos="-7800, -7800, 2750" animation="Idle_A" />
+														<node name="SetValue" key="PlayerDropCheck" value="0" />
+														<!-- 전투판 밖으로 떨어진 경우를 체크하기 위해 사용하는 변수 초기화 하여, 다시 0부터 시작하게 하기-->
+														<node name="SetValue" key="PlayerNotDropCheck" value="0" />
+														<!-- 전투판 밖으로 떨어지지 않은 경우를 체크하기 위해 사용하는 변수 초기화 하여, 다시 0부터 시작하게 하기-->
+														<node name="SetValue" key="PlayerNotDropCheck_Max" value="0" />
+														<!-- PlayerNotDropCheck_Max  값 초기화 함, 깔끔한 예측을 위해 왠만하면 중요 변수 초기화 하는 것으로 함-->
+														<node name="SetValue" key="PlayerDropCheck_Max" value="0" />
+														<!-- PlayerDropCheck_Max  값 초기화 함, 깔끔한 예측을 위해 왠만하면 중요 변수 초기화 하는 것으로 함-->
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+												</condition>
+											</node>
+										</node>
+										<!--  Check02: 전투판 밖으로 떨어진 플레이어가 계속 없으면, 위협 발언 도발 행동을 함, 그리고 계속 없으면 BattleOn = 1로 만들어 전투에 참여하도록 함 -->
+										<node name="standby" limit="500" faceTarget="0" animation="Idle_A" cooltime="3000">
+											<node name="conditions">
+												<condition name="extraData" key="PlayerNotDropCheck_Max" value="1" op="greaterEqual">
+													<node name="standby" limit="4000" faceTarget="0" animation="Idle_A" isKeepBattle="true">
+														<node name="SetValue" key="BattleOn" value="1" />
+														<!-- PlayerNotDropCheck_Max 변수가 2가 되었기 때문에  BattleOn = 1로 설정해 칸두라가 전투판에 점프 뛰도록 함-->
+														<node name="SetValue" key="PlayerNotDropCheck_Max" value="0" />
+														<!-- PlayerNotDropCheck_Max  값 초기화 함, 깔끔한 예측을 위해 왠만하면 중요 변수 초기화 하는 것으로 함-->
+														<node name="SetValue" key="PlayerDropCheck_Max" value="0" />
+														<!-- PlayerDropCheck_Max  값 초기화 함, 깔끔한 예측을 위해 왠만하면 중요 변수 초기화 하는 것으로 함-->
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="conditions">
+														<condition name="extraData" key="PlayerNotDropCheck" value="4" op="greaterEqual">
+															<!--  PlayerNotDropCheck  변수 연산하는 곳은 AI 최 상단에서 진행함-->
+															<node name="skill" facePos="-7800, -7800, 2750" isKeepBattle="true" idx="16">
+																<!--레벨2: 졸병을 보고 답답해 하며 도발 행동 하기-->
+																<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+																<node name="SetValue" key="PlayerNotDropCheck_Max" value="1" isModify="1" />
+																<!-- PlayerNotDropCheck_Max 에 1을 더하기, PlayerNotDropCheck_Max 변수가 2가 되면 칸두라가 전투판으로 점프 뛰면서 전투에 참여함-->
+																<node name="SetValue" key="PlayerNotDropCheck" value="0" />
+																<!-- 전투판 밖으로 떨어지지 않은 상황  체크하기 위해 사용하는 변수 초기화 하여, 다시 0부터 시작하게 하기-->
+																<node name="SetValue" key="PlayerDropCheck" value="0" />
+																<!-- 전투판 밖으로 떨어진 경우를 체크하기 위해 사용하는 변수 초기화 하여, 다시 0부터 시작하게 하기-->
+															</node>
+														</condition>
+														<condition name="true">
+															<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+														</condition>
+													</node>
+												</condition>
+											</node>
+										</node>
+										<!--위 모든 행동이 쿨타임 걸릴 수 있어서 만약을 대비해 이것을 넣음-->
+										<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- HP 88% 이하로 깎이면 바로 단상 위로 도망가도록 함-->
+					<node name="conditions">
+						<condition name="extraData" key="BattleOn" value="2">
+							<!--전투판에서 싸우고 있는 상태라면 -->
+							<node name="skill" facePos="-5340, -5340, 2750" isKeepBattle="true" idx="10">
+								<!--단상 위로 점프 뛰기 -->
+								<node name="jump" pos="-5340, -5340, 2750" speed="1200" heightMultiplier="0.5" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="11" />
+								<!--점프 착지 -->
+								<node name="SetValue" key="BattleOn" value="0" />
+								<!--BattleOn = 0,  단상 위에서 견제 행동하기-->
+								<node name="standby" limit="300" faceTarget="0" animation="Idle_A" />
+								<node name="SetSlaveValue" key="DeathSummon" value="1" />
+								<!--소환몹 자살 명령 보내기-->
+								<node name="skill" facePos="-7800, -7800, 2750" idx="18" />
+								<!--레벨1: 대미지 동작을 취하며, 도발 행동 하기-->
+								<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+								<node name="move" destination="-2150, -2150, 2750" limit="5000" animation="Walk_A" />
+								<!--2페이즈 전투판으로 이동하기-->
+								<node name="skill" facePos="715, 715, 4070" idx="10" />
+								<!--2페이즈 점프판으로  점프 뛰기 -->
+								<node name="TriggerSetUserValue" triggerID="1112000" key="FirstPhaseEnd" value="1" />
+								<!-- 1페이지 종료 후 맵 트리거 설정 정의 부분 -->
+								<node name="jump" pos="715, 715, 4070" speed="2500" heightMultiplier="0.5" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="11" />
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP" summonPos="715, 715, 4070" />
+								<!-- master = "None" 없으면 소환 모체가 사라지면, 소환몹이 같이 사라지기 때문에 꼭 있어야 함 -->
+								<node name="RemoveMe" />
+								<!-- 자기 자신 스스로 제거하기 -->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--이미 단상 위에 올라간 상태라면, 여기 올 확률 극히 낮지만 만약을 위해 점프 없이 다음 페이지 넘어가는 부분을 넣음 -->
+							<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" isKeepBattle="true">
+								<!--이미 단상 위에 있는 상태라면, 점프 뛰는 부분 넣지 않음 -->
+								<node name="SetSlaveValue" key="DeathSummon" value="1" />
+								<!--소환몹 자살 명령 보내기-->
+								<node name="skill" facePos="-7800, -7800, 2750" idx="18" />
+								<!--레벨1: 대미지 동작을 취하며, 도발 행동 하기-->
+								<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+								<node name="move" destination="-2150, -2150, 2750" limit="5000" animation="Walk_A" />
+								<!--2페이즈 전투판으로 이동하기-->
+								<node name="skill" facePos="715, 715, 4070" idx="10" />
+								<!--2페이즈 점프판으로  점프 뛰기 -->
+								<node name="TriggerSetUserValue" triggerID="1112000" key="FirstPhaseEnd" value="1" />
+								<!-- 1페이지 종료 후 맵 트리거 설정 정의 부분 -->
+								<node name="jump" pos="715, 715, 4070" speed="2500" heightMultiplier="0.5" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="11" />
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP" summonPos="715, 715, 4070" />
+								<!-- master = "None" 없으면 소환 모체가 사라지면, 소환몹이 같이 사라지기 때문에 꼭 있어야 함 -->
+								<node name="RemoveMe" />
+								<!-- 자기 자신 스스로 제거하기 -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!-- 1페이지 변신전 칸두라 구간에서 스펙높은 유저에게 극딜당해 죽을 경우-->
+		<node name="TriggerSetUserValue" triggerID="1130000" key="KanduraNormalDead" value="1" />
+		<!-- 1페이지 변신전 칸두라 구간에서 죽을 경우 -->
+	</battleEnd>
+	<aiPresets>
+		<!--단상 위에 있을때 전투판에서 떨어진 플레이어 체크하는 부분 -->
+		<aiPreset name="NonBattle_DropCheck">
+			<node name="target" type="near" center="-6150, -6000, 1300">
+				<!-- 전투판에 떨어져서 오게 되는  바닥 독큐브 위치를 기준으로 타겟팅 설정함-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="13">
+						<!--레벨1: 단상위에서 사용되는 범위, 타겟팅 대상이 전투판 아래 범위에 들어와 있으면, 누군가 전투판 밖으로 떨어졌다고 판단함-->
+						<node name="standby" limit="100" faceTarget="1" animation="Idle_A" isKeepBattle="true">
+							<node name="SetValue" key="PlayerDropCheck" value="1" isModify="1" />
+							<!--이거 체크 때 누군가 전투판 밖으로 떨어졌기 때문에, PlayerDropCheck 변수에 1 더하기함-->
+							<node name="target" type="near" from="5" to="1200" />
+							<!-- 전투판 밖 체크 유무 끝나면 타겟팅 꼭 제일 가까운 대상 하는 것이 좋음-->
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- 전투판 밖으로 떨어진 플레이어 없다고 판단했으면-->
+						<node name="standby" limit="100" faceTarget="1" animation="Idle_A" isKeepBattle="true">
+							<node name="SetValue" key="PlayerNotDropCheck" value="1" isModify="1" />
+							<!--이거 체크 때  전투판 밖으로 떨어진 플레이어가 없으면 , PlayerNotDropCheck 변수에 1 더하기함-->
+							<node name="target" type="near" from="5" to="1200" />
+							<!-- 전투판 밖 체크 유무 끝나면 타겟팅 꼭 제일 가까운 대상 하는 것이 좋음-->
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<!--전투중에 전투판에서 떨어진 플레이어 체크하는 부분 -->
+		<aiPreset name="Battle_DropCheck">
+			<node name="target" type="near" center="-6150, -6000, 1300">
+				<!-- 전투판에 떨어져서 오게 되는  바닥 독큐브 위치를 기준으로 타겟팅 설정함-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="14">
+						<!--레벨2: 전투판에서 사용되는 범위, 타겟팅 대상이 전투판 아래 범위에 들어와 있으면, 누군가 전투판 밖으로 떨어졌다고 판단함-->
+						<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+							<node name="SetValue" key="PlayerDropCheck" value="1" isModify="1" />
+							<!--이거 체크 때 누군가 전투판 밖으로 떨어졌기 때문에, PlayerDropCheck 변수에 1 더하기함-->
+							<node name="target" type="near" from="5" to="1200" />
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- 전투판 밖으로 떨어진 플레이어 없다고 판단했으면-->
+						<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+							<node name="SetValue" key="PlayerNotDropCheck" value="1" isModify="1" />
+							<!--이거 체크 때  전투판 밖으로 떨어진 플레이어가 없으면 , PlayerNotDropCheck 변수에 1 더하기함-->
+							<node name="target" type="near" from="5" to="1200" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<!--왼쪽 전투판에서의 공격 행동 -->
+		<aiPreset name="MainBattle_Left">
+			<node name="conditions">
+				<condition name="extraData" key="OtherSideJump" value="6" op="greaterEqual">
+					<!--## 왼쪽 -> 오른쪽 전투판으로 이동 -->
+					<node name="skill" facePos="-4850, -6500, 2480" isKeepBattle="true" idx="10">
+						<node name="jump" pos="-4850, -6500, 2480" speed="1200" heightMultiplier="0.5" />
+						<!--점프중 -->
+						<node name="skill" faceTarget="0" idx="11" />
+						<!--점프 착지 -->
+						<node name="SetValue" key="LeftRight" value="2" />
+						<!-- 전투 때 자신이 왼쪽 전투판에 있는지 오른쪽 전투판에 있는지를 판단하기 위한 변수, Left: 1, Right: 2,  단상위: 0-->
+						<node name="SetValue" key="OtherSideJump" value="0" />
+						<!--변수 초기화 건퍼편 전투판으로 점프뛰는데 결정하는 변수-->
+						<node name="target" type="near" from="5" to="2500" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="15,15,15,15,20">
+								<!--사정거리 1100 이내에 있으면, 즉 같은 전투판에 플레이어가 있는 경우임-->
+								<node name="skill" facePos="-5630, -4730, 2480" cooltime="9000" isKeepBattle="true" idx="10">
+									<!--1시 지점으로 점프-->
+									<node name="jump" pos="-5630, -4730, 2480" speed="1200" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+									<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+									<node name="target" type="near" from="5" to="2500" />
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="-6300, -5500, 2480" cooltime="9000" isKeepBattle="true" idx="10">
+									<!--5시 지점으로 점프 -->
+									<node name="jump" pos="-6300, -5500, 2480" speed="1200" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+									<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+									<node name="target" type="near" from="5" to="2500" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="-6900, -4800, 2480" cooltime="9000" isKeepBattle="true" idx="10">
+									<!--7시 지점으로 점프 -->
+									<node name="jump" pos="-6900, -4800, 2480" speed="1200" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="target" type="near" from="5" to="2500" />
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="-6250, -4250, 2480" cooltime="9000" isKeepBattle="true" idx="10">
+									<!--10시 지점으로 점프 -->
+									<node name="jump" pos="-6250, -4250, 2480" speed="1200" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="target" type="near" from="5" to="2500" />
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<!--통상 공격 행동 -->
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="33,34,33">
+												<!--사정거리 600 이내에 있으면-->
+												<node name="skill" faceTarget="1" cooltime="18000" idx="7">
+													<!--연속 찌르기 -->
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="target" type="near" from="5" to="2500" />
+													<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+													<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+												</node>
+												<node name="skill" faceTarget="1" idx="1">
+													<!--돌진 휘두르기 -->
+													<node name="target" type="near" from="5" to="2500" />
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+													<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+												</node>
+												<node name="skill" faceTarget="1" idx="2">
+													<node name="select" prob="50,50">
+														<!--점프 쾅 공격 (근) -->
+														<node name="skill" faceTarget="1" cooltime="8000" idx="3">
+															<!--점프 쾅 공격 후 끝 -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+																<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+															</node>
+														</node>
+														<node name="skill" faceTarget="1" idx="4">
+															<!--점프 쾅 공격 후  자세 전환-->
+															<node name="skill" faceTarget="1" idx="5">
+																<!--돌진 공격 후 끝 -->
+																<node name="standby" limit="1500" faceTarget="1">
+																	<node name="target" type="near" from="5" to="2500" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="6">
+													<node name="select" prob="60,40">
+														<!--사정거리 950 이내에 있으면-->
+														<node name="skill" faceTarget="1" idx="6">
+															<node name="select" prob="50,50">
+																<!--점프 쾅 공격 (원) -->
+																<node name="skill" faceTarget="1" cooltime="8000" idx="3">
+																	<!--점프 쾅 공격 후 끝 -->
+																	<node name="standby" limit="500" faceTarget="1">
+																		<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+																		<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+																	</node>
+																</node>
+																<node name="skill" faceTarget="1" idx="4">
+																	<!--점프 쾅 공격 후  자세 전환-->
+																	<node name="skill" faceTarget="1" idx="5">
+																		<!--돌진 공격 후 끝 -->
+																		<node name="standby" limit="1500" faceTarget="1">
+																			<node name="target" type="near" from="5" to="2500" />
+																		</node>
+																	</node>
+																</node>
+															</node>
+														</node>
+														<node name="trace" limit="3000" animation="Run_A" cooltime="15000" skillIdx="1" />
+														<!--거리 630까리 다가가기-->
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="skill" faceTarget="1" idx="8">
+														<!--원거리 유도 바닥폭발 -->
+														<node name="standby" limit="4000" faceTarget="1">
+															<node name="target" type="near" from="5" to="2500" />
+														</node>
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--사정거리 1100 밖에 있으면, 즉 같은 전투판에 플레이어가 없는 경우임-->
+							<!--  레이드 난이도는 회복 투사체 발사 행위 하지 않도록 함-->
+							<!--		<skill id="50000554" level="1"  faceTarget="1" prob="98"  cooltime = "4000">    회복 투사체 발사					
+						<standby limit="1500" faceTarget="1" prob="100">
+							<target type="near" prob="100" from="5" to="2500"/> 	
+						</standby>	
+					</skill>	 -->
+							<node name="skill" faceTarget="1" idx="8">
+								<!--원거리 유도 바닥폭발 -->
+								<node name="standby" limit="2300" faceTarget="1">
+									<node name="target" type="near" from="5" to="2500" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--오른쪽 전투판에서의 공격 행동 -->
+		<aiPreset name="MainBattle_Right">
+			<node name="conditions">
+				<condition name="extraData" key="OtherSideJump" value="6" op="greaterEqual">
+					<node name="skill" facePos="-6200, -4850, 2480" cooltime="35000" isKeepBattle="true" idx="10">
+						<!--## 오른쪽 -> 왼쪽 전투판으로 이동 -->
+						<node name="jump" pos="-6200, -4850, 2480" speed="1200" heightMultiplier="0.5" />
+						<!--점프중 -->
+						<node name="skill" faceTarget="0" idx="11" />
+						<!--점프 착지 -->
+						<node name="SetValue" key="LeftRight" value="1" />
+						<!-- 전투 때 자신이 왼쪽 전투판에 있는지 오른쪽 전투판에 있는지를 판단하기 위한 변수, Left: 1, Right: 2, 단상위: 0-->
+						<node name="SetValue" key="OtherSideJump" value="0" />
+						<!--변수 초기화 건퍼편 전투판으로 점프뛰는데 결정하는 변수-->
+						<node name="target" type="near" from="5" to="2500" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="15,15,15,15,20">
+								<!--사정거리 1100 이내에 있으면, 즉 같은 전투판에 플레이어가 있는 경우임-->
+								<node name="skill" facePos="-4400, -6250, 2480" cooltime="9000" isKeepBattle="true" idx="10">
+									<!--2시 지점으로 점프 -->
+									<node name="jump" pos="-4400, -6250, 2480" speed="1200" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+									<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+									<node name="target" type="near" from="5" to="2500" />
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="-5000, -6850, 2480" cooltime="9000" isKeepBattle="true" idx="10">
+									<!--4시 지점으로 점프 -->
+									<node name="jump" pos="-5000, -6850, 2480" speed="1200" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="target" type="near" from="5" to="2500" />
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="-5700, -6300, 2480" cooltime="9000" isKeepBattle="true" idx="10">
+									<!--7시 지점으로 점프 -->
+									<node name="jump" pos="-5700, -6300, 2480" speed="1200" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+									<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+									<node name="target" type="near" from="5" to="2500" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="-5330, -5800, 2480" cooltime="9000" isKeepBattle="true" idx="10">
+									<!--위쪽 지점으로 점프 -->
+									<node name="jump" pos="-5330, -5800, 2480" speed="1200" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="target" type="near" from="5" to="2500" />
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<!--통상 공격 행동 -->
+								<node name="standby" limit="100" faceTarget="1">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="33,34,33">
+												<!--사정거리 600 이내에 있으면-->
+												<node name="skill" faceTarget="1" cooltime="18000" idx="7">
+													<!--연속 찌르기 -->
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="target" type="near" from="5" to="2500" />
+													<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+													<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+												</node>
+												<node name="skill" faceTarget="1" idx="1">
+													<!--돌진 휘두르기 -->
+													<node name="target" type="near" from="5" to="2500" />
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+													<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+												</node>
+												<node name="skill" faceTarget="1" idx="2">
+													<node name="select" prob="50,50">
+														<!--점프 쾅 공격 (근) -->
+														<node name="skill" faceTarget="1" cooltime="8000" idx="3">
+															<!--점프 쾅 공격 후 끝 -->
+															<node name="standby" limit="500" faceTarget="1">
+																<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+																<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+															</node>
+														</node>
+														<node name="skill" faceTarget="1" idx="4">
+															<!--점프 쾅 공격 후  자세 전환-->
+															<node name="skill" faceTarget="1" idx="5">
+																<!--돌진 공격 후 끝 -->
+																<node name="standby" limit="1500" faceTarget="1">
+																	<node name="target" type="near" from="5" to="2500" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="6">
+													<node name="select" prob="60,40">
+														<!--사정거리 950 이내에 있으면-->
+														<node name="skill" faceTarget="1" idx="6">
+															<node name="select" prob="50,50">
+																<!--점프 쾅 공격 (원) -->
+																<node name="skill" faceTarget="1" cooltime="8000" idx="3">
+																	<!--점프 쾅 공격 후 끝 -->
+																	<node name="standby" limit="500" faceTarget="1">
+																		<node name="SetValue" key="OtherSideJump" value="1" isModify="1" />
+																		<!--건너편 전투판으로 점프뛰기 조건변수 1더하기 -->
+																	</node>
+																</node>
+																<node name="skill" faceTarget="1" idx="4">
+																	<!--점프 쾅 공격 후  자세 전환-->
+																	<node name="skill" faceTarget="1" idx="5">
+																		<!--돌진 공격 후 끝 -->
+																		<node name="standby" limit="1500" faceTarget="1">
+																			<node name="target" type="near" from="5" to="2500" />
+																		</node>
+																	</node>
+																</node>
+															</node>
+														</node>
+														<node name="trace" limit="3000" animation="Run_A" cooltime="15000" skillIdx="1" />
+														<!--거리 630까리 다가가기-->
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="skill" faceTarget="1" idx="8">
+														<!--원거리 유도 바닥폭발 -->
+														<node name="standby" limit="4000" faceTarget="1">
+															<node name="target" type="near" from="5" to="2500" />
+														</node>
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--사정거리 1100 밖에 있으면, 즉 같은 전투판에 플레이어가 없는 경우임-->
+							<!--레이드 난이도는 회복 행위 하지 않음-->
+							<!--		<skill id="50000554" level="1"  faceTarget="1" prob="98"  cooltime = "4000">    회복 투사체 발사				
+						<standby limit="1500" faceTarget="1" prob="100">
+							<target type="near" prob="100" from="5" to="2500"/> 	
+						</standby>	
+					</skill>	 -->
+							<node name="skill" faceTarget="1" idx="8">
+								<!--원거리 유도 바닥폭발 -->
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="near" from="5" to="2500" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

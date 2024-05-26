@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="52">
+			<!--칸두라 몹의 HP가 52% 남을 무렵에는 다른 NPC가 전투판에 합류해 PC를 도와 칸두라와 싸우게 되는데, NPC 합류 신호를 여기서 보내 맵 트리거에서 NPC를 스폰시키게 합니다.-->
+			<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+				<node name="move" destination="8400, 3000, 6280" limit="5000" />
+				<!--전투를 벌이던 칸두라가 소환 위치에 있는 걸 피하기 위해, 이 위치로 강제 이동 시킴 -->
+				<node name="TriggerSetUserValue" triggerID="1112000" key="CallFriendlyNPC" value="1" />
+				<!-- NPC 합류 신호를 여기서 보내 맵 트리거에서 NPC를 스폰시키게 합니다.-->
+				<node name="TriggerSetUserValue" triggerID="1112000" key="ChangeBGM" value="1" />
+				<!-- 이 타이밍에 보스 BGM이 나오게 설정함,  한방에 죽어서 생기는 이슈를 위한 안전장치-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,0">
+			<!--AI에서 사용하는 각정 설정 변수 최초 선언하는 부분-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<!--여기에 animation="Idle_A" 넣으면 공격 상황에서도 이 애니가 출력 되기때문에 넣지 않음-->
+				<node name="SetValue" key="BattleStart" value="0" />
+				<!-- 변신 연출 다 보여주고 본격 두번째 페이즈 전투 시작을 알리때 사용하는 변수-->
+				<node name="skill" idx="12" />
+				<!-- 변신 막 시작하는 동작-->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="7">
+					<node name="conditions">
+						<condition name="extraData" key="BattleStart" value="0">
+							<!--2페이즈 본격 전투 전 변신 연출 나오는 장면 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="12">
+									<node name="skill" facePos="6980, 1567, 6180" isKeepBattle="true" idx="13">
+										<!--대기 동작-->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--대기 동작 -->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--대기 동작 -->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--대기 동작 -->
+										<node name="skill" faceTarget="0" idx="15" />
+										<!--대기 동작, 버그 때문에 성우 목소리 일단 빼자, 레벨22: 성우 목소리   이 성우 효과음을 위쪽에 설정하면 보스 BGM 트리거 설정과 충돌되어서 BGM이 안나오는 문제가 있는데, TriggerEvent 보다 뒤에서 나오는 형태로 설정하면 위험함  -->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--대기 동작 -->
+										<node name="skill" faceTarget="0" idx="14" />
+										<!--변신 시작 동작  -->
+										<node name="standby" limit="100" faceTarget="0" />
+										<node name="skill" faceTarget="0" idx="16" />
+										<!--레벨3: 성우 음성 -->
+										<node name="SetValue" key="BattleStart" value="1" />
+										<!-- 이 변수에 0이 아닌 다른 숫자를 넣어 본격 2페이즈 전투 시작을 알림-->
+										<!--전투 시작 성우 음성-->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="skill" facePos="6980, 1567, 6180" idx="13">
+										<node name="target" type="near" from="10" to="1300" />
+										<!--제일 가까운 대상 타겟팅 잡기, 이거 없으면 모든 파티원이 900 이내로 가까아 와야하는 버그성 문제가 있음-->
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--전투 설정 부분 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="999,99,38,38,24">
+										<!--거리 580 이내에 있으면 -->
+										<node name="skill" cooltime="30000" initialCooltime="25000" idx="9">
+											<!--거대 투사체 발사함 -->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="1" cooltime="33000" initialCooltime="30000" isKeepBattle="true" idx="4">
+											<node name="skill" faceTarget="0" idx="5" />
+											<!--할퀴기 공격 -->
+											<node name="skill" faceTarget="1" idx="6" />
+											<!--다음 공격 준비 자세 -->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!--할퀴기 공격 -->
+											<node name="skill" faceTarget="1" idx="6" />
+											<!--다음 공격 준비 자세 -->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!--할퀴기 공격 -->
+											<node name="skill" faceTarget="1" idx="6" />
+											<!--다음 공격 준비 자세 -->
+											<node name="skill" faceTarget="0" idx="5" />
+											<!--할퀴기 공격 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<!--할퀴기 마무리   -->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="skill" idx="2">
+											<!--돌진 2연타 휘두르기, 근거리 주력-->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="11000" idx="1">
+											<!--내려찍기, 이 스킬은 근거리 원거리 다 커버 -->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<!--사정거리 이내 까지 쫓아가서 왼손 휘둘러서 마법 뿌리기 공격, 상태이상 걸기, 여기서는 가끔 사용함 -->
+										<node name="trace" limit="3000" cooltime="23000" skillIdx="8">
+											<node name="skill" idx="8">
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="39,30,30,1">
+												<!--거리 950 이내에 있으면 (2페이즈에서 사용하는 거리체크) -->
+												<node name="skill" idx="3">
+													<!--돌진 찌르기 후 휘두르기, 원거리 주력-->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+												<node name="skill" cooltime="11000" idx="1">
+													<!--내려찍기, 이 스킬은 근거리 원거리 다 커버 -->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+												<node name="trace" limit="2500" cooltime="11000" skillIdx="2" />
+												<!--거리 580까지 쫓아가기-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="10">
+													<!--지하에 있으면 -->
+													<node name="skill" idx="10">
+														<!--지하 방향 쪽으로 투사체 발사-->
+														<node name="standby" limit="2500" faceTarget="1" />
+													</node>
+												</condition>
+												<condition name="skillRange" skillIdx="11">
+													<!--큐브 3칸 2층 지형에 있으면-->
+													<node name="trace" till="1050" limit="3000">
+														<!--1050 거리까지 다가가기-->
+														<node name="skill" idx="11">
+															<!--지하 방향 쪽으로 투사체 발사-->
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="conditions">
+														<condition name="skillRange" skillIdx="17">
+															<node name="select" prob="50,50">
+																<!--사정거리 1200 이내에 있으면,                     이 스킬코드는 점프 도약 준비 스킬임 -->
+																<node name="standby" limit="800" faceTarget="1" />
+																<node name="trace" limit="5000" cooltime="8000" skillIdx="2" />
+																<!--거리 950까지 쫓아가기-->
+															</node>
+														</condition>
+														<condition name="true">
+															<node name="standby" limit="800" faceTarget="1">
+																<node name="target" type="near" from="5" to="1300" />
+															</node>
+														</condition>
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<node name="standby" limit="1800" faceTarget="0" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+							<node name="standby" limit="400" faceTarget="1" animation="Attack_Idle_A" />
+							<node name="move" destination="8400, 3000, 6280" limit="5000" />
+							<!--죽기 직전 강제로 이쪽으로 이동 시킴-->
+							<node name="standby" limit="500" faceTarget="1" animation="Attack_Idle_A" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="18">
+								<node name="select" prob="90,10">
+									<!--레벨2: 거리 1200 이내에 같은 높이 전투판에 있으면, 큐브 구멍에 빠진 대상도 포함 -->
+									<node name="skill" cooltime="23000" idx="9">
+										<!--거대 투사체 발사함 -->
+										<node name="standby" limit="2000" faceTarget="0" animation="Attack_Idle_B">
+											<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_A" />
+											<node name="target" type="near" from="5" to="1150" />
+											<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+										</node>
+									</node>
+									<node name="skill" idx="1">
+										<!--내려찍기, 이 스킬은 근거리 원거리 다 커버 -->
+										<node name="standby" limit="1800" faceTarget="0" animation="Attack_Idle_B">
+											<node name="standby" limit="1200" faceTarget="1" animation="Attack_Idle_A" />
+											<node name="target" type="near" from="5" to="1150" />
+											<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="1800" faceTarget="0" animation="Attack_Idle_B">
+									<node name="standby" limit="900" faceTarget="1" animation="Attack_Idle_A" />
+									<node name="target" type="near" from="5" to="1150" />
+									<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 선언하는 부분-->
+		<node name="TriggerSetUserValue" triggerID="1112000" key="BattleEnd" value="1">
+			<!-- 3페이지 종료 후 맵 트리거 설정 정의 부분 -->
+			<node name="TriggerSetUserValue" triggerID="1112000" key="CallFriendlyNPC" value="1">
+				<!-- 한방에 죽어서 생기는 이슈를 위한 안전장치 -->
+				<node name="TriggerSetUserValue" triggerID="1112000" key="ChangeBGM" value="1" />
+				<!-- 이 타이밍에 보스 BGM이 나오게 설정함,  한방에 죽어서 생기는 이슈를 위한 안전장치-->
+			</node>
+		</node>
+	</battleEnd>
+</npcAi>

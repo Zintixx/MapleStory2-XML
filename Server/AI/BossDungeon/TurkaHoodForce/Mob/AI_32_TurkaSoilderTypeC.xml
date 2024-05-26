@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 세번째 스테이지(3), 가운데 구역(2)    이 몬스터는  AI_SignalElementMarble.xml 로 부터 ElementSignalOk 변수 신호 받을 때까지 계속 standby 상태로 있을 것임-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<!--main.xml 트리거에 설정된  변수 1 더하기, TriggerMesh??: 첫번째 숫자: 1단계는 1  2단계는 2  3단계는 3, 두번째 숫자: 왼쪽 1  가운데 2  오른쪽 3-->
+				<node name="TriggerModifyUserValue" triggerID="101" key="TriggerMesh32" value="1" />
+				<!-- 전투 상태가 되면 트리거가 졸몹 마리수 체크할 때 +1 하기,   TriggerModelID =  101 -->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetValue" key="ElementSignalOk" value="0" />
+				<!-- AI_SignalElementMarble.xml 로 부터 신호 받을 때까지 이 변수에 의해 계속 가만히 대기 상태로 있도록 함 -->
+				<node name="SetValue" key="ElementSignalCall" value="0" />
+				<!-- AI_SignalElementMarble.xml 로 부터  약점 속성 변수 신호 받기 위한 변수 초기화-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="near" from="10" to="1500" cooltime="4000" />
+			<!--해당 스킬 범위 내에 타겟이 있을 경우 아래의 스킬들을 확률적으로 발동-->
+			<node name="conditions">
+				<condition name="extraData" key="ElementSignalOk" value="0">
+					<!--  AI_SignalElementMarble.xml 로 부터 이 변수 신호 받을 때까지 여기서 대기함  -->
+					<aiPreset name="ElementSignalCheck" />
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<!-- 거리 850 이내 있으면, 공격 행동하기, 큐브 한칸 아래 포함되지 않음 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="90,10">
+								<node name="skill" idx="1">
+									<node name="standby" limit="1600" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" skillIdx="1" limit="900" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="500" faceTarget="1" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="TriggerModifyUserValue" triggerID="101" key="TriggerMesh32" value="-1" />
+				<!--이 몬스터가 죽으면 main.xml 트리거에 설정된 MonsterMany 변수 1 빼기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="ElementSignalCheck">
+			<node name="conditions">
+				<condition name="extraData" key="ElementSignalCall" value="1">
+					<!--   ElementSignal = 1 인 경우임, 화염약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006007">
+						<!-- 화염약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="2">
+					<!--   ElementSignal = 2 인 경우임, 빙결약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006008">
+						<!-- 빙결약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="3">
+					<!--   ElementSignal = 3 인 경우임, 전격약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006009">
+						<!-- 전격약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="4">
+					<!--   ElementSignal = 4 인 경우임, 신성약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006010">
+						<!-- 신성약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="5">
+					<!--   ElementSignal = 5 인 경우임, 암흑약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006011">
+						<!-- 암흑약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="6">
+					<!--   ElementSignal = 6 인 경우임, 독약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006012">
+						<!-- 독약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<!--   ElementSignal = 0 인 경우임, 즉 아직  AI_ElementSignal.xml 로 부터 신호 안받은 상태임 -->
+					<node name="standby" limit="300" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

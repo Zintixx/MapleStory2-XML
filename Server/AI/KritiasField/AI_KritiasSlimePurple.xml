@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- <원거리에서 장판 공격만 하는 AI 프리셋> -->
+<npcAi>
+	<!--전투-->
+	<reserved>
+		<condition name="hpLess" value="110">
+			<node name="standby" limit="10" faceTarget="1" initialCooltime="0">
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" option="masterHP,linkHP" summonPosOffset="0, 0, 0" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="101" option="masterHP,linkHP" summonPosOffset="0, 0, 0" />
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" useNpcProb="1">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="90,20,20">
+						<!-- <1번 스킬 슬롯에 원거리 공격 세팅> -->
+						<node name="skill" idx="1">
+							<!-- <1번 스킬 사용> -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="runaway" till="450" limit="2000">
+							<!-- <450만큼 도망간 후 1번 스킬 사용> -->
+							<node name="skill" idx="1" level="1" />
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="100,100">
+						<node name="trace" skillIdx="1" limit="4000">
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</node>
+						<node name="trace" skillIdx="1" limit="4000" />
+					</node>
+				</condition>
+			</node>
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="30,70,20">
+						<node name="skill" idx="2">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="runaway" till="600" limit="2000">
+							<!-- <600만큼 도망> -->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" skillIdx="2" limit="4000">
+						<node name="select" prob="100,100">
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+							<node name="standby" limit="100" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

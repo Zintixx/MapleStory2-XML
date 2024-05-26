@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="25">
+			<node name="conditions">
+				<condition name="extraData" key="JumpMoveOn" value="1">
+					<!--보스 HP   89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+					<!--***reserved**** -->
+					<!--바닥 전체 독안개 깔기 스킬은 맨 위 reserved 시스템에 의해서 HP 20% 이하가 되면 무조건 실행하도록 설정-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="move" destination="-450, 300, 4550" limit="2000" />
+						<!--맵 중앙 쪽으로 이동-->
+						<node name="skill" facePos="750, 800, 4600" idx="14" />
+						<!--배 측면에 대포 발사-->
+						<node name="skill" faceTarget="0" idx="15" />
+						<!--배 측면에 대포 발사-->
+						<node name="standby" limit="200" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="9999999" initialCooltime="10" isKeepBattle="true">
+						<!--배 아래로 떨어지기-->
+						<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+						<!--점프중    type ="2" 를 넣으면 Jump_B 셋의 애니메이션을 사용하게 됨 -->
+						<node name="skill" faceTarget="0" idx="10" />
+						<!--점프 착지 -->
+						<node name="SetValue" key="JumpMoveOn" value="1" />
+						<!--보스 HP  89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+						<node name="standby" limit="500" faceTarget="1" />
+						<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+						<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+						<node name="move" destination="-450, 300, 4550" limit="2000" />
+						<!--맵 중앙 쪽으로 이동-->
+						<node name="skill" facePos="750, 800, 4600" idx="14" />
+						<!--배 측면에 대포 발사-->
+						<node name="skill" faceTarget="0" idx="15" />
+						<!--배 측면에 대포 발사-->
+						<node name="standby" limit="200" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,9999,0">
+			<!--보스 AI 로직을 위해 필요한 변수를 여기서 전부 선언함-->
+			<node name="standby" limit="500" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="FirstJumpMoveOn" value="0" />
+				<!--FirstJumpMoveOn 이 변수에 의해 최초에 보스가 점프로 배 위로 올라갔는지를 판담함, 전투 중 의도치 않게 전투가 풀렸다 다시 전투에 돌입할 경우,  AI가 꼬여 배 위로 점프 뛸수 있기 때문에 만일의 사태를 대비함-->
+				<node name="SetValue" key="CheckSummonMany" value="1" />
+				<!--  소환몹이 전부 죽었는지 체크하는 변수 선언 부분, 최초 딱 한번 선언함-->
+				<node name="SetSlaveValue" key="DeathCrossbowShot" value="0" />
+				<!--소환몹 대포와 그린후드 석궁 자살 명령 OFF 상태로 놓기-->
+				<node name="SetValue" key="JumpMoveOn" value="0" />
+				<!--JumpMoveOn 이 변수에 의해 보스가 점프로 배 아래로 내려왔는지 판단함, 보스 HP  89~84%를 그냥 훅 넘길경우 점프 이동을 안하여 AI가 꼬일수 있어서 만일의 사태를 대비함 -->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1300" />
+				<!--<target type="mid" prob="100" from="10" to="1300" /> -->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="97">
+					<!--#1-1페이즈 - 최초 배 위로 점프 이동 후 졸병 소환                    100~97 -->
+					<node name="conditions">
+						<condition name="extraData" key="FirstJumpMoveOn" value="0">
+							<node name="select" prob="9999,1">
+								<!-- HP 100~97%구간에서 최초 딱 한번 배 위로 점프 올라기기를 해야햐기 때문에 이 조건을 설정함 -->
+								<node name="skill" facePos="900, 1050, 4850" cooltime="999999" isKeepBattle="true" idx="7">
+									<!--배 위로 점프뛰기 -->
+									<node name="jump" pos="900, 1050, 4850" speed="2000" heightMultiplier="0.5" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="FirstJumpMoveOn" value="1" />
+									<!--보스가 전투 돌입하자마자 최초에 배위로 점프 뛰었는지를 알리기 위해  FirstJumpMoveOn 변수에 1로 설정함  -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" idx="17" />
+								<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99,0">
+								<!--HP 100~97%구간에서 이미 점프 올라기기를 했으면, 이 부분을 실행함-->
+								<node name="standby" limit="1000" faceTarget="1" cooltime="999999" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--졸병 호출하는 동작-->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="-300, -300, 4550" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="107" summonPos="-150, 1200, 4550" summonRot="0,0,-50" />
+									<node name="SetValue" key="CheckSummonMany" value="7" />
+									<node name="standby" limit="8000" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="19" />
+									<!--도발하면서 성우 대사 나오기-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="extraData" key="CheckSummonMany" value="1" op="greaterEqual">
+										<node name="select" prob="75,35">
+											<!-- 소환몹이 한마리라도 남아있으면 -->
+											<node name="skill" faceTarget="0" idx="17">
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="skill" faceTarget="0" cooltime="5000" idx="16">
+												<node name="select" prob="60,40">
+													<!-- 갈고리 손 대포 가끔 사용, 2층 지형에서 사용 -->
+													<node name="skill" faceTarget="0" cooltime="8000" idx="18" />
+													<!-- 도발 행동 -->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<!-- 소환몹이 모두 죽으면 -->
+											<node name="standby" limit="1500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+												<node name="skill" faceTarget="0" idx="11" />
+												<!--졸병 호출하는 동작-->
+												<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="111" summonPos="150, 900, 4550" summonRot="0,0,80" />
+												<!--왼쪽 지점 대포-->
+												<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="450, 1200, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+												<node name="standby" limit="2500" faceTarget="1" />
+												<node name="skill" faceTarget="0" idx="16" />
+												<!-- 갈고리 손 대포, 2층 지형에서 사용 -->
+											</node>
+											<node name="skill" faceTarget="0" idx="17" />
+											<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="75">
+					<node name="select" prob="9999,0">
+						<!--#1-2페이즈 - 대포 맞고 아래로 떨어짐                97~75 -->
+						<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" isKeepBattle="true">
+							<!--배 아래로 떨어지기-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--대포 맞고 배 아래로 떨어지기-->
+							<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--점프 착지 -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+							<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="59,40,1">
+									<node name="skill" idx="1">
+										<!-- 휘두르기-->
+										<node name="standby" limit="2500" faceTarget="0" />
+									</node>
+									<node name="skill" cooltime="7000" idx="13">
+										<!-- 대쉬 휘두르기-->
+										<node name="standby" limit="2500" faceTarget="0" />
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="50,25,25">
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="skill" idx="4">
+												<!-- 점프 쾅!~-->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="skill" idx="3">
+												<!-- 돌진 공격-->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="72">
+					<node name="select" prob="9999,99,0">
+						<!--#1-3페이즈 - 다시  배 위로 올라기 졸병 소환       75~72-->
+						<node name="skill" facePos="900, 1050, 4850" cooltime="999999" isKeepBattle="true" idx="7">
+							<!--배 위로 점프뛰기 -->
+							<node name="jump" pos="900, 1050, 4850" speed="2000" heightMultiplier="0.5" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="8" />
+							<!--점프 착지 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="standby" limit="1000" faceTarget="1" cooltime="999999" isKeepBattle="true">
+							<node name="skill" faceTarget="0" idx="11" />
+							<!--졸병 호출하는 동작-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="-300, -300, 4550" summonRot="0,0,-50" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="107" summonPos="-150, 1200, 4550" summonRot="0,0,-50" />
+							<node name="SetValue" key="CheckSummonMany" value="7" />
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="CheckSummonMany" value="1" op="greaterEqual">
+								<node name="select" prob="10,90">
+									<!-- 소환몹이 한마리라도 남아있으면 -->
+									<node name="skill" faceTarget="0" idx="17">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" faceTarget="0" cooltime="4000" idx="16">
+										<node name="select" prob="60,40">
+											<!-- 갈고리 손 대포 가끔 사용, 2층 지형에서 사용 -->
+											<node name="skill" faceTarget="0" cooltime="8000" idx="18" />
+											<!-- 도발 행동 -->
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<!-- 소환몹이 모두 죽으면 -->
+									<node name="standby" limit="1500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+										<node name="skill" faceTarget="0" idx="11" />
+										<!--졸병 호출하는 동작-->
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="111" summonPos="450, 300, 4550" summonRot="0,0,150" />
+										<!--오른쪽 지점 대포-->
+										<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="112" summonPos="750, 300, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 900, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="150, 300, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="0, -150, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="-600, 450, 4550" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" summonPos="-150, 450, 4550" summonRot="0,0,-50" />
+										<node name="standby" limit="2500" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="16" />
+										<!-- 갈고리 손 대포, 2층 지형에서 사용 -->
+									</node>
+									<node name="skill" faceTarget="0" idx="17" />
+									<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="50">
+					<node name="select" prob="9999,0">
+						<!--#1-4페이즈 - 대포 맞고 아래로 떨어짐                72~50 -->
+						<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" isKeepBattle="true">
+							<!--배 아래로 떨어지기-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--대포 맞고 배 아래로 떨어지기-->
+							<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+							<!--점프중    type ="2" 를 넣으면 Jump_B 셋의 애니메이션을 사용하게 됨 -->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--점프 착지 -->
+							<node name="SetValue" key="JumpMoveOn" value="1" />
+							<!--보스 HP  89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+							<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="40,30,30,1">
+									<node name="skill" idx="1">
+										<!-- 휘두르기-->
+										<node name="standby" limit="4500" faceTarget="0" />
+									</node>
+									<node name="skill" cooltime="9000" idx="3">
+										<!-- 돌진 공격-->
+										<node name="standby" limit="4500" faceTarget="1" />
+									</node>
+									<node name="skill" idx="13">
+										<!-- 대쉬 휘두르기-->
+										<node name="standby" limit="4500" faceTarget="0" />
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="50,25,25">
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="skill" idx="4">
+												<!-- 점프 쾅!~-->
+												<node name="standby" limit="4500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="3">
+												<!-- 돌진 공격-->
+												<node name="standby" limit="4500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="25">
+					<!--#2페이즈 (한방 킬 공격 이벤트 발동)                  50~25   (HP 100~50%를 그냥 훅 넘길경우를 대비한 점프이동관련 로직이 들어가 있음)-->
+					<node name="conditions">
+						<condition name="extraData" key="JumpMoveOn" value="1">
+							<node name="select" prob="9999,50,0">
+								<!--보스 HP   89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<!--전원 기절시킨 후 한방 킬 공격 이 페이즈때 한번만 사용-->
+								<node name="standby" limit="500" faceTarget="1" cooltime="999999" isKeepBattle="true">
+									<node name="move" destination="0, 600, 4550" limit="2000" />
+									<!--맵 중앙 쪽으로 이동-->
+									<node name="skill" facePos="-450, 0, 4550" idx="5" />
+									<!--기절시키기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="target" type="mid" from="10" to="1300" />
+									<!--중간 위치한 플레이어로 타겟팅 잡기-->
+									<node name="trace" limit="2000" skillIdx="12" />
+									<node name="skill" faceTarget="0" idx="12" />
+									<!--한방킬 발동-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="22000" idx="3">
+									<!--돌진 공격 후 왼손 대포 바닥 폭발-->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="skill" idx="2">
+											<!-- 왼손 대포 발사-->
+											<node name="standby" limit="4500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="33,33,33,1">
+											<node name="skill" cooltime="8000" idx="1">
+												<!-- 휘두르기-->
+												<node name="standby" limit="4500" faceTarget="10" />
+											</node>
+											<node name="skill" cooltime="9000" idx="13">
+												<!-- 대쉬 휘두르기-->
+												<node name="standby" limit="4500" faceTarget="10" />
+											</node>
+											<node name="skill" cooltime="8000" idx="3">
+												<!-- 돌진 공격-->
+												<node name="standby" limit="4500" faceTarget="0" />
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="4">
+												<node name="select" prob="26,37,37">
+													<node name="trace" limit="2500" skillIdx="1" />
+													<node name="skill" idx="4">
+														<!-- 점프 쾅!~-->
+														<node name="standby" limit="4500" faceTarget="1" />
+													</node>
+													<node name="skill" idx="3">
+														<!-- 돌진 공격-->
+														<node name="standby" limit="4500" faceTarget="0" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="99,1">
+													<node name="trace" limit="2500" skillIdx="1" />
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,1">
+								<!--보스 HP  100~50%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" initialCooltime="10" isKeepBattle="true">
+									<!--배 아래로 떨어지기-->
+									<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+									<!--점프중    type ="2" 를 넣으면 Jump_B 셋의 애니메이션을 사용하게 됨 -->
+									<node name="skill" faceTarget="0" idx="10" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="JumpMoveOn" value="1" />
+									<!--보스 HP  89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+									<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+								</node>
+								<node name="skill" faceTarget="0" idx="17" />
+								<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="14">
+					<!--#3-1 페이즈  바닥 독깔기         25~14  (HP 100~50%를 그냥 훅 넘길경우를 대비한 점프이동관련 로직이 들어가 있음)-->
+					<node name="conditions">
+						<condition name="extraData" key="JumpMoveOn" value="1">
+							<!--보스 HP   100~50%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="35,64,1">
+										<node name="skill" idx="1">
+											<!-- 휘두르기-->
+											<node name="target" type="near" from="10" to="1000">
+												<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+												<node name="standby" limit="4500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" cooltime="8000" idx="13">
+											<!-- 대쉬 휘두르기-->
+											<node name="target" type="near" from="10" to="1000">
+												<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+												<node name="standby" limit="4500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="standby" limit="500" faceTarget="0" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="4">
+											<node name="select" prob="60,20,20">
+												<node name="trace" limit="2500" skillIdx="1" />
+												<node name="skill" idx="4">
+													<!-- 점프 쾅!~-->
+													<node name="standby" limit="4500" faceTarget="0" />
+												</node>
+												<node name="skill" idx="3">
+													<!-- 돌진 공격-->
+													<node name="standby" limit="4500" faceTarget="0" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="99,1">
+												<node name="trace" limit="2500" skillIdx="1" />
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,1">
+								<!--보스 HP  100~50%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" initialCooltime="10" isKeepBattle="true">
+									<!--배 아래로 떨어지기-->
+									<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+									<!--점프중    type ="2" 를 넣으면 Jump_B 셋의 애니메이션을 사용하게 됨 -->
+									<node name="skill" faceTarget="0" idx="10" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="JumpMoveOn" value="1" />
+									<!--보스 HP  89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+									<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+								</node>
+								<node name="skill" faceTarget="0" idx="17" />
+								<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--#3-2 페이즈 죽기 직전  기절 공격 패턴 사용함    14~0  (HP 100~50%를 그냥 훅 넘길경우를 대비한 점프이동관련 로직이 들어가 있음)-->
+					<node name="conditions">
+						<condition name="extraData" key="JumpMoveOn" value="1">
+							<node name="select" prob="9999,50,1,1,1">
+								<!--보스 HP   100~50%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<node name="standby" limit="500" faceTarget="1" cooltime="999000" isKeepBattle="true">
+									<node name="skill" faceTarget="1" idx="6" />
+									<!--기절시키기, 기 모으는 동작 긴 형태-->
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="target" type="mid" from="10" to="1300" />
+									<!--중간 위치한 플레이어로 타겟팅 잡기-->
+									<node name="trace" limit="2000" skillIdx="12" />
+									<node name="skill" faceTarget="1" idx="12" />
+									<!--한방킬 발동-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="22000" idx="3">
+									<!--돌진 공격 후 왼손 대포 바닥 폭발-->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="skill" idx="2">
+											<!-- 왼손 대포 발사-->
+											<node name="standby" limit="4500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="7000" idx="4">
+									<!-- 점프 쾅!~-->
+									<node name="standby" limit="4500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="7000" idx="3">
+									<!-- 돌진 공격-->
+									<node name="standby" limit="4500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,1">
+								<!--보스 HP  100~50%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+								<node name="standby" limit="100" facePos="150, 600, 4550" cooltime="999999" initialCooltime="10" isKeepBattle="true">
+									<!--배 아래로 떨어지기-->
+									<node name="jump" pos="150, 600, 4550" speed="2000" heightMultiplier="0.5" type="2" />
+									<!--점프중    type ="2" 를 넣으면 Jump_B 셋의 애니메이션을 사용하게 됨 -->
+									<node name="skill" faceTarget="0" idx="10" />
+									<!--점프 착지 -->
+									<node name="SetValue" key="JumpMoveOn" value="1" />
+									<!--보스 HP  89~84%를 그냥 훅 넘길경우 점프로 배 아래로 내려오기를 안할 수 있어서, 그 부분을 보완하기 위해 이것을 넣음  -->
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="SetSlaveValue" key="DeathCrossbowShot" value="1" />
+									<!--대포에게 자살 명령 내림, 자살 명령을 가장 나중에 해야 안정적임, 너무 빨리 하면 신호를 주고받기가 잘 안될 수 있음-->
+								</node>
+								<node name="skill" faceTarget="0" idx="17" />
+								<!-- Attack_Idle_A 상태로 가만히 서있기 -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

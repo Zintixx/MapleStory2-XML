@@ -1,0 +1,975 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" key="PhasePatternTrigger" value="1" />
+			<!-- 이 변수는 몬스터의 페이즈를 결정하는 것으로  PhasePatternTrigger.xml  트리거에 의해  이 숫자가 1씩 늘어나게 설정하였음 -->
+		</condition>
+		<condition name="hpLess" value="80">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="20">
+			<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="rand" from="10" to="1800" cooltime="8000" />
+			<node name="conditions">
+				<condition name="extraData" key="PhasePatternTrigger" value="1">
+					<!-- 1페이즈 때의 공격 형태, 이 변수 PhasePatternTrigger.xml  트리거에 의해 결정됨 -->
+					<aiPreset name="1Phase_AttackPattern" />
+				</condition>
+				<condition name="extraData" key="PhasePatternTrigger" value="2">
+					<!-- 2페이즈 때의 공격 형태 -->
+					<aiPreset name="2Phase_AttackPattern" />
+				</condition>
+				<condition name="true">
+					<!-- PhasePatternTrigger = 3, 즉 3페이즈 때의 공격 형태 -->
+					<aiPreset name="FinalPhase_AttackPattern" />
+					<!--최종 페이즈 전투 패턴-->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerModifyUserValue" triggerID="991" key="PhaseSumTotal" value="6">
+			<!-- 죽으면 MS2TriggerModel  ID : 991   PhaseSumTotal = PhaseSumTotal + 6 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 우뮤를 경정하게 함, 즉 죽어서 +6 해서 다른 보스들이 빨리 패턴 변화이 되도록 함-->
+			<node name="TriggerSetUserValue" triggerID="992" key="DeathYuperiaRbladerDark" value="1" />
+			<!-- 유페리아가 죽었으면 트리거를 통해서 죽었음을 알리는 메시지를 보여주기    -->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="1Phase_AttackPattern">
+			<!--1페이즈 전투 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="99,50,50">
+						<!-- 평타공격 2타 거리에 있으면 아래 스킬들을 사용, 레벨2이 거리체크 240-->
+						<node name="skill" cooltime="15000" initialCooltime="10000" idx="13">
+							<!--채찍공격-->
+							<node name="skill" faceTarget="0" idx="16">
+								<!--채찍 마무리 동작-->
+								<node name="standby" limit="3300" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="5">
+							<!-- 평타공격 2타 -->
+							<node name="standby" limit="3300" faceTarget="1" />
+						</node>
+						<node name="skill" idx="6">
+							<!-- 찌르기-->
+							<node name="skill" faceTarget="0" idx="7">
+								<!-- 1타 찌르고 빠지기 사용-->
+								<node name="standby" limit="3300" faceTarget="1" />
+								<!--  대기-->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="99,49,49,1,1">
+						<!-- 거리 2320, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+						<node name="skill" cooltime="15000" initialCooltime="14000" idx="13">
+							<!-- 채찍공격 -->
+							<node name="skill" faceTarget="0" idx="16">
+								<!--채찍 마무리 동작-->
+								<node name="standby" limit="3200" faceTarget="1" />
+							</node>
+						</node>
+						<node name="trace" limit="2100" cooltime="14000" skillIdx="5" />
+						<!-- 평타공격 거리로-->
+						<node name="trace" limit="2100" cooltime="14000" skillIdx="8">
+							<!-- 추적 스킬 거리로 -->
+							<node name="skill" idx="8">
+								<node name="select" prob="50,50">
+									<!-- 추적 찌르기 스킬 사용-->
+									<node name="skill" faceTarget="1" idx="5">
+										<!-- 평타공격 2타 사용-->
+										<node name="standby" limit="3200" faceTarget="1" />
+									</node>
+									<node name="standby" limit="2900" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="7000" idx="13">
+							<!-- 채찍공격 -->
+							<node name="skill" faceTarget="0" idx="16">
+								<!--채찍 마무리 동작-->
+								<node name="standby" limit="3100" faceTarget="1" />
+							</node>
+						</node>
+						<node name="move" destination="3900, 4800, 5860" limit="2400" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99,1">
+						<node name="move" destination="3900, 4800, 5860" limit="6000" cooltime="6000">
+							<!--맵 10~11시 쪽으로 이동함  -->
+							<node name="standby" limit="1800" faceTarget="1">
+								<node name="target" type="near" from="10" to="2300" />
+							</node>
+						</node>
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="near" from="10" to="2300" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="2Phase_AttackPattern">
+			<!--2페이즈 전투 패턴-->
+			<node name="conditions">
+				<condition name="extraData" key="TeleportActionOk" value="7" op="greaterEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!-- 2셋트 메인 전투판에 들어서야 순간이동 행위 하도록 거리 조건 체크를 설정함, 근처 물큐브에 빠져 있어도 거리체크 조건에 들어감-->
+							<node name="skill" faceTarget="0" idx="4">
+								<!--  레벨33: 순간이동, 컬리전 박스 올리지 않아서 때릴 수 있는 버전임-->
+								<node name="SetValue" key="TeleportActionOk" value="0">
+									<!--  이 변수 0 초기화 안하면 무한 텔레포트 하게 되어서 꼭 0 셋팅해야 함-->
+									<node name="conditions">
+										<condition name="extraData" key="TeleportPosCheck" value="1">
+											<node name="select" prob="33,33,33">
+												<!-- 중요: 순간이동 동착하고  standby 후에 꼭 제일 가까운 대상 타겟팅 하도록 함-->
+												<node name="teleport" pos="3600, 3000, 5860">
+													<!-- 5시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="5" />
+														</node>
+													</node>
+												</node>
+												<!-- 3페이즈에서는 순간이동 도착후 2.8초 standby 딜레이 주기-->
+												<node name="teleport" pos="3000, 3600, 5860">
+													<!-- 7시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="7" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3000, 4350, 5860">
+													<!-- 8시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="8" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="2">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="3000, 3600, 5860">
+													<!-- 7시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="7" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3000, 4350, 5860">
+													<!-- 8시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="8" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 4950, 5860">
+													<!-- 10시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="10" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="4">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="3000, 4350, 5860">
+													<!-- 8시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="8" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 4950, 5860">
+													<!-- 10시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="10" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4350, 4950, 5860">
+													<!-- 11시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="11" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="5">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="3600, 4950, 5860">
+													<!-- 10시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="10" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4350, 4950, 5860">
+													<!-- 11시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="11" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4950, 4350, 5860">
+													<!-- 1시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="7">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="4350, 4950, 5860">
+													<!-- 11시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="11" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4950, 4350, 5860">
+													<!-- 1시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="1" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4950, 3600, 5860">
+													<!-- 2시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="2" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="8">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="4950, 4350, 5860">
+													<!-- 1시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="1" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4950, 3600, 5860">
+													<!-- 2시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="2" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4350, 3000, 5860">
+													<!-- 4시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="4" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="10">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="4950, 3600, 5860">
+													<!-- 2시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="2" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4350, 3000, 5860">
+													<!-- 4시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="4" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 3000, 5860">
+													<!-- 5시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="5" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="11">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="4350, 3000, 5860">
+													<!-- 4시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="4" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 3000, 5860">
+													<!-- 5시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="5" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3000, 3600, 5860">
+													<!-- 7시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="7" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="33,33,33">
+												<!-- TeleportPosCheck = 0 인 경우로 최초 텔레포트 할때 딱 한번 여기 실행할 것임-->
+												<node name="teleport" pos="4950, 4350, 5860">
+													<!-- 1시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="1" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 3000, 5860">
+													<!-- 5시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="5" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 4950, 5860">
+													<!-- 10시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="10" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1100" faceTarget="1" />
+							<!-- 아무것도 안함-->
+						</condition>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="5">
+					<!-- 평타공격 2타 거리에 있으면 아래 스킬들을 사용, 레벨2이 거리체크 240-->
+					<node name="SetValue" key="TeleportActionOk" value="1" isModify="1">
+						<node name="select" prob="99,50,50">
+							<!-- 공격 행동 할 때마다 이 변수 1씩 더해서 일정 수 이상 되면 텔레포트 하도록 함-->
+							<node name="skill" cooltime="15000" isKeepBattle="true" idx="13">
+								<!--채찍공격-->
+								<node name="skill" faceTarget="0" idx="16" />
+								<!--채찍 마무리 동작-->
+								<node name="target" type="near" from="10" to="2800" />
+								<!-- 가까이 붙으면서 공략하는 요소가 있어서 공격 행동 후 항상 자주 제일 가까운 대상 우선 타겟팅 하는 기능을 부여함-->
+								<node name="standby" limit="3200" faceTarget="1" />
+							</node>
+							<node name="skill" idx="5">
+								<!-- 평타공격 2타-->
+								<node name="standby" limit="3300" faceTarget="1">
+									<node name="target" type="near" from="10" to="2300" />
+								</node>
+							</node>
+							<node name="skill" isKeepBattle="true" idx="6">
+								<!-- 찌르기 -->
+								<node name="skill" faceTarget="0" idx="7" />
+								<!-- 1타 찌르고 빠지기 사용-->
+								<node name="target" type="near" from="10" to="2800" />
+								<node name="standby" limit="3300" faceTarget="1" />
+								<!-- 0.7초간 대기-->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<!-- 레벨31: 거리 450 이내,  10인 최종 던전 2셋트 전투판에 맞는 정밀한 거리체크 용도, 이거 유페리아 퇴장연출 스킬 데이터임 -->
+					<node name="SetValue" key="TeleportActionOk" value="1" isModify="1">
+						<node name="select" prob="30,30,30,9,1">
+							<!-- 공격 행동 할 때마다 이 변수 1씩 더해서 일정 수 이상 되면 텔레포트 하도록 함-->
+							<node name="trace" limit="2000" cooltime="12000" skillIdx="8">
+								<!-- 추적 스킬 거리로 다가감 2초간 지속-->
+								<node name="skill" isKeepBattle="true" idx="8">
+									<!-- 추적스킬 사용-->
+									<node name="skill" faceTarget="1" idx="5" />
+									<!-- 추적스킬 사용하여 다가가 평타공격 2타 사용-->
+									<node name="target" type="near" from="10" to="2800" />
+									<node name="standby" limit="3300" faceTarget="1" />
+								</node>
+							</node>
+							<node name="trace" limit="2000" cooltime="12000" skillIdx="6">
+								<!-- 추적 스킬 거리로 다가감 2초간 지속-->
+								<node name="skill" isKeepBattle="true" idx="6">
+									<!-- 찌르기 -->
+									<node name="skill" faceTarget="1" idx="7" />
+									<!-- 1타 찌르고 빠지기 사용-->
+									<node name="target" type="near" from="10" to="2800" />
+									<node name="standby" limit="3500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="12000" isKeepBattle="true" idx="13">
+								<!-- 채찍공격 -->
+								<node name="skill" faceTarget="0" idx="16" />
+								<!--채찍 마무리 동작-->
+								<node name="target" type="near" from="10" to="2800" />
+								<node name="standby" limit="3500" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="62000" idx="11">
+								<!--그린 라펜타 웨이브, 거대 투사체 , 레벨12가 퀘스트용 던전용도임, 각종 상태이상 없는 난이도 쉬운거 -->
+								<node name="target" type="near" from="10" to="2500">
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+							</node>
+							<node name="standby" limit="1200" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="9">
+					<!-- 거리 2500  같은 높이 위치, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+					<node name="say" message="$YuperiaRbladerDark_TwoStage_LongCheck$" durationTick="6000" delayTick="0">
+						<node name="select" prob="9999,60,24,15,1">
+							<!--(1)처음에는 무조건 이거 사용 -->
+							<node name="standby" limit="900" faceTarget="1" cooltime="7300" isKeepBattle="true">
+								<!--그린 라펜타 웨이브, 거대 투사체 , 레벨2가 10인 최종 던전용, 공속 느리고 발사체 속도 느린것임-->
+								<node name="target" type="near" from="10" to="2800" />
+								<!--제일 가까운 대상 타겟팅 잡기, 이때 맵 중앙 타겟팅 했더니 근거리가 넘 불리해서 이때 유페리아 한테 가까이 붙으면 붙은 대상에게 타겟팅 가도록 설정함 -->
+								<node name="skill" faceTarget="1" idx="11" />
+								<!--그린 라펜타 웨이브, 거대 투사체 , 레벨12가 퀘스트용 던전용도임, 각종 상태이상 없는 난이도 쉬운거 -->
+								<node name="standby" limit="3600" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2800" />
+								<node name="SetValue" key="TeleportActionOk" value="2" isModify="1" />
+								<!--플레이어가 유페리아에게 가까이 다가가서 견제하지 않으면 더 자주 텔레포트 하도록 하기 위해 TeleportActionOk  3이상 더함, 한번 공격하고 바로 텔레포트 하도록  -->
+							</node>
+							<!--(2)이후 플레이어가 가까이 붙지 않으면 아래 3개 스킬 랜덤 선택함 -->
+							<node name="standby" limit="500" faceTarget="1" cooltime="7300" isKeepBattle="true">
+								<!--그린 라펜타 웨이브, 거대 투사체 , 레벨2가 10인 최종 던전용, 공속 느리고 발사체 속도 느린것임-->
+								<node name="target" type="near" from="10" to="2800" />
+								<!--제일 가까운 대상 타겟팅 잡기, 이때 맵 중앙 타겟팅 했더니 근거리가 넘 불리해서 이때 유페리아 한테 가까이 붙으면 붙은 대상에게 타겟팅 가도록 설정함 -->
+								<node name="skill" faceTarget="1" idx="11" />
+								<!--그린 라펜타 웨이브, 거대 투사체 , 레벨12가 퀘스트용 던전용도임, 각종 상태이상 없는 난이도 쉬운거 -->
+								<node name="standby" limit="3500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2800" />
+								<node name="SetValue" key="TeleportActionOk" value="2" isModify="1" />
+								<!--플레이어가 유페리아에게 가까이 다가가서 견제하지 않으면 더 자주 텔레포트 하도록 하기 위해 TeleportActionOk  3이상 더함, 한번 공격하고 바로 텔레포트 하도록  -->
+							</node>
+							<node name="standby" limit="500" faceTarget="1" cooltime="11300" isKeepBattle="true">
+								<!--, 2초 기절시킴-->
+								<node name="target" type="near" from="10" to="2800" />
+								<!--제일 가까운 대상 타겟팅 잡기, 이때 맵 중앙 타겟팅 했더니 근거리가 넘 불리해서 이때 유페리아 한테 가까이 붙으면 붙은 대상에게 타겟팅 가도록 설정함 -->
+								<node name="skill" faceTarget="1" idx="17" />
+								<!--채찍 3개 한번에 공격, 레벨14 기절기능 없음-->
+								<node name="standby" limit="3500" faceTarget="1" />
+								<node name="SetValue" key="TeleportActionOk" value="2" isModify="1" />
+								<!--플레이어가 유페리아에게 가까이 다가가서 견제하지 않으면 더 자주 텔레포트 하도록 하기 위해 TeleportActionOk  3이상 더함, 한번 공격하고 바로 텔레포트 하도록  -->
+							</node>
+							<node name="standby" limit="500" faceTarget="1" cooltime="27300" isKeepBattle="true">
+								<!--채찍 가운데 양끝 한번씩 총 3번 공격-->
+								<node name="target" type="near" from="10" to="2800" />
+								<!--제일 가까운 대상 타겟팅 잡기, 이때 맵 중앙 타겟팅 했더니 근거리가 넘 불리해서 이때 유페리아 한테 가까이 붙으면 붙은 대상에게 타겟팅 가도록 설정함 -->
+								<node name="skill" faceTarget="1" idx="13" />
+								<!--채찍 가운데 지점 공격-->
+								<node name="skill" faceTarget="0" idx="14" />
+								<!--채찍 왼쪽 지점 공격-->
+								<node name="skill" faceTarget="0" idx="15" />
+								<!--채찍 오른쪽 지점 공격-->
+								<node name="skill" faceTarget="0" idx="16" />
+								<!--채찍 마무리 동작-->
+								<node name="standby" limit="3600" faceTarget="1" />
+								<node name="SetValue" key="TeleportActionOk" value="2" isModify="1" />
+								<!--플레이어가 유페리아에게 가까이 다가가서 견제하지 않으면 더 자주 텔레포트 하도록 하기 위해 TeleportActionOk  3이상 더함, 한번 공격하고 바로 텔레포트 하도록  -->
+							</node>
+							<node name="standby" limit="1100" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1200" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="FinalPhase_AttackPattern">
+			<!--최종 페이즈 전투 패턴-->
+			<node name="conditions">
+				<condition name="extraData" key="TeleportActionOk" value="6" op="greaterEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!-- 2셋트 메인 전투판에 들어서야 순간이동 행위 하도록 거리 조건 체크를 설정함, 근처 물큐브에 빠져 있어도 거리체크 조건에 들어감-->
+							<node name="skill" faceTarget="0" idx="4">
+								<!--  레벨33: 순간이동, 컬리전 박스 올리지 않아서 때릴 수 있는 버전임-->
+								<node name="SetValue" key="TeleportActionOk" value="0">
+									<!--  이 변수 0 초기화 안하면 무한 텔레포트 하게 되어서 꼭 0 셋팅해야 함-->
+									<node name="conditions">
+										<condition name="extraData" key="TeleportPosCheck" value="1">
+											<node name="select" prob="33,33,33">
+												<!-- 중요: 순간이동 동착하고  standby 후에 꼭 제일 가까운 대상 타겟팅 하도록 함-->
+												<node name="teleport" pos="3600, 3000, 5860">
+													<!-- 5시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="5" />
+														</node>
+													</node>
+												</node>
+												<!-- 최종 페이즈에서는 순간이동 도착후 2초 standby 딜레이 주기-->
+												<node name="teleport" pos="3000, 3600, 5860">
+													<!-- 7시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="7" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3000, 4350, 5860">
+													<!-- 8시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="8" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="2">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="3000, 3600, 5860">
+													<!-- 7시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="7" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3000, 4350, 5860">
+													<!-- 8시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="8" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 4950, 5860">
+													<!-- 10시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="10" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="4">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="3000, 4350, 5860">
+													<!-- 8시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="8" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 4950, 5860">
+													<!-- 10시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="10" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4350, 4950, 5860">
+													<!-- 11시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="11" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="5">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="3600, 4950, 5860">
+													<!-- 10시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="10" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4350, 4950, 5860">
+													<!-- 11시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="11" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4950, 4350, 5860">
+													<!-- 1시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="7">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="4350, 4950, 5860">
+													<!-- 11시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="11" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4950, 4350, 5860">
+													<!-- 1시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="1" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4950, 3600, 5860">
+													<!-- 2시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="2" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="8">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="4950, 4350, 5860">
+													<!-- 1시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="1" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4950, 3600, 5860">
+													<!-- 2시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="2" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4350, 3000, 5860">
+													<!-- 4시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="4" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="10">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="4950, 3600, 5860">
+													<!-- 2시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="2" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="4350, 3000, 5860">
+													<!-- 4시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="4" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 3000, 5860">
+													<!-- 5시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="5" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="extraData" key="TeleportPosCheck" value="11">
+											<node name="select" prob="33,33,33">
+												<node name="teleport" pos="4350, 3000, 5860">
+													<!-- 4시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="4" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 3000, 5860">
+													<!-- 5시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="5" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3000, 3600, 5860">
+													<!-- 7시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="7" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="33,33,33">
+												<!-- TeleportPosCheck = 0 인 경우로 최초 텔레포트 할때 딱 한번 여기 실행할 것임-->
+												<node name="teleport" pos="4950, 4350, 5860">
+													<!-- 1시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="1" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 3000, 5860">
+													<!-- 5시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="5" />
+														</node>
+													</node>
+												</node>
+												<node name="teleport" pos="3600, 4950, 5860">
+													<!-- 10시-->
+													<node name="standby" limit="3940" faceTarget="1">
+														<node name="target" type="near" from="10" to="2500">
+															<node name="SetValue" key="TeleportPosCheck" value="10" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1100" faceTarget="1" />
+							<!-- 아무것도 안함-->
+						</condition>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="5">
+					<!-- 평타공격 2타 거리에 있으면 아래 스킬들을 사용, 레벨2이 거리체크 240-->
+					<node name="SetValue" key="TeleportActionOk" value="1" isModify="1">
+						<node name="select" prob="599,99,50,50">
+							<!-- 공격 행동 할 때마다 이 변수 1씩 더해서 일정 수 이상 되면 텔레포트 하도록 함-->
+							<!--순간이동 후 세갈래  채찍 스턴 공격-->
+							<node name="standby" limit="200" faceTarget="1" cooltime="42000">
+								<node name="skill" faceTarget="0" idx="3">
+									<node name="select" prob="25,25,25,25">
+										<node name="teleport" pos="4600, 3963, 5860" cooltime="122000" isKeepBattle="true">
+											<!-- 2시-->
+											<node name="target" type="near" center="3975, 3975, 5860" />
+											<!--2셋트 맵 정중앙을 기준으로 타겟팅 잡음 -->
+											<node name="skill" faceTarget="1" idx="17" />
+											<!--채찍 3개 한번에 공격, 레벨14는 기절 기능 없음-->
+											<node name="target" type="near" from="10" to="2800" />
+											<node name="standby" limit="3300" faceTarget="1" />
+										</node>
+										<node name="teleport" pos="3980, 3330, 5860" cooltime="122000" isKeepBattle="true">
+											<!-- 4시-->
+											<node name="target" type="near" center="3975, 3975, 5860" />
+											<!--2셋트 맵 정중앙을 기준으로 타겟팅 잡음 -->
+											<node name="skill" faceTarget="1" idx="17" />
+											<!--채찍 3개 한번에 공격, 레벨14는 기절 기능 없음-->
+											<node name="target" type="near" from="10" to="2800" />
+											<node name="standby" limit="3300" faceTarget="1" />
+										</node>
+										<node name="teleport" pos="3300, 3984, 5860" cooltime="122000" isKeepBattle="true">
+											<!-- 8시-->
+											<node name="target" type="near" center="3975, 3975, 5860" />
+											<!--2셋트 맵 정중앙을 기준으로 타겟팅 잡음 -->
+											<node name="skill" faceTarget="1" idx="17" />
+											<!--채찍 3개 한번에 공격, 레벨14는 기절 기능 없음-->
+											<node name="target" type="near" from="10" to="2800" />
+											<node name="standby" limit="3300" faceTarget="1" />
+										</node>
+										<node name="teleport" pos="3975, 4630, 5860" cooltime="92000" isKeepBattle="true">
+											<!-- 10시-->
+											<node name="target" type="near" center="3975, 3975, 5860" />
+											<!--2셋트 맵 정중앙을 기준으로 타겟팅 잡음 -->
+											<node name="skill" faceTarget="1" idx="17" />
+											<!--채찍 3개 한번에 공격, 레벨14는 기절 기능 없음-->
+											<node name="target" type="near" from="10" to="2800" />
+											<node name="standby" limit="3500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="15000" isKeepBattle="true" idx="13">
+								<!--채찍공격-->
+								<node name="skill" faceTarget="0" idx="16" />
+								<!--채찍 마무리 동작-->
+								<node name="target" type="near" from="10" to="2800" />
+								<!-- 가까이 붙으면서 공략하는 요소가 있어서 공격 행동 후 항상 자주 제일 가까운 대상 우선 타겟팅 하는 기능을 부여함-->
+								<node name="standby" limit="3300" faceTarget="1" />
+							</node>
+							<node name="skill" idx="5">
+								<!-- 평타공격 2타-->
+								<node name="standby" limit="3500" faceTarget="1">
+									<node name="target" type="near" from="10" to="2300" />
+								</node>
+							</node>
+							<node name="skill" isKeepBattle="true" idx="6">
+								<!-- 찌르기 -->
+								<node name="skill" faceTarget="0" idx="7" />
+								<!-- 1타 찌르고 빠지기 사용-->
+								<node name="target" type="near" from="10" to="2800" />
+								<node name="standby" limit="3500" faceTarget="1" />
+								<!-- 0.7초간 대기-->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<!-- 레벨31: 거리 450 이내,  10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도, 이거 유페리아 퇴장연출 스킬 데이터임 -->
+					<node name="SetValue" key="TeleportActionOk" value="1" isModify="1">
+						<node name="select" prob="30,30,30,9,1">
+							<!-- 공격 행동 할 때마다 이 변수 1씩 더해서 일정 수 이상 되면 텔레포트 하도록 함-->
+							<node name="trace" limit="2000" cooltime="12000" skillIdx="8">
+								<!-- 추적 스킬 거리로 다가감 2초간 지속-->
+								<node name="skill" isKeepBattle="true" idx="8">
+									<!-- 추적스킬 사용-->
+									<node name="skill" faceTarget="1" idx="5" />
+									<!-- 추적스킬 사용하여 다가가 평타공격 2타 사용-->
+									<node name="target" type="near" from="10" to="2800" />
+									<node name="standby" limit="3200" faceTarget="1" />
+								</node>
+							</node>
+							<node name="trace" limit="2000" cooltime="12000" skillIdx="6">
+								<!-- 추적 스킬 거리로 다가감 2초간 지속-->
+								<node name="skill" isKeepBattle="true" idx="6">
+									<!-- 찌르기 -->
+									<node name="skill" faceTarget="1" idx="5" />
+									<!--  찌르고 다음에 2연타 휘두르기-->
+									<node name="target" type="near" from="10" to="2800" />
+									<node name="standby" limit="3300" faceTarget="1" />
+								</node>
+							</node>
+							<node name="standby" limit="200" faceTarget="1" cooltime="12000" isKeepBattle="true">
+								<!--채찍 가운데 양끝 한번씩 총 3번 공격-->
+								<node name="target" type="near" center="3975, 3975, 5860" />
+								<!--2셋트 맵 정중앙을 기준으로 타겟팅 잡음 -->
+								<node name="skill" faceTarget="1" idx="13" />
+								<!--채찍 가운데 지점 공격-->
+								<node name="skill" faceTarget="0" idx="14" />
+								<!--채찍 왼쪽 지점 공격-->
+								<node name="skill" faceTarget="0" idx="15" />
+								<!--채찍 오른쪽 지점 공격-->
+								<node name="skill" faceTarget="0" idx="16" />
+								<!--채찍 마무리 동작-->
+								<node name="target" type="near" from="10" to="2800" />
+								<node name="standby" limit="3500" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="62000" idx="12">
+								<!--그린 라펜타 웨이브, 거대 투사체 , 레벨13이 퀘스트용 던전용도임, 각종 상태이상 없는 난이도 쉬운거 -->
+								<node name="target" type="near" from="10" to="2500">
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+							</node>
+							<node name="standby" limit="1200" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="10">
+					<!-- 거리 2500  같은 높이 위치, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+					<node name="say" message="$YuperiaRbladerDark_TwoStage_LongCheck$" durationTick="6000" delayTick="0">
+						<node name="select" prob="70,29,1">
+							<!-- 아래 3개 스킬 랜덤 선택함 -->
+							<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+								<!--그린 라펜타 웨이브, 거대 투사체 , 레벨2가 10인 최종 던전용, 공속 느리고 발사체 속도 느린것임-->
+								<node name="target" type="near" from="10" to="2800" />
+								<!--제일 가까운 대상 타겟팅 잡기, 이때 맵 중앙 타겟팅 했더니 근거리가 넘 불리해서 이때 유페리아 한테 가까이 붙으면 붙은 대상에게 타겟팅 가도록 설정함 -->
+								<node name="skill" faceTarget="1" idx="12" />
+								<!--그린 라펜타 웨이브, 거대 투사체 , 레벨13이 퀘스트용 던전용도임, 각종 상태이상 없는 난이도 쉬운거 -->
+								<node name="standby" limit="3400" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2800" />
+								<node name="SetValue" key="TeleportActionOk" value="2" isModify="1" />
+								<!--플레이어가 유페리아에게 가까이 다가가서 견제하지 않으면 더 자주 텔레포트 하도록 하기 위해 TeleportActionOk  4이상 더함, 한번 공격하고 바로 텔레포트 하도록  -->
+							</node>
+							<node name="standby" limit="500" faceTarget="1" cooltime="9300" isKeepBattle="true">
+								<!--채찍 3개 한번에 공격, 2초 기절시킴-->
+								<node name="target" type="near" from="10" to="2800" />
+								<!--제일 가까운 대상 타겟팅 잡기, 이때 맵 중앙 타겟팅 했더니 근거리가 넘 불리해서 이때 유페리아 한테 가까이 붙으면 붙은 대상에게 타겟팅 가도록 설정함 -->
+								<node name="skill" faceTarget="1" idx="17" />
+								<!--채찍 3개 한번에 공격, 레벨14 기절기능 없음-->
+								<node name="standby" limit="3300" faceTarget="1" />
+								<node name="SetValue" key="TeleportActionOk" value="2" isModify="1" />
+								<!--플레이어가 유페리아에게 가까이 다가가서 견제하지 않으면 더 자주 텔레포트 하도록 하기 위해 TeleportActionOk  4이상 더함, 한번 공격하고 바로 텔레포트 하도록  -->
+							</node>
+							<node name="standby" limit="1100" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1200" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

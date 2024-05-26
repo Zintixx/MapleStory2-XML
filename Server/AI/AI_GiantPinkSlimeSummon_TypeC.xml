@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 15초마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="15000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<!--#1페이즈 -->
+			<node name="conditions">
+				<condition name="hpOver" value="90">
+					<!--*****************HP 80% 이상 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="70,5">
+								<!--근거리용 ai -->
+								<node name="skill" cooltime="4000" idx="1">
+									<!--기본공격2회 -->
+									<node name="skill" idx="1" />
+									<node name="skill" idx="2" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="skill" idx="1" />
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,5">
+								<node name="trace" limit="5000" skillIdx="2">
+									<!--기본 공격-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="100,0">
+						<!--#2페이즈 -->
+						<node name="skill" cooltime="4000" idx="3">
+							<!--기본공격2회 후 바닥 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="100,5">
+									<!--근거리용 ai -->
+									<node name="skill" cooltime="4000" idx="1">
+										<!--기본공격2회 후 바닥 -->
+										<node name="skill" idx="1" />
+										<node name="skill" idx="2" />
+										<node name="skill" idx="3" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

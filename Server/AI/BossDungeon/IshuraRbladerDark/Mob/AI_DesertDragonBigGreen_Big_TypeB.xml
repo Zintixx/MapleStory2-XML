@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetMasterValue" key="MonsterNumber" value="1" isModify="1" />
+				<!--전투 상태가 되면 보스가 졸몹 마리수 체크할 때 +1 하기-->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="200" faceTarget="1" cooltime="9000">
+				<node name="target" type="near" center="2550, 450, 4060" />
+			</node>
+			<!--난간 아래로 내려가는 상황이 종종 있어서 자기가 스폰된 지점으로 돌아가도록 하는 설정을 넣음 -->
+			<node name="move" destination="2550, 450, 4060" limit="15000" cooltime="3500" />
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<!--올려치기 사정거리에 있으면-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="100,50">
+								<!--바닥치기 사정거리에 있고 바닥 치기 사정거리에 있으면-->
+								<node name="skill" idx="2">
+									<!--바닥치기 공격, 레벨3: 기절기능-->
+									<node name="standby" limit="2800" faceTarget="1" />
+								</node>
+								<node name="standby" limit="700" faceTarget="1">
+									<node name="skill" idx="2">
+										<!--바닥치기 공격, 레벨3: 기절기능-->
+										<node name="standby" limit="2700" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="skill" idx="1">
+									<!--올려치기 공격-->
+									<node name="standby" limit="3200" faceTarget="1" />
+								</node>
+								<node name="standby" limit="700" faceTarget="1">
+									<node name="skill" idx="1">
+										<!--올려치기 공격-->
+										<node name="standby" limit="2700" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="hpOver" value="90">
+							<!--전투 초반 들어서자마자 trace 실행하면 건너편 대상을 공격하기 위해 맵 구석에 파묻히는 문제가 있어서, HP가 어느정도 깍기면 추적 행동 하도록 함-->
+							<node name="standby" limit="800" faceTarget="1" />
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="700" skillIdx="1" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기-->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+				<!--전투 상태가 되면 보스가 졸몹 마리수 체크할 때 -1 하기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

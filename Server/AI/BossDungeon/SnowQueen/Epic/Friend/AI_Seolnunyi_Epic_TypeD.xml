@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="ActionMode" value="0" />
+				<!-- 나중에 보스한테 이 변수를 1로 전해 받을 것임-->
+				<node name="move" destination="-300, -150, 1450" limit="15900" />
+				<!-- 전투판 중앙으로 이동하기-->
+				<node name="standby" limit="9000" faceTarget="1" />
+				<node name="target" type="near" from="10" to="1150" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="ActionMode" value="3">
+					<!-- 보스가 2페이즈 전투 끝나면 1층에 있던 설눈이가 2층으로 올라와야 하기 때문에 2층에 설눈이 소호나하고 자신과 전에 소환했던 몹  제거하기 -->
+					<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+						<node name="SetSlaveValue" key="SummonDeath" value="1" />
+						<!--소환몹에게 자살 명령 내리기-->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="999" master="None" summonPos="-1350, 730, 3700" summonRot="0,0,75" />
+						<!-- 21421338 코드가 2층 중앙 전투판에서 싸우는 설눈이임 -->
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="2">
+					<node name="select" prob="99999,299,0">
+						<!-- 보스가 1페이즈 전투 끝나고 위쪽 지점으로 올라갈 때 설눈이한테  ActionMode=2 신호를 보냄, 이 신호 받으면 졸몹 소환시키고 졸몹과 싸우게 하고 말풍선으로 플레이어보고 올라가라고 함-->
+						<node name="standby" limit="3000" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="move" destination="-345, -200, 1450" limit="15900" />
+							<node name="standby" limit="3000" faceTarget="1" />
+							<!-- 	<summon npcId="21421337" npcCount="1" npcCountMax="1" group="100" master = "None"  summonPosOffset="0, 0, 0" summonRot="0,0,0" prob="100"/> 
+					<event eventName="Remove" target="Me" />  자기 자신 스스로 제거하기 -->
+						</node>
+						<node name="standby" limit="100" faceTarget="1" cooltime="6000" isKeepBattle="true">
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" summonPos="-450, -500, 1450" summonRot="0,0,-50" />
+							<!--검사-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="202" summonPos="-150, -500, 1450" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="203" summonPos="-600, -250, 1450" summonRot="0,0,-50" />
+							<!--창-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="204" summonPos="-700, 50, 1450" summonRot="0,0,-50" />
+							<!--검사-->
+							<node name="target" type="near" from="10" to="1150" />
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<!--2층 위로 올라간  스노우퀸을 타겟팅하고 하고 있지 않으면  일반적인 공격 행위를 함  -->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="70,16,10,1,3">
+											<!--망치 휘두르기 사정거리까지 다가가기 -->
+											<node name="skill" cooltime="2500" idx="2">
+												<node name="select" prob="99,1">
+													<!--망치 휘두르기 -->
+													<node name="say" message="$Seolnunyi_Elevator$" durationTick="15000" delayTick="0" cooltime="999999" />
+													<node name="standby" limit="300" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" cooltime="24000" idx="3" />
+											<!--망치 강력 내려치기 -->
+											<node name="standby" limit="100" faceTarget="1" cooltime="4000">
+												<node name="select" prob="34,33,33">
+													<!--몬스터 끼리 뭉쳐있는 것이 어색해 보여 거리 벌리게끔 설정함 -->
+													<node name="move" destination="-300, -750, 1450" limit="15900" cooltime="8000" />
+													<node name="move" destination="-900, -150, 1450" limit="15900" cooltime="8000" />
+													<node name="move" destination="-750, -600, 1450" limit="15900" />
+												</node>
+											</node>
+											<node name="skill" idx="2">
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="target" type="near" from="10" to="650" cooltime="20000" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" limit="5000" skillIdx="2" />
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,50">
+									<!--2층 위로 올라간 스노우퀸을 타겟팅하고 있지면 타겟팅 다시 잡기  -->
+									<node name="move" destination="-345, -200, 1450" limit="8000" cooltime="12000" />
+									<node name="standby" limit="100" faceTarget="1">
+										<node name="target" type="rand" from="10" to="2600" />
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="1">
+					<node name="select" prob="9999,1">
+						<!-- 보스의 전투 졸몹 다 잡으면 맵 중앙에 불판 깔도록 함 -->
+						<node name="standby" limit="2000" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<!--   보스한때 가끔  ActionMode=1 신호를 받는 버그가 의심되는데, 최초 한번만 실행하도록 쿨타임 넣음-->
+							<node name="move" destination="-300, -150, 1400" limit="15900" />
+							<node name="standby" limit="2000" faceTarget="1" />
+							<node name="skill" facePos="-900, -750, 1400" idx="4" />
+							<!--불판은 엘리페이터 바로 아래쪽에 설치하도록 함-->
+							<node name="SetValue" key="ActionMode" value="0" />
+							<!--   0: 평상시 상태 -->
+							<node name="standby" limit="6000" faceTarget="1" />
+						</node>
+						<node name="standby" limit="100" faceTarget="1">
+							<!--   보스한때 가끔  ActionMode=1 신호를 받는 버그가 의심되는데, 여기서 신호 받아도  초기화 해버림-->
+							<node name="SetValue" key="ActionMode" value="0" />
+							<!--   0: 평상시 상태 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="77,10,5,3,5">
+								<!--망치 휘두르기 사정거리까지 다가가기 -->
+								<node name="skill" cooltime="3000" idx="2" />
+								<!--망치 휘두르기 -->
+								<node name="skill" cooltime="23000" idx="3" />
+								<!--망치 강력 내려치기 -->
+								<node name="standby" limit="500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="650" cooltime="20000" />
+								<node name="move" destination="-150, 0, 1450" limit="15900" cooltime="20000" />
+								<!-- 종종 전투판 중앙으로 이동하기-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="5000" skillIdx="2" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

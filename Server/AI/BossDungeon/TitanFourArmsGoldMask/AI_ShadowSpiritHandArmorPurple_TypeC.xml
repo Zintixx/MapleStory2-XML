@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="3000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--멀리 있을때 레이저, 가까이 있으면 일반 주먹, 큐브 높이 1칸 차이나는 건너편 지형 공격 가능-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<!--거리 550 이내에 있으면-->
+					<node name="skill" idx="1">
+						<!--강럭주먹 1타-->
+						<node name="skill" faceTarget="0" idx="2">
+							<!--강럭주먹 2타-->
+							<node name="standby" limit="1700" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="50,50">
+								<!--거리 1500 이내에 있으면-->
+								<node name="skill" idx="3">
+									<!--양손 지속 레이저-->
+									<node name="standby" limit="2100" faceTarget="1" />
+								</node>
+								<node name="standby" limit="700" faceTarget="1">
+									<node name="skill" idx="3">
+										<!--양손 지속 레이저-->
+										<node name="standby" limit="1700" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="90,10">
+								<node name="trace" limit="4500" skillIdx="3" />
+								<!--거리 1500-->
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,1000,0">
+			<!--최초 1회-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="999999999">
+				<node name="jump" pos="-150, 150, 1850" speed="800" heightMultiplier="0.8" />
+				<node name="say" message="$Arena__AI_PIGGOBLIN__0$" durationTick="2500" delayTick="0" />
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="target" type="rand" from="10" to="1000" />
+			</node>
+			<!--주기적인 타겟 전환-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--#1페이즈 -->
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<node name="select" prob="9999,100">
+						<node name="skill" faceTarget="0" cooltime="20000" initialCooltime="12000" idx="3" />
+						<!--포효-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="6">
+								<node name="select" prob="40,40,40,40">
+									<!--망치 내려찍기-->
+									<node name="skill" idx="7">
+										<node name="select" prob="100,100">
+											<node name="standby" limit="2000" faceTarget="1" />
+											<node name="skill" idx="12" />
+											<!--망치 빠르게 내려찍기-->
+										</node>
+									</node>
+									<node name="skill" cooltime="20000" idx="8">
+										<node name="select" prob="100,100">
+											<!--망치 휘두르기-->
+											<node name="standby" limit="2000" faceTarget="1" />
+											<node name="skill" idx="12" />
+											<!--망치 빠르게 내려찍기-->
+										</node>
+									</node>
+									<node name="skill" cooltime="20000" idx="9">
+										<node name="skill" idx="8" />
+										<node name="select" prob="100,100">
+											<!--망치연속휘두르기-->
+											<node name="standby" limit="2000" faceTarget="1" />
+											<node name="skill" idx="12" />
+										</node>
+									</node>
+									<node name="skill" cooltime="20000" idx="2">
+										<!--망치 회전-->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="2500" skillIdx="5" />
+								<!--이동 후 회전 공격-->
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--#2페이즈 -->
+				<condition name="hpOver" value="40">
+					<node name="select" prob="9999,100,100,100,100">
+						<node name="skill" faceTarget="0" cooltime="13000" idx="4" />
+						<!--포효-->
+						<node name="skill" faceTarget="0" cooltime="15000" initialCooltime="5000" idx="1" />
+						<!--망치 내려찍기-->
+						<node name="skill" faceTarget="0" cooltime="15000" initialCooltime="5000" idx="10">
+							<!--대쉬-->
+							<node name="skill" idx="11" />
+							<node name="skill" idx="2" />
+						</node>
+						<node name="skill" faceTarget="0" cooltime="15000" initialCooltime="5000" idx="11">
+							<node name="skill" idx="2" />
+						</node>
+						<!--대쉬 후 회전 공격-->
+						<!--1페이즈보다 짧은 대기 시간-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="6">
+								<node name="select" prob="40,40,40,40">
+									<node name="skill" idx="7">
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="150000" idx="8">
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="150000" idx="9">
+										<node name="skill" idx="8" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="150000" idx="2">
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="2500" skillIdx="5" />
+								<!--이동 후 회전 공격-->
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!--#3페이즈 -->
+				<condition name="true">
+					<node name="select" prob="9999,100,100,100,100,100">
+						<node name="skill" faceTarget="0" cooltime="7500" idx="4" />
+						<!--포효-->
+						<node name="skill" faceTarget="0" cooltime="12000" initialCooltime="5000" idx="1" />
+						<!--망치 내려찍기-->
+						<node name="skill" faceTarget="0" cooltime="12000" initialCooltime="5000" idx="10">
+							<!--대쉬-->
+							<node name="skill" idx="11" />
+							<node name="skill" idx="2" />
+						</node>
+						<node name="skill" faceTarget="0" cooltime="10000" initialCooltime="5000" idx="11" >
+							<node name="skill" idx="2" />
+						</node>
+						<!--대쉬 후 회전 공격-->
+						<node name="skill" faceTarget="1" cooltime="10000" idx="9">
+							<node name="skill" idx="8" />
+						</node>
+						<!--망치연속휘두르기-->
+						<!--2페이즈보다 짧은 대기 시간-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="6">
+								<node name="select" prob="40,40,40,40">
+									<node name="skill" idx="7">
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="10000" idx="8">
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="10000" idx="9">
+										<node name="skill" idx="8" />
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="10000" idx="2">
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="2500" skillIdx="5" />
+								<!--이동 후 회전 공격-->
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="select" prob="0,0">
+			<node name="say" message="$Arena__AI_PIGGOBLIN__1$" durationTick="3000" delayTick="0" />
+			<node name="TriggerSetUserValue" triggerID="999991" key="RoundEnd" value="1" />
+		</node>
+	</battleEnd>
+</npcAi>

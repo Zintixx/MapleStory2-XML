@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<!--BuffCheck.xml 트리거에 설정된 MonsterMany 변수 1 더하기-->
+				<node name="TriggerModifyUserValue" triggerID="553" key="MonsterMany" value="1" />
+				<!--전투 상태가 되면 트리거가 졸몹 마리수 체크할 때 +1 하기,   TriggerModelID =  552 -->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999,9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="target" type="near" center="-150, 900, 1050" cooltime="4000" />
+			<!-- 자신 해당 쿠션 위치 우선 타겟팅-->
+			<node name="buff" type="add" id="50000349" level="1" cooltime="5000" />
+			<!-- 방업 버프 주기적으로 사용-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="50,30,19,1">
+						<node name="skill" idx="3">
+							<!--양손 공격 -->
+							<node name="standby" limit="1200" faceTarget="0" />
+						</node>
+						<node name="skill" idx="2">
+							<!--한손 공격 -->
+							<node name="standby" limit="1100" faceTarget="0" />
+						</node>
+						<node name="skill" idx="4">
+							<!--돌진 공격 -->
+							<node name="standby" limit="1500" faceTarget="0" />
+						</node>
+						<node name="standby" limit="500" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="52,47,1">
+								<node name="skill" idx="2">
+									<!--한손 공격 -->
+									<node name="standby" limit="1100" faceTarget="0" />
+								</node>
+								<node name="skill" idx="4">
+									<!--돌진 공격 -->
+									<node name="standby" limit="1400" faceTarget="0" />
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="50,49,1">
+								<node name="skill" idx="4">
+									<!--돌진 공격 -->
+									<node name="standby" limit="1600" faceTarget="0" />
+								</node>
+								<node name="trace" limit="2000" skillIdx="3" />
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="TriggerModifyUserValue" triggerID="553" key="MonsterMany" value="-1" />
+				<!--전투 상태가 되면 트리거가 졸몹 마리수 체크할 때 +1 하기,   TriggerModelID =  552 -->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--일정 시간마다 발록 기절 시키는 공격 사용-->
+			<node name="standby" limit="2000" faceTarget="1" cooltime="85000">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="2">
+						<!--발록 기절 스킬 거리 측정용 -->
+						<node name="skill" idx="2">
+							<!--발록 기절 스킬 -->
+							<node name="standby" limit="3000" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="6000" skillIdx="2">
+							<!--발록 기절 스킬 거리 측정용 -->
+							<node name="skill" idx="2">
+								<!--발록 기절 스킬 -->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+			<!--*************************************-->
+			<!--평상시 전투 상황-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="50,49,19,31,1">
+						<node name="skill" cooltime="45000" initialCooltime="43000" idx="2">
+							<!--발록 기절 스킬 -->
+							<node name="standby" limit="3000" faceTarget="1" />
+						</node>
+						<node name="skill" idx="1">
+							<!--2연타 휘두르기 -->
+							<node name="runaway" till="150" limit="2000">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="10000" initialCooltime="10000" idx="3">
+							<!--2연타 휘두르기 후 폼잡기 -->
+							<node name="runaway" till="150" limit="2000">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="runaway" till="400" limit="2000">
+							<!--너무 보스하고 붙어있으면 어색하니 가끔 뒤로 이동함 -->
+							<node name="skill" idx="4">
+								<!--돌진 공격 -->
+								<node name="runaway" till="210" limit="2000" />
+							</node>
+						</node>
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<node name="skill" idx="4">
+								<!--돌진 공격 -->
+								<node name="runaway" till="210" limit="2000" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="80,20">
+								<node name="trace" limit="2500" skillIdx="4" />
+								<node name="trace" limit="2500" skillIdx="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

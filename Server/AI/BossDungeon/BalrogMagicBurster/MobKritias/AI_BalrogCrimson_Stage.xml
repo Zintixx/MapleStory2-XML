@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--졸구간에서 같은편 모스터에게 보호 버프를 부여하는 역할함 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="120" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="ColleagueMonsterMany" value="12" />
+				<!-- 크림슨 발록을 제외한 동료 몬스터는 12마리임 -->
+				<!-- 동료 몬스터가 얼만큼 남았는지 체크하여 얼마 안남았으면 버프 부여 행동 안하고 일반 공격 행동 하도록 함, 원래는 
+					이 변수 0으로 셋팅하고  돌요 몬스터가 등장해 전투 상태가 되면 +1 하고 죽으면 -1 하는 방식으로 설정해야 하는데, 
+					동료 몬스터가 등장해 신호 보내도 크림슨발록은 약간 늦게 등장해서 이 신호를 제때 못받기 때문에 이런 식으로 함, 어차피 수치 오차가 나와도 별 문제 없기 때문에 이런 방식으로 함-->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="StageSummonMany" value="1" isModify="1" />
+				<!--전투 상태가 되면 소환몹 마리수 체크 +1 신호 보냄-->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="near" from="2" to="2400" cooltime="6000" />
+			<node name="conditions">
+				<condition name="extraData" key="SummonStageDeath" value="1">
+					<!--  인페르녹이 졸구간에서 HP 10% 이상 깎이면 이 신호를 보냄-->
+					<node name="skill" idx="4" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<aiPreset name="Normal_Attack" />
+					<!-- 평상시 공격 행동을 정의한 부분 -->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="StageSummonMany" value="-1" isModify="1" />
+				<!--죽으면  소환몹 마리수 체크 -1 신호 보냄-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<!-- 할퀴기 사정거리 이내면, 레벨2: 돌진없는 공격 -->
+					<node name="skill" idx="2">
+						<node name="select" prob="100,100,100">
+							<!--할퀴기 -->
+							<node name="SetValue" key="AttackDelay" value="1" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="AttackDelay" value="2" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="AttackDelay" value="3" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="3">
+					<!--  같은편 몬스터에게 보호막 버프 부여하기-->
+					<node name="conditions">
+						<condition name="extraData" key="ColleagueMonsterMany" value="4" op="greaterEqual">
+							<node name="select" prob="99999,100">
+								<!--  같은편 몬스터 4마리 이상 있다면, 보호 버프 부여 행동하기-->
+								<node name="say" message="$BalrogCrimsonKritias_InfernoSoilderGuard$" durationTick="9000" cooltime="4000" />
+								<node name="skill" idx="3">
+									<node name="select" prob="100,100,100">
+										<node name="SetValue" key="AttackDelay" value="1" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="AttackDelay" value="2" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="AttackDelay" value="3" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									</node>
+								</node>
+							</node>
+						</condition>
+						<!--  같은편 몬스터 3마리 이하로 있다면, 일반 원기리 공격 하기 -->
+						<condition name="skillRange" skillIdx="1">
+							<!-- 레벨3:  1020  한큐브 아래 이상까지 커버-->
+							<node name="skill" idx="1">
+								<node name="select" prob="100,100,100">
+									<!--원거리 유도 투사체 -->
+									<node name="SetValue" key="AttackDelay" value="6" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									<node name="SetValue" key="AttackDelay" value="7" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									<node name="SetValue" key="AttackDelay" value="8" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="near" from="2" to="1800" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="800" faceTarget="1">
+						<node name="target" type="near" from="2" to="1800" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

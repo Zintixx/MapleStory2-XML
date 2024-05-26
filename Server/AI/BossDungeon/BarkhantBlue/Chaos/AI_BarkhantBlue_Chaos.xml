@@ -1,0 +1,1776 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--AI 로직을 위한 변수를 최초 선언 -->
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="SummonPosition" value="0" />
+				<!--1셋트 때 어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+				<node name="SetValue" key="BarrierBrake" value="0" />
+				<!--BarrierBrake  이 변수를 바르칸트 분신한테 보내서, 분신이 보호막 파괴 행동 패턴으로 전환되도록 함-->
+				<node name="SetValue" key="SummonDeath" value="0" />
+				<!--소환몹 죽음 명령 내리기-->
+				<node name="SetValue" key="CheckBarkhantSummonMany" value="-1" />
+				<!--2셋트용 분신 소환몹 죽음 현황 체크, -1: 디폴트, 0: 방금 소환몹 2마리 다 죽었음, 1: 분신 소환몹 한마리만 죽었음, 2: 현재 분신 소환몹 2마리 있음 -->
+				<node name="SetValue" key="TeleportDashAttackMode" value="0" />
+				<!--2셋트용 보호막모드때  순간이동 대시 공격 행동때 사용하는 변수-->
+				<node name="SetValue" key="PowerAttackOK" value="0" />
+				<!--3셋트 전투판 들어서서, 바닥파괴 직전에 강력 스킬 사용 가능을 확일할 때 사용하는 변수-->
+				<node name="SetValue" key="CheckDragonMany" value="0" />
+				<!--3셋트용 일반 소환몹 죽음 현황 체크-->
+				<!--졸 소환하고 전투판 중앙으로 오면서 전투 최초 시작 -->
+				<node name="skill" facePos="-5400, -1500, 3950" idx="32" />
+				<!--1셋트 시작 성우 대사 (레벨1)-->
+				<node name="standby" limit="2700" faceTarget="0" />
+				<node name="skill" facePos="-5400, -1500, 3950" idx="22" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="-5400, -1500, 3950" speed="1200" heightMultiplier="0.4" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="25" />
+				<!--레벨4: 점프 착지, 성우 대사 없음 -->
+				<node name="standby" limit="500" faceTarget="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="75">
+			<!--2셋트 전투판으로 이동 하는 부분-->
+			<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--1셋트 전투판의 소환몹 죽음 명령 내리기-->
+				<node name="skill" facePos="-4125, -225, 4250" idx="22" />
+				<!--우선 1셋트 전투판 단상위로 점프 뛰기,   -4200, -300, 4250-->
+				<node name="jump" pos="-4125, -225, 4250" speed="1200" heightMultiplier="0.4" />
+				<!--1셋트 전투판 단상위로 점프 뛰기-->
+				<node name="skill" faceTarget="0" idx="25" />
+				<!--레벨4: 점프 착지 -->
+				<node name="standby" limit="2000" faceTarget="1" />
+				<node name="standby" limit="3000" faceTarget="0" />
+				<node name="skill" facePos="-5400, -1500, 3950" idx="33" />
+				<!--1셋트 끝  성우 대사 (레벨2)-->
+				<node name="standby" limit="2000" faceTarget="0" />
+				<node name="skill" facePos="-600, 1200, 4550" idx="23" />
+				<!--레벨2가 점프 도약 파괴용 -->
+				<!-- ## 발판 생성 스위치 생성 트리거 신호 보내기 ##-->
+				<node name="TriggerSetUserValue" triggerID="99999002" key="FirstPhaseEnd" value="1" />
+				<!-- ##  ##-->
+				<node name="jump" pos="300, 1500, 5000" speed="1200" heightMultiplier="0.4" />
+				<!--2셋트 전투판 단상위로 점프 뛰기, 최종 목적지가 300, 1500, 5000-->
+				<node name="skill" faceTarget="0" idx="25" />
+				<!--레벨4: 점프 착지 -->
+				<node name="RemoveSlaves" />
+				<!-- 혹시 몰라 소환몹 한번 더 제거하기 신호 보내기,  이 NPC가  target="Slaves" 로 소환한 몬스터 전부 제거하기, Slaves 몬스터가 행동 도중에도 강제 제거 해버리는 기능-->
+				<node name="standby" limit="3000" faceTarget="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="39">
+			<!--3셋트 전투판으로 이동 하는 부분-->
+			<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true">
+				<!--우선 2셋트 전투판으로 단상으로 이동, 300, 1500, 5000-->
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--소환몹 제일먼저 죽음 명령 내리기, 로직 꼬일 수 있어 제일 먼저 죽이는 것이 좋음-->
+				<node name="buff" type="remove" id="50000335" />
+				<!--2셋트에서의 공업 버프 해제하기-->
+				<node name="buff" type="remove" id="50000336" />
+				<!--2셋트에서의 방업 버프 해제하기-->
+				<node name="skill" facePos="375, 1575, 5000" idx="22" />
+				<node name="jump" pos="375, 1575, 5000" speed="1200" heightMultiplier="0.4" />
+				<!--2셋트 전투판으로 점프 뛰기-->
+				<node name="skill" faceTarget="0" idx="25" />
+				<!--레벨4: 점프 착지 -->
+				<node name="standby" limit="2000" faceTarget="1" />
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--혹시 몰라서 한번 더 실행-->
+				<node name="standby" limit="3000" faceTarget="1" />
+				<node name="skill" facePos="-450, 750, 4550" idx="34" />
+				<!--2셋트 끝  성우 대사 (레벨3)-->
+				<node name="standby" limit="2000" faceTarget="0" />
+				<!--여기부터 3셋트 전투판으로 뛰기 시작하는 부분-->
+				<node name="skill" facePos="6000, 3900, 6200" idx="23" />
+				<!--레벨2가 점프 도약 파괴용 -->
+				<!-- ## 발판 생성 스위치 생성 트리거 신호 보내기 ##-->
+				<node name="TriggerSetUserValue" triggerID="99999004" key="SecondPhaseEnd" value="1" />
+				<!-- ##  ##-->
+				<node name="jump" pos="6000, 3900, 6200" speed="1200" heightMultiplier="0.4" />
+				<!--3셋트 전투판으로 점프 뛰기-->
+				<node name="skill" faceTarget="0" idx="25" />
+				<!--레벨4: 점프 착지 -->
+				<node name="SetValue" key="PowerAttackOK" value="1" />
+				<!--강력스킬 사용가능 변수 1로 셋팅함 -->
+				<node name="standby" limit="1000" faceTarget="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="35">
+			<!--#이벤트 용도: 바람 끌어당긴 후 내려찍기, 바닥 큐브 파괴, 만약 극딜로 인해 35~32% 단계 건너 띄우면 플레이어가 오기도 전이 이 스킬 사용으로 이미 전투판이 파괴되어 있을 것임, 이 부분은 맨 위쪽 예약 쪽에서 처리함-->
+			<node name="standby" limit="100" faceTarget="1">
+				<node name="skill" prob="100" idx="38">
+					<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+					<node name="teleport" pos="6300, 4200, 6200" prob="100">
+						<node name="skill" facePos="5700, 3600, 6200" prob="100" idx="31">
+							<!--바람 끌어당긴 후 내려찍기, 이벤트 연출 용도, 나이트의 전사의 의지 스킬 사용과 바닥 큐브 파괴 용도임-->
+							<node name="skill" faceTarget="0" prob="100" idx="21">
+								<!--  카오스 난이도는  이 곳에  standby 대신 안전 지대에 큐브 대미지 필드 설치하는 이 스킬 넣음 	-->
+								<node name="target" type="near" prob="100" from="2" to="3000" />
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="hpOver" value="75">
+				<node name="select" prob="99999,599,0">
+					<!--#1페이즈   HP: 100~75% -->
+					<!--졸 소환하는 부분 (1페이즈의 핵심) , ##카오스 난이도 소환 주기 비교적 짧게 함 -->
+					<node name="standby" limit="10" faceTarget="0" cooltime="32000">
+						<aiPreset name="1SetSummonCallPattern" />
+						<!-- 1셋트 전투판에서 소환몹 등장 헝태에 대한 정의 부분-->
+					</node>
+					<!--전투판 여기저기 날아 이동하는 부분,  initialCooltime = "5800" 에 의해서 먼저 졸몹 소환하고 이어서 바로 점프 이동하도록 설정했음-->
+					<node name="standby" limit="10" faceTarget="0" cooltime="32000" initialCooltime="5800">
+						<aiPreset name="1SetJumpMovePattern" />
+						<!-- 1셋트 전투판에서 점프 이동 할 때 정의한 부분, 방금전 소환한 소환몹 위치에 따리 점프 이동이 걸정됨-->
+					</node>
+					<!-- @$# 중요!: 참고로 SummonPosition 변수 지정은 이유가 있어서 1에서 부터 8까지 순차적으로 지정한 것인데, "1", "2", "3" 은 이 변수에 맞게 바르칸트가 특정 공격 행동 패턴을 행하고 "4~8"은 공통적인 공격 행동하도록 설정하였음-->
+					<node name="conditions">
+						<condition name="extraData" key="SummonPosition" value="1">
+							<!-- 현재 소환몹 등장 형태가 왼쪽 한큐브 높은 지점, 휠윈드로 대응 형태일 경우-->
+							<aiPreset name="1SetBattlePattern_1" />
+						</condition>
+						<condition name="extraData" key="SummonPosition" value="2">
+							<!-- 현재 소환몹 등장 형태가 오른쪽  한큐브 높은 지점, 휠윈드로 대응 형태일 경우-->
+							<aiPreset name="1SetBattlePattern_2" />
+						</condition>
+						<condition name="extraData" key="SummonPosition" value="3">
+							<!-- 현재 소환몹 등장 형태가 남쪽 다리 휠윈드로 대응 형태일 경우-->
+							<aiPreset name="1SetBattlePattern_3" />
+						</condition>
+						<condition name="true">
+							<!-- 그외 형태는 이 공격패턴 사용-->
+							<aiPreset name="1SetBattlePattern_48" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="39">
+				<!--#2-1페이즈 HP: 75~59% ,  2-2페이즈 HP: 59~39%-->
+				<!-- ### 맨위 예약 시스템에서 2셋트 전투판으로 이동 하는 부분을 제일 먼저 실행함-->
+				<!--분신 소환몹이 전부 죽었으면 공방업 버프 해제 하는 부분  ## 2페이즈에서는 매 턴마다 체크함 ##  -->
+				<node name="conditions">
+					<condition name="extraData" key="CheckBarkhantSummonMany" value="0">
+						<!--방금 분신 소환몹이 전부 죽었으면 공방업 버프 해제하고 CheckBarkhantSummonMany 변수에 값을 디폴트로 설정함-->
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<node name="buff" type="remove" id="50000335" />
+							<!--분신이 전부 죽었기 때문에 공업 버프 해제하기-->
+							<node name="buff" type="remove" id="50000336" />
+							<!--분신이 전부 죽었기 때문에 방업 버프 해제하기-->
+							<node name="SetValue" key="CheckBarkhantSummonMany" value="-1" />
+							<!--CheckBarkhantSummonMany 이 변수에 -1을 넣어서 다음 분신 소환몹이 나올때까지 이 부분을 거치지 않게끔 함    -1: 디폴트, 0: 방금 소환몹 2마리 다 죽었음,, 1: 분신 소환몹 한마리만 죽었음, 2: 현재 분신 소환몹 2마리 있음 -->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="399,0">
+							<!--분신 소환몹이 한마리라도 있거나 "CheckBarkhantSummonMany= -1" 이면  통상적인 공격 행동을 함 -->
+							<!-- ========================================================================================================================	 -->
+							<!--@@ 2셋트 전투판의 핵심 로직 @@-->
+							<!--공방업 버프 사용하는 부분 그리고 분신한테 보호막 파괴 스킬 사용하라고 신호 보내는 용도, 비교적 자주 신호 보내기-->
+							<node name="standby" limit="100" faceTarget="0" cooltime="15000">
+								<aiPreset name="SignalSend" />
+								<!--  분신 소환몹에게 보호막 파괴 행동 하라고 신호 보내기에 대한 것을 정의하는 부분 -->
+							</node>
+							<!--@@ 2셋트 전투판의 핵심 로직 @@-->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="28">
+									<node name="select" prob="999999,299,0">
+										<!--거리 1200 정도, 메인 전투판 보다 큐브 한칸 높이라도 있으면 이 사정거리에 벗어나게 됨  -->
+										<!--2셋트 전투판 중앙으로 오면서 이 부분 최초 딱 한번만 실행함 -->
+										<node name="standby" limit="1000" faceTarget="1" cooltime="9999999">
+											<aiPreset name="2SetBattleStart" />
+											<!--  분신 소환몹 호출하고 보호막을 생성한 다음 단상 위에서 내려오는 동작 -->
+										</node>
+										<!--주기적으로 분신 소환몹 다시 생성하는 부분, 그룹 코드가 같기 때문에 빈칸 채우기 형태로 소환시킴 -->
+										<node name="standby" limit="150" faceTarget="0" cooltime="24000">
+											<node name="conditions">
+												<condition name="additional" id="50004401" level="2">
+													<!-- 분신한테 충격파 공격 맞아 기절 당하면  50004401(레벨2) 이 애디셔널이 약 50초 동안 생겨 분신 호출과 공방업 버프 사용 불가 상태가 되는데 이때는 소환몹 등장 안하도록 함, 레벨2가 카오스 난이도 전용, 레벨1은 레이드 난이도 전용-->
+													<!--  50004401(레벨2) 이 애디셔널이 약 51초 걸리면, 이거 두번 생행되어 분신 소환을 최소 51초 동안 하지 못하게 함-->
+													<node name="say" message="$BarkhantBlue_DamageMode$" durationTick="6000">
+														<node name="skill" faceTarget="0" idx="17">
+															<!--  기절 동작 2초짜리 나오기-->
+															<node name="standby" limit="350" faceTarget="0" />
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="standby" limit="150" faceTarget="1" isKeepBattle="true">
+														<!--분신 소환 행동 -->
+														<node name="SetValue" key="CheckBarkhantSummonMany" value="2" />
+														<!--CheckBarkhantSummonMany  이 변수에 2를 넣어 현재 분신 소환몹이 2마리임을 알림-->
+														<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="200" summonPos="300, 1050, 4550" summonRot="0,0,-50" />
+														<!--보스 기준 왼쪽   그룹 번호 중요-->
+														<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" summonPos="-150, 1500, 4550" summonRot="0,0,-50" />
+														<!--보스 기준 오른쪽   그룹 번호 중요-->
+														<node name="skill" faceTarget="0" idx="14" />
+														<!-- 이 스킬을 사용해 자신한테 공방업 50000335(레벨1), 50000336(레벨1)  애디셔널을 부여할 함, 중요!: 그러나 분신 소환몹한테 맞아서 50004401(레벨2) 애디셔널에 걸리면 이 스킬 사용해도 공방업 애디셔널에 걸리지 않을 것임, 레벨2가 카오스 난이도 전용, 레벨1은 레이드 난이도 전용-->
+														<node name="say" message="$BarkhantBlue_BarrierMode$" durationTick="6000" />
+														<node name="SetValue" key="TeleportDashAttackMode" value="0" />
+														<!--보호막 모드때 사용하는 순간이동대쉬공격 패턴 사용을 위해 변수 0으로 초기화 함-->
+														<node name="standby" limit="1200" faceTarget="1" />
+														<!--다음 턴으로 바로 넘어가면 혹시 AI가 꼬일 수 있어, 이거 실행후 0.2초 정도 잠시 대기 standby 상태를 유지함 -->
+													</node>
+												</condition>
+											</node>
+										</node>
+										<!-- **평상시 공격 행동 패턴** -->
+										<node name="conditions">
+											<condition name="additional" id="50000335">
+												<!-- 분신 소환 몹으로 인해 보호막이 생겨 공방업 버프 상태이면 50000335(레벨1), 50000336(레벨1) 이 2개  애디셔널을 지기게 됨-->
+												<aiPreset name="2SetBarrierAttackPattern" />
+												<!-- 2셋트 전투판에서 보호막이 있는 상태에서의  위협적인 공격 형태 정의 -->
+											</condition>
+											<condition name="true">
+												<node name="select" prob="299,0">
+													<!-- 분신 소환 몹이 없다면-->
+													<!--죽음의 광역 폭발  or  바람 끌어당긴 후 내려찍기, HP 59% 이하부터 사용함-->
+													<node name="standby" limit="100" faceTarget="1" cooltime="32000">
+														<aiPreset name="ForceAttackPattern" />
+														<!-- HP 59 이상이면 강력한 스킬 낮은 확률로 발동, HP 59% 이하이면 주기적 발동 -->
+													</node>
+													<aiPreset name="2SetNormalAttackPattern" />
+													<!-- 2셋트 전투판에서 보호막이 없는 상태에서의  평범한 공격 형태 정의 -->
+												</node>
+											</condition>
+										</node>
+										<!-- ************************** -->
+									</node>
+								</condition>
+								<condition name="true">
+									<!--거리 1200 벗어나 있거나 큐브 한칸 높이에 있어, 사정거리에 벗어나 있는 상태라면-->
+									<!-- **메인 전투판에 플레이어가 한명도 없을 경우** -->
+									<aiPreset name="2SetNormalStandbyPattern" />
+									<!-- 2셋트 전투판에서 하는 Sandby 행동 정의 -->
+								</condition>
+							</node>
+							<!-- ========================================================================================================================	 -->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="hpOver" value="35">
+				<!--#3-0페이즈 HP: 39~35% , 3페이즈 본격 들어가기 전에 4% 정도 여유 타이밍을 설정함 (이거 건너 뛰어도 별 상관 없음)-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="29">
+						<!--거리 1000 정도, 큐브 한칸 높이까지 체크  -->
+						<node name="conditions">
+							<condition name="extraData" key="PowerAttackOK" value="3" op="greaterEqual">
+								<!-- 전투판 중앙 근처로  순간이동을 한 후 마법진 공격 난사, 중요!: 이 스킬은 유리큐브 바닥 파괴되는 곳 바닥에는 생성되지 않는 문제가 있어서 너무 자주 사용하면 안좋음-->
+								<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="38" />
+									<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+									<node name="teleport" pos="6450, 4350, 6200" />
+									<node name="standby" limit="300" faceTarget="1" />
+									<node name="skill" facePos="4800, 2700, 6200" idx="39" />
+									<!--마법진 난사 공격 레벨5: 맨 마지막 최후  전용 스킬-->
+									<node name="standby" limit="1000" faceTarget="0" />
+									<node name="skill" facePos="4800, 2700, 6200" idx="39" />
+									<!--마법진 난사 공격 레벨5: 맨 마지막 최후  전용 스킬-->
+									<node name="skill" faceTarget="0" idx="38" />
+									<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+									<node name="teleport" pos="5750, 3750, 6200" />
+									<node name="standby" limit="600" faceTarget="1" />
+									<node name="SetValue" key="PowerAttackOK" value="0" />
+									<!--다음 사용을 위해 0으로 초기화 -->
+									<node name="target" type="near" from="2" to="3500" />
+									<!--항상 제일 가까운 대상 타겟팅 하도록 함, 타겟팅 대상이 전투판 아래로 떨어졌을 경우 문제될 계속 가만히 있을 수 있기 때문에 바로 제일 가까운 대상 타겟팅 잡도록 함-->
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="33,33,34">
+									<node name="skill" cooltime="6000" isKeepBattle="true" idx="1">
+										<!--회전 공격 -->
+										<node name="target" type="rand" from="2" to="1200" />
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="SetValue" key="PowerAttackOK" value="1" isModify="1" />
+									</node>
+									<node name="skill" isKeepBattle="true" idx="4">
+										<!--돌진 공격, 레벨3: 돌진거리 제일 긴거 -->
+										<node name="target" type="rand" from="2" to="1200" />
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="SetValue" key="PowerAttackOK" value="1" isModify="1" />
+									</node>
+									<node name="skill" cooltime="9000" isKeepBattle="true" idx="10">
+										<!--마법진 내려찍기, 3셋트지만 아직 레벨1 사용함-->
+										<node name="target" type="rand" from="2" to="1200" />
+										<node name="standby" limit="500" faceTarget="1" />
+										<node name="SetValue" key="PowerAttackOK" value="1" isModify="1" />
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="skill" idx="42">
+							<!--타겟이 멀리 있을 때 여기서는 거대 투사체 난사가 어울림-->
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="2" to="3500" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="hpOver" value="28">
+				<node name="select" prob="299,0">
+					<!--#3-1페이즈 HP: 35~28% , 소환몹 블란트 최초 등장-->
+					<!--#이벤트 용도: 바람 끌어당긴 후 내려찍기, 바닥 큐브 파괴, 만약 극딜로 인해 35~32% 단계 건너 띄우면 플레이어가 오기도 전이 이 스킬 사용으로 이미 전투판이 파괴되어 있을 것임, 이 부분은 맨 위쪽 예약 쪽에서 처리함-->
+					<!--블란트 소환하기 패턴A-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="38000" isKeepBattle="true">
+						<!--전투가 오래 걸리지 않는다면 3-1페이즈에서는 소환몹 한번만 나오는 형태-->
+						<!--분신 소환 행동 -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="300" delayTick="3000" summonPos="4200, 3600, 6200" summonRot="0,0,-50" />
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="301" delayTick="3000" summonPos="4200, 3150, 6200" summonRot="0,0,-50" />
+						<!--할퀴기_랜덤 대상 타겟팅(21402137) -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="302" delayTick="3000" summonPos="4800, 2550, 6200" summonRot="0,0,-50" />
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="303" delayTick="3000" summonPos="5100, 2250, 6200" summonRot="0,0,-50" />
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="304" delayTick="3000" summonPos="5550, 2250, 6200" summonRot="0,0,-50" />
+						<!--할퀴기_가까운 대상 타겟팅(21402237) -->
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="29">
+							<node name="select" prob="999,199,20,20,60">
+								<!--거리 1000 정도, 큐브 한칸 높이까지 체크  -->
+								<!--3-1페이즈 이후 부터는 항상 북쪽으로 이동하려는 성향을 넣음, 근거리 클래스의 수월한 공격을 위해 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="11000">
+									<node name="select" prob="32,36,32">
+										<node name="move" destination="5850, 4350, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 왼쪽 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+										<node name="move" destination="6000, 3900, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 중앙 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+										<node name="move" destination="6450, 3750, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 오른쪽 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+									</node>
+								</node>
+								<!-- 북쪽으로 순간이동 후 공격 패턴, 근거리 클래스의 수월한 공격을 위해 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="13000">
+									<node name="skill" idx="38">
+										<node name="select" prob="45,55">
+											<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+											<node name="teleport" pos="6150, 4650, 6200">
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="29">
+														<!--거리 1000 정도, 큐브 한칸 높이까지 체크  -->
+														<node name="skill" idx="4">
+															<!--돌진 공격, 레벨3: 돌진거리 제일 긴거 -->
+															<node name="standby" limit="800" faceTarget="1">
+																<node name="target" type="near" from="2" to="2500" />
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="skill" idx="42">
+															<!--거대 투사체 발사-->
+															<node name="standby" limit="800" faceTarget="1">
+																<node name="target" type="near" from="2" to="3500" />
+															</node>
+														</node>
+													</condition>
+												</node>
+											</node>
+											<node name="teleport" pos="6750, 4050, 6200">
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="29">
+														<!--거리 1000 정도, 큐브 한칸 높이까지 체크  -->
+														<node name="skill" idx="4">
+															<!--돌진 공격, 레벨3: 돌진거리 제일 긴거 -->
+															<node name="standby" limit="800" faceTarget="1">
+																<node name="target" type="near" from="2" to="2500" />
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="skill" idx="12">
+															<!--마법진 내려찍기, 레벨4: 3셋트 전용 스킬-->
+															<node name="standby" limit="800" faceTarget="1">
+																<node name="target" type="near" from="2" to="3500" />
+															</node>
+														</node>
+													</condition>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="1">
+									<!--회전 공격 -->
+									<node name="standby" limit="1500" faceTarget="1">
+										<node name="target" type="near" from="2" to="2500" />
+									</node>
+								</node>
+								<node name="skill" idx="4">
+									<!--돌진 공격, 레벨3: 돌진거리 제일 긴거 -->
+									<node name="standby" limit="1500" faceTarget="1">
+										<node name="target" type="near" from="2" to="2500" />
+									</node>
+								</node>
+								<node name="skill" cooltime="15000" idx="12">
+									<!--마법진 내려찍기, 레벨4: 3셋트 전용 스킬-->
+									<node name="standby" limit="1500" faceTarget="1">
+										<node name="target" type="mid" from="2" to="1100" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="skill" idx="42">
+									<!--거대 투사체 발사-->
+									<node name="standby" limit="1200" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+								<node name="skill" cooltime="6000" idx="12">
+									<!--마법진 내려찍기, 레벨4: 3셋트 전용 스킬-->
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="24">
+				<node name="select" prob="299,399,0">
+					<!--#3-2페이즈 HP: 28~24% , 이 페이즈에서 소환몹 블란트 등장 위치 변경 -->
+					<!--블란트 소환하기 패턴B-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="72000" isKeepBattle="true">
+						<!--왠만하면 3-2 페이즈에서는 소환몹 한번만 나오는 형태-->
+						<!--분신 소환 행동 -->
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="305" delayTick="3000" summonPos="5550, 4800, 6200" summonRot="0,0,-50" />
+						<!--할퀴기_가까운 대상 타겟팅(21402237) -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="306" delayTick="3000" summonPos="6300, 5100, 6200" summonRot="0,0,-50" />
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="307" delayTick="3000" summonPos="5700, 3600, 6200" summonRot="0,0,-50" />
+						<!--할퀴기_랜덤 대상 타겟팅(21402137) -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="308" delayTick="3000" summonPos="6900, 4500, 6200" summonRot="0,0,-50" />
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="309" delayTick="3000" summonPos="6750, 3450, 6200" summonRot="0,0,-50" />
+						<!--할퀴기_가까운 대상 타겟팅(21402237) -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="300" delayTick="3000" summonPos="4200, 3600, 6200" summonRot="0,0,-50" />
+						<!--그룹코드 300,    위 설정값과 같음-->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="303" delayTick="3000" summonPos="5100, 2250, 6200" summonRot="0,0,-50" />
+						<!--그룹코드 303,   위 설정값과 같음-->
+					</node>
+					<!--가장자리 지역의 바닥 큐브 파괴 하기-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="24000" isKeepBattle="true">
+						<node name="target" type="far" from="2" to="2300" />
+						<node name="skill" idx="7" />
+						<!--가장자리 지역의 바닥 큐브 파괴를 위해 사용하는 스킬-->
+						<node name="skill" faceTarget="0" idx="8" />
+						<node name="skill" faceTarget="0" idx="9" />
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="29">
+							<node name="select" prob="999,199,399,20,20,60">
+								<!--거리 1000 정도, 큐브 한칸 높이까지 체크  -->
+								<!--3-1페이즈 이후 부터는 항상 북쪽으로 이동하려는 성향을 넣음, 근거리 클래스의 수월한 공격을 위해 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="11000">
+									<node name="select" prob="32,36,32">
+										<node name="move" destination="5850, 4350, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 왼쪽 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+										<node name="move" destination="6000, 3900, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 중앙 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+										<node name="move" destination="6450, 3750, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 오른쪽 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+									</node>
+								</node>
+								<!-- 북쪽으로 순간이동 후 공격 패턴, 근거리 클래스의 수월한 공격을 위해, 위 move 설정의 좌표와 비슷하지 않도록 함 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="13000">
+									<node name="skill" idx="38">
+										<node name="select" prob="45,55">
+											<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+											<node name="teleport" pos="6300, 4650, 6200">
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="29">
+														<!--거리 1000 정도, 큐브 한칸 높이까지 체크  -->
+														<node name="skill" idx="4">
+															<!--돌진 공격, 레벨3: 돌진거리 제일 긴거 -->
+															<node name="standby" limit="800" faceTarget="1">
+																<node name="target" type="near" from="2" to="2500" />
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="skill" idx="42">
+															<!--거대 투사체 발사-->
+															<node name="standby" limit="800" faceTarget="1">
+																<node name="target" type="near" from="2" to="3500" />
+															</node>
+														</node>
+													</condition>
+												</node>
+											</node>
+											<node name="teleport" pos="6900, 4200, 6200">
+												<node name="skill" idx="12">
+													<!--마법진 내려찍기, 레벨4: 3셋트 전용 스킬-->
+													<node name="standby" limit="800" faceTarget="1">
+														<node name="target" type="near" from="2" to="3500" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="9999999" idx="20">
+									<!--전투판 대미지 필드 설치, 3-2페이즈 에서 한번만 사용하는 형태 -->
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="target" type="near" from="2" to="2500" />
+									</node>
+								</node>
+								<node name="skill" idx="1">
+									<!--회전 공격 -->
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="target" type="near" from="2" to="2500" />
+									</node>
+								</node>
+								<node name="skill" idx="4">
+									<node name="select" prob="35,35,30">
+										<!--돌진 공격, 레벨3: 돌진거리 제일 긴거 -->
+										<node name="standby" limit="500" faceTarget="1">
+											<node name="move" destination="5850, 4200, 6200">
+												<!--3셋트 메인 전투판 왼쪽 지점-->
+												<node name="target" type="near" from="2" to="2500" />
+											</node>
+										</node>
+										<node name="standby" limit="500" faceTarget="1">
+											<node name="move" destination="6450, 3900, 6200">
+												<!--3셋트 메인 전투판 왼쪽 지점-->
+												<node name="target" type="near" from="2" to="2500" />
+											</node>
+										</node>
+										<node name="standby" limit="500" faceTarget="1">
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="12000" idx="12">
+									<!--마법진 내려찍기, 레벨4: 3셋트 전용 스킬-->
+									<node name="standby" limit="1500" faceTarget="1">
+										<node name="target" type="mid" from="2" to="1100" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="skill" idx="42">
+									<!--거대 투사체 발사-->
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+								<node name="skill" cooltime="6000" idx="12">
+									<!--마법진 내려찍기, 레벨4: 3셋트 전용 스킬, 히트박스 높이 낮아서 큐브 2칸 위에서 생성 안됨-->
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="7">
+				<node name="select" prob="299,199,0">
+					<!--#3-3페이즈 HP: 24~7% -->
+					<!--블란트 소환하기 패턴A-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="25000" isKeepBattle="true">
+						<!--3-3페이즈에서는 소환몹 자주 나오는 형태 -->
+						<!--분신 소환 행동 -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="300" delayTick="3000" summonPos="4200, 3600, 6200" summonRot="0,0,-50" />
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="301" delayTick="3000" summonPos="4200, 3150, 6200" summonRot="0,0,-50" />
+						<!--할퀴기_랜덤 대상 타겟팅(21402137) -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="302" delayTick="3000" summonPos="4800, 2550, 6200" summonRot="0,0,-50" />
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="303" delayTick="3000" summonPos="5100, 2250, 6200" summonRot="0,0,-50" />
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="304" delayTick="3000" summonPos="5550, 2250, 6200" summonRot="0,0,-50" />
+						<!--할퀴기_가까운 대상 타겟팅(21402237) -->
+					</node>
+					<!--텔레포트 후 가장자리 지역의 바닥 큐브 파괴 하기-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+						<node name="skill" idx="38">
+							<node name="select" prob="45,55">
+								<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+								<node name="teleport" pos="5700, 4650, 6200" cooltime="38000" isKeepBattle="true">
+									<node name="target" type="far" from="2" to="2300" />
+									<node name="skill" idx="7" />
+									<!--가장자리 지역의 바닥 큐브 파괴를 위해 사용하는 스킬-->
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="teleport" pos="6750, 3600, 6200" cooltime="38000" isKeepBattle="true">
+									<node name="target" type="far" from="2" to="2300" />
+									<node name="skill" idx="7" />
+									<!--가장자리 지역의 바닥 큐브 파괴를 위해 사용하는 스킬-->
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="29">
+							<node name="select" prob="999,999,299,33,34,43">
+								<!--레벨5: 거리 1000 정도, 큐브 한칸 높이까지 체크  -->
+								<!--3-1페이즈 이후 부터는 항상 북쪽으로 이동하려는 성향을 넣음, 근거리 클래스의 수월한 공격을 위해 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="11000">
+									<node name="select" prob="32,36,32">
+										<node name="move" destination="5850, 4350, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 왼쪽 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+										<node name="move" destination="6000, 3900, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 중앙 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+										<node name="move" destination="6450, 3750, 6200" cooltime="33000">
+											<!--3셋트 메인 전투판 오른쪽 지점-->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+									</node>
+								</node>
+								<!--바람 끌어당긴 후 내려찍기-->
+								<node name="standby" limit="100" faceTarget="1" cooltime="34000">
+									<node name="skill" idx="38">
+										<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+										<node name="teleport" pos="6300, 4200, 6200">
+											<node name="skill" idx="6">
+												<!--바람 끌어당긴 후 내려찍기  -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="30000" idx="20">
+									<!--전투판 대미지 필드 설치, ##카오스 난이도는 사용 주기나 확률을 비교적 약하게 함 -->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="target" type="near" from="2" to="2500" />
+									</node>
+								</node>
+								<node name="skill" idx="1">
+									<!--회전 공격 -->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="target" type="near" from="2" to="2500" />
+									</node>
+								</node>
+								<node name="skill" idx="4">
+									<node name="select" prob="35,35,30">
+										<!--돌진 공격, 레벨3: 돌진거리 제일 긴거 -->
+										<node name="standby" limit="500" faceTarget="1">
+											<node name="move" destination="6000, 4500, 6200">
+												<!--3셋트 메인 전투판 왼쪽 지점-->
+												<node name="target" type="near" from="2" to="2500" />
+											</node>
+										</node>
+										<node name="standby" limit="500" faceTarget="1">
+											<node name="move" destination="6600, 3900, 6200">
+												<!--3셋트 메인 전투판 왼쪽 지점-->
+												<node name="target" type="near" from="2" to="2500" />
+											</node>
+										</node>
+										<node name="standby" limit="500" faceTarget="1">
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="6000" idx="12">
+									<!--마법진 내려찍기, 레벨4: 3셋트 전용 스킬, 히트박스 높이 낮아서 큐브 2칸 위에서 생성 안됨-->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="target" type="mid" from="2" to="1100" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="skill" idx="42">
+									<!--거대 투사체 발사-->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+								<node name="skill" idx="12">
+									<!--마법진 내려찍기, 레벨4: 3셋트 전용 스킬, 히트박스 높이 낮아서 큐브 2칸 위에서 생성 안됨-->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<!--#3-4페이즈 HP: 7~0% -->
+				<!--작은 원형 전투판 중앙으로 순간이동한 다음에 마법진 공격 난사, 파괴된 큐브 위로 아이템 떨구면 절대 안돼기 때문에 안전함 전투판 중앙으로 와서 절대 움직이면 안됨-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="13">
+						<!--레벨5: 거리 1600 정도, 큐브 한칸 높이까지 체크, 전투판 아래로 떨어져도 체크 범위 벗어남  -->
+						<!--작은원 전투판 중앙으로 순간이동을 한 후 마법진 공격 난사-->
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--소환몹 죽음 명령 내리기-->
+							<node name="standby" limit="500" faceTarget="0" />
+							<node name="skill" faceTarget="0" idx="38" />
+							<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+							<node name="teleport" pos="5700, 4350, 6200" />
+							<node name="skill" facePos="4800, 2700, 6200" idx="39" />
+							<!--마법진 난사 공격 레벨5: 맨 마지막 최후  전용 스킬-->
+							<node name="standby" limit="1000" faceTarget="0" />
+							<node name="skill" faceTarget="0" idx="38" />
+							<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+							<node name="teleport" pos="6450, 3600, 6200" />
+							<node name="skill" facePos="4800, 2700, 6200" idx="39" />
+							<!--마법진 난사 공격 레벨5: 맨 마지막 최후  전용 스킬-->
+							<node name="standby" limit="1000" faceTarget="0" />
+							<node name="skill" faceTarget="0" idx="38" />
+							<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+							<node name="teleport" pos="6000, 3900, 6200" />
+							<node name="skill" facePos="4800, 2700, 6200" idx="39" />
+							<!--마법진 난사 공격 레벨5: 맨 마지막 최후  전용 스킬-->
+							<node name="standby" limit="1500" faceTarget="0" />
+							<node name="target" type="near" from="2" to="3500" />
+							<!--항상 제일 가까운 대상 타겟팅 하도록 함, 타겟팅 대상이 전투판 아래로 떨어졌을 경우 문제될 계속 가만히 있을 수 있기 때문에 바로 제일 가까운 대상 타겟팅 잡도록 함-->
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="500" faceTarget="1">
+							<node name="target" type="near" from="2" to="3500" />
+							<!--항상 제일 가까운 대상 타겟팅 하도록 함, 타겟팅 대상이 전투판 아래로 떨어졌을 경우 문제될 계속 가만히 있을 수 있기 때문에 바로 제일 가까운 대상 타겟팅 잡도록 함-->
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="1SetSummonCallPattern">
+			<node name="select" prob="15,15,14,14,14,14,14,14">
+				<!-- 1셋트 전투판에서 소환몹 등장 헝태에 대한 정의 부분, 중요!: 등장 좌표가 같으면 같은 group 숫자를 부여해야 함-->
+				<!-- @$# 중요!: 참고로 SummonPosition 변수 지정은 이유가 있어서 1에서 부터 8까지 순차적으로 지정한 것인데, "1", "2", "3" 은 이 변수에 맞게 바르칸트가 특정 공격 행동 패턴을 행하고 "4~8"은 공통적인 공격 행동하도록 설정하였음-->
+				<!--왼쪽 한큐브 높은 지점, 휠윈드로 대응(오른쪽 일부 등장), SummonPosition=1 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="207000">
+					<node name="select" prob="50,50">
+						<node name="standby" limit="100" faceTarget="0" cooltime="328000" isKeepBattle="true">
+							<!--왼쪽 한큐브 높은 지점 TypeA, 휠윈드로 대응 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="101" summonPos="-7200, -450, 3950" summonRot="0,0,-50" />
+							<!--남서쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="102" summonPos="-7350, -750, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="103" summonPos="-7050, -900, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="111" summonPos="-6900, -600, 3950" summonRot="0,0,-50" />
+							<!--가운데-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="104" summonPos="-6750, -300, 3950" summonRot="0,0,-50" />
+							<!--북동쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="105" summonPos="-6450, -450, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="106" summonPos="-6600, -750, 3950" summonRot="0,0,-50" />
+							<!--오른쪽 한큐브 높은 지점 일부셋, 휠윈드로 대응 , SummonPosition=7 셋트 합쳐지면 겹치는 곳 없이 꽉 차도록 하기 위해 북동쪽 방면으로 소환함-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="204" summonPos="-4200, -2700, 3950" summonRot="0,0,-50" />
+							<!--북동쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="205" summonPos="-4050, -3000, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="206" summonPos="-4350, -3150, 3950" summonRot="0,0,-50" />
+							<node name="SetValue" key="SummonPosition" value="1" />
+							<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+							<node name="skill" faceTarget="0" idx="15" />
+							<!--졸 소환시 성우 목소리 -->
+						</node>
+						<node name="standby" limit="100" faceTarget="0" cooltime="328000" isKeepBattle="true">
+							<!--왼쪽 한큐브 높은 지점 TypeB, 휠윈드로 대응 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="101" summonPos="-7200, -450, 3950" summonRot="0,0,-50" />
+							<!--북서쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="107" summonPos="-7050, -150, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="104" summonPos="-6750, -300, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="111" summonPos="-6900, -600, 3950" summonRot="0,0,-50" />
+							<!--가운데-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="103" summonPos="-7050, -900, 3950" summonRot="0,0,-50" />
+							<!--동남쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="108" summonPos="-6750, -1050, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="106" summonPos="-6600, -750, 3950" summonRot="0,0,-50" />
+							<!--오른쪽 한큐브 높은 지점 일부셋, 휠윈드로 대응 , SummonPosition=7 셋트 합쳐지면 겹치는 곳 없이 꽉 차도록 하기 위해 북동쪽 방면으로 소환함-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="204" summonPos="-4200, -2700, 3950" summonRot="0,0,-50" />
+							<!--북동쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="205" summonPos="-4050, -3000, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="206" summonPos="-4350, -3150, 3950" summonRot="0,0,-50" />
+							<node name="SetValue" key="SummonPosition" value="1" />
+							<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+							<node name="skill" faceTarget="0" idx="15" />
+							<!--졸 소환시 성우 목소리 -->
+						</node>
+					</node>
+				</node>
+				<!--오른쪽 한큐브 높은 지점, 휠윈드로 대응(왼쪽 일부 등장), SummonPosition=2 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="207000">
+					<node name="select" prob="50,50">
+						<node name="standby" limit="100" faceTarget="0" cooltime="328000" isKeepBattle="true">
+							<!--오른쪽 한큐브 높은 지점 TypeA, 휠윈드로 대응 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="201" summonPos="-4650, -2550, 3950" summonRot="0,0,-50" />
+							<!--남서쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="202" summonPos="-4950, -2700, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="203" summonPos="-4800, -3000, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="211" summonPos="-4500, -2850, 3950" summonRot="0,0,-50" />
+							<!--가운데-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="204" summonPos="-4200, -2700, 3950" summonRot="0,0,-50" />
+							<!--북동쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="205" summonPos="-4050, -3000, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="206" summonPos="-4350, -3150, 3950" summonRot="0,0,-50" />
+							<!--왼쪽 한큐브 높은 지점 일부셋, 휠윈드로 대응, SummonPosition=7 셋트 합쳐지면 겹치는 곳 없이 꽉 차도록 하기 위해 북서쪽 방면으로 소환함-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="101" summonPos="-7200, -450, 3950" summonRot="0,0,-50" />
+							<!--북서쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="107" summonPos="-7050, -150, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="104" summonPos="-6750, -300, 3950" summonRot="0,0,-50" />
+							<node name="SetValue" key="SummonPosition" value="2" />
+							<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+							<node name="skill" faceTarget="0" idx="15" />
+							<!--졸 소환시 성우 목소리 -->
+						</node>
+						<node name="standby" limit="100" faceTarget="0" cooltime="328000" isKeepBattle="true">
+							<!--오른쪽 한큐브 높은 지점 TypeB, 휠윈드로 대응 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="201" summonPos="-4650, -2550, 3950" summonRot="0,0,-50" />
+							<!--북서쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="207" summonPos="-4350, -2400, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="204" summonPos="-4200, -2700, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="211" summonPos="-4500, -2850, 3950" summonRot="0,0,-50" />
+							<!--가운데-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="203" summonPos="-4800, -3000, 3950" summonRot="0,0,-50" />
+							<!--동남쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="208" summonPos="-4650, -3300, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="206" summonPos="-4350, -3150, 3950" summonRot="0,0,-50" />
+							<!--왼쪽 한큐브 높은 지점 일부셋, 휠윈드로 대응, SummonPosition=7 셋트 합쳐지면 겹치는 곳 없이 꽉 차도록 하기 위해 북서쪽 방면으로 소환함-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="101" summonPos="-7200, -450, 3950" summonRot="0,0,-50" />
+							<!--북서쪽 방면 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="107" summonPos="-7050, -150, 3950" summonRot="0,0,-50" />
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="104" summonPos="-6750, -300, 3950" summonRot="0,0,-50" />
+							<node name="SetValue" key="SummonPosition" value="2" />
+							<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+							<node name="skill" faceTarget="0" idx="15" />
+							<!--졸 소환시 성우 목소리 -->
+						</node>
+					</node>
+				</node>
+				<!--남쪽 다리 휠윈드 대응, SummonPosition=3 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="207000" isKeepBattle="true">
+					<!--7시 지점 다리 근처, 카르모어-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="601" summonPos="-7225, -1575, 3800" summonRot="0,0,-50" />
+					<!--다리 진입로-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="602" summonPos="-6900, -1800, 3800" summonRot="0,0,-50" />
+					<!--공중 오른편-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="603" summonPos="-6900, -1350, 3800" summonRot="0,0,-50" />
+					<!--공중 왼편-->
+					<!--5시 지점 다리 근처, 카르모어-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="604" summonPos="-5400, -3225, 3800" summonRot="0,0,-50" />
+					<!--다리 진입로-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="605" summonPos="-5250, -2800, 3800" summonRot="0,0,-50" />
+					<!--공중 오른편-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="606" summonPos="-5640, -2850, 3800" summonRot="0,0,-50" />
+					<!--공중 왼편-->
+					<node name="SetValue" key="SummonPosition" value="3" />
+					<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+					<node name="skill" faceTarget="0" idx="15" />
+					<!--졸 소환시 성우 목소리 -->
+				</node>
+				<!--중앙 전투판 대응, SummonPosition=4 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="207000" initialCooltime="58000" isKeepBattle="true">
+					<!--북쪽 좁은 다리 지점, 원거리 관통으로 대응, 카르모어  -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="401" summonPos="-4800, -900, 3800" summonRot="0,0,-50" />
+					<!--좁은 다리 전방-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="402" summonPos="-4425, -525, 3800" summonRot="0,0,-50" />
+					<!--좁은 다리 후방-->
+					<!--중앙 전투판에 등장, 칼타 -->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="403" summonPos="-5925, -1275, 3950" summonRot="0,0,-50" />
+					<!--중앙 전투판 9시쪽-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="404" summonPos="-5925, -2025, 3950" summonRot="0,0,-50" />
+					<!--중앙 전투판 6시쪽-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="405" summonPos="-5175, -2025, 3950" summonRot="0,0,-50" />
+					<!--중앙 전투판 3시쪽-->
+					<node name="SetValue" key="SummonPosition" value="4" />
+					<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+					<node name="skill" faceTarget="0" idx="15" />
+					<!--졸 소환시 성우 목소리 -->
+				</node>
+				<!--대미지 필드 전투, SummonPosition=5 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="207000" isKeepBattle="true">
+					<!--남쪽 대미지 필드 지점-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="501" summonPos="-6525, -2325, 3800" summonRot="0,0,-50" />
+					<!--중앙 전투판에서 공격 가능 거리_왼쪽, 칼타-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="502" summonPos="-6225, -2625, 3800" summonRot="0,0,-50" />
+					<!--중앙 전투판에서 공격 가능 거리_오른쪽, 칼타-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="503" summonPos="-7050, -2400, 3800" summonRot="0,0,-50" />
+					<!--맨 아래쪽 왼쪽-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="504" summonPos="-6900, -2700, 3800" summonRot="0,0,-50" />
+					<!--맨 아래쪽 왼쪽 중앙-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="505" summonPos="-6600, -3000, 3800" summonRot="0,0,-50" />
+					<!--맨 아래쪽 오른쪽 중앙-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="506" summonPos="-6300, -3150, 3800" summonRot="0,0,-50" />
+					<!--맨 아래쪽 오른쪽-->
+					<node name="SetValue" key="SummonPosition" value="5" />
+					<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+					<node name="skill" faceTarget="0" idx="15" />
+					<!--졸 소환시 성우 목소리 -->
+				</node>
+				<!--원거리 관통으로 대응, SummonPosition=6 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="207000" initialCooltime="33000" isKeepBattle="true">
+					<!--북동쪽 북서쪽 끊어진 다리 지점, 원거리 관통으로 대응  -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="301" summonPos="-4500, -1650, 3800" summonRot="0,0,-50" />
+					<!--북동쪽 전방  공중-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="302" summonPos="-4050, -1650, 3800" summonRot="0,0,-50" />
+					<!--북동쪽 후방-->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="303" summonPos="-5550, -600, 3800" summonRot="0,0,-50" />
+					<!--북동쪽 전방  공중-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="304" summonPos="-5550, -150, 3800" summonRot="0,0,-50" />
+					<!--북동쪽 후방-->
+					<!--좌우 한큐브 높은 지점, 원거리 관통으로 대응  -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="305" summonPos="-6300, -975, 3780" summonRot="0,0,-50" />
+					<!--공중에  -->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="106" summonPos="-6600, -750, 3950" summonRot="0,0,-50" />
+					<!--한큐브, 좌표겹침-->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="306" summonPos="-4875, -2325, 3780" summonRot="0,0,-50" />
+					<!--공중에  -->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="201" summonPos="-4650, -2550, 3950" summonRot="0,0,-50" />
+					<!--한큐브, 좌표겹침-->
+					<node name="SetValue" key="SummonPosition" value="6" />
+					<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+					<node name="skill" faceTarget="0" idx="15" />
+					<!--졸 소환시 성우 목소리 -->
+				</node>
+				<!--좌우 한큐브 높은 지점, 휠윈드로 대응(좌우 일부분 등장), SummonPosition=7 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="207000" isKeepBattle="true">
+					<!--왼쪽 한큐브 높은 지점 TypeB의 일부셋 등장, 휠윈드로 대응 -->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="111" summonPos="-6900, -600, 3950" summonRot="0,0,-50" />
+					<!--가운데-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="103" summonPos="-7050, -900, 3950" summonRot="0,0,-50" />
+					<!--동남쪽 방면 -->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="108" summonPos="-6750, -1050, 3950" summonRot="0,0,-50" />
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="106" summonPos="-6600, -750, 3950" summonRot="0,0,-50" />
+					<!--오른쪽 한큐브 높은 지점 TypeA의 일부셋 등장, 휠윈드로 대응 -->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="201" summonPos="-4650, -2550, 3950" summonRot="0,0,-50" />
+					<!--남서쪽 방면 -->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="202" summonPos="-4950, -2700, 3950" summonRot="0,0,-50" />
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="203" summonPos="-4800, -3000, 3950" summonRot="0,0,-50" />
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="211" summonPos="-4500, -2850, 3950" summonRot="0,0,-50" />
+					<!--가운데-->
+					<node name="SetValue" key="SummonPosition" value="7" />
+					<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+					<node name="skill" faceTarget="0" idx="15" />
+					<!--졸 소환시 성우 목소리 -->
+				</node>
+				<!--북쪽 대규모 등장, SummonPosition=8 , 이거는 난이도가 어려워서 쿨타임 길게 설정함-->
+				<node name="standby" limit="100" faceTarget="0" cooltime="303000" initialCooltime="58000" isKeepBattle="true">
+					<!--북쪽 지점 대규모 등장-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="701" summonPos="-5550, 0, 3800" summonRot="0,0,-50" />
+					<!--10시 지점 끊어진 길쪽 등장, 칼타-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="702" summonPos="-3900, -1650, 3800" summonRot="0,0,-50" />
+					<!--2시 지점 끊어진 길쪽 등장, 칼타-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="703" summonPos="-4950, 0, 3800" summonRot="0,0,-50" />
+					<!--11시 지점-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="704" summonPos="-4650, -150, 3800" summonRot="0,0,-50" />
+					<!--11시 지점-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="705" summonPos="-3900, -1050, 3800" summonRot="0,0,-50" />
+					<!--1시 지점-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="706" summonPos="-4050, -750, 3800" summonRot="0,0,-50" />
+					<!--1시 지점-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="707" summonPos="-4200, -450, 3800" summonRot="0,0,-50" />
+					<!--12시 지점-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="708" summonPos="-4350, -300, 3800" summonRot="0,0,-50" />
+					<!--12시 지점-->
+					<!--	<summon npcId="21500140" npcCount="1" npcCountMax="1" group="101" summonPos="-4350, -450, 3800"  summonRot="0,0,-50"/> 12시 지점-->
+					<node name="SetValue" key="SummonPosition" value="8" />
+					<!--어디 지점에 소환몹이 등장하느냐에 따라 보스의 점프 이동 위치가 결정되는데 그때 사용하는 변수임-->
+					<node name="skill" faceTarget="0" idx="15" />
+					<!--졸 소환시 성우 목소리 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="1SetJumpMovePattern">
+			<!-- 1셋트 전투판에서 점프 이동 할 때 정의한 부분, 방금전 소환한 소환몹 위치에 따리 점프 이동이 걸정됨-->
+			<node name="conditions">
+				<condition name="extraData" key="SummonPosition" value="1">
+					<!--왼쪽 한큐브 높은 지점, 휠윈드로 대응(오른쪽 일부 등장) -->
+					<node name="skill" facePos="-6200, -710, 3780" isKeepBattle="true" idx="22">
+						<!--레벨1 일반 점프 도약 -->
+						<node name="jump" pos="-6200, -710, 3780" speed="1200" heightMultiplier="0.4" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="skill" faceTarget="0" idx="24" />
+						<!--레벨3: 점프 착지, 성우 대사 -->
+						<node name="target" type="near" from="2" to="3500" />
+						<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+						<node name="standby" limit="2000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonPosition" value="2">
+					<!--오른쪽 한큐브 높은 지점, 휠윈드로 대응(왼쪽 일부 등장) -->
+					<node name="skill" facePos="-4590, -2300, 3780" isKeepBattle="true" idx="22">
+						<!--레벨1 일반 점프 도약 -->
+						<node name="jump" pos="-4590, -2300, 3780" speed="1200" heightMultiplier="0.4" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="skill" faceTarget="0" idx="24" />
+						<!--레벨3: 점프 착지, 성우 대사 -->
+						<node name="target" type="near" from="2" to="3500" />
+						<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+						<node name="standby" limit="2000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonPosition" value="3">
+					<!--남쪽 다리 휠윈드 대응-->
+					<node name="skill" facePos="-6300, -2400, 3780" isKeepBattle="true" idx="22">
+						<!--레벨1 일반 점프 도약 -->
+						<node name="jump" pos="-6300, -2400, 3780" speed="1200" heightMultiplier="0.4" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="skill" faceTarget="0" idx="24" />
+						<!--레벨3: 점프 착지, 성우 대사 -->
+						<node name="target" type="near" from="2" to="3500" />
+						<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+						<node name="standby" limit="2000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonPosition" value="4">
+					<node name="select" prob="50,50">
+						<!--중앙 전투판 대응  -->
+						<!--바르칸트가 대미지 필드로 이동함, 왼쪽지점-->
+						<node name="skill" facePos="-6900, -2250, 3800" isKeepBattle="true" idx="22">
+							<!--레벨1 일반 점프 도약 -->
+							<node name="jump" pos="-6900, -2250, 3800" speed="1200" heightMultiplier="0.4" />
+							<!--2셋트 전투판 중앙으로 오기-->
+							<node name="skill" faceTarget="0" idx="24" />
+							<!--레벨3: 점프 착지, 성우 대사 -->
+							<node name="target" type="near" from="2" to="3500" />
+							<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<!--바르칸트가 대미지 필드로 이동함, 오른쪽지점-->
+						<node name="skill" facePos="-6150, -3000, 3800" isKeepBattle="true" idx="22">
+							<!--레벨1 일반 점프 도약 -->
+							<node name="jump" pos="-6150, -3000, 3800" speed="1200" heightMultiplier="0.4" />
+							<!--2셋트 전투판 중앙으로 오기-->
+							<node name="skill" faceTarget="0" idx="24" />
+							<!--레벨3: 점프 착지, 성우 대사 -->
+							<node name="target" type="near" from="2" to="3500" />
+							<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonPosition" value="5">
+					<node name="select" prob="50,50">
+						<!--대미지 필드 전투-->
+						<!--8시 방향 한큐브 높은 지점 이동-->
+						<node name="skill" facePos="-7050, -1050, 3800" isKeepBattle="true" idx="22">
+							<!--레벨1 일반 점프 도약 -->
+							<node name="jump" pos="-7050, -1050, 3800" speed="1200" heightMultiplier="0.4" />
+							<!--2셋트 전투판 중앙으로 오기-->
+							<node name="skill" faceTarget="0" idx="24" />
+							<!--레벨3: 점프 착지, 성우 대사 -->
+							<node name="target" type="near" from="2" to="3500" />
+							<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<!--4시 방향 한큐브 높은 지점 이동-->
+						<node name="skill" facePos="-4950, -3150, 3800" isKeepBattle="true" idx="22">
+							<!--레벨1 일반 점프 도약 -->
+							<node name="jump" pos="-4950, -3150, 3800" speed="1200" heightMultiplier="0.4" />
+							<!--2셋트 전투판 중앙으로 오기-->
+							<node name="skill" faceTarget="0" idx="24" />
+							<!--레벨3: 점프 착지, 성우 대사 -->
+							<node name="target" type="near" from="2" to="3500" />
+							<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonPosition" value="6">
+					<!--원거리 관통으로 대응  -->
+					<node name="skill" facePos="-5550, -1650, 3950" isKeepBattle="true" idx="22">
+						<!--레벨1 일반 점프 도약 -->
+						<node name="jump" pos="-5550, -1650, 3950" speed="1200" heightMultiplier="0.4" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="skill" faceTarget="0" idx="24" />
+						<!--레벨3: 점프 착지, 성우 대사 -->
+						<node name="target" type="near" from="2" to="3500" />
+						<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+						<node name="standby" limit="2000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonPosition" value="7">
+					<node name="select" prob="50,50">
+						<!--좌우 한큐브 높은 지점, 휠윈드로 대응(좌우 일부분 등장) -->
+						<!--7시 방향 다리쪽으로 이동-->
+						<node name="skill" facePos="-6750, -1575, 3800" isKeepBattle="true" idx="22">
+							<!--레벨1 일반 점프 도약 -->
+							<node name="jump" pos="-6750, -1575, 3800" speed="1200" heightMultiplier="0.4" />
+							<!--2셋트 전투판 중앙으로 오기-->
+							<node name="skill" faceTarget="0" idx="24" />
+							<!--레벨3: 점프 착지, 성우 대사 -->
+							<node name="target" type="near" from="2" to="3500" />
+							<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<!--5시 방향 다리쪽으로 이동-->
+						<node name="skill" facePos="-5400, -2700, 3800" isKeepBattle="true" idx="22">
+							<!--레벨1 일반 점프 도약 -->
+							<node name="jump" pos="-5400, -2700, 3800" speed="1200" heightMultiplier="0.4" />
+							<!--2셋트 전투판 중앙으로 오기-->
+							<node name="skill" faceTarget="0" idx="24" />
+							<!--레벨3: 점프 착지, 성우 대사 -->
+							<node name="target" type="near" from="2" to="3500" />
+							<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonPosition" value="8">
+					<!--북쪽 대규모 등장-->
+					<node name="skill" facePos="-5550, -1650, 3950" isKeepBattle="true" idx="22">
+						<!--레벨1 일반 점프 도약 -->
+						<node name="jump" pos="-5550, -1650, 3950" speed="1200" heightMultiplier="0.4" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="skill" faceTarget="0" idx="24" />
+						<!--레벨3: 점프 착지, 성우 대사 -->
+						<node name="target" type="near" from="2" to="3500" />
+						<!--이거 넣지 않으면 점프 이동 후 무조건 졸 회복 행동 할 수있음  -->
+						<node name="standby" limit="2000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="300" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<!-- @$# 중요!: 참고로 SummonPosition 변수 지정은 이유가 있어서 1에서 부터 8까지 순차적으로 지정한 것인데, "1", "2", "3" 은 이 변수에 맞게 바르칸트가 특정 공격 행동 패턴을 행하고 "4~8"은 공통적인 공격 행동하도록 설정하였음-->
+		<aiPreset name="1SetBattlePattern_1">
+			<node name="select" prob="999,0">
+				<!-- 현재 소환몹 등장 형태가 왼쪽  한큐브 높은 지점 등장, 휠윈드로 대응 형태일 경우의 공격 패턴 정의-->
+				<!-- 전투판 중앙 지점 대상 거리체크하여 범위 안에 있으면 유도탄 3개 발사 공격 하기-->
+				<node name="skill" facePos="-5550, -1650, 3950" cooltime="16000" idx="41">
+					<!-- 레벨2: 공격용 스킬이 아닌 방향 주시 변경용도로 Attack_Idle_A 가만히 서있는 형태-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="40">
+							<node name="skill" facePos="-5550, -1650, 3950" idx="40">
+								<node name="standby" limit="1300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="target" type="near" center="-6600, -750, 3950" />
+							<!-- 왼쪽 휠윈드 대응 전투 지점의 좌표에 가까운 대상 최우선 타겟팅함-->
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="26">
+						<node name="select" prob="999,999,99,1">
+							<!--레벨1:  550 이내 있으면 -->
+							<node name="skill" cooltime="9000" idx="10">
+								<!--마법진 내려찍기, 레벨1: 최대 3명 타겟 -->
+								<node name="target" type="near" center="-6000, -950, 3950">
+									<!--중앙 전투판 왼쪽 지점 최우선 타겟팅 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="15000" idx="42">
+								<!--전방 직사 거대 투척 발사 -->
+								<node name="target" type="near" center="-6000, -950, 3950">
+									<!--중앙 전투판 왼쪽 지점 최우선 타겟팅 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="11000" isKeepBattle="true" idx="1">
+								<!--3회전  베기 공격 -->
+								<node name="move" destination="-6200, -710, 3780" limit="3000" />
+								<!-- SummonPosition = 1 의 점프착지 지점 좌표로 이동함 -->
+								<node name="target" type="near" center="-6000, -950, 3950" />
+								<!--중앙 전투판 왼쪽 지점 최우선 타겟팅 -->
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+							<node name="skill" idx="2">
+								<!--돌진 공격  레벨1: 돌진 거리 짧음-->
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="rand" from="2" to="950" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="27">
+						<node name="select" prob="49,50,1">
+							<!--레벨2:  550~1000 사이에 있으면 -->
+							<node name="skill" cooltime="5900" idx="11">
+								<!--마법진 내려찍기, 레벨2: 최대 2명 타겟 1페이즈에서 사용하는 전용-->
+								<node name="target" type="near" center="-6000, -950, 3950">
+									<!--중앙 전투판 왼쪽 지점 최우선 타겟팅 -->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="6000" idx="42">
+								<!--전방 직사 거대 투척 발사 -->
+								<node name="target" type="near" center="-6000, -950, 3950">
+									<!--중앙 전투판 왼쪽 지점 최우선 타겟팅 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="standby" limit="300" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="50,45,5">
+							<node name="standby" limit="1200" faceTarget="1">
+								<node name="target" type="near" from="2" to="3500" />
+							</node>
+							<node name="skill" cooltime="6000" idx="42">
+								<!--거대 투사체 발사-->
+								<node name="standby" limit="1200" faceTarget="1">
+									<node name="target" type="near" from="2" to="3500" />
+								</node>
+							</node>
+							<node name="skill" cooltime="99000" idx="18">
+								<!--졸 회복 시켜주기, 아주 가끔 사용하게 하기-->
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="near" from="2" to="3500" />
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="1SetBattlePattern_2">
+			<node name="select" prob="999,0">
+				<!-- 현재 소환몹 등장 형태가 오른쪽 한큐브 높은 지점 등장, 휠윈드로 대응 형태일 경우의 공격 패턴 정의-->
+				<!-- 전투판 중앙 지점 대상 거리체크하여 범위 안에 있으면 유도탄 3개 발사 공격 하기-->
+				<node name="skill" facePos="-5550, -1650, 3950" cooltime="16000" idx="41">
+					<!-- 레벨2: 공격용 스킬이 아닌 방향 주시 변경용도로 Attack_Idle_A 가만히 서있는 형태-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="40">
+							<node name="skill" facePos="-5550, -1650, 3950" idx="40">
+								<node name="standby" limit="1300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="target" type="near" center="-4350, -2400, 3950" />
+							<!-- 오른쪽 휠윈드 대응 전투 지점의 좌표에 가까운 대상 최우선 타겟팅함-->
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="26">
+						<node name="select" prob="999,999,99,1">
+							<!--레벨1:  550 이내 있으면 -->
+							<node name="skill" cooltime="9000" idx="10">
+								<!--마법진 내려찍기, 레벨1: 최대 3명 타겟 -->
+								<node name="target" type="near" center="-4850, -2050, 3950">
+									<!--중앙 전투판 오른쪽 지점 최우선 타겟팅 -->
+									<node name="standby" limit="800" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="15000" idx="42">
+								<!--전방 직사 거대 투척 발사 -->
+								<node name="target" type="near" center="-4850, -2050, 3950">
+									<!--중앙 전투판 오른쪽 지점 최우선 타겟팅 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="11000" isKeepBattle="true" idx="1">
+								<!--3회전  베기 공격 -->
+								<node name="move" destination="-4590, -2300, 3780" limit="3000" />
+								<!-- SummonPosition = 2 의 점프착지 지점 좌표로 이동함 -->
+								<node name="target" type="near" center="-4850, -2050, 3950" />
+								<!--중앙 전투판 오른쪽 지점 최우선 타겟팅 -->
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+							<node name="skill" idx="2">
+								<!--돌진 공격  레벨1: 돌진 거리 짧음-->
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="rand" from="2" to="950" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="27">
+						<node name="select" prob="50,50,1">
+							<!--레벨2:  550~1000 사이에 있으면 -->
+							<node name="skill" cooltime="5900" idx="11">
+								<!--마법진 내려찍기, 레벨2: 최대 2명 타겟 1페이즈에서 사용하는 전용-->
+								<node name="target" type="near" center="-4850, -2050, 3950">
+									<!--중앙 전투판 오른쪽 지점 최우선 타겟팅 -->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="6000" idx="42">
+								<!--전방 직사 거대 투척 발사 -->
+								<node name="target" type="near" center="-4850, -2050, 3950">
+									<!--중앙 전투판 오른쪽 지점 최우선 타겟팅 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="standby" limit="300" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="50,45,5">
+							<node name="standby" limit="1200" faceTarget="1">
+								<node name="target" type="near" from="2" to="3500" />
+							</node>
+							<node name="skill" cooltime="6000" idx="42">
+								<!--거대 투사체 발사-->
+								<node name="standby" limit="1200" faceTarget="1">
+									<node name="target" type="near" from="2" to="3500" />
+								</node>
+							</node>
+							<node name="skill" cooltime="99000" idx="18">
+								<!--졸 회복 시켜주기, 아주 가끔 사용하게 하기-->
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="near" from="2" to="3500" />
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="1SetBattlePattern_3">
+			<node name="select" prob="999,0">
+				<!-- 현재 소환몹 등장 형태가 남쪽 다리 휠윈드로 대응 형태일 경우의 공격 패턴 정의-->
+				<!-- 전투판 중앙 지점 대상 거리체크하여 범위 안에 있으면 유도탄 3개 발사 공격 하기-->
+				<node name="skill" facePos="-5550, -1650, 3950" cooltime="16000" idx="41">
+					<!-- 레벨2: 공격용 스킬이 아닌 방향 주시 변경용도로 Attack_Idle_A 가만히 서있는 형태-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="40">
+							<node name="skill" facePos="-5550, -1650, 3950" idx="40">
+								<node name="standby" limit="1300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="target" type="rand" from="2" to="1800" />
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="26">
+						<node name="select" prob="999,999,1">
+							<!--레벨1:  550 이내 있으면 -->
+							<node name="skill" cooltime="12000" idx="10">
+								<!--마법진 내려찍기, 레벨1: 최대 3명 타겟 -->
+								<node name="target" type="near" center="-5850, -1950, 3950">
+									<!--중앙 전투판 지점 최우선 타겟팅 -->
+									<node name="standby" limit="900" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="15000" idx="42">
+								<!--전방 직사 거대 투척 발사 -->
+								<node name="standby" limit="1200" faceTarget="1">
+									<node name="target" type="rand" from="2" to="1800" />
+								</node>
+							</node>
+							<node name="skill" idx="2">
+								<!--돌진 공격  레벨1: 돌진 거리 짧음-->
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="rand" from="2" to="1800" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="27">
+						<node name="select" prob="49,50,1">
+							<!--레벨2:  550~1000 사이에 있으면 -->
+							<node name="skill" cooltime="5900" idx="11">
+								<!--마법진 내려찍기, 레벨2: 최대 2명 타겟 1페이즈에서 사용하는 전용-->
+								<node name="target" type="near" center="-5850, -1950, 3950">
+									<!--중앙 전투판 지점 최우선 타겟팅 -->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="6000" idx="42">
+								<!--전방 직사 거대 투척 발사 -->
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="rand" from="2" to="1800" />
+								</node>
+							</node>
+							<node name="standby" limit="300" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="50,45,5">
+							<node name="standby" limit="1200" faceTarget="1">
+								<node name="target" type="near" from="2" to="3500" />
+							</node>
+							<node name="skill" cooltime="6000" idx="42">
+								<!--거대 투사체 발사-->
+								<node name="standby" limit="1200" faceTarget="1">
+									<node name="target" type="near" from="2" to="3500" />
+								</node>
+							</node>
+							<node name="skill" cooltime="99000" idx="18">
+								<!--졸 회복 시켜주기, 아주 가끔 사용하게 하기-->
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="near" from="2" to="3500" />
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="1SetBattlePattern_48">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="26">
+					<node name="select" prob="33,33,34">
+						<!--레벨1:  550 이내 있으면 -->
+						<node name="skill" cooltime="5000" idx="1">
+							<!--3회전  베기 공격 -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="skill" idx="2">
+							<!--돌진 공격  레벨1: 돌진 거리 짧음-->
+							<node name="standby" limit="1500" faceTarget="1">
+								<node name="target" type="rand" from="2" to="950" />
+							</node>
+						</node>
+						<node name="skill" cooltime="9000" idx="10">
+							<!--마법진 내려찍기, 레벨1: 최대 3명 타겟 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="rand" from="2" to="950" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="27">
+							<node name="select" prob="45,45,10">
+								<!--레벨2:  550~1000 사이에 있으면 -->
+								<node name="skill" cooltime="8000" idx="11">
+									<!--마법진 내려찍기, 레벨2: 최대 2명 타겟 1페이즈에서 사용하는 전용-->
+									<node name="standby" limit="800" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+								<node name="skill" cooltime="8000" idx="42">
+									<!--거대 투사체 발사-->
+									<node name="standby" limit="1200" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+								<node name="trace" limit="3000" skillIdx="26" />
+								<!--거리 550 이내로 추적-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,45,5">
+								<node name="standby" limit="1200" faceTarget="1">
+									<node name="target" type="near" from="2" to="3500" />
+								</node>
+								<node name="skill" cooltime="6000" idx="42">
+									<!--거대 투사체 발사-->
+									<node name="standby" limit="1200" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+								<node name="skill" cooltime="21000" idx="18">
+									<!--졸 회복 시켜주기, 아주 가끔 사용하게 하기-->
+									<node name="standby" limit="1500" faceTarget="1">
+										<node name="target" type="near" from="2" to="3500" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="2SetBattleStart">
+			<!-- 2셋트 전투판으로 이동하자 마자 최초 딱 한번만 실행하는 행동에 대해 정의한 부분-->
+			<node name="standby" limit="2000" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="SummonDeath" value="0" />
+				<!--소환몹 죽음 명령 변수 초기화 하기-->
+				<!--분신 소환 행동 -->
+				<node name="SetValue" key="CheckBarkhantSummonMany" value="2" />
+				<!--CheckBarkhantSummonMany  이 변수에 2를 넣어 현재 분신 소환몹이 2마리임을 알림-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="200" delayTick="500" summonPos="450, 1350, 5000" summonRot="0,0,-50" />
+				<!--보스 기준 왼쪽, 소환 동작에 맞게 등장시키기 위해  delayTick="500" 넣음  -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" delayTick="500" summonPos="150, 1650, 5000" summonRot="0,0,-50" />
+				<!--보스 기준 오른쪽, 소환 동작에 맞게 등장시키기 위해  delayTick="500" 넣음  -->
+				<node name="skill" facePos="-450, 750, 4550" idx="16" />
+				<!--레벨2: 분신 소환하는 행동과 성우 대사 -->
+				<node name="skill" faceTarget="0" idx="14" />
+				<!-- 이 스킬을 사용해 자신한테 공방업 50000335(레벨1), 50000336(레벨1)  애디셔널을 부여할 함-->
+				<node name="standby" limit="3000" faceTarget="0" />
+				<node name="skill" facePos="-450, 750, 4550" idx="22" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="-450, 750, 4550" speed="1200" heightMultiplier="0.4" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="25" />
+				<!--레벨4:  점프 착지 (성우 음성 없음)-->
+				<node name="target" type="near" from="2" to="1800" />
+				<node name="standby" limit="2000" faceTarget="1" />
+			</node>
+		</aiPreset>
+		<aiPreset name="SignalSend">
+			<!--  분신 소환몹에게 보호막 파괴 행동 하라고 신호 보내기에 대한 것을 정의하는 부분 -->
+			<node name="conditions">
+				<condition name="additional" id="50000335">
+					<!-- 분신 소환 몹으로 인해 보호막이 생겨 공방업 버프 상태이면 50000335(레벨1), 50000336(레벨1) 이 2개  애디셔널을 지기게 됨-->
+					<!-- 즉 보스가 보호막이 있는 상태일 때만 분신 소환몹에게 신호를 보냄, 분신 두마리 중 한마리만 있을 수 있어서 빨간색 흰색 따로 보내는 방식보다는 랜덤 방식으로 보내는 것이 좋음-->
+					<node name="SetSlaveValue" key="BarrierBrake" value="1" isRandom="1" />
+					<!--분신 소환몹에게 보호막 파괴용 스킬 사용하라고 신호를 보냄, 두마리 중 한마리한테만 랜덤 선택해서 보냄, 즉 BarrierBrake = 1 을  보냄 -->
+				</condition>
+				<condition name="true">
+					<!--보호막이 없는 상태에서는 아무런 일도 일어나지 않음-->
+					<node name="standby" limit="100" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="2SetBarrierAttackPattern">
+			<node name="select" prob="9999,0">
+				<!-- 보호막이 있는 상태에서의 위협적인 공격 패턴 -->
+				<node name="target" type="near" center="-450, 750, 4550" cooltime="7000" />
+				<!-- 전투판 중앙의 대상을 최우선 타겟팅 함, 분신 소환몹에게 공격 당하기 패턴때 파티원 전원이 분신 소환몹 쪽으로 와 있어야 의도되로 공략할 수 있도록 하기 위해-->
+				<node name="conditions">
+					<condition name="extraData" key="TeleportDashAttackMode" value="0">
+						<node name="select" prob="199,30,30,20,20">
+							<!-- TeleportDashAttackMode = 0 인 경우로 평범한 공격 행동으로, 보호막 있는 상태로 최초 이 단계로 오면 무조건 여기 부터 실행할 것임 -->
+							<!-- TeleportDashAttackMode 이 변수는 순간이동 돌진배기 다 했을 경우와 보호막을 다시 생성시도 할때 0으로 초기화 함 -->
+							<!-- 순간이동 돌진배기 3연속 하기-->
+							<node name="standby" limit="200" faceTarget="1" cooltime="25000">
+								<node name="select" prob="33,34,33">
+									<node name="skill" faceTarget="0" cooltime="65000" isKeepBattle="true" idx="35">
+										<!-- ** 11시쪽 -> 6시쪽 셋트  -->
+										<node name="skill" faceTarget="0" idx="36" />
+										<node name="SetValue" key="TeleportDashAttackMode" value="116" />
+										<!--여기에 특정 변수를 넣어 다음 두번째 순간이동 돌진 공격을 하도록 함-->
+									</node>
+									<node name="skill" faceTarget="0" cooltime="65000" isKeepBattle="true" idx="35">
+										<!-- ## 2시쪽 -> 10시쪽 셋트  -->
+										<node name="skill" faceTarget="0" idx="36" />
+										<node name="SetValue" key="TeleportDashAttackMode" value="210" />
+										<!--여기에 특정 변수를 넣어 다음 두번째 순간이동 돌진 공격을 하도록 함-->
+									</node>
+									<node name="skill" faceTarget="0" cooltime="65000" isKeepBattle="true" idx="35">
+										<!-- @@ 6시쪽 -> 1시쪽 셋트  -->
+										<node name="skill" faceTarget="0" idx="36" />
+										<node name="SetValue" key="TeleportDashAttackMode" value="61" />
+										<!--여기에 특정 변수를 넣어 다음 두번째 순간이동 돌진 공격을 하도록 함-->
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" idx="1">
+								<!--회전 돌진 공격 -->
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="8000" idx="39">
+								<!--연속 마법진 공격 -->
+								<node name="trace" till="500" limit="1000">
+									<!--이 스킬 사용후 바로 플레이어 추적하게 하여 , 분신 소환몹 맞추기 타이밍이 잘 나올 수 있게 하기 -->
+									<node name="standby" limit="450" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="13000" idx="39">
+								<!--연속 마법진 공격 -->
+								<node name="trace" till="500" limit="1000">
+									<!--이 스킬 사용후 바로 플레이어 추적하게 하여 , 분신 소환몹 맞추기 타이밍이 잘 나올 수 있게 하기 -->
+									<node name="standby" limit="450" faceTarget="1" />
+								</node>
+							</node>
+							<!--돌진배기 순간이동 2연속 하기-->
+							<node name="skill" faceTarget="0" cooltime="8000" isKeepBattle="true" idx="35">
+								<!-- $$ 11시쪽 딱 한번 발동  -->
+								<node name="skill" faceTarget="0" idx="36" />
+								<node name="SetValue" key="TeleportDashAttackMode" value="11" />
+								<!--여기에 특정 변수를 넣어 다음 두번째 순간이동 돌진 공격을 하도록 함-->
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportDashAttackMode" value="116">
+						<!-- ** 11시쪽 -> 6시쪽 셋트  -->
+						<node name="teleport" pos="-450, 1050, 4600" isKeepBattle="true">
+							<!--11시쪽 부근 -->
+							<node name="standby" limit="300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="36" />
+							<node name="SetValue" key="TeleportDashAttackMode" value="1166" />
+							<!--여기에 특정 변수를 넣어 다음 세번째 순간이동 돌진 공격을 하도록 함-->
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportDashAttackMode" value="1166">
+						<!-- ** 11시쪽 -> 6시쪽 셋트  -->
+						<node name="teleport" pos="-600, 600, 4600" isKeepBattle="true">
+							<!--6시쪽 부근 -->
+							<node name="standby" limit="300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="37" />
+							<node name="standby" limit="1500" faceTarget="1" />
+							<node name="SetValue" key="TeleportDashAttackMode" value="0" />
+							<!--순간이동 돌진공격 다 해서, 다음 사용을 위해 0으로 초기화 하기 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportDashAttackMode" value="210">
+						<!-- ## 2시쪽 -> 10시쪽 셋트  -->
+						<node name="teleport" pos="-150, 600, 4600" isKeepBattle="true">
+							<!--2시쪽 부근 -->
+							<node name="standby" limit="300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="36" />
+							<node name="SetValue" key="TeleportDashAttackMode" value="21010" />
+							<!--여기에 특정 변수를 넣어 다음 세번째 순간이동 돌진 공격을 하도록 함-->
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportDashAttackMode" value="21010">
+						<!-- ## 2시쪽 -> 10시쪽 셋트  -->
+						<node name="teleport" pos="-600, 1050, 4600" isKeepBattle="true">
+							<!--10시쪽 부근 -->
+							<node name="standby" limit="300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="37" />
+							<node name="standby" limit="1500" faceTarget="1" />
+							<node name="SetValue" key="TeleportDashAttackMode" value="0" />
+							<!--순간이동 돌진공격 다 해서, 다음 사용을 위해 0으로 초기화 하기 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportDashAttackMode" value="61">
+						<!-- @@ 6시쪽 -> 1시쪽 셋트  -->
+						<node name="teleport" pos="-600, 600, 4600" isKeepBattle="true">
+							<!--6시쪽 부근 -->
+							<node name="standby" limit="300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="36" />
+							<node name="SetValue" key="TeleportDashAttackMode" value="611" />
+							<!--여기에 특정 변수를 넣어 다음 세번째 순간이동 돌진 공격을 하도록 함-->
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportDashAttackMode" value="611">
+						<!-- @@ 6시쪽 -> 1시쪽 셋트  -->
+						<node name="teleport" pos="-150, 750, 4600" isKeepBattle="true">
+							<!--1시쪽 부근 -->
+							<node name="standby" limit="300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="37" />
+							<node name="standby" limit="1500" faceTarget="1" />
+							<node name="SetValue" key="TeleportDashAttackMode" value="0" />
+							<!--순간이동 돌진공격 다 해서, 다음 사용을 위해 0으로 초기화 하기 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportDashAttackMode" value="11">
+						<!-- $$ 11시쪽 딱 한번 발동  -->
+						<node name="teleport" pos="-450, 750, 4600" isKeepBattle="true">
+							<!--11시쪽 부근 -->
+							<node name="standby" limit="300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="37" />
+							<node name="standby" limit="1200" faceTarget="1" />
+							<node name="SetValue" key="TeleportDashAttackMode" value="0" />
+							<!--순간이동 돌진공격 다 해서, 다음 사용을 위해 0으로 초기화 하기 -->
+						</node>
+					</condition>
+					<condition name="true">
+						<!--이론적으로 이곳에 올일 없지만 혹시 몰라서 TeleportDashAttackMode 변수 초기화 하는 설정만 하고 이어서 평이한 상태로 돌아가도록 함 -->
+						<node name="SetValue" key="TeleportDashAttackMode" value="0" />
+						<!--순간이동 돌진공격 다 해서, 다음 사용을 위해 0으로 초기화 하기 -->
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="2SetNormalAttackPattern">
+			<node name="select" prob="30,30,40">
+				<!-- 보호막이 없는 상태에서의 평범한 공격 패턴 -->
+				<node name="skill" idx="1">
+					<!--회전 공격 -->
+					<node name="standby" limit="1500" faceTarget="1">
+						<node name="target" type="near" from="2" to="1800" />
+					</node>
+				</node>
+				<node name="skill" idx="3">
+					<!--돌진 공격, 레벨2: 돌진거리 800 -->
+					<node name="standby" limit="1500" faceTarget="1">
+						<node name="target" type="near" from="2" to="1800" />
+					</node>
+				</node>
+				<node name="skill" cooltime="6000" idx="10">
+					<!--마법진 내려찍기 공격 -->
+					<node name="standby" limit="500" faceTarget="1">
+						<!--이 스킬 사용후 무빙 스킬을 사용해야 하기 때문에 standby 시간 짧게 설정함 -->
+						<node name="target" type="near" from="2" to="1800" />
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="2SetNormalStandbyPattern">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="30">
+					<node name="select" prob="999,20,45,35">
+						<!--거리 3000 정도 높이 700으로 즉 같은 높이 전투판 이상의 곳에 있다면 아래 내용 실행, 즉 현재 바르칸트가 단상위에 있다면 이부분 실행 안함  -->
+						<!--거리 3000 는 분신 소환몹과의 전투 공간까지 포함됨-->
+						<node name="move" destination="-450, 750, 4550" limit="3000" cooltime="15000">
+							<!--2셋트 전투판 중앙쪽으로 이동-->
+							<node name="target" type="near" from="2" to="1800" />
+						</node>
+						<node name="skill" idx="26">
+							<!--Attack_Idle_A-->
+							<node name="target" type="near" from="2" to="1800" />
+						</node>
+						<node name="skill" cooltime="9000" idx="19">
+							<!--분신 소환몹 회복 시키기, 레벨2가 투사체 회복 방식임-->
+							<node name="target" type="near" from="2" to="1800" />
+						</node>
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="near" from="2" to="1800" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--바르칸트가 2셋트 전투판 단상위에 있을 때는 가만히 있기-->
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="target" type="near" from="2" to="1800" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="ForceAttackPattern">
+			<node name="conditions">
+				<condition name="hpOver" value="59">
+					<node name="select" prob="999999,75,25">
+						<!-- HP 59 이상이면 강력한 스킬 낮은 확률로 발동 -->
+						<node name="standby" limit="250" faceTarget="1" cooltime="9999999" />
+						<!-- 2셋트 전투 들어서자 마자 바로 텔레포트 강력 스킬을 사용하는 것을 막기 위해 이 부분 넣음 -->
+						<node name="standby" limit="200" faceTarget="1" />
+						<node name="skill" cooltime="61000" isKeepBattle="true" idx="38">
+							<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+							<node name="teleport" pos="-450, 750, 4550" />
+							<node name="skill" idx="6" />
+							<!--바람 끌어당긴 후 내려찍기  -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- HP 59 이하이면 주기적으로 발동 -->
+					<node name="skill" idx="38">
+						<!--텔레포트 직전 동작과 이펙트 와 효과음 설정하는 곳-->
+						<node name="teleport" pos="-450, 750, 4550">
+							<node name="select" prob="95,5">
+								<node name="skill" cooltime="55000" idx="5">
+									<!--공중 광역 충격파 즉사 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="55000" idx="6">
+									<!--바람 끌어당긴 후 내려찍기  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

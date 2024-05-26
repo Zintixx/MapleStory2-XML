@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 2페이지 10시 방향 전투판 담당, 이 몬스터는 최초에 미니맵에서 보스 아이콘 자체가 나오지 않는 맵 구석 HiddenCube 지점에 대기하고 있음 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" key="Number" value="0">
+				<!-- 공격 횟수 체크하기 위한 변수 -->
+				<node name="SetValue" key="CallSummon10" value="0" />
+				<!-- 이 변수에 의해 본 전투판으로 순간이동으로 오거나, 대기상태로 되거나 등등 중요 행동에 사용하는 변수 -->
+			</node>
+		</condition>
+		<!-- 이 분신은 보스하고 HP 공유하는데, 파티원이 이 분신한테만 몰려서 몰빵할 경우의 어느정도 어뷰징을 막기 위해 각 HP 구간별로 Number = 7 강제 설정하여 퇴장하돌고 함-->
+		<condition name="hpLess" value="80">
+			<node name="SetValue" key="Number" value="7" />
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="SetValue" key="Number" value="7" />
+		</condition>
+		<condition name="hpLess" value="20">
+			<node name="SetValue" key="Number" value="7" />
+		</condition>
+		<!-- 이 몬스터는 절대 죽지 않게 설정했음, HP 1% 이하가 되면 스스로 사라지게 함, 본체만 공격하고 분신 방치하면 이 분신 사라지지 않는 버그스러운 상황이 생길 수 있어서 스스로 사라지는 설정 넣음  -->
+		<condition name="hpLess" value="1">
+			<node name="RemoveMe" />
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="near" from="10" to="1500" cooltime="2400" />
+			<!--  제일 가까운 지점의 플레이어 우선 타겟팅 하기, 혼자온 마력의 구슬 터치 플레이어 신속히 견제할 수 있도록 쿨타임 시간 짧게 설정-->
+			<node name="conditions">
+				<condition name="extraData" key="DeathTurkaSummon" value="1" op="greaterEqual">
+					<!-- 소환한 보스에게 이 변수 1 신호를 받으면, 스스로 사라지도록 함 -->
+					<node name="RemoveMe">
+						<node name="standby" limit="3200" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CallSummon10" value="0">
+					<!--  CallSummon10 = 0 이면 HiddenCube 지점에 아무것도 안하고 대기 상태로 있기 -->
+					<node name="skill" idx="1" />
+					<!-- Attack_Idle_A 동작으로 그냥 가만히 서있는 스킬임 -->
+				</condition>
+				<condition name="extraData" key="CallSummon10" value="1">
+					<!-- 보스한테 CallSummon10 = 1 신호 받으면, 2페이지 전투판의 10시 방향으로 순간이동 오도록 하기 -->
+					<node name="teleport" pos="4425, 7920, 2110" isKeepBattle="true">
+						<!--  10시 방향 좌표 순간이동 -->
+						<node name="skill" idx="7" />
+						<!-- 등장모습 비주얼 적인 이유로 이동한 다음 순간이동 이펙트 나오도록 설명, 레벨2가 순간이동 등장 스킬임 -->
+						<node name="SetValue" key="CallSummon10" value="99" />
+						<!-- 이 변수에 "1", "0"  이 아닌 다른 숫자로 설정해서 평상시 공격 상태가 되도록 하기 -->
+						<node name="SetValue" key="Number" value="0" />
+						<!--  전투하러 순간이동 올때도 이 변수 0 초기화 하기, 위  <reserved> 에서 이 변수 셋팅될 경우 전투판 도착하자마자 바로 퇴장하는 어색한 경우가 생기기 때문에 전투하러 올때도 이 변수 0 초기화 하기 -->
+						<node name="standby" limit="3100" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<!-- 공격 후 standby 상태 -->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="Number" value="7" op="greaterEqual">
+					<!-- 공격 횟수가 일정 이상 되면, 미니맵에서 안보이는 12시 방향 맨 구석 HiddenCube 지점으로 순간이동해 대기 상태로 있도록함 -->
+					<!-- 참고로 Number 는 구슬 등장할 때 구슬 AI에서 Number = 0 신호 보내 초기화 시킴 (AI_MarbleTurkaSupport10.xml, AI_MarbleTurkaSupport02.xml, AI_MarbleTurkaSupport04.xml, AI_MarbleTurkaSupport08.xml) -->
+					<node name="skill" isKeepBattle="true" idx="6">
+						<node name="teleport" pos="12000, 12000, 4210" />
+						<!-- 미니맵에서 안보이는 12시 방향 맨 구석 HiddenCube 지점으로 순간이동 -->
+						<!-- 각종 변수 0 초기화 -->
+						<node name="SetValue" key="CallSummon10" value="0" />
+						<!-- 이 변수 0 초기화 해서 다시 HiddenCube 지점에 아무것도 안하고 대기 상태 행동 하도록 함 -->
+						<node name="SetValue" key="Number" value="0" />
+						<node name="SetValue" key="AttackDelay" value="0" />
+					</node>
+				</condition>
+				<!-- 본격 공격 행동 정의는 여기부터 -->
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="50,50">
+								<!-- 사정거리 450,  가까운 거리면  standby 약간 길게 하기  까이이서 싸우면 약간 더 쉽게 하기위해 -->
+								<node name="skill" faceTarget="1" idx="2">
+									<!-- 낫 휘둘기 2연타, 레벨2는 이동 없음 -->
+									<node name="SetValue" key="AttackDelay" value="23">
+										<node name="select" prob="40,60">
+											<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+											<node name="SetValue" key="Number" value="2" isModify="1" />
+											<node name="SetValue" key="Number" value="3" isModify="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="9000" idx="4">
+									<!--얼굴 발사, 레벨1은 사정거리 650 -->
+									<node name="SetValue" key="AttackDelay" value="26">
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="Number" value="2" isModify="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="5">
+							<node name="select" prob="50,50">
+								<!-- 사정거리 1450, 한큐브 아래 이하는 커버 안함, 먼 거리면  standby 짧게 하기  -->
+								<node name="skill" faceTarget="1" idx="5">
+									<!--얼굴 발사, 레벨6은 2페이즈 마력구의 구슬 오브젝트 지형만을 커버하는 범위 -->
+									<node name="SetValue" key="AttackDelay" value="9">
+										<node name="select" prob="50,50">
+											<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+											<node name="SetValue" key="Number" value="1" isModify="1" />
+											<node name="SetValue" key="Number" value="2" isModify="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="28000" initialCooltime="15200" idx="3">
+									<!-- 레벨11: 얼굴 바닥 레이저 발사, 레이저 공격 애니메이션 자체가 길어서  초반에 레이저 공격할 경우 플레이어 한명으로 마력의 구슬 파괴할 수 있는 상황이 생길 수 있어서 initialCooltime 을 넣음 -->
+									<node name="SetValue" key="AttackDelay" value="3">
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="Number" value="2" isModify="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="near" from="10" to="2100">
+									<node name="select" prob="50,50">
+										<node name="SetValue" cooltime="12000" key="Number" value="1" isModify="1" />
+										<node name="SetValue" key="Number" value="0" isModify="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

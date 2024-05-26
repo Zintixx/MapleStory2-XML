@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 최후의 바야르-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="DeathSummonMob" value="1">
+				<node name="skill" idx="5" />
+				<!-- 보스 명령을 받고 자살 스킬 사용하기-->
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,0">
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="near" from="10" to="2500" cooltime="9000" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!--몸통 돌진 사정거리 안에 들어오면, 몸통 돌진 공격 하기 -->
+							<node name="skill" faceTarget="1" idx="2">
+								<node name="select" prob="33,33,34">
+									<!--몸통 돌진 후 standby 상태 비교적 오래 하기-->
+									<node name="standby" limit="2700" faceTarget="1" />
+									<node name="standby" limit="3900" faceTarget="1" />
+									<node name="standby" limit="5200" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="70,30">
+								<!--사정거리 1500~1800 이내 같은 층에 있는 대상이 있으면 돌진 사정거리까지 쫓아가기 -->
+								<node name="trace" limit="2500" skillIdx="2" />
+								<!--거리 200 이내로 추적하기 -->
+								<node name="standby" limit="800" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="4">
+							<node name="select" prob="90,10">
+								<!--레벨2: 큐브 한칸 위쪽 대상은 원거리 투사체 공격을 함 -->
+								<node name="skill" faceTarget="1" cooltime="4000" idx="4">
+									<node name="select" prob="33,33,34">
+										<node name="standby" limit="900" faceTarget="1" />
+										<node name="standby" limit="1200" faceTarget="1" />
+										<node name="standby" limit="2100" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="900" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="near" from="10" to="1500" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="CheckSummonMany" value="-1" isModify="1"></node>
+	</battleEnd>
+</npcAi>

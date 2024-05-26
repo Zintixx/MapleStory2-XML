@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 2페이지에서 레이저 캐논포 앞에 나와서 대신 맞아 발록보스를 보호하는 역할을 하는 몬스터 -->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="200" faceTarget="0" cooltime="16000">
+				<node name="target" type="near" from="2" to="2400" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath_2Phase" value="1">
+					<!-- 2페이즈 전용 자살 명령 신호 변수-->
+					<node name="skill" idx="3" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="9999,0">
+								<!-- 레벨3: 거리 900~1000 정도 정도, 아래쪽으로 200 더 확장된 범위임 -->
+								<node name="say" message="$BalrogCrimsonKritias_BalrogBossGuard$" durationTick="9000" cooltime="4000" />
+								<aiPreset name="Normal_Attack" />
+								<!-- 평상시 공격 행동을 정의한 부분 -->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="near" from="10" to="2500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<!-- 할퀴기 사정거리 이내면, 레벨3: 돌진없는 공격, 사정거리 450, 레이저 캐논포 공격 전용 -->
+					<node name="skill" idx="2">
+						<!--할퀴기 -->
+						<node name="SetValue" key="AttackDelay" value="25">
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="target" type="near" from="2" to="1800" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<!--  설치 투척, 레벨3은 바닥 대미지 필드 없음, 거리 900~1000 정도-->
+					<node name="skill" idx="1">
+						<node name="select" prob="33,33,33">
+							<!--  설치 투척, 레벨3은 바닥 대미지 필드 없음-->
+							<node name="SetValue" key="AttackDelay" value="25" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="AttackDelay" value="33" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="AttackDelay" value="41" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="800" faceTarget="1">
+						<node name="target" type="near" from="2" to="1800" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="20000" initialCooltime="1">
+				<node name="target" type="randAssociated" />
+				<!--자신을 공격한 PC 랜덤 타겟-->
+			</node>
+			<node name="conditions">
+				<condition name="additional" id="40361201">
+					<node name="select" prob="9999,1">
+						<!-- 추가 점수 소환 신호 버프가 있으면 더미 점수 소환 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="900000">
+							<node name="summon" npcId="1" npcCount="4" npcCountMax="4" group="101" summonPos="-600, 150, 2400" summonRadius="250" master="None" lifeTime="3000" />
+						</node>
+						<node name="standby" limit="10" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="100,1">
+								<node name="skill" faceTarget="1" cooltime="4000" idx="1">
+									<node name="standby" limit="100" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="1000" skillIdx="1" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

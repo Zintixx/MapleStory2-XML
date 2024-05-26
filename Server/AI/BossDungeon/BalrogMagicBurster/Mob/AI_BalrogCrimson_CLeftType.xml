@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				<node name="SetValue" key="CannonShotPattern" value="1" />
+				<!--	1번: 가운데 -> 2번: 왼쪽 -> 3번: 오른쪽 대포 발사  -> 4번: 가운데 강제 죽이기 패턴 행위를 결정할때 사용하는 변수	-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투 -->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--대포쪽 플레이어 타겟팅 최우선 설정하는 부분 정의 -->
+			<node name="standby" limit="200" faceTarget="0" cooltime="3000">
+				<node name="SetValue" key="AttackDelay" value="0">
+					<!--  타겟팅 리뉴어 될때  AttackDelay = 0 초기화 시킴, 대포 대상 바로 견제 하도록 하기 위해 -->
+					<aiPreset name="TargetLogic" />
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<node name="skill" idx="7" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<!--찌르기 사정거리 이내이면, 대포 쪽으로 멀리 떨어지게 하기 위해 끌고오기 수월하게 하기 위해 제일 가까운 거리 스킬 데이터 기준으로 거리 체크함-->
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<!--할퀴기  사정거리 이내이면-->
+								<node name="standby" limit="100" faceTarget="1" />
+							</condition>
+							<condition name="true">
+								<node name="trace" till="300" limit="5000" />
+								<!--할퀴기 거리 이내까지  추적 -->
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- 가슴 강력 에너지볼 투척 스킬  자신과 다른 크림슨발록도 이 변수를 셋팅하여  설정하기-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="39000" initialCooltime="24000" isKeepBattle="true">
+							<node name="SetValue" key="CriticalBallAttackMode" value="1" />
+							<!--	자기 자신 이 변수 1로 만들어 가슴 강력 에너지볼 사용하도록 함-->
+							<node name="SetValueRangeTarget" key="CriticalBallAttackMode" value="1" radius="3800" height="2000" />
+							<!--주변 다른 크림슨 발록에게 신호보내서 이 스킬 동시에 사용하도록 함	-->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="CriticalBallAttackMode" value="1">
+								<node name="select" prob="9999,1">
+									<node name="skill" cooltime="39000" isKeepBattle="true" idx="1">
+										<!-- 가슴 강력 에너지볼 투척 스킬 -->
+										<node name="SetValue" key="AttackDelay" value="31" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="CriticalBallAttackMode" value="0" />
+										<!--	이 변수 0으로 초기화, 초기화 안하면 무한으로 초강력 에너지볼 사용하는 대박 버그 생김	-->
+									</node>
+									<node name="standby" limit="200" faceTarget="1">
+										<!-- 위 스킬이 쿨타임 걸린 상태라면 아무것도 안함-->
+										<node name="SetValue" key="CriticalBallAttackMode" value="0" />
+										<!--	이 변수 0으로 초기화, 초기화 안하면 무한으로 초강력 에너지볼 사용하는 대박 버그 생김	-->
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="70,30">
+									<!-- 할퀴기 사정거리 이내면 -->
+									<node name="skill" idx="4">
+										<!--할퀴기 -->
+										<node name="SetValue" key="AttackDelay" value="25">
+											<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+											<node name="target" type="near" from="2" to="1800" />
+										</node>
+									</node>
+									<node name="skill" cooltime="12000" idx="2">
+										<!--바닥 설치 투척 -->
+										<node name="SetValue" key="AttackDelay" value="25" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="3">
+								<node name="select" prob="95,5">
+									<!-- 한큐브 높은 곳 즉 대포 있는 곳에 있으면-->
+									<node name="skill" cooltime="6000" idx="3">
+										<!--한큐브 높은 곳 즉 대포 있는 곳의 플레이어 공격하기-->
+										<node name="SetValue" key="AttackDelay" value="25" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									</node>
+									<node name="trace" limit="3000" skillIdx="4" />
+									<!--할퀴기 거리까지 추적 -->
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="40,40,20">
+									<!-- 몸통 돌진 사정거리 이내에 있으면-->
+									<node name="skill" idx="5">
+										<!--몸통 돌진 -->
+										<node name="SetValue" key="AttackDelay" value="25">
+											<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+											<node name="target" type="near" from="2" to="1800" />
+										</node>
+									</node>
+									<node name="skill" cooltime="8000" idx="2">
+										<!--바닥 설치 투척 -->
+										<node name="SetValue" key="AttackDelay" value="25" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									</node>
+									<node name="trace" limit="3000" skillIdx="4" />
+									<!--할퀴기 거리까지 추적 -->
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="6">
+										<!--	50001288 은 전투판 안에 있는지를 판단하는 거리체크 용도	-->
+										<node name="trace" limit="8000" skillIdx="5" />
+										<!--몸통 돌진 거리까지 추적 -->
+									</condition>
+									<condition name="true">
+										<!--	파티원 전원 스타팅 포인트에 있다면	-->
+										<node name="standby" limit="300" faceTarget="1">
+											<node name="target" type="rand" from="10" to="2500" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="TargetLogic">
+			<node name="conditions">
+				<condition name="extraData" key="CannonShotPattern" value="1">
+					<node name="select" prob="100,100,100">
+						<!--인페르녹 전함이 가운데 지점에 있음 -->
+						<!---왼쪽-->
+						<node name="target" type="near" center="-1500, 600, 2410" />
+						<!---가운데 -->
+						<node name="target" type="near" center="-900, 300, 2110" />
+						<node name="target" type="near" center="-450, 450, 2110" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotPattern" value="2">
+					<node name="select" prob="100,100,100">
+						<!--인페르녹 전함이 왼쪽 지점에 있음 -->
+						<!---왼쪽-->
+						<node name="target" type="near" center="-1500, 600, 2410" />
+						<node name="target" type="near" center="-1800, 300, 2410" />
+						<node name="target" type="near" center="-2100, 150, 2410" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotPattern" value="3">
+					<node name="select" prob="100,100,100">
+						<!--인페르녹 전함이 오른쪽 지점에 있음 -->
+						<!---가운데 -->
+						<node name="target" type="near" center="450, 300, 2110" />
+						<node name="target" type="near" center="0, 450, 2110" />
+						<node name="target" type="near" center="-450, 450, 2110" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="100,100">
+						<node name="target" type="rand" from="10" to="5500" />
+						<node name="target" type="near" from="2" to="1800" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

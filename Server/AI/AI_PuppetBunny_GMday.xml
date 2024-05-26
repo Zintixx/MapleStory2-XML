@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅 갱신 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="6000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1200" />
+			</node>
+			<!-- HP 80% 이상 -->
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<node name="select" prob="999,0">
+						<node name="skill" cooltime="15000" initialCooltime="10000" idx="4">
+							<!-- 회오리 3개 발사 -->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="20,50,30">
+									<!--근접 거리 체크 -->
+									<node name="skill" idx="2">
+										<!--근접 밀어내기 -->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="1">
+										<!--근접 휘두르기 -->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="5000" initialCooltime="5000" idx="3">
+										<!--대쉬 공격 -->
+										<node name="runaway" till="2500" limit="1000" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="60,40">
+											<!--타겟대상  1300 안에  있으면 -->
+											<node name="skill" idx="2">
+												<!--회오리 3개 발사 -->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" cooltime="10000" initialCooltime="10000" skillIdx="3">
+												<!--타겟대상  800까지 쫓아가기 -->
+												<node name="skill" idx="3">
+													<!--근거리 돌진 공격 -->
+													<node name="runaway" till="2500" limit="1000" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" limit="1500" skillIdx="3" />
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<!-- HP 40% 이상 -->
+				<condition name="true">
+					<node name="conditions">
+						<condition name="hpOver" value="40">
+							<node name="select" prob="9999,99,0">
+								<node name="skill" cooltime="30000" initialCooltime="1" idx="5">
+									<node name="select" prob="100,100">
+										<!--유도 회오리 3개 발사 -->
+										<node name="skill" idx="6" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</node>
+								<!-- 연속 바람 큐브 후 바람 유도 투척 3개-->
+								<node name="skill" faceTarget="0" cooltime="25000" initialCooltime="10000" isKeepBattle="true" idx="7">
+									<!-- 밀쳐내기 충격파 발사-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="8" />
+									<!-- 큐브 스킬 바람 일으킴-->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!-- 대기 상태-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="8" />
+									<!-- 큐브 스킬 바람 일으킴-->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!-- 대기 상태-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="8" />
+									<!-- 큐브 스킬 바람 일으킴-->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!-- 대기 상태-->
+									<node name="skill" faceTarget="0" idx="10" />
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="20,30,50">
+											<!--타겟팅이  1400이내 가까이 있으면 돌진 공격-->
+											<node name="skill" idx="1">
+												<!--회오리 3개 발사 -->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+											<node name="skill" idx="4">
+												<!--회오리 3개 발사 -->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" cooltime="10000" initialCooltime="10000" skillIdx="2">
+												<!--타겟대상  800까지 쫓아가기 -->
+												<node name="skill" idx="2">
+													<!--발 느리게 한 후 폭발 -->
+													<node name="target" type="rand" from="10" to="1000">
+														<node name="select" prob="50,50">
+															<node name="skill" idx="2">
+																<!--발 느리게 한 후 폭발 2연속 -->
+																<node name="standby" limit="2500" faceTarget="1" />
+															</node>
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" limit="800" skillIdx="4" />
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<!-- HP 40% 이하 -->
+						<condition name="true">
+							<node name="select" prob="9999,9999,0">
+								<node name="skill" faceTarget="0" cooltime="40000" initialCooltime="10000" idx="11">
+									<!-- 밀쳐내기 충격파 발사-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="30000" initialCooltime="10000" isKeepBattle="true" idx="7">
+									<!-- 밀쳐내기 충격파 발사-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="8" />
+									<!-- 큐브 스킬 바람 일으킴-->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!-- 대기 상태-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="8" />
+									<!-- 큐브 스킬 바람 일으킴-->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!-- 대기 상태-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="8" />
+									<!-- 큐브 스킬 바람 일으킴-->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!-- 대기 상태-->
+									<node name="target" type="rand" from="10" to="1500" />
+									<node name="skill" faceTarget="1" idx="8" />
+									<!-- 큐브 스킬 바람 일으킴-->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!-- 대기 상태-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="12">
+										<node name="select" prob="30,70">
+											<!--타겟팅이  1000이내 가까이 있으면 돌진 공격-->
+											<node name="skill" idx="4">
+												<!--회오리 3개 발사 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" cooltime="10000" initialCooltime="10000" skillIdx="12">
+												<!--타겟대상  800까지 쫓아가기 -->
+												<node name="skill" idx="12">
+													<!--발 느리게 한 후 폭발 -->
+													<node name="target" type="rand" from="10" to="1000">
+														<node name="select" prob="50,50">
+															<node name="skill" idx="12">
+																<!--발 느리게 한 후 폭발 -->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" limit="1500" skillIdx="3" />
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

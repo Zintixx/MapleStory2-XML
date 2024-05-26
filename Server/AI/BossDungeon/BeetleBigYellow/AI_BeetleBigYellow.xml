@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,9999,0">
+			<node name="standby" limit="500" faceTarget="0" cooltime="999999" isKeepBattle="true">
+				<node name="SetValue" key="FourthTimes" value="0" />
+				<!--FourthTimes  이 변수를 통해 보호막 생성 3번 연속 발동 유무 후 1번 쉬기를 체크함-->
+				<node name="SetValue" key="CenterMove" value="0" />
+				<!--CenterMove  이 변수를 통해 구석에 끼여 계속 trace만 한 경우 전투판 중앙 지점으로 가도록 하여 끼임 현상을 해결함-->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주거나 구석에 끼일 경우 벗어나도록 함 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="7000">
+				<node name="conditions">
+					<condition name="extraData" key="CenterMove" value="2" op="lessEqual">
+						<node name="target" type="rand" from="10" to="2500" />
+						<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					</condition>
+					<condition name="true">
+						<!--CenterMove 값이 3 이상인 경우 구석에 끼였기 때문에 맵 중앙으로 이동하도록 함 -->
+						<node name="move" destination="-750, 1050, 1250" limit="1000">
+							<!--구석 끼임을 벗어나기 위해 맵 중앙으로 이동함-->
+							<node name="SetValue" key="CenterMove" value="0">
+								<!--CenterMove  이 변수를 구석 끼임을 벗어났기 때문에 이 변수를 초기화 함-->
+								<node name="target" type="near" center="-400, 1250, 1210" />
+								<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="90">
+					<node name="select" prob="9999,99,0">
+						<!--#1페이즈     ***구석에 끼였을 때 벗어나는 로직을 넣었음-->
+						<!--***졸병 소환 딱 1번 사용, 레벨2가 성우 대사 설정 -->
+						<node name="standby" limit="300" faceTarget="1" cooltime="999999" initialCooltime="23000" isKeepBattle="true">
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" lifeTime="30000" summonPos="-1050, 2550, 1250" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" lifeTime="30000" summonPos="-1350, 2250, 1250" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" lifeTime="30000" summonPos="900, 600, 1250" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" lifeTime="30000" summonPos="600, 300, 1250" />
+						</node>
+						<!--***방업 버프 딱 1번 사용-->
+						<node name="standby" limit="100" faceTarget="0" cooltime="999999" initialCooltime="95000">
+							<node name="buff" type="add" id="50000329" level="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="13">
+								<!--플레이어가 같은 높이에 있으면-->
+								<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="30,40,30">
+											<node name="skill" idx="1">
+												<node name="standby" limit="1500" faceTarget="1">
+													<node name="SetValue" key="CenterMove" value="0" />
+													<!--근점 공격을 했다는 것은 구석 끼임을 벗어났다는 의미기 때문에 이 변수를 초기화 함-->
+												</node>
+											</node>
+											<node name="skill" cooltime="12000" isKeepBattle="true" idx="3">
+												<node name="target" type="far" from="10" to="1200" />
+												<node name="skill" idx="4" />
+												<node name="standby" limit="1500" faceTarget="1" />
+												<node name="SetValue" key="CenterMove" value="0" />
+												<!--근점 공격을 했다는 것은 구석 끼임을 벗어났다는 의미기 때문에 이 변수를 초기화 함-->
+											</node>
+											<node name="skill" cooltime="18000" idx="5">
+												<!--점프 쾅 공격 -->
+												<node name="skill" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,50">
+											<node name="trace" limit="1200" skillIdx="2">
+												<node name="target" type="near" from="10" to="2500">
+													<node name="SetValue" key="CenterMove" value="1" isModify="1" />
+													<!--구석이 끼이면 계속 trace를 하기 때문에 CenterMove 변수에 1씩 넣음 -->
+												</node>
+											</node>
+											<node name="skill" cooltime="13000" idx="5">
+												<!--점프 쾅 공격 -->
+												<node name="skill" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+								<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+							</condition>
+							<condition name="true">
+								<node name="select" prob="10,90">
+									<!--플레이어가 큐브 한칸 이하 아래에 있으면-->
+									<node name="skill" idx="12">
+										<!--Attack_Idle로 서있기-->
+										<node name="standby" limit="500" faceTarget="0">
+											<node name="target" type="near" center="-400, 1250, 1210" />
+											<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+										</node>
+									</node>
+									<node name="skill" cooltime="6500" idx="9">
+										<!--원거리 투척 공격-->
+										<node name="standby" limit="3000" faceTarget="0">
+											<node name="target" type="near" center="-400, 1250, 1210" />
+											<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="32">
+					<node name="select" prob="9999,0">
+						<!--#2페이즈   방업 버프 사용  -->
+						<node name="setData" key="aiBattleTime" value="0" cooltime="999999" />
+						<!--2페이즈 시작시 battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="60000" battleTimeLoop="130000">
+								<node name="select" prob="99999,99,0">
+									<!--보호막 페이즈-->
+									<!--보호막 사용-->
+									<node name="standby" limit="100" faceTarget="0" cooltime="22000">
+										<node name="buff" type="add" id="50000329" level="1" />
+									</node>
+									<!--제일 멀리 있는 대상에게 1~2연타 발사 공격-->
+									<node name="standby" limit="100" faceTarget="0" cooltime="17000">
+										<node name="target" type="far" from="10" to="2700">
+											<node name="select" prob="50,50">
+												<node name="skill" idx="9">
+													<!--한번 발사 공격-->
+													<node name="standby" limit="3000" faceTarget="1">
+														<node name="target" type="near" from="10" to="1200" />
+														<!--원거리 발사 공격 후 제일 가까운 대상 타겟팅 잡아 건너편 대상을 계속 타겟팅 잡는 상황을 막음-->
+													</node>
+												</node>
+												<node name="skill" idx="9">
+													<!--두번 연속 발사 공격-->
+													<node name="target" type="far" from="10" to="2700">
+														<node name="standby" limit="3000" faceTarget="1">
+															<node name="skill" idx="9">
+																<node name="standby" limit="3000" faceTarget="1">
+																	<node name="target" type="near" from="10" to="1200" />
+																	<!--원거리 발사 공격 후 제일 가까운 대상 타겟팅 잡아 건너편 대상을 계속 타겟팅 잡는 상황을 막음-->
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="12">
+											<!--플레이어가 같은 높이에 있으면-->
+											<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="1">
+													<node name="select" prob="30,40,30">
+														<node name="skill" idx="1">
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+														<node name="skill" cooltime="9000" isKeepBattle="true" idx="3">
+															<node name="target" type="far" from="10" to="1200" />
+															<node name="skill" idx="4" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+														<node name="skill" cooltime="15000" idx="5">
+															<node name="select" prob="55,45">
+																<!--점프 쾅 공격 -->
+																<node name="skill" idx="7">
+																	<node name="skill" idx="8">
+																		<node name="standby" limit="1500" faceTarget="1" />
+																	</node>
+																</node>
+																<node name="skill" idx="6">
+																	<node name="standby" limit="1500" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="select" prob="50,50">
+														<node name="trace" limit="1200" skillIdx="1">
+															<node name="target" type="near" from="10" to="2500" />
+														</node>
+														<node name="skill" cooltime="13000" idx="5">
+															<node name="select" prob="55,45">
+																<!--점프 쾅 공격 -->
+																<node name="skill" idx="7">
+																	<node name="skill" idx="8">
+																		<node name="standby" limit="1500" faceTarget="1" />
+																	</node>
+																</node>
+																<node name="skill" idx="6">
+																	<node name="standby" limit="1500" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</condition>
+											</node>
+											<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+										</condition>
+										<condition name="true">
+											<node name="select" prob="10,90">
+												<!--플레이어가 큐브 한칸 이하 아래에 있으면-->
+												<node name="skill" idx="12">
+													<!--Attack_Idle로 서있기-->
+													<node name="standby" limit="500" faceTarget="0">
+														<node name="target" type="near" center="-400, 1250, 1210" />
+														<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+													</node>
+												</node>
+												<node name="skill" cooltime="6500" idx="9">
+													<!--원거리 투척 공격-->
+													<node name="standby" limit="3000" faceTarget="0">
+														<node name="target" type="near" center="-400, 1250, 1210" />
+														<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+													</node>
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,0">
+									<!--졸 소환 페이즈-->
+									<!--졸 소환-->
+									<node name="standby" limit="100" faceTarget="0" cooltime="37000">
+										<node name="select" prob="25,25,25,25">
+											<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-1050, 2550, 1250" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="900, 600, 1250" />
+											</node>
+											<node name="skill" cooltime="52000" isKeepBattle="true" idx="13">
+												<!--레벨2가 성우 대사 설정 -->
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-1650, 1950, 1250" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="900, 600, 1250" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="111" summonPos="-300, 2100, 1250" />
+											</node>
+											<node name="skill" cooltime="52000" isKeepBattle="true" idx="13">
+												<!--레벨2가 성우 대사 설정 -->
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-1350, 2250, 1250" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="300, 0, 1250" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="112" summonPos="450, 1350, 1250" />
+											</node>
+											<node name="skill" cooltime="85000" isKeepBattle="true" idx="13">
+												<!--레벨2가 성우 대사 설정 -->
+												<!--물방울 가두기 젤리비 두마리 소환 -->
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="111" summonPos="-300, 2100, 1250" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="112" summonPos="450, 1350, 1250" />
+											</node>
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="12">
+											<!--플레이어가 같은 높이에 있으면-->
+											<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="1">
+													<node name="select" prob="15,25,30,30">
+														<node name="skill" idx="9">
+															<!--투척 연속 발사 공격-->
+															<node name="standby" limit="3000" faceTarget="1" />
+														</node>
+														<node name="skill" idx="1">
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+														<node name="skill" cooltime="9000" isKeepBattle="true" idx="3">
+															<node name="target" type="far" from="10" to="1200" />
+															<node name="skill" idx="4" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+														<node name="skill" cooltime="16000" idx="5">
+															<node name="select" prob="55,45">
+																<!--점프 쾅 공격 -->
+																<node name="skill" idx="7">
+																	<node name="skill" idx="8">
+																		<node name="standby" limit="1500" faceTarget="1" />
+																	</node>
+																</node>
+																<node name="skill" idx="6">
+																	<node name="standby" limit="1500" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="select" prob="50,50">
+														<node name="trace" limit="1200" skillIdx="1">
+															<node name="target" type="near" from="10" to="2500" />
+														</node>
+														<node name="skill" cooltime="11000" idx="5">
+															<node name="select" prob="60,40">
+																<!--점프 쾅 공격 -->
+																<node name="skill" idx="7">
+																	<node name="skill" idx="8">
+																		<node name="standby" limit="1500" faceTarget="1" />
+																	</node>
+																</node>
+																<node name="skill" idx="6">
+																	<node name="standby" limit="1500" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</condition>
+											</node>
+											<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+										</condition>
+										<condition name="true">
+											<node name="select" prob="10,90">
+												<!--플레이어가 큐브 한칸 이하 아래에 있으면-->
+												<node name="skill" idx="12">
+													<!--Attack_Idle로 서있기-->
+													<node name="standby" limit="500" faceTarget="0">
+														<node name="target" type="near" center="-400, 1250, 1210" />
+														<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+													</node>
+												</node>
+												<node name="skill" cooltime="6500" idx="9">
+													<!--원거리 투척 공격-->
+													<node name="standby" limit="3000" faceTarget="0">
+														<node name="target" type="near" center="-400, 1250, 1210" />
+														<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+													</node>
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="10">
+					<!--#3페이즈   덫 설치후 연속 휘두르기 공격  -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="12">
+							<node name="select" prob="99,0">
+								<!--플레이어가 같은 높이에 있으면-->
+								<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+								<node name="skill" cooltime="28000" isKeepBattle="true" idx="10">
+									<node name="skill" idx="11" />
+									<node name="skill" idx="11" />
+									<node name="target" type="near" from="10" to="5000" />
+									<node name="skill" idx="11" />
+									<node name="skill" idx="11" />
+									<node name="target" type="near" from="10" to="5000" />
+									<node name="skill" idx="11" />
+									<node name="skill" idx="11" />
+									<node name="target" type="rand" from="10" to="1200" />
+									<!--### 이부분만 랜덤 설정함 ###-->
+									<node name="skill" idx="11" />
+									<node name="skill" idx="11" />
+									<node name="target" type="near" from="10" to="5000" />
+									<node name="skill" idx="11" />
+									<node name="skill" idx="11" />
+									<node name="target" type="rand" from="10" to="5000" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="30,40,30">
+											<node name="skill" idx="1">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="skill" cooltime="10000" isKeepBattle="true" idx="3">
+												<node name="target" type="far" from="10" to="1200" />
+												<node name="skill" idx="4" />
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="skill" cooltime="17000" idx="5">
+												<!--점프 쾅 공격 -->
+												<node name="skill" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,50">
+											<node name="trace" limit="1200" skillIdx="1">
+												<node name="target" type="near" from="10" to="2500" />
+											</node>
+											<node name="skill" cooltime="12000" idx="5">
+												<!--점프 쾅 공격 -->
+												<node name="skill" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+								<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="10,90">
+								<!--플레이어가 큐브 한칸 이하 아래에 있으면-->
+								<node name="skill" idx="12">
+									<!--Attack_Idle로 서있기-->
+									<node name="standby" limit="500" faceTarget="0">
+										<node name="target" type="near" center="-400, 1250, 1210" />
+										<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+									</node>
+								</node>
+								<node name="skill" cooltime="6500" idx="9">
+									<!--원거리 투척 공격-->
+									<node name="standby" limit="3000" faceTarget="0">
+										<node name="target" type="near" center="-400, 1250, 1210" />
+										<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,99,0">
+						<!--#4페이즈  마지막 보호막 페이즈  ***구석에 끼였을 때 벗어나는 로직을 넣었음-->
+						<!--보호막 사용-->
+						<node name="standby" limit="100" faceTarget="0" cooltime="22000">
+							<node name="buff" type="add" id="50000329" level="1" />
+						</node>
+						<!--제일 멀리 있는 대상에게 1~2연타 발사 공격-->
+						<node name="standby" limit="100" faceTarget="0" cooltime="16000">
+							<node name="target" type="far" from="10" to="2700">
+								<node name="skill" idx="9">
+									<!--1타 발사 공격-->
+									<node name="standby" limit="3000" faceTarget="1">
+										<node name="target" type="near" from="10" to="1200" />
+										<!--원거리 발사 공격 후 제일 가까운 대상 타겟팅 잡아 건너편 대상을 계속 타겟팅 잡는 상황을 막음-->
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="12">
+								<!--플레이어가 같은 높이에 있으면-->
+								<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="25,45,30">
+											<node name="skill" idx="1">
+												<node name="standby" limit="1000" faceTarget="1">
+													<node name="SetValue" key="CenterMove" value="0" />
+													<!--근점 공격을 했다는 것은 구석 끼임을 벗어났다는 의미기 때문에 이 변수를 초기화 함-->
+												</node>
+											</node>
+											<node name="skill" cooltime="9000" isKeepBattle="true" idx="3">
+												<node name="target" type="far" from="10" to="1200" />
+												<node name="skill" idx="4" />
+												<node name="standby" limit="1000" faceTarget="1" />
+												<node name="SetValue" key="CenterMove" value="0" />
+												<!--근점 공격을 했다는 것은 구석 끼임을 벗어났다는 의미기 때문에 이 변수를 초기화 함-->
+											</node>
+											<node name="skill" cooltime="13000" idx="5">
+												<!--점프 쾅 공격 -->
+												<node name="skill" idx="7">
+													<node name="skill" idx="8">
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,50">
+											<node name="trace" limit="1200" skillIdx="1">
+												<node name="target" type="near" from="10" to="2500">
+													<node name="SetValue" key="CenterMove" value="1" isModify="1" />
+													<!--구석이 끼이면 계속 trace를 하기 때문에 CenterMove 변수에 1씩 넣음 -->
+												</node>
+											</node>
+											<node name="skill" cooltime="10000" idx="5">
+												<!--점프 쾅 공격 -->
+												<node name="skill" idx="7">
+													<node name="skill" idx="8">
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+								<!--### 평소 상태에서의 공격 행동 설정 부분 ###-->
+							</condition>
+							<condition name="true">
+								<node name="select" prob="10,90">
+									<!--플레이어가 큐브 한칸 이하 아래에 있으면-->
+									<node name="skill" idx="12">
+										<!--Attack_Idle로 서있기-->
+										<node name="standby" limit="500" faceTarget="0">
+											<node name="target" type="near" center="-400, 1250, 1210" />
+											<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+										</node>
+									</node>
+									<node name="skill" cooltime="6500" idx="9">
+										<!--원거리 투척 공격-->
+										<node name="standby" limit="3000" faceTarget="0">
+											<node name="target" type="near" center="-400, 1250, 1210" />
+											<!--전투판 중앙에서 가까운 대상 타겟팅 하기 -->
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투 -->
+	<!--예약, 잡기 공격 패턴 예약-->
+	<reserved>
+		<condition name="hpLess" value="34">
+			<!--***reserved**** -->
+			<node name="standby" limit="4000" faceTarget="1">
+				<!--  앞전 단계에서 사용한 대미지 필드가 남아있을 가능성이 있어서 여기서 잠시 대기함, 앞전 단계에서 나온 성우 음성 때문에 잡기 공격 전용 성우 음성이 안나올 수있기 때문에 여기서 시간을 충분히 부여함 -->
+				<node name="SetSlaveValue" key="DeathSummon" value="1">
+					<!--혹시 소환몹이 남아잇어 잡기 패턴이 꼬일 수 있어서 소환몹 제거함-->
+					<node name="skill" faceTarget="0" prob="100" idx="19">
+						<!--레벨1: 3명 잡기 스킬(일반 난이도용) 여기서 잡히지 않는 플레이어를 뒤로 밀쳐냄, 마법 버프 여기서 제거하기-->
+						<node name="target" type="far" prob="100" from="10" to="1860">
+							<!--다시 타겟팅 잡기, 앞쪽에서 놓칠 수 있기 때문에 꼭 1860 설정함, 이것 보다 크면 문제 생길 수 있음-->
+							<node name="ShowVibrate" groupID="1">
+								<!--3층 지형 큐브 생성-->
+								<node name="target" type="far" prob="100" from="10" to="1860">
+									<!--다시 타겟팅 잡기, 앞쪽에서 놓칠 수 있기 때문에 꼭 1860 설정함, 이것 보다 크면 문제 생길 수 있음-->
+									<node name="skill" faceTarget="0" prob="100" idx="20">
+										<!--잡은 대상 바라보기-->
+										<node name="conditions">
+											<condition name="state" targetState="grabTarget">
+												<!-- 타겟팅 된 대상이 손에 잡혀있으면, 손에 잡힌 대상 죽임-->
+												<!-- 두번이나 타겟팅 검사를 했는데, 큐브 3칸 위에 있지 않으면 잡힌 대사을 죽인다.-->
+												<node name="skill" faceTarget="0" idx="21">
+													<!-- 매달린 대상 죽이기-->
+													<node name="standby" limit="2000" faceTarget="1" prob="100">
+														<node name="HideVibrateAll" />
+														<!--회피용 지형 제거, 이거 없으면 다시 리스폰 되기 때문에 꼭 이거 설정해야 함-->
+													</node>
+												</node>
+											</condition>
+											<condition name="skillRange" skillIdx="20">
+												<!--타겟팅 대상이 손에 잡혀있지 않고 큐브 3칸 높이에 있으면-->
+												<!--큐브 3칸 위에 있는 대상을 공격하기 위해 손 휘두르기-->
+												<node name="skill" faceTarget="0" idx="22">
+													<!--회피용 지형 큐브 파괴하기-->
+													<node name="standby" limit="2000" faceTarget="1" prob="100">
+														<node name="HideVibrateAll" />
+														<!--회피용 지형 제거, 이거 없으면 다시 리스폰 되기 때문에 꼭 이거 설정해야 함-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!--타겟팅 대상이 손에 잡혀있지 않고 큐브 3칸 아래 높이에 있으면, 손에 잡힌 대상 죽임-->
+												<node name="skill" faceTarget="0" idx="21">
+													<!-- 손에 잡힌 대상 죽임-->
+													<node name="standby" limit="2000" faceTarget="1" prob="100">
+														<node name="HideVibrateAll" />
+														<!--회피용 지형 제거, 이거 없으면 다시 리스폰 되기 때문에 꼭 이거 설정해야 함-->
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="conditions">
+			<condition name="hpOver" value="42">
+				<!--#1페이즈 - 플레이어가 같은 높이에 있어야 전투 체크함  -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="4">
+						<node name="select" prob="999999,9999,0">
+							<!--전투판 쪽으로 와야  전투 개시, 사정거리 1800 이내로 들어오면 -->
+							<!-- 속성 전환 모드, 로직관련 변수 선언문 -->
+							<node name="standby" limit="10" faceTarget="1" cooltime="95000">
+								<node name="select" prob="33,33,34">
+									<!-- 1분 35초마다 -->
+									<node name="skill" cooltime="150000" idx="4">
+										<node name="SetValue" key="StateMode" value="1" />
+										<!--  화염 모드로 시작 설정 -->
+									</node>
+									<node name="skill" cooltime="150000" idx="5">
+										<node name="SetValue" key="StateMode" value="2" />
+										<!--  냉기 모드로 시작 설정 -->
+									</node>
+									<node name="skill" cooltime="150000" idx="6">
+										<node name="SetValue" key="StateMode" value="3" />
+										<!--  전격 모드로 시작 설정 -->
+									</node>
+								</node>
+							</node>
+							<node name="standby" limit="10" faceTarget="0" cooltime="8000">
+								<node name="target" type="rand" from="10" to="1850" />
+							</node>
+							<!--전투판 전체 저주 걸기(죽을 수 밖에 없음, 전사의 의지 보호막 필수), 이 스킬은 카오스 난이도에서만 사용함, 일반 레이드 사용 안함-->
+							<!--		<standby limit="2000" faceTarget="0" prob="9999" cooltime = "120000" initialCooltime = "71000">
+					<skill id="50101242" level="1" prob="100">
+						<standby limit="4000"  faceTarget="0"  prob="10"/>	
+					</skill>				
+				</standby>  -->
+							<node name="conditions">
+								<condition name="extraData" key="StateMode" value="1">
+									<node name="select" prob="200,100,100,60,60,1">
+										<!-- 화염 속성 모드:  스킬레벨1-->
+										<!--저주 공격 약마법  패턴  (비교적 자주 사용)-->
+										<node name="standby" limit="100" faceTarget="0" cooltime="25000">
+											<node name="select" prob="65,35">
+												<node name="skill" idx="16">
+													<!--속성 마법 저주, 레벨11 두발 발사, 4인 레이드 난이도용-->
+													<node name="standby" limit="2500" faceTarget="0" />
+												</node>
+												<node name="skill" cooltime="55000" idx="1">
+													<!--공격력 저하 저주, 레벨2 두발 발사, 4인 레이드 난이도용-->
+													<node name="standby" limit="2500" faceTarget="0" />
+												</node>
+											</node>
+										</node>
+										<!--검 휘드리기 패턴-->
+										<node name="standby" limit="1000" faceTarget="0" cooltime="21000">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="7">
+													<node name="select" prob="30,35,35">
+														<node name="skill" cooltime="58000" idx="7">
+															<!--검 2번 휘두르기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+														<node name="skill" cooltime="58000" idx="10">
+															<!--검 3번 휘두르기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+														<node name="skill" cooltime="58000" idx="13">
+															<!--내려찍기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<!--검 사정거리인 오른쪽에 타겟이 없으면, 그냥 바라보기 공격을 함-->
+													<node name="standby" limit="100" faceTarget="0">
+														<node name="conditions">
+															<condition name="skillRange" skillIdx="24">
+																<node name="skill" idx="24">
+																	<!--전방 보기-->
+																	<node name="standby" limit="4000" faceTarget="0" />
+																	<!--성우 음성 때문에 스킬 사용후 대기시간 충분히 확보함-->
+																</node>
+															</condition>
+															<condition name="skillRange" skillIdx="25">
+																<node name="skill" idx="25">
+																	<!--왼쪽 보기-->
+																	<node name="standby" limit="4000" faceTarget="0" />
+																	<!--성우 음성 때문에 스킬 사용후 대기시간 충분히 확보함-->
+																</node>
+															</condition>
+															<condition name="true">
+																<node name="standby" limit="1000" faceTarget="0" />
+															</condition>
+														</node>
+													</node>
+												</condition>
+											</node>
+										</node>
+										<!--얼굴 바라보기 패턴 - HP 저하 상태이상-->
+										<node name="standby" limit="1000" faceTarget="0" cooltime="18000">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="24">
+													<node name="skill" idx="24">
+														<!--전방 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+														<!--성우 음성 때문에 스킬 사용후 대기시간 충분히 확보함-->
+													</node>
+												</condition>
+												<condition name="skillRange" skillIdx="25">
+													<node name="skill" idx="25">
+														<!--왼쪽 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="skill" idx="26">
+														<!--오른쪽 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="skill" cooltime="38000" idx="2">
+											<!--바람기둥 생성-->
+											<node name="standby" limit="6000" faceTarget="0" />
+										</node>
+										<!--##바닥 불 필드 깔고 소환몹 호출  (비교적 가끔 사용)-->
+										<node name="skill" cooltime="85000" isKeepBattle="true" idx="23">
+											<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" delayTick="1200" lifeTime="600" summonPos="750, -750, 4850" summonRot="0,0,-50" />
+											<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" delayTick="1200" lifeTime="600" summonPos="-900, -300, 4850" summonRot="0,0,-50" />
+											<node name="standby" limit="4000" faceTarget="0" />
+										</node>
+										<!--모두 쿨타임에 걸린 상태면 가만히 서있기-->
+										<node name="standby" limit="1500" faceTarget="0" />
+									</node>
+								</condition>
+								<condition name="extraData" key="StateMode" value="2">
+									<node name="select" prob="200,100,100,60,60,1">
+										<!-- 냉기 속성 모드:  스킬레벨2-->
+										<!--저주 공격 약마법  패턴  (비교적 자주 사용)-->
+										<node name="standby" limit="100" faceTarget="0" cooltime="21000">
+											<node name="select" prob="65,35">
+												<!--얼음 대미지 필드 까릴는 시간이 21초 정도 되기 때문에 쿨타임 주기는 21~23초 정도 함-->
+												<node name="skill" idx="17">
+													<!--속성 마법 저주, 레벨12 두발 발사, 4인 레이드 난이도용-->
+													<node name="standby" limit="2500" faceTarget="0" />
+												</node>
+												<node name="skill" cooltime="55000" idx="1">
+													<!--공격력 저하 저주, 레벨2 두발 발사, 4인 레이드 난이도용-->
+													<node name="standby" limit="2500" faceTarget="0" />
+												</node>
+											</node>
+										</node>
+										<!--검 휘두르기 패턴-->
+										<node name="standby" limit="1000" faceTarget="0" cooltime="21000">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="8">
+													<node name="select" prob="30,35,35">
+														<node name="skill" cooltime="58000" idx="8">
+															<!--검 2번 휘두르기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+														<node name="skill" cooltime="58000" idx="11">
+															<!--검 3번 휘두르기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+														<node name="skill" cooltime="58000" idx="14">
+															<!--내려찍기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<!--검 사정거리인 오른쪽에 타겟이 없으면, 그냥 바라보기 공격을 함-->
+													<node name="standby" limit="100" faceTarget="0">
+														<node name="conditions">
+															<condition name="skillRange" skillIdx="24">
+																<node name="skill" idx="24">
+																	<!--전방 보기-->
+																	<node name="standby" limit="4000" faceTarget="0" />
+																	<!--성우 음성 때문에 스킬 사용후 대기시간 충분히 확보함-->
+																</node>
+															</condition>
+															<condition name="skillRange" skillIdx="25">
+																<node name="skill" idx="25">
+																	<!--왼쪽 보기-->
+																	<node name="standby" limit="4000" faceTarget="0" />
+																	<!--성우 음성 때문에 스킬 사용후 대기시간 충분히 확보함-->
+																</node>
+															</condition>
+															<condition name="true">
+																<node name="standby" limit="1000" faceTarget="0" />
+															</condition>
+														</node>
+													</node>
+												</condition>
+											</node>
+										</node>
+										<!--얼굴 바라보기 패턴 - HP 저하 상태이상-->
+										<node name="standby" limit="1000" faceTarget="0" cooltime="18000">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="24">
+													<node name="skill" idx="24">
+														<!--전방 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+														<!--성우 음성 때문에 스킬 사용후 대기시간 충분히 확보함-->
+													</node>
+												</condition>
+												<condition name="skillRange" skillIdx="25">
+													<node name="skill" idx="25">
+														<!--왼쪽 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="skill" idx="26">
+														<!--오른쪽 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="skill" cooltime="38000" idx="2">
+											<!--바람기둥 생성-->
+											<node name="standby" limit="6000" faceTarget="0" />
+										</node>
+										<!--##냉기 속성 강공격    (해당 속성 페이즈에서 한번만 사용)-->
+										<node name="standby" limit="500" faceTarget="0" cooltime="210000" isKeepBattle="true">
+											<node name="skill" faceTarget="0" idx="27" />
+											<!--손동작 취함, 얼음 드랍 세번함-->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--손동작 취함, 원형 마법진-->
+											<node name="skill" faceTarget="0" idx="32" />
+											<!--Attack_Idle_A, 얼음 드랍 여섯번함-->
+											<node name="skill" faceTarget="0" idx="29" />
+											<!--손동작 취함, 원형 마법진-->
+											<node name="skill" faceTarget="0" idx="32" />
+											<!--Attack_Idle_A, 얼음 드랍 여섯번함-->
+											<node name="skill" faceTarget="0" idx="30" />
+											<!--손동작 취함, 원형 마법진-->
+											<node name="skill" faceTarget="0" idx="32" />
+											<!--Attack_Idle_A, 얼음 드랍 여섯번함-->
+											<node name="skill" faceTarget="0" idx="31" />
+											<!--손동작 취함, 원형 마법진-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<!--모두 쿨타임에 걸린 상태면 가만히 서있기-->
+										<node name="standby" limit="1500" faceTarget="0" />
+									</node>
+								</condition>
+								<condition name="extraData" key="StateMode" value="3">
+									<node name="select" prob="200,100,100,60,60,1">
+										<!-- 전격 속성 모드:  스킬레벨3-->
+										<!--저주 공격 약마법  패턴  (비교적 자주 사용)-->
+										<node name="standby" limit="100" faceTarget="0" cooltime="24000">
+											<node name="select" prob="80,20">
+												<node name="skill" idx="18">
+													<!--속성 마법 저주, 전기 폭발 공격은 더 자주 사용하도록 함, 레벨13 두발 발사, 4인 레이드 난이도용-->
+													<node name="standby" limit="2500" faceTarget="0" />
+												</node>
+												<node name="skill" cooltime="85000" idx="1">
+													<!--공격력 저하 저주, 레벨2 두발 발사, 4인 레이드 난이도용-->
+													<node name="standby" limit="2500" faceTarget="0" />
+												</node>
+											</node>
+										</node>
+										<!--검 휘두르기 패턴-->
+										<node name="standby" limit="1000" faceTarget="0" cooltime="21000">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="9">
+													<node name="select" prob="30,35,35">
+														<node name="skill" cooltime="58000" idx="9">
+															<!--검 2번 휘두르기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+														<node name="skill" cooltime="58000" idx="12">
+															<!--검 3번 휘두르기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+														<node name="skill" cooltime="58000" idx="15">
+															<!--내려찍기-->
+															<node name="standby" limit="3000" faceTarget="0" />
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<!--검 사정거리인 오른쪽에 타겟이 없으면, 그냥 바라보기 공격을 함-->
+													<node name="standby" limit="100" faceTarget="0">
+														<node name="conditions">
+															<condition name="skillRange" skillIdx="24">
+																<node name="skill" idx="24">
+																	<!--전방 보기-->
+																	<node name="standby" limit="4000" faceTarget="0" />
+																	<!--성우 음성 때문에 스킬 사용후 대기시간 충분히 확보함-->
+																</node>
+															</condition>
+															<condition name="skillRange" skillIdx="25">
+																<node name="skill" idx="25">
+																	<!--왼쪽 보기-->
+																	<node name="standby" limit="4000" faceTarget="0" />
+																</node>
+															</condition>
+															<condition name="true">
+																<node name="standby" limit="1000" faceTarget="0" />
+															</condition>
+														</node>
+													</node>
+												</condition>
+											</node>
+										</node>
+										<!--얼굴 바라보기 패턴 - HP 저하 상태이상-->
+										<node name="standby" limit="1000" faceTarget="0" cooltime="18000">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="24">
+													<node name="skill" idx="24">
+														<!--전방 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+													</node>
+												</condition>
+												<condition name="skillRange" skillIdx="25">
+													<node name="skill" idx="25">
+														<!--왼쪽 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+														<!--성우 음성 때문에 스킬 사용후 대기시간 충분히 확보함-->
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="skill" idx="26">
+														<!--오른쪽 보기-->
+														<node name="standby" limit="4000" faceTarget="0" />
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="skill" cooltime="38000" idx="2">
+											<!--바람기둥 생성-->
+											<node name="standby" limit="6000" faceTarget="0" />
+										</node>
+										<!--##전격 속성 강공격   (해당 속성 페이즈에서 한번만 사용)-->
+										<node name="standby" limit="500" faceTarget="0" cooltime="210000">
+											<node name="select" prob="50,50">
+												<node name="skill" faceTarget="0" cooltime="120000" isKeepBattle="true" idx="33">
+													<node name="standby" limit="800" faceTarget="1" />
+													<node name="skill" faceTarget="0" idx="33" />
+													<node name="standby" limit="800" faceTarget="1" />
+													<node name="skill" faceTarget="0" idx="33" />
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" faceTarget="0" cooltime="120000" isKeepBattle="true" idx="33">
+													<node name="standby" limit="800" faceTarget="1" />
+													<node name="skill" faceTarget="0" idx="33" />
+													<node name="standby" limit="800" faceTarget="1" />
+													<node name="skill" faceTarget="0" idx="33" />
+													<node name="standby" limit="800" faceTarget="1" />
+													<node name="skill" faceTarget="0" idx="33" />
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<!--모두 쿨타임에 걸린 상태면 가만히 서있기-->
+										<node name="standby" limit="1500" faceTarget="0" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--만약을 위해:   StateMode 변수 값 할당을 못할 수 도 있기 때문에 만약을 대비해 여기에 속성 전혼 모드 선언을 넣음 -->
+									<!-- 속성 전환 모드, 로직관련 변수 선언문 -->
+									<node name="standby" limit="10" faceTarget="1">
+										<node name="select" prob="33,33,34">
+											<!-- 1분 35초마다 -->
+											<node name="skill" cooltime="150000" idx="4">
+												<node name="SetValue" key="StateMode" value="1" />
+												<!--  화염 모드로 시작 설정 -->
+											</node>
+											<node name="skill" cooltime="150000" idx="5">
+												<node name="SetValue" key="StateMode" value="2" />
+												<!--  냉기 모드로 시작 설정 -->
+											</node>
+											<node name="skill" cooltime="150000" idx="6">
+												<node name="SetValue" key="StateMode" value="3" />
+												<!--  전격 모드로 시작 설정 -->
+											</node>
+										</node>
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--사정거리 1800 이내가 아니면 가만이 있으면서 다른 타겟팅 찾음 -->
+						<node name="standby" limit="1000" faceTarget="1">
+							<node name="target" type="rand" from="10" to="1800" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="hpOver" value="34">
+				<node name="select" prob="9999,0">
+					<!--  해당 속성마법 난사 페이즈, 여기서 속성 전환 하지 않음 ,여기서는  대미지 필드  오래 깔리는거 사용하면 절대 안됨-->
+					<node name="standby" limit="10" faceTarget="0" cooltime="8000">
+						<node name="target" type="rand" from="10" to="1850" />
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="StateMode" value="1">
+							<node name="select" prob="28,26,26,20,1">
+								<!-- 화염 속성 모드:  검 휘두르기는 스킬레벨1-->
+								<node name="skill" faceTarget="0" cooltime="10000" idx="49">
+									<!-- 2번 발동-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="50">
+									<!-- 3번 발동-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="51">
+									<!-- 불 대미지필드 후 2번 발동-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="10">
+									<!--검 3번 휘두르기-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="extraData" key="StateMode" value="2">
+							<node name="select" prob="28,26,26,20,1">
+								<!-- 냉기 속성 모드:  검 휘두르기는 스킬레벨2-->
+								<node name="skill" faceTarget="0" cooltime="10000" idx="52">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="53">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="54">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="11">
+									<!--검 3번 휘두르기-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="20,20,20,20,20,1">
+								<!-- 전격 속성 모드:  검 휘두르기는 스킬레벨3-->
+								<node name="skill" faceTarget="0" cooltime="10000" idx="55">
+									<!--약약강-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="56">
+									<!--약약약강-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="57">
+									<!--강강-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="3">
+									<!--바람 일으키기, 짧은거-->
+									<node name="skill" faceTarget="0" idx="58">
+										<!--약강-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" faceTarget="0" cooltime="10000" idx="12">
+									<!--검 3번 휘두르기-->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="999999,0">
+					<!--마지막 페이즈에서만 사용하기 위한 변수 선언 -->
+					<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+						<node name="SetValue" key="FinalAttackStart" value="1" />
+						<node name="target" type="rand" from="10" to="1800" />
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="FinalAttackStart" value="2">
+							<!-- FinalAttackStart = 2 이면 전에 최초로 검을 꽂았으니 계속 공격만 하면 됨 -->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="38">
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" delayTick="1000" lifeTime="45" summonPos="750, -750, 4850" summonRot="0,0,-50" />
+								<!-- 마지막 페이즈에서의 소환몹은 방치하면 45초 뒤에 죽도록 하기 -->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" delayTick="1000" lifeTime="45" summonPos="-900, -300, 4850" summonRot="0,0,-50" />
+								<!-- 마지막 페이즈에서의 소환몹은 방치하면 45초 뒤에 죽도록 하기 -->
+								<node name="skill" faceTarget="0" idx="40" />
+								<node name="skill" faceTarget="0" idx="39" />
+								<!--바닥 원 폭발 -->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" delayTick="100" lifeTime="45" summonPos="900, -1200, 4850" summonRot="0,0,-50" />
+								<!-- 마지막 페이즈에서의 소환몹은 방치하면 45초 뒤에 죽도록 하기 -->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="104" delayTick="100" lifeTime="45" summonPos="-300, 450, 4850" summonRot="0,0,-50" />
+								<!-- 마지막 페이즈에서의 소환몹은 방치하면 45초 뒤에 죽도록 하기 -->
+								<node name="skill" faceTarget="0" idx="40" />
+								<node name="skill" faceTarget="0" idx="40" />
+								<node name="skill" faceTarget="0" idx="39" />
+								<!--바닥 원 폭발 -->
+								<node name="skill" faceTarget="0" idx="40" />
+								<node name="skill" faceTarget="0" idx="40" />
+								<node name="skill" faceTarget="0" idx="39" />
+								<!--바닥 원 폭발 -->
+								<node name="skill" faceTarget="0" idx="40" />
+								<node name="target" type="rand" from="10" to="1800" />
+								<node name="skill" faceTarget="0" idx="35" />
+								<!--검 두번 휘두른 후 다시 꽂기, 기합 성우 목소리 구분을 위해 레벨2, 3, 4 나누었음-->
+								<node name="ShowVibrate" groupID="2" />
+								<!--바람 끌어당기는거에 대항하는 지형 큐브 생성-->
+								<node name="skill" faceTarget="0" idx="41" />
+								<node name="skill" faceTarget="0" idx="44" />
+								<node name="skill" faceTarget="0" idx="43" />
+								<node name="skill" faceTarget="0" idx="44" />
+								<node name="skill" faceTarget="0" idx="42" />
+								<node name="skill" faceTarget="0" idx="44" />
+								<node name="skill" faceTarget="0" idx="43" />
+								<node name="skill" faceTarget="0" idx="44" />
+								<node name="skill" faceTarget="0" idx="42" />
+								<node name="skill" faceTarget="0" idx="44" />
+								<node name="skill" faceTarget="0" idx="44" />
+								<node name="target" type="rand" from="10" to="1800" />
+								<node name="skill" faceTarget="0" idx="36" />
+								<!--검 두번 휘두른 후 다시 꽂기, 기합 성우 목소리 구분을 위해 레벨2, 3, 4 나누었음-->
+								<node name="HideVibrateAll" />
+								<!--회피용 지형 제거, 이거 없으면 다시 리스폰 되기 때문에 꼭 이거 설정해야 함-->
+								<node name="skill" faceTarget="0" idx="45" />
+								<node name="skill" faceTarget="0" idx="48" />
+								<node name="skill" faceTarget="0" idx="46" />
+								<node name="skill" faceTarget="0" idx="48" />
+								<node name="skill" faceTarget="0" idx="47" />
+								<node name="skill" faceTarget="0" idx="48" />
+								<node name="skill" faceTarget="0" idx="45" />
+								<node name="skill" faceTarget="0" idx="48" />
+								<node name="skill" faceTarget="0" idx="46" />
+								<node name="skill" faceTarget="0" idx="48" />
+								<node name="skill" faceTarget="0" idx="37" />
+								<!--검 두번 휘두른 후 다시 꽂기, 기합 성우 목소리 구분을 위해 레벨2, 3, 4 나누었음-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- FinalAttackStart 변수가 1이면 검을 땅에 꽂기위한 행위를 함-->
+							<node name="standby" limit="4000" faceTarget="0">
+								<!--잠기 공격 후 성우 음성이 나오고 바로 이 동작이 나오면 어색해서 시간 확보 차원에서 넣음-->
+								<node name="skill" faceTarget="0" idx="34">
+									<!--최초 검 꽂기-->
+									<node name="SetValue" key="FinalAttackStart" value="2" />
+									<!-- FinalAttackStart 변수에 2를 넣어 이후 계속 마지막 공격 난사 행위만 하도록 함-->
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

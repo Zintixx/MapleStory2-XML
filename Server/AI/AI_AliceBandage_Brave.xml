@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<node name="standby" limit="10" faceTarget="1" cooltime="20000" initialCooltime="5000">
+				<node name="select" prob="100,100">
+					<node name="runaway" till="1500" limit="2000">
+						<node name="standby" limit="2500" faceTarget="1" />
+					</node>
+					<node name="target" type="far" from="10" to="1000">
+						<node name="trace" limit="2000" skillIdx="1" />
+						<!--distance 200짜리 가짜 스킬 데이터-->
+					</node>
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<!--#1페이즈 -->
+					<!--*****************HP 75% 이상 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="55,45,1">
+								<node name="skill" idx="2">
+									<!--내려찍기 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="2">
+									<!--내려찍기 1타 -->
+									<!--정밀한 거리 체크를 위해  Distance 550 짜리 스킬 데이터로 거리 조건을 체크함-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="6">
+											<!--1타 공격 후 공격 대상이 가까이 있으면 근거리 범위 내려찍기 -->
+											<node name="skill" idx="3">
+												<!--근거리 내려찍기 2타 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<!--1타 공격 후 공격 대상이 멀리 있으면 원거리  범위 내려찍기 -->
+											<node name="skill" idx="5">
+												<!--원거리 내려찍기 2타 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="50,49,1">
+										<!--원거리 내려찍기 범위 안에 있으면-->
+										<node name="skill" idx="4">
+											<!--원거리 내려찍기 범위-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="2500" skillIdx="2" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="2500" skillIdx="2" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+					<!--*****************HP 50% 이상 -->
+				</condition>
+				<condition name="true">
+					<!--#2페이즈 -->
+					<!--*****************HP 30% 이상 -->
+					<node name="conditions">
+						<condition name="hpOver" value="30">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="9999,9999,40,1">
+										<node name="skill" cooltime="21000" initialCooltime="10000" idx="11">
+											<!--둘러싸기 폭탄  -->
+											<node name="skill" idx="7">
+												<!--회전 공격_준비 포함 1Lv  -->
+												<node name="skill" idx="9">
+													<!--회전 공격_마무리 포함  3Lv  -->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" cooltime="30000" initialCooltime="30000" idx="10">
+											<!--도끼 내려찍어  폭발 -->
+											<node name="skill" idx="10">
+												<node name="skill" idx="10">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" idx="2">
+											<!--내려찍기 1Lv -->
+											<node name="skill" idx="8">
+												<!--회전 공격 2Lv  -->
+												<node name="skill" idx="9">
+													<!--회전 공격_마무리 포함  3Lv  -->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="4">
+											<node name="select" prob="33,33,33,1">
+												<!--점프 내려찍기_원거리 거리 체크-->
+												<node name="skill" idx="12">
+													<!--폭탄투척_원거리 -->
+													<node name="trace" limit="2500" skillIdx="2" />
+												</node>
+												<node name="skill" idx="4">
+													<!--내려찍기 원거리  3Lv -->
+													<node name="skill" idx="8">
+														<!--회전 공격 2Lv  -->
+														<node name="skill" idx="9">
+															<!--회전 공격_마무리 포함  3Lv  -->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="trace" limit="2500" skillIdx="2" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="50,50">
+												<node name="skill" idx="12">
+													<!--폭탄투척_원거리 -->
+													<node name="trace" limit="2500" skillIdx="4" />
+													<!--점프 내려찍기_원거리 범위 까지 추척-->
+												</node>
+												<node name="trace" limit="2500" skillIdx="4" />
+												<!--점프 내려찍기_원거리 범위 까지 추척-->
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--#3페이즈   HP 30% 이하 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="10">
+									<node name="select" prob="9999,99,1">
+										<!--도끼 내려찍어  폭발 -->
+										<node name="skill" cooltime="10000" initialCooltime="10000" idx="10">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+										<!--회전공격 3연속-->
+										<node name="skill" idx="7">
+											<!--회전공격 _준비 포함-->
+											<node name="skill" idx="8">
+												<!--회전공격 -->
+												<node name="skill" idx="9">
+													<!--회전공격 _마무리 포함-->
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="80,20">
+										<!--원거리용 회전공격 3연속-->
+										<node name="skill" idx="7">
+											<!--회전공격 _준비 포함-->
+											<node name="skill" idx="8">
+												<!--회전공격 -->
+												<node name="skill" idx="8">
+													<!--회전공격 -->
+													<node name="skill" idx="8">
+														<!--회전공격 -->
+														<node name="skill" idx="9">
+															<!--회전공격 _마무리 포함-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="trace" limit="8000" skillIdx="10" />
+										<!--회전공격 범위까지 추적-->
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

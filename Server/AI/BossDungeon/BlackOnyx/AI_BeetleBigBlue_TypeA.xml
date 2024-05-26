@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+				<!--main.xml 트리거에 설정된 MonsterMany 변수 1 더하기-->
+				<node name="TriggerModifyUserValue" triggerID="1001" key="MonsterMany" value="1" />
+				<!--전투 상태가 되면 트리거가 졸몹 마리수 체크할 때 +1 하기,   TriggerModelID =  1001 -->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="7000">
+				<node name="target" type="near" from="10" to="1700" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="85">
+					<!--#1페이즈 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="30,40,30">
+								<!--사정거리 580 -->
+								<node name="skill" idx="1">
+									<!--딱 한번만 공격-->
+									<node name="standby" limit="2300" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="12000" isKeepBattle="true" idx="2">
+									<!--2연타 휘두르기 공격-->
+									<node name="skill" idx="3" />
+									<node name="standby" limit="2700" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="18000" idx="4">
+									<!--점프 쾅 공격 -->
+									<node name="skill" idx="5">
+										<!--점프 쾅 공격 후 바로 마무리-->
+										<node name="standby" limit="2700" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="8">
+							<node name="skill" idx="8">
+								<node name="select" prob="33,33,34">
+									<!--레벨3: 원거리 발사 공격 -->
+									<node name="standby" limit="1700" faceTarget="1" />
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="standby" limit="3200" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1200" faceTarget="1" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="60">
+					<node name="select" prob="99,0">
+						<!--#2페이즈, 원거리 2연타 공격  -->
+						<!--제일 멀리 있는 대상에게 1~2연타 발사 공격-->
+						<node name="standby" limit="100" faceTarget="0" cooltime="33000">
+							<node name="target" type="far" from="10" to="2700">
+								<node name="select" prob="50,50">
+									<node name="skill" idx="8">
+										<!--한번 발사 공격, 레벨3이 기절 시키는 것이 없고 바닥 폭발 영역 좁음-->
+										<node name="standby" limit="3000" faceTarget="1">
+											<node name="target" type="near" from="10" to="1200" />
+											<!--원거리 발사 공격 후 제일 가까운 대상 타겟팅 잡아 건너편 대상을 계속 타겟팅 잡는 상황을 막음-->
+										</node>
+									</node>
+									<node name="skill" idx="8">
+										<!--두번 연속 발사 공격, 레벨3이 기절 시키는 것이 없고 바닥 폭발 영역 좁음-->
+										<node name="target" type="far" from="10" to="2700">
+											<node name="standby" limit="3000" faceTarget="1">
+												<node name="skill" idx="8">
+													<node name="standby" limit="3000" faceTarget="1">
+														<node name="target" type="near" from="10" to="1200" />
+														<!--원거리 발사 공격 후 제일 가까운 대상 타겟팅 잡아 건너편 대상을 계속 타겟팅 잡는 상황을 막음-->
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="30,40,30">
+									<!--사정거리 580 -->
+									<node name="skill" idx="1">
+										<!--딱 한번만 공격-->
+										<node name="standby" limit="2300" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="12000" isKeepBattle="true" idx="2">
+										<!--2연타 휘두르기 공격-->
+										<node name="skill" idx="3" />
+										<node name="standby" limit="2700" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="13000" idx="4">
+										<node name="select" prob="55,45">
+											<!--점프 쾅 공격 -->
+											<node name="skill" idx="6">
+												<node name="skill" idx="7">
+													<node name="standby" limit="2700" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" idx="5">
+												<node name="standby" limit="2700" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="8">
+								<node name="skill" idx="8">
+									<node name="select" prob="33,33,34">
+										<!--레벨3: 원거리 발사 공격 -->
+										<node name="standby" limit="1700" faceTarget="1" />
+										<node name="standby" limit="2500" faceTarget="1" />
+										<node name="standby" limit="3200" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="1200" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="25">
+					<!--#3페이즈   덫 설치후 연속 휘두르기 공격  -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="99,30,40,30">
+								<!--사정거리 580 -->
+								<node name="skill" cooltime="32000" isKeepBattle="true" idx="9">
+									<node name="skill" idx="9" />
+									<node name="target" type="near" from="10" to="5000" />
+									<node name="skill" idx="9" />
+									<node name="skill" idx="9" />
+									<node name="target" type="near" from="10" to="5000" />
+									<node name="skill" idx="9" />
+									<node name="standby" limit="3300" faceTarget="1" />
+								</node>
+								<node name="skill" idx="1">
+									<!--딱 한번만 공격-->
+									<node name="standby" limit="2300" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="12000" isKeepBattle="true" idx="2">
+									<!--2연타 휘두르기 공격-->
+									<node name="skill" idx="3" />
+									<node name="standby" limit="2700" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="13000" idx="4">
+									<node name="select" prob="55,45">
+										<!--점프 쾅 공격 -->
+										<node name="skill" idx="6">
+											<node name="skill" idx="7">
+												<node name="standby" limit="2700" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" idx="5">
+											<node name="standby" limit="2700" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="8">
+							<node name="skill" idx="8">
+								<node name="select" prob="33,33,34">
+									<!--레벨3: 원거리 발사 공격 -->
+									<node name="standby" limit="1700" faceTarget="1" />
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="standby" limit="3200" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1200" faceTarget="1" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99,0">
+						<!--#4페이즈  마지막 보호막 페이즈  ***구석에 끼였을 때 벗어나는 로직을 넣었음-->
+						<!--제일 멀리 있는 대상에게 1~2연타 발사 공격-->
+						<node name="standby" limit="100" faceTarget="0" cooltime="34000">
+							<node name="target" type="far" from="10" to="2700">
+								<node name="skill" idx="8">
+									<!--1타 발사 공격, 레벨3이 기절 시키는 것이 없고 바닥 폭발 영역 좁음-->
+									<node name="standby" limit="3000" faceTarget="1">
+										<node name="target" type="near" from="10" to="1200" />
+										<!--원거리 발사 공격 후 제일 가까운 대상 타겟팅 잡아 건너편 대상을 계속 타겟팅 잡는 상황을 막음-->
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="20,40,40">
+									<!--사정거리 580 -->
+									<node name="skill" idx="1">
+										<!--딱 한번만 공격-->
+										<node name="standby" limit="2300" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="9000" isKeepBattle="true" idx="2">
+										<!--2연타 휘두르기 공격-->
+										<node name="skill" idx="3" />
+										<node name="standby" limit="2700" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="9000" idx="4">
+										<!--점프 쾅 공격 -->
+										<node name="skill" idx="6">
+											<node name="skill" idx="7">
+												<node name="standby" limit="2700" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="8">
+								<node name="skill" idx="8">
+									<node name="select" prob="33,33,34">
+										<!--레벨3: 원거리 발사 공격 -->
+										<node name="standby" limit="1700" faceTarget="1" />
+										<node name="standby" limit="2500" faceTarget="1" />
+										<node name="standby" limit="3200" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="1200" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기-->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="TriggerModifyUserValue" triggerID="1001" key="MonsterMany" value="-1">
+					<!--이 몬스터가 죽으면 -main.xml  트리거에 설정된 MonsterMany 변수 1 빼기-->
+					<node name="SetMasterValue" key="BeetleBigBlueDeath" value="1" isModify="1" />
+					<!-- 자기 자신이 죽으면 AI_SignalSummon.xml 에 이 변수 1 더하기 신호 보냄 -->
+				</node>
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetMasterValue" key="BeetleBigBlueDeath" value="1" isModify="1" />
+				<!-- 자기 자신이 죽으면 AI_SignalSummon.xml 에 이 변수 1 더하기 신호 보냄 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

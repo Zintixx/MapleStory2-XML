@@ -1,0 +1,1072 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="TriggerSetUserValue" triggerID="421" key="EventNpcAppearance" value="1" />
+				<!--트리거에 EventNpcAppearance = 1 신호를 보내 우호적 NPC 가 메인 전투판에 등장하고, 함교에 있는 NPC 사라지도록 함-->
+				<node name="buff" type="add" id="50001074" level="1" />
+				<!--오른손 검 이펙트 생성하기-->
+				<node name="SetValue" key="CornerJumpOk" value="0" />
+				<!--꼭대기 전투판 구석 점프 이동을 결정하는데 사용하는 변수-->
+				<node name="SetValue" key="CornerAttackMode" value="0" />
+				<!--꼭대기 전투판 구석 점프 이동 공격 모드일 때 사용하는 변수-->
+				<node name="SetValue" key="AirBattleMode" value="0" />
+				<!--공중에 떠서 공격하는 모드, 이 변수가 0이라는 것은 땅 위에서 공격 중이라는 뜻임, 이 변수가 1이라는 것은 공중에서 공격 모드 중이라는 뜻임-->
+				<node name="SetValue" key="JumpPos" value="0" />
+				<!--4, 5페이즈때 점프 이동 후 현재 위치가 어디인지 알수 있게 해주는 변수-->
+				<node name="SetValue" key="AirShotModeEnd" value="0" />
+				<!--2페이즈 연속 공격 모드 끝낼때 이 변수에 1 이상의 수를 넣어서 알수 있게 함-->
+				<node name="SetValue" key="4Phase_JumpCheck" value="0" />
+				<!--4페이즈에서 점프 이동을 언제 할지 체크하는데 사용하는 변수-->
+				<node name="SetValue" key="5Phase_LaserMode" value="0" />
+				<!--5페이즈 레이저 공격 모드일때 사용되는 변수-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="90">
+			<!--#2페이즈 검 애디셔널 이펙트 제거하기-->
+			<node name="buff" type="remove" id="50001074" level="1" />
+			<!-- 오른손 검 이펙트 애디셔널  제거하기-->
+		</condition>
+		<condition name="hpLess" value="60">
+			<!--#3페이즈, 맨 아래쪽 지점으로 점프 뛰기-->
+			<node name="conditions">
+				<condition name="extraData" key="AirBattleMode" value="0">
+					<!-- 이 변수가 0 이라는 것은 땅 위에서 공격 중이라는 뜻임, 점프 뛸때 도약 동작 넣기 -->
+					<node name="skill" facePos="2300, -1125, 2600" isKeepBattle="true" idx="28">
+						<!--맨 아래쪽 지점으로 점프 뛰기 -->
+						<node name="jump" pos="2300, -1125, 2600" speed="1800" heightMultiplier="1.2" />
+						<node name="skill" faceTarget="0" idx="29" />
+						<node name="buff" type="add" id="50001074" level="1" />
+						<!--오른손 검 이펙트 생성하기-->
+						<node name="standby" limit="3100" faceTarget="1" />
+						<node name="SetValue" key="AirBattleMode" value="0" />
+						<!--혹시 몰라 이 변수 초기화 하기-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 이 변수가 1 이라는 것은 공중에서 공격 모드 중이라는 뜻임, 점프 뛸때 도약 없이 뛰기 -->
+					<node name="jump" pos="2300, -1125, 2600" speed="1800" heightMultiplier="1.2" isKeepBattle="true">
+						<!--맨 아래쪽 지점으로 점프 뛰기 -->
+						<node name="buff" type="add" id="50001078" level="1" />
+						<!--공중 연속 발사 동작때의 몸에 붙는 애디셔널 이펙트 제거하기, 이 애디셔널을 부여하여 전에 붙여 놓았던 애디셔널 제거하는 방식임 -->
+						<node name="buff" type="add" id="50001076" level="1" />
+						<!--공중 이동 모드때의  부스터 애디셔널 이펙트 제거하기 , 이 애디셔널을 부여하여 전에 붙여 놓았던 애디셔널 제거하는 방식임 -->
+						<node name="skill" faceTarget="0" idx="29" />
+						<node name="standby" limit="3100" faceTarget="1" />
+						<node name="buff" type="add" id="50001074" level="1" />
+						<!--오른손 검 이펙트 생성하기-->
+						<node name="SetValue" key="AirBattleMode" value="0" />
+						<!--혹시 몰라 이 변수 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</condition>
+		<condition name="hpLess" value="53">
+			<!--#4페이즈, 중간 지점 공중에 떠서 공격하기-->
+			<!--중간 지점으로 점프 뛰어 공중에 떠있기 -->
+			<node name="skill" facePos="200, -880, 2810" isKeepBattle="true" idx="12">
+				<!--공중 모드 시작  동작-->
+				<node name="buff" type="remove" id="50001074" level="1" />
+				<!-- 오른손 검 이펙트 애디셔널  제거하기-->
+				<node name="jump" pos="200, -880, 2810" speed="1800" heightMultiplier="1.2" />
+				<!--점프중  -->
+				<node name="standby" limit="1000" faceTarget="0" animation="AirMode_Attack_Idle_A" />
+				<node name="skill" faceTarget="0" idx="14" />
+				<!--공중 연속 발사 공격 모드 시작  동작-->
+				<node name="standby" limit="1300" faceTarget="1" animation="Air_Attack_02_A" />
+				<node name="SetValue" key="JumpPos" value="2" />
+				<!--이 변수가 2을 넣어 북쪽 지점임을 알림, 3이면 북쪽 경사지점, 1 이면 남쪽 지점임-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="28">
+			<!--#5페이즈, 꼭대기 전투판 중앙 지점으로 점프 뛰기-->
+			<!--중앙 지점으로 점프 뛰어 공중에 떠있기 -->
+			<node name="jump" pos="-525, 800, 3800" speed="1800" heightMultiplier="1.2" isKeepBattle="true">
+				<!--점프중  -->
+				<node name="standby" limit="1100" faceTarget="1" animation="Air_Attack_02_A" />
+				<node name="SetValue" key="JumpPos" value="0" />
+				<!--이 변수 5페이즈때도 다시 사용하기 때문에, 변수 초기화 하기  -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="hpOver" value="90">
+				<!--#1페이즈    -->
+				<node name="conditions">
+					<condition name="extraData" key="CornerJumpOk" value="5" op="greaterEqual">
+						<aiPreset name="CornerJumpPattern" />
+					</condition>
+					<condition name="extraData" key="CornerAttackMode" value="1" op="greaterEqual">
+						<aiPreset name="CornerAttackPattern_1Phase" />
+					</condition>
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="40,35,25">
+							<!-- 휘두르기 공격 사정거리 안에 있으면-->
+							<node name="skill" faceTarget="1" cooltime="5000" isKeepBattle="true" idx="1">
+								<!--검 1타 휘두르기    -->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="SetValue" key="CornerJumpOk" value="1" isModify="1" />
+							</node>
+							<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+								<!--검 2연타 휘두르기    -->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="280" faceTarget="1" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="SetValue" key="CornerJumpOk" value="1" isModify="1" />
+							</node>
+							<node name="SetValue" cooltime="12000" key="CornerJumpOk" value="1" isModify="1">
+								<aiPreset name="LongRange" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="4">
+						<node name="select" prob="50,50">
+							<!--원거리 발사 공격 사정거리 안에 있으면-->
+							<node name="trace" limit="4000" skillIdx="1" />
+							<node name="standby" limit="200" faceTarget="1" cooltime="8000">
+								<aiPreset name="LongRange" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="12">
+						<node name="select" prob="40,40,20">
+							<!--거리 2300 이내 같은 높이 이상의 전투판에 있으면-->
+							<node name="trace" limit="4000" skillIdx="1" />
+							<!--검 휘두르기 사정거리까지 추적-->
+							<node name="trace" limit="4000" skillIdx="4" />
+							<!--발사 사정거리까지 추적 -->
+							<node name="standby" limit="1000" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1600" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="800" faceTarget="1">
+							<node name="target" type="near" from="10" to="1600" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="hpOver" value="60">
+				<node name="select" prob="9999,0">
+					<!--#2페이즈 -->
+					<node name="setData" key="aiBattleTime" value="0" cooltime="999999" />
+					<!--2페이즈 시작시 battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+					<node name="conditions">
+						<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="90000" battleTimeLoop="150000">
+							<!--공중 공격 패턴 구간-->
+							<node name="conditions">
+								<condition name="extraData" key="AirBattleMode" value="0">
+									<node name="skill" faceTarget="1" isKeepBattle="true" idx="12">
+										<!--레벨1: 공중 뜨기 시작 -->
+										<node name="buff" type="remove" id="50001074" level="1" />
+										<!-- 오른손 검 이펙트 애디셔널  제거하기-->
+										<node name="standby" limit="600" faceTarget="1" animation="AirMode_Attack_Idle_A" />
+										<node name="SetValue" key="AirBattleMode" value="1" />
+										<!--이 변수가 1이라는 것은 공중에서의 공격 모드 중이라는 뜻임 -->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99999,0">
+										<node name="skill" faceTarget="0" cooltime="51000" idx="14">
+											<!--점프 전에 공중 연속 발사 공격 시작 동작 하기: 애디셔널 붙이기-->
+											<aiPreset name="2Phase_AirJumpPattern" />
+										</node>
+										<aiPreset name="2Phase_AirBattlePattern" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="extraData" key="AirBattleMode" value="1">
+									<node name="jump" pos="-850, 800, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+										<!--맵 중앙으로 점프 이동-->
+										<node name="buff" type="add" id="50001078" level="1" />
+										<!--공중 연속 발사 동작때의 몸에 붙는 애디셔널 이펙트 제거하기, 이 애디셔널을 부여하여 전에 붙여 놓았던 애디셔널 제거하는 방식임 -->
+										<node name="buff" type="add" id="50001076" level="1" />
+										<!--공중 이동 모드때의  부스터 애디셔널 이펙트 제거하기 , 이 애디셔널을 부여하여 전에 붙여 놓았던 애디셔널 제거하는 방식임 -->
+										<node name="skill" faceTarget="0" idx="29" />
+										<!--바닥 착지 동작 -->
+										<node name="target" type="rand" from="10" to="1300" />
+										<node name="standby" limit="400" faceTarget="1" />
+										<node name="buff" type="add" id="50001074" level="1" />
+										<!--오른손 검 이펙트 생성하기-->
+										<node name="standby" limit="400" faceTarget="1" />
+										<node name="SetValue" key="AirBattleMode" value="0" />
+										<!--이 변수가 0이라는 것은 땅 위에서 공격 중이라는 뜻임 -->
+										<node name="SetValue" key="CornerJumpOk" value="0" />
+										<!--바닥 전투때 검 휘두르기 공격 몇번 후 12시 3시쪽 구석으로 점프 이동하도록 하는 변수로, 바닥 전투 시작때  0으로 초기화 하기 -->
+										<node name="SetValue" key="CornerAttackMode" value="0" />
+										<!--1페이즈에서 막 구석 점프 이동 한 상태에서 2페이즈 넘어오는 경우가 있을 수 있어서 이 단계에서 0으로 초기화 함-->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="extraData" key="CornerJumpOk" value="5" op="greaterEqual">
+											<aiPreset name="CornerJumpPattern" />
+										</condition>
+										<condition name="extraData" key="CornerAttackMode" value="1" op="greaterEqual">
+											<aiPreset name="CornerAttackPattern_2Phase" />
+										</condition>
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="35,45,20">
+												<!-- 휘두르기 공격 사정거리 안에 있으면-->
+												<node name="skill" faceTarget="1" cooltime="5000" isKeepBattle="true" idx="1">
+													<!--검 1타 휘두르기    -->
+													<node name="target" type="rand" from="10" to="1300" />
+													<node name="standby" limit="1500" faceTarget="1" />
+													<node name="SetValue" key="CornerJumpOk" value="2" isModify="1" />
+												</node>
+												<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+													<!--검 2연타 휘두르기    -->
+													<node name="target" type="rand" from="10" to="1300" />
+													<node name="standby" limit="280" faceTarget="1" />
+													<node name="skill" faceTarget="1" idx="3" />
+													<node name="target" type="rand" from="10" to="1300" />
+													<node name="standby" limit="1500" faceTarget="1" />
+													<node name="SetValue" key="CornerJumpOk" value="2" isModify="1" />
+												</node>
+												<node name="SetValue" cooltime="12000" key="CornerJumpOk" value="1" isModify="1">
+													<aiPreset name="LongRange" />
+												</node>
+											</node>
+										</condition>
+										<condition name="skillRange" skillIdx="4">
+											<node name="select" prob="50,50">
+												<!--원거리 발사 공격 사정거리 안에 있으면-->
+												<node name="trace" limit="4000" skillIdx="1" />
+												<node name="standby" limit="200" faceTarget="1" cooltime="8000">
+													<aiPreset name="LongRange" />
+												</node>
+											</node>
+										</condition>
+										<condition name="skillRange" skillIdx="12">
+											<node name="select" prob="40,40,20">
+												<!--거리 2300 이내 같은 높이 이상의 전투판에 있으면-->
+												<node name="trace" limit="4000" skillIdx="1" />
+												<!--검 휘두르기 사정거리까지 추적-->
+												<node name="trace" limit="4000" skillIdx="4" />
+												<!--발사 사정거리까지 추적 -->
+												<node name="standby" limit="1000" faceTarget="1">
+													<node name="target" type="rand" from="10" to="1600" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="standby" limit="500" faceTarget="1">
+												<node name="target" type="near" from="10" to="1600" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="53">
+				<!--#3페이즈, 전투판 맨 아래에서 전투   -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="40,32,28">
+							<!-- 휘두르기 공격 사정거리 안에 있으면, 레벨1-->
+							<!--검 1타 휘두르기    -->
+							<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="1">
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+							<!--검 2연타 휘두르기    -->
+							<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="280" faceTarget="1" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+							<!--2연속 돌진 공격   -->
+							<node name="skill" faceTarget="1" cooltime="41000" isKeepBattle="true" idx="12">
+								<!--공중 뜨기 -->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="24" />
+								<!--돌진 준비 -->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="24" />
+								<!--돌진 준비 -->
+								<node name="skill" faceTarget="0" idx="25" />
+								<!--돌진 발동 -->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="24" />
+								<!--돌진 준비 -->
+								<node name="skill" faceTarget="0" idx="25" />
+								<!--돌진 발동 -->
+								<node name="skill" faceTarget="0" idx="13" />
+								<!--바닥 착지 -->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<!-- 사정거리 1600 이내에 있으면, 레벨2-->
+						<node name="trace" limit="4000" skillIdx="1" />
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="600" faceTarget="1">
+							<node name="target" type="near" from="10" to="1300" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="hpOver" value="28">
+				<node name="select" prob="99999,99999,0">
+					<!--#4페이즈,  공중에 떠서 중간 지점에서 전투, 이 페이즈 이후 부터 계속 공중에 떠있기  -->
+					<!-- 4페이지에서 보스가 바닥으로 부터 200 이상의 높이에 있어서 우호적NPC가 계속 standby만 행동할 수 있는데, 이것을 계속 방치할 경우 BattleEnd 변수 1씩 더해서 30 이상 되면 스스로 사라지는  상황이 생길 수 있기 때문에 지속적으로 BattleEnd 변수  초기화 하는 신호를 우호적NPC에게 보냄-->
+					<node name="SetValueRangeTarget" cooltime="14000" key="BattleEnd" value="0" radius="59000" height="39000">
+						<node name="SetValueRangeTarget" key="MoveGo" value="1" radius="59000" height="39000" />
+						<!--!특수처리!: 우호적 NPC 에게 신호보내 특정 지점으로 이동하도록 하기, 보스가 4페이즈 지점에 있을 때 우호적 NPC가 길찾기를 못해서 가만히 서있는 상황이 어색해 보여서 우호적 NPC에게 주기적으로 신호 보내서 적당한 곳에 위치해 있게 함-->
+					</node>
+					<node name="standby" limit="70" faceTarget="1" animation="Air_Attack_02_A" cooltime="25000">
+						<aiPreset name="4Phase_LaserAttackPattern" />
+						<!-- 북쪽 경사 지점에 있다면 이 선언된 부분을 통해 레이저 발사 공격 행동을 함-->
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="4Phase_JumpCheck" value="8" op="greaterEqual">
+							<aiPreset name="4Phase_AirJumpPattern" />
+						</condition>
+						<condition name="skillRange" skillIdx="23">
+							<node name="select" prob="50,25,25">
+								<!-- 휘두르기 공격 사정거리 안에 있으면, 레벨2가 4페이즈 전용임-->
+								<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="23">
+									<!--휘두르기 공격, 레벨2가 4페이즈 전용임 -->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="standby" limit="2100" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="4Phase_JumpCheck" value="1" isModify="1" />
+									<!--이 변수가 일정 이상 되면 다른 지점으로 점프 이동 하도록 하기 -->
+								</node>
+								<node name="skill" faceTarget="1" cooltime="5000" isKeepBattle="true" idx="18">
+									<!--양쪽 발사 , 레벨13: 양끝 바닥 유지 시간 짧은거-->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="standby" limit="3100" faceTarget="1" animation="Air_Attack_02_A" />
+								</node>
+								<node name="skill" faceTarget="1" cooltime="5000" isKeepBattle="true" idx="19">
+									<!--가운데 발사, 레벨14: 가운데 바닥 유지 시간 짧은거-->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="standby" limit="3100" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="4Phase_JumpCheck" value="1" isModify="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="14">
+							<node name="select" prob="60,40">
+								<!-- 원거리 공격 사정거리 안에 있으면-->
+								<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="18">
+									<!--양쪽 발사 , 레벨13: 양끝 바닥 유지 시간 짧은거-->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="standby" limit="3100" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="4Phase_JumpCheck" value="1" isModify="1" />
+								</node>
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="19">
+									<!--가운데 발사, 레벨14: 가운데 바닥 유지 시간 짧은거-->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="standby" limit="3100" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="4Phase_JumpCheck" value="1" isModify="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="700" faceTarget="1" animation="Air_Attack_02_A">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="8">
+				<node name="select" prob="99999,0">
+					<!--#5페이즈   -->
+					<node name="standby" limit="100" faceTarget="1" animation="Air_Attack_02_A" cooltime="31000">
+						<node name="conditions">
+							<condition name="hpOver" value="19">
+								<node name="select" prob="9999,1">
+									<!--HP가 19% 이상이면 점프 이동 후 거대 레이저발사 패턴 56초 마다 발동되도록 하기-->
+									<node name="standby" limit="100" faceTarget="1" animation="Air_Attack_02_A" cooltime="52000">
+										<aiPreset name="5Phase_AirJumpPattern" />
+									</node>
+									<node name="standby" limit="100" faceTarget="1" animation="Air_Attack_02_A" />
+								</node>
+							</condition>
+							<condition name="true">
+								<!--HP가 19% 이하이면  점프 이동 후 거대 레이저발사 패턴 사용 빈도 2배 상승하기-->
+								<aiPreset name="5Phase_AirJumpPattern" />
+							</condition>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="24">
+							<node name="conditions">
+								<condition name="extraData" key="5Phase_LaserMode" value="1" op="greaterEqual">
+									<!--이 변수가 1 이상이면 연속 초강력 레이저 공격 상태임-->
+									<aiPreset name="5Phase_LaserAttackPattern" />
+								</condition>
+								<condition name="true">
+									<node name="select" prob="34,33,33">
+										<node name="skill" faceTarget="1" idx="24">
+											<node name="select" prob="50,50">
+												<!--레벨1: 돌진 대기 루핑 -->
+												<node name="skill" faceTarget="1" isKeepBattle="true" idx="24">
+													<!--레벨1: 돌진 대기 루핑 -->
+													<node name="skill" faceTarget="0" idx="25" />
+													<!--레벨2: 돌진 공격-->
+													<node name="target" type="rand" from="10" to="1300" />
+													<node name="standby" limit="1300" faceTarget="1" animation="Air_Attack_02_A" />
+												</node>
+												<node name="skill" faceTarget="0" isKeepBattle="true" idx="25">
+													<!--레벨2: 돌진 공격-->
+													<node name="target" type="rand" from="10" to="1300" />
+													<node name="standby" limit="1300" faceTarget="1" animation="Air_Attack_02_A" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="20">
+											<!--레벨23: 양 측면 발사, 바닥 유지시간 긴거-->
+											<node name="target" type="rand" from="10" to="1300" />
+											<node name="standby" limit="900" faceTarget="1" animation="Air_Attack_02_A" />
+										</node>
+										<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="21">
+											<!--레벨24: 가운데 발사, 바닥 유지시간 긴거-->
+											<node name="target" type="rand" from="10" to="1300" />
+											<node name="standby" limit="900" faceTarget="1" animation="Air_Attack_02_A" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="600" faceTarget="1" animation="Air_Attack_02_A">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="99999,50,50">
+					<!--#6페이즈   -->
+					<node name="skill" facePos="2250, 800, 4100" cooltime="9999999" idx="17">
+						<node name="select" prob="47,53">
+							<!--공중 연속 발사 마무리 동작-->
+							<node name="jump" pos="3050, -950, 3200" speed="1800" heightMultiplier="1.2" isKeepBattle="true">
+								<!--함교의 오른쪽 부근 -->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="3000" faceTarget="1" animation="AirMode_Attack_Idle_A" />
+							</node>
+							<node name="jump" pos="1650, 3170, 2630" speed="1800" heightMultiplier="1.2" isKeepBattle="true">
+								<!--함교의 왼쪽 추진기 부근 -->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="3000" faceTarget="1" animation="AirMode_Attack_Idle_A" />
+							</node>
+						</node>
+					</node>
+					<!-- 가슴 코어에 레이저 발사 패턴1, 대기 타이밍 한번   -->
+					<node name="standby" limit="100" faceTarget="1" animation="Air_Attack_01_D" isKeepBattle="true">
+						<node name="buff" type="add" id="50001079" level="1" />
+						<!-- 가슴 코어에 레이저 발사 직전 빛 이펙트 붙이기   -->
+						<node name="standby" limit="800" faceTarget="1" animation="Air_Attack_01_D" />
+						<node name="target" type="rand" from="10" to="1300" />
+						<node name="skill" faceTarget="1" idx="26" />
+						<node name="skill" faceTarget="0" idx="27" />
+						<node name="buff" type="remove" id="50001079" level="1" />
+						<node name="standby" limit="2100" faceTarget="1" animation="Air_Attack_01_D" />
+					</node>
+					<!-- 가슴 코어에 레이저 발사 패턴1, 대기 타이밍 두번   -->
+					<node name="standby" limit="100" faceTarget="1" animation="Air_Attack_01_D" isKeepBattle="true">
+						<node name="buff" type="add" id="50001079" level="1" />
+						<!-- 가슴 코어에 레이저 발사 직전 빛 이펙트 붙이기   -->
+						<node name="standby" limit="800" faceTarget="1" animation="Air_Attack_01_D" />
+						<node name="target" type="rand" from="10" to="1300" />
+						<node name="skill" faceTarget="1" idx="26" />
+						<node name="target" type="rand" from="10" to="1300" />
+						<node name="skill" faceTarget="1" idx="26" />
+						<node name="skill" faceTarget="0" idx="27" />
+						<node name="buff" type="remove" id="50001079" level="1" />
+						<node name="standby" limit="2100" faceTarget="1" animation="Air_Attack_01_D" />
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--이 battleEnd 다음에  onlyDead="true"  을 넣지 않는 이유는, 필드보스의 전투가 끝나는 상황이 죽는 것 이외에 전투가 풀리면서 필드보스가 스스로 사라지는 상황도 있기 때문에 onlyDead="true"  을 넣지 않았음-->
+		<node name="TriggerSetUserValue" triggerID="421" key="EventNpcAppearance" value="2">
+			<!--죽을때 트리거에 EventNpcAppearance = 2 신호를 보내  메인 전투판의 우호적 NPC이 제거하고 , 함교에 있는 NPC 등장하게 하고 초기화 시킴-->
+			<node name="SetValueRangeTarget" key="BattleEnd" value="30" radius="59000" height="39000" />
+			<!--BattleEnd = 30 우호적 NPC 에게 신호보내 전투 끝났으니 Bore 행동 취한 후 퇴장하라고 명령함-->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="LongRange">
+			<node name="select" prob="40,40">
+				<node name="skill" faceTarget="1" cooltime="5500" isKeepBattle="true" idx="4">
+					<!--발사 시작 동작 -->
+					<node name="skill" faceTarget="1" idx="10" />
+					<!--레벨44: 강공격 발사 (준비시간짧음) -->
+					<node name="target" type="rand" from="10" to="1300" />
+					<node name="standby" limit="1200" faceTarget="1" />
+					<node name="SetValue" key="CornerJumpOk" value="1" isModify="1" />
+				</node>
+				<node name="skill" faceTarget="1" cooltime="5500" isKeepBattle="true" idx="4">
+					<!--발사 시작 동작 -->
+					<node name="skill" faceTarget="1" idx="9" />
+					<!--레벨33: 약공격 발사 (준비시간짧음) -->
+					<node name="target" type="rand" from="10" to="1300" />
+					<node name="standby" limit="1200" faceTarget="1" />
+					<node name="SetValue" key="CornerJumpOk" value="1" isModify="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="CornerJumpPattern">
+			<node name="SetValue" key="CornerJumpOk" value="0">
+				<!--12시 3시쪽 구석으로 점프 뛰기 위해 결정하는 변수 다음 사용을 위해 초기화 하기 -->
+				<node name="SetValue" key="CornerAttackMode" value="4">
+					<node name="select" prob="50,50">
+						<!--!!! 중요!:  이 수치가 일치해야 함!!, 이 변수는 구석으로 점프이동할 때 할당됨 -->
+						<node name="skill" facePos="660, 1400, 3800" isKeepBattle="true" idx="28">
+							<!--전투판 12시쪽 점프 뛰기 -->
+							<node name="jump" pos="660, 1400, 3800" speed="1800" heightMultiplier="1.2" />
+							<!--점프중    1200, -750, 1750-->
+							<node name="skill" faceTarget="0" idx="29" />
+							<!--점프 착지 -->
+							<node name="standby" limit="1800" faceTarget="1" />
+						</node>
+						<node name="skill" facePos="660, 225, 3800" isKeepBattle="true" idx="28">
+							<!--전투판 3시쪽 점프 뛰기 -->
+							<node name="jump" pos="660, 225, 3800" speed="1800" heightMultiplier="1.2" />
+							<!--점프중    1200, -750, 1750-->
+							<node name="skill" faceTarget="0" idx="29" />
+							<!--점프 착지 -->
+							<node name="standby" limit="1800" faceTarget="1" />
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="CornerAttackPattern_1Phase">
+			<node name="conditions">
+				<condition name="extraData" key="CornerAttackMode" value="4" op="greaterEqual">
+					<!--!!! 중요!:  이 수치가 일치해야 함!!, 이 변수는 구석으로 점프이동할 때 할당됨 -->
+					<node name="skill" facePos="-215, 800, 3800" idx="4">
+						<!--공격 시작 동작 -->
+						<node name="SetValue" key="CornerAttackMode" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CornerAttackMode" value="2" op="greaterEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!--공격 대상이 거리 1400 이내 같은 높의 전투판에 있으면, 공격 발동 -->
+							<node name="skill" faceTarget="0" idx="5">
+								<node name="select" prob="50,50">
+									<node name="skill" faceTarget="1" idx="6">
+										<!--약공격 3연발 -->
+										<node name="target" type="rand" from="10" to="1300">
+											<node name="SetValue" key="CornerAttackMode" value="-1" isModify="1" />
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" idx="7">
+										<!--강공격-->
+										<node name="target" type="rand" from="10" to="1300">
+											<node name="SetValue" key="CornerAttackMode" value="-1" isModify="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--공격 대상이 공격 가능 사정거리에 없으면  standby 상태 유지하기-->
+							<node name="standby" limit="600" faceTarget="1" animation="Attack_02_B">
+								<node name="target" type="near" center="250, 720, 3800" />
+								<!--구석지점의 같은 높이 전투판 지점을 최우선 타겟팅 함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="50,50">
+						<!--CornerAttackMode =  1 인 경우 마지막 공격하고 마무리 함-->
+						<node name="skill" faceTarget="1" idx="7">
+							<!--강공격-->
+							<node name="skill" faceTarget="0" idx="8">
+								<!--마무리 동작-->
+								<node name="target" type="rand" from="10" to="1300">
+									<node name="standby" limit="900" faceTarget="1">
+										<node name="SetValue" key="CornerAttackMode" value="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" facePos="-215, 800, 3800" idx="11">
+							<!--바람 끌어당긴후 연속 충격파 공격 -->
+							<node name="target" type="rand" from="10" to="1300">
+								<node name="standby" limit="900" faceTarget="1">
+									<node name="SetValue" key="CornerAttackMode" value="0" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="CornerAttackPattern_2Phase">
+			<node name="conditions">
+				<condition name="extraData" key="CornerAttackMode" value="4" op="greaterEqual">
+					<node name="select" prob="80,20">
+						<!--!!! 중요!:  이 수치가 일치해야 함!! , 이 변수는 구석으로 점프이동할 때 할당됨 -->
+						<node name="skill" facePos="-215, 800, 3800" cooltime="17000" idx="11" />
+						<!--바람 끌어당긴후 연속 충격파 공격 -->
+						<node name="skill" facePos="-215, 800, 3800" idx="4">
+							<!--공격 시작 동작 -->
+							<node name="SetValue" key="CornerAttackMode" value="-1" isModify="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="CornerAttackMode" value="2" op="greaterEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!--공격 대상이 거리 1400 이내 같은 높의 전투판에 있으면, 공격 발동 -->
+							<node name="skill" faceTarget="0" idx="5">
+								<node name="skill" faceTarget="1" idx="7">
+									<!--강공격-->
+									<node name="target" type="rand" from="10" to="1300">
+										<node name="SetValue" key="CornerAttackMode" value="-1" isModify="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--공격 대상이 공격 가능 사정거리에 없으면  standby 상태 유지하기-->
+							<node name="standby" limit="600" faceTarget="1" animation="Attack_02_B">
+								<node name="target" type="near" center="250, 720, 3800" />
+								<!--구석지점의 같은 높이 전투판 지점을 최우선 타겟팅 함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--CornerAttackMode =  1 인 경우 마지막 공격하고 마무리 함-->
+					<node name="skill" faceTarget="1" idx="7">
+						<!--강공격-->
+						<node name="skill" faceTarget="0" idx="8">
+							<!--마무리 동작-->
+							<node name="target" type="rand" from="10" to="1300">
+								<node name="standby" limit="900" faceTarget="1">
+									<node name="SetValue" key="CornerAttackMode" value="0" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="2Phase_AirJumpPattern">
+			<node name="standby" limit="450" faceTarget="0" animation="Air_Attack_02_A">
+				<node name="SetValue" key="AirShotModeEnd" value="0">
+					<node name="select" prob="20,20,20,20,20">
+						<!--이 변수에 0을 넣어서 점프 이동 후 공중 연속 발사 모드 시작을 알림-->
+						<node name="jump" pos="-1500, -160, 3800" speed="1800" heightMultiplier="0.3" cooltime="211000" isKeepBattle="true">
+							<!--5시 지점으로 점프 이동-->
+							<node name="target" type="mid" from="10" to="1300" />
+							<node name="standby" limit="2500" faceTarget="1" animation="Air_Attack_02_A" />
+						</node>
+						<node name="jump" pos="-1450, 1750, 3800" speed="1800" heightMultiplier="0.3" cooltime="211000" isKeepBattle="true">
+							<!--9시 지점으로 점프 이동-->
+							<node name="target" type="mid" from="10" to="1300" />
+							<node name="standby" limit="2500" faceTarget="1" animation="Air_Attack_02_A" />
+						</node>
+						<node name="jump" pos="300, 1725, 3800" speed="1800" heightMultiplier="0.3" cooltime="211000" isKeepBattle="true">
+							<!--11시 지점으로 점프 이동-->
+							<node name="target" type="mid" from="10" to="1300" />
+							<node name="standby" limit="2500" faceTarget="1" animation="Air_Attack_02_A" />
+						</node>
+						<node name="jump" pos="925, 750, 3800" speed="1800" heightMultiplier="0.3" cooltime="211000" isKeepBattle="true">
+							<!--1시 지점으로 점프 이동-->
+							<node name="target" type="mid" from="10" to="1300" />
+							<node name="standby" limit="2500" faceTarget="1" animation="Air_Attack_02_A" />
+						</node>
+						<node name="jump" pos="-600, -160, 3800" speed="1800" heightMultiplier="0.3" cooltime="211000" isKeepBattle="true">
+							<!--3시 지점으로 점프 이동-->
+							<node name="target" type="mid" from="10" to="1300" />
+							<node name="standby" limit="2500" faceTarget="1" animation="Air_Attack_02_A" />
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="4Phase_AirJumpPattern">
+			<node name="conditions">
+				<condition name="extraData" key="JumpPos" value="2" op="greaterEqual">
+					<node name="select" prob="9999,1">
+						<!--이 변수가 2이상이면 2 혹은 3 이라는 뜻, 즉 북쪽에 있다는 뜻이기 때문에 남쪽 지점으로 점프 이동시킴 -->
+						<node name="jump" pos="685, -335, 3100" speed="1200" heightMultiplier="0.3" cooltime="225000" isKeepBattle="true">
+							<!--북쪽 경사 지점으로 점프 이동-->
+							<node name="standby" limit="3100" faceTarget="1" animation="Air_Attack_02_A" />
+							<node name="SetValue" key="JumpPos" value="3" />
+							<!--이 변수에 3을 넣어 북쪽 경사 지점에 있다는 것을 알게 함-->
+							<node name="SetValue" key="4Phase_JumpCheck" value="0" />
+							<!--점프 이동을 위한 변수 초기화 하기-->
+						</node>
+						<node name="jump" pos="-1610, -880, 2810" speed="1200" heightMultiplier="0.3" isKeepBattle="true">
+							<!--남쪽 지점으로 점프 이동-->
+							<node name="standby" limit="3100" faceTarget="1" animation="Air_Attack_02_A" />
+							<node name="SetValue" key="JumpPos" value="1" />
+							<!--이 변수에 1을 넣어 남쪽 지점에 있다는 것을 알게 함-->
+							<node name="SetValue" key="4Phase_JumpCheck" value="0" />
+							<!--점프 이동을 위한 변수 초기화 하기-->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,1">
+						<!--이 변수가1이면 남쪽에 있다는 뜻이기 때문에 북쪽 지점으로 점프 이동시킴 -->
+						<node name="jump" pos="685, -335, 3100" speed="1200" heightMultiplier="0.3" cooltime="225000" isKeepBattle="true">
+							<!--북쪽 경사 지점으로 점프 이동-->
+							<node name="standby" limit="3100" faceTarget="1" animation="Air_Attack_02_A" />
+							<node name="SetValue" key="JumpPos" value="3" />
+							<!--이 변수에 3을 넣어 북쪽 경사 지점에 있다는 것을 알게 함-->
+							<node name="SetValue" key="4Phase_JumpCheck" value="0" />
+							<!--점프 이동을 위한 변수 초기화 하기-->
+						</node>
+						<node name="jump" pos="200, -880, 2810" speed="1200" heightMultiplier="0.3" isKeepBattle="true">
+							<!--북쪽 지점으로 점프 이동-->
+							<node name="standby" limit="3100" faceTarget="1" animation="Air_Attack_02_A" />
+							<node name="SetValue" key="JumpPos" value="2" />
+							<!--이 변수에 2을 넣어 북쪽 지점에 있다는 것을 알게 함-->
+							<node name="SetValue" key="4Phase_JumpCheck" value="0" />
+							<!--점프 이동을 위한 변수 초기화 하기-->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="5Phase_AirJumpPattern">
+			<node name="standby" limit="220" faceTarget="0" animation="Air_Attack_02_A">
+				<node name="SetValue" key="5Phase_LaserMode" value="5">
+					<!--점프 이동 후 초강력 레이저 공격 반복 사용하는데, 이 변수가 0이 될때까지 계속 사용함-->
+					<node name="conditions">
+						<condition name="extraData" key="JumpPos" value="12">
+							<node name="select" prob="50,50">
+								<node name="jump" pos="-1950, 1780, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--8시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="8" />
+									<!--변수 8을 넣어 자신이 8시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+								<node name="jump" pos="-650, -160, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--4시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="4" />
+									<!--변수 4를 넣어 자신이 4시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="JumpPos" value="2">
+							<node name="select" prob="50,50">
+								<node name="jump" pos="-675, 1675, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--10시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="10" />
+									<!--변수 10을 넣어 자신이 10시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+								<node name="jump" pos="-1600, -160, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--5시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="5" />
+									<!--변수 5를 넣어 자신이 4시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="JumpPos" value="4">
+							<node name="select" prob="50,50">
+								<node name="jump" pos="-675, 1675, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--10시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="10" />
+									<!--변수 10을 넣어 자신이 10시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+								<node name="jump" pos="-1950, 1780, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--8시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="8" />
+									<!--변수 8을 넣어 자신이 8시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="JumpPos" value="5">
+							<node name="select" prob="50,50">
+								<node name="jump" pos="725, 1475, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--12시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="12" />
+									<!--변수 12를 넣어 자신이 12시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+								<node name="jump" pos="745, 130, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--2시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="2" />
+									<!--변수 2를 넣어 자신이 2시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="JumpPos" value="8">
+							<node name="select" prob="50,50">
+								<node name="jump" pos="745, 130, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--2시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="2" />
+									<!--변수 2를 넣어 자신이 2시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+								<node name="jump" pos="725, 1475, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--12시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="12" />
+									<!--변수 12를 넣어 자신이 12시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="JumpPos" value="10">
+							<node name="select" prob="50,50">
+								<node name="jump" pos="-1600, -160, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--5시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="5" />
+									<!--변수 5를 넣어 자신이 4시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+								<node name="jump" pos="725, 1475, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--12시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="12" />
+									<!--변수 12를 넣어 자신이 12시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,33,34">
+								<!--  JumpPos = 0 인 경우임  -->
+								<node name="jump" pos="745, 130, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--2시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="2" />
+									<!--변수 2를 넣어 자신이 2시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+								<node name="jump" pos="725, 1475, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--12시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="12" />
+									<!--변수 12를 넣어 자신이 12시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+								<node name="jump" pos="-675, 1675, 3800" speed="1800" heightMultiplier="0.3" isKeepBattle="true">
+									<!--10시 지점으로 점프 이동-->
+									<node name="target" type="mid" from="10" to="1300" />
+									<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+									<node name="SetValue" key="JumpPos" value="10" />
+									<!--변수 10을 넣어 자신이 10시 지점으로 점프 이동 했다는 것을 알게 함-->
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="2Phase_AirBattlePattern">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="14">
+					<node name="conditions">
+						<condition name="extraData" key="AirShotModeEnd" value="0">
+							<node name="select" prob="60,40">
+								<node name="skill" faceTarget="1" cooltime="6000" idx="15">
+									<node name="target" type="rand" from="10" to="1300">
+										<node name="select" prob="30,30,27,13">
+											<node name="standby" limit="3000" faceTarget="1" animation="Air_Attack_02_A" cooltime="37000" />
+											<node name="standby" limit="3000" faceTarget="1" animation="Air_Attack_02_A" cooltime="37000" />
+											<node name="standby" limit="3000" faceTarget="1" animation="Air_Attack_02_A" />
+											<node name="standby" limit="2100" faceTarget="1" animation="Air_Attack_02_A">
+												<node name="SetValue" key="AirShotModeEnd" value="2" />
+												<!--이 변수에 2 넣어서 공중 연속 발사 공격 그만하도록 함-->
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" idx="16">
+									<node name="target" type="rand" from="10" to="1300">
+										<node name="select" prob="30,30,27,13">
+											<node name="standby" limit="3000" faceTarget="1" animation="Air_Attack_02_A" cooltime="37000" />
+											<node name="standby" limit="3000" faceTarget="1" animation="Air_Attack_02_A" cooltime="37000" />
+											<node name="standby" limit="3000" faceTarget="1" animation="Air_Attack_02_A" />
+											<node name="standby" limit="2100" faceTarget="1" animation="Air_Attack_02_A">
+												<node name="SetValue" key="AirShotModeEnd" value="2" />
+												<!--이 변수에 2 넣어서 공중 연속 발사 공격 그만하도록 함-->
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="extraData" key="AirShotModeEnd" value="2">
+							<!--AirShotModeEnd =  2 인 경우 연속 발사 공격 마무리 동작 하기-->
+							<node name="skill" faceTarget="0" idx="17">
+								<!--연속 발사 공격 마무리 동작, 애디셔널 제거-->
+								<node name="standby" limit="1500" faceTarget="1" animation="AirMode_Attack_Idle_A">
+									<node name="SetValue" key="AirShotModeEnd" value="1" />
+									<!--이 변수에 1 넣어서 점프 이동때까지 계속 돌진 공격 근접공격 조합하도록 함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="60,40">
+								<!--AirShotModeEnd =  1 인 경우,  공중 연속발사 마무리 동작 후 돌진 공격 아니면 팔 휘두르기 공격 모드 하기, 점프 이동전까지 계속 이부분 실행함-->
+								<node name="trace" limit="3000" animation="AirMode_Attack_Idle_A" cooltime="8000" skillIdx="22">
+									<!--팔 휘두르기 공격 범위까지 추적 -->
+									<node name="skill" faceTarget="0" idx="22">
+										<!--팔 휘두르기 -->
+										<node name="target" type="rand" from="10" to="1300">
+											<node name="standby" limit="2300" faceTarget="1" animation="AirMode_Attack_Idle_A" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" idx="24">
+									<!--돌진 공격 준비-->
+									<node name="skill" faceTarget="0" idx="25">
+										<!--돌진 공격 -->
+										<node name="target" type="rand" from="10" to="1300">
+											<node name="standby" limit="2300" faceTarget="1" animation="AirMode_Attack_Idle_A" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="extraData" key="AirShotModeEnd" value="0">
+							<node name="standby" limit="300" faceTarget="1" animation="Air_Attack_02_A">
+								<node name="target" type="rand" from="10" to="1200" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1" animation="AirMode_Attack_Idle_A">
+								<node name="target" type="rand" from="10" to="1200" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="4Phase_LaserAttackPattern">
+			<node name="conditions">
+				<condition name="extraData" key="JumpPos" value="3">
+					<!-- JumpPos = 3은 북쪽 경사 지점에 있다는 뜻, 이때는 거대 레이저 발사 공격 사용함    -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="26">
+							<!-- 레이저 공격 사정거리 이내, 즉 같은 전투판 높이 -->
+							<node name="standby" limit="100" faceTarget="1" animation="Air_Attack_01_D" isKeepBattle="true">
+								<node name="buff" type="add" id="50001079" level="1" />
+								<!-- 가슴 코어에 레이저 발사 직전 빛 이펙트 붙이기   -->
+								<node name="standby" limit="1500" faceTarget="1" animation="Air_Attack_01_D" />
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="26" />
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="26" />
+								<node name="skill" faceTarget="0" idx="27" />
+								<node name="buff" type="remove" id="50001079" level="1" />
+								<node name="SetValue" key="4Phase_JumpCheck" value="3" isModify="1" />
+								<node name="standby" limit="2100" faceTarget="1" animation="Air_Attack_02_A" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="target" type="rand" from="10" to="1300" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="target" type="rand" from="10" to="1300" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="5Phase_LaserAttackPattern">
+			<node name="select" prob="30,30,20,20">
+				<!--레벨23: 양 측면 발사, 바닥 유지시간 긴거-->
+				<node name="skill" faceTarget="1" cooltime="7000" idx="20">
+					<node name="target" type="rand" from="10" to="1300">
+						<node name="standby" limit="1100" faceTarget="1" animation="Air_Attack_02_A">
+							<node name="select" prob="60,40">
+								<node name="SetValue" key="5Phase_LaserMode" value="-1" isModify="1" />
+								<node name="standby" limit="200" faceTarget="1" animation="Air_Attack_02_A" />
+							</node>
+						</node>
+					</node>
+				</node>
+				<!--레벨24: 가운데 발사, 바닥 유지시간 긴거-->
+				<node name="skill" faceTarget="1" cooltime="5000" idx="21">
+					<node name="target" type="rand" from="10" to="1300">
+						<node name="standby" limit="1100" faceTarget="1" animation="Air_Attack_02_A">
+							<node name="select" prob="60,40">
+								<node name="SetValue" key="5Phase_LaserMode" value="-1" isModify="1" />
+								<node name="standby" limit="200" faceTarget="1" animation="Air_Attack_02_A" />
+							</node>
+						</node>
+					</node>
+				</node>
+				<!-- 가슴 코어 거대 레이저 발사 -->
+				<node name="standby" limit="100" faceTarget="1" animation="Air_Attack_01_D" isKeepBattle="true">
+					<node name="buff" type="add" id="50001079" level="1" />
+					<!-- 가슴 코어에 레이저 발사 직전 빛 이펙트 붙이기   -->
+					<node name="standby" limit="800" faceTarget="1" animation="Air_Attack_01_D" />
+					<node name="target" type="rand" from="10" to="1300" />
+					<node name="skill" faceTarget="1" idx="26" />
+					<node name="skill" faceTarget="0" idx="27" />
+					<node name="buff" type="remove" id="50001079" level="1" />
+					<node name="SetValue" key="5Phase_LaserMode" value="-1" isModify="1" />
+					<!-- 이 변수 -1씩 하여 결국 1보다 작아지면 거대 레이저 공격 모드 멈춤  -->
+					<node name="standby" limit="1300" faceTarget="1" animation="Air_Attack_02_A" />
+				</node>
+				<!-- 양쪽 발사 후 가슴 코어 거대 레이저 발사 -->
+				<node name="skill" faceTarget="1" isKeepBattle="true" idx="20">
+					<!--레벨23: 양 측면 발사, 바닥 유지시간 긴거-->
+					<node name="standby" limit="1200" faceTarget="1" animation="Air_Attack_02_A" />
+					<node name="buff" type="add" id="50001079" level="1" />
+					<!-- 가슴 코어에 레이저 발사 직전 빛 이펙트 붙이기   -->
+					<node name="standby" limit="500" faceTarget="1" animation="Air_Attack_01_D" />
+					<node name="target" type="rand" from="10" to="1300" />
+					<node name="skill" faceTarget="1" idx="26" />
+					<node name="target" type="rand" from="10" to="1300" />
+					<node name="skill" faceTarget="1" idx="26" />
+					<node name="skill" faceTarget="0" idx="27" />
+					<node name="buff" type="remove" id="50001079" level="1" />
+					<node name="SetValue" key="5Phase_LaserMode" value="-2" isModify="1" />
+					<!-- 이 변수 -2 하기, 결국 1보다 작아지면 거대 레이저 공격 모드 멈춤  -->
+					<node name="standby" limit="1300" faceTarget="1" animation="Air_Attack_02_A" />
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

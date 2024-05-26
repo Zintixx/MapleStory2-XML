@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--등장하자마자 바로 발록의 흡수 행위를 끊는 공격 하도록 함, 참고로 트리스탄은 타겟팅 예외 처리 되어서 카오스발록한테 타겟팅 되지 않음-->
+			<node name="standby" limit="120" faceTarget="1" isKeepBattle="true">
+				<node name="say" message="$Tristan_TargetAppearance$" durationTick="8000" />
+				<node name="standby" limit="1200" faceTarget="1" />
+				<node name="move" destination="4800, 3750, 2750" limit="6000" />
+				<node name="say" message="$Tristan_StunAttack01$" durationTick="8000" />
+				<node name="skill" faceTarget="1" idx="4" />
+				<!--레벨13는 무적설정된 진짜 끊기 공격 기력모으기 스킬 데이터-->
+				<node name="skill" faceTarget="1" idx="5" />
+				<!--레벨14는 바닥쾅 스킬 데이터, 혹시 버그로 인해 기력모으기가 캔슬되면 바닥쾅 공격이 발동 안되는 대박 버그 나올 수 있어 레벨은 나누었음-->
+				<node name="standby" limit="5000" faceTarget="1" />
+				<!--발록 공격 끊기 공격 후 연출을 위해 일부러 더 오래 서있게 함-->
+				<node name="SetValue" key="SummonBattleMode" value="0" />
+				<!--나중에 소환몹 방해받는 상황에 대해 사용할 것이기 때문에 0으로 셋팅함-->
+				<node name="SetValue" key="CheckSummonMany" value="0" />
+				<!--현재 지란트 소환몹이 몇마리 있는지 알 수 있게 하기위한 변수-->
+				<node name="SetValue" key="EmergencyBattleMode" value="0" />
+				<!--  CheckSummonMany -1  신호를 못받아서  CheckSummonMany = 0 이 안되어서 대박 버그가 생길 것을 대비한, 만약을 위한 별도 처리 로직 때 사용하는 변수-->
+				<node name="SetValue" key="TristanStunAttack" value="0" />
+				<!--카오스 발록이 특정 행동을 할때 이 신호를 트리스탄한테 보내 이 상황에 맞는 행동을 하도록 함, 발록이 흡수 공격 도중에 5페이즈로 넘어왔을 경우 트리스탄한테 신호 보내는 용도로도 사용-->
+				<node name="SetValue" key="BurstInterruptionMode" value="0" />
+				<!--카오스 발록이 폭발 공격을 할 때 이 변수를 1로 만드는 신호를 트리스탄한테 보내는데, 트리스탄은 이 신호를 받아서 끊기 공격 할지 말지를 결정함-->
+				<node name="SetValue" key="BurstInterruptionOK" value="0" />
+				<!--이 변수가 일정 이상 수보다 커야 끊기 공격을 할 것임-->
+				<node name="SetValue" key="FinalStunAttack" value="0" />
+				<!--발록이 전투판 다 파괴 후 최종 마지막 페이즈에서 트리스탄이 살아있다면, 최종 스턴 공격 행동 하도록 하는 변수-->
+				<node name="SetValue" key="BalrogDead" value="0" />
+				<!--발록이 죽었으면, 발록한테서 이 변수 1 신호를 받게 됨-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<!--카오스 발록 4페이즈용-->
+		<node name="conditions">
+			<condition name="extraData" key="TristanStunAttack" value="1">
+				<!--이 변수가 1이면 카오스 발록 4페이즈 흡수 공격 끊기 패턴임-->
+				<node name="conditions">
+					<condition name="extraData" key="SummonBattleMode" value="0">
+						<!--발록이 흡수 공격한다고 신호 보내면, 트리스탄은 이 부분 부터 실행하여 지란트 소환몹 호출하고   SummonBattleMode 변수를 1로 만들어서 플레이어가 소환몹을 다 제거해야 발록의 흡수 공격을 끊을 수 있도록 함-->
+						<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+							<node name="SetValue" key="SummonBattleMode" value="1" />
+							<!--이 변수를 1로 셋팅해 지란트 소환몹 한테 신호 받기 대기 상태로 만듦-->
+							<node name="move" destination="4800, 3750, 2750" limit="6000" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="801" delayTick="2000" summonPos="4950, 3750, 2950" />
+							<!-- 지란트 소환몹 호출, 트리스탄이 소환몹 지란트를 제거하는 설정이 필요하기 때문에 꼭 주종관계로 설정함 -->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="802" delayTick="2000" summonPos="4650, 3750, 2950" />
+							<!-- 지란트 소환몹 호출, 트리스탄이 소환몹 지란트를 제거하는 설정이 필요하기 때문에 꼭 주종관계로 설정함 -->
+							<node name="skill" faceTarget="1" idx="2" />
+							<!--레벨11: 기력 모으기 동작 루핑 17회 (레벨11~16: 카오스 난이도용)-->
+							<node name="ShowVibrate" groupID="4" />
+							<!--플레이어가 지란트 때릴 수 있게 150 높이 삼각 큐브 생성하기 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="SummonBattleMode" value="1">
+						<!--지란트 소환몹 한테 신호 받기 대기 상태-->
+						<node name="conditions">
+							<condition name="extraData" key="CheckSummonMany" value="1" op="greaterEqual">
+								<!--지란트 소환몹한테 CheckSummonMany +1  신호 받아, 이 변수가 1 이상이 되면  SummonBattleMode 변수 2로 만들어 지란트와의 전투 행동을 하도록 함-->
+								<node name="SetValue" key="SummonBattleMode" value="2" />
+								<!--이 변수를 1로 셋팅해 소환몹과의 전투 모드로 전화하게 함-->
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99999,1">
+									<!--지란트 소환몹한테 CheckSummonMany +1  신호 받기 전까지 이 부분 계속 실행함-->
+									<!--지란트 소환몹이 등장하자마자 바로 죽으면 CheckSummonMany +1 신호를 트리스탄한테 보내지도 못하고 죽어서 트리스탄이 기력 모으기 행동만 무한으로 하는 버그가 생길 수 도 있는데, 그럴 경우 "50101001 레벨11 스킬" 실행하고 standby 행동 10초 이상 행동한 다음   SummonBattleMode=2 실행하도록 설정했음-->
+									<node name="skill" faceTarget="0" cooltime="9999999" idx="2" />
+									<!--레벨11: 기력 모으기 동작 루핑 17회 (레벨11~16: 카오스 난이도용)-->
+									<!-- !주의: 이 부분은 지란트 소환몹이 신호를 보내기 전에 지란트 소환몹이 죽을 경우에 트리스탄 행동패턴이 꼬일 수 있는데, 이것을 해결하기 위해 이렇게 설정했음, 이 부분 약간 복잡해서 주의해야 함-->
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="select" prob="99999,999,1">
+											<node name="standby" limit="6000" faceTarget="1" cooltime="999999" />
+											<!-- !주의: standby의  이  limit="6000 시간 이보다 짧으면 지란트 등장하여 신호 보낼때까지 기다리지 않고 발록 끊기 공격 상황으로 넘어갈 수 있어서 이 시간 길이 설정 무척 중요함-->
+											<node name="standby" limit="4000" faceTarget="1" cooltime="999999" />
+											<node name="SetValue" key="SummonBattleMode" value="2" />
+											<!--이론적으로 이부분 실행될일 없으나 혹시 지란트 소환몹이 등장하자마자 바로 죽으면 CheckSummonMany +1 신호를 트리스탄한테 보내지 못하면, 트리스탄이 무한 루프에 빠질 수 있어, 만약을 대비해 설정을 한 것임-->
+											<!--이 변수를 2로 셋팅해 "소환몹과의 전투하거나 발록 끊기 공격 상황" 으로 넘어가도록 함-->
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="9999,0">
+							<!-- SummonBattleMode = 2 이인 경우로 , 트리스탄 주변에 지란트 소환몹이 등장하여 발록 공격 하는 것을 방해 받으면, 이 부분을 실행함-->
+							<node name="target" type="near" from="10" to="1500" cooltime="6000" />
+							<node name="conditions">
+								<condition name="extraData" key="CheckSummonMany" value="1" op="greaterEqual">
+									<!--소환몹을 다 죽이지 않으면 이 변수가 1 이상인 상태이기 때문에 이 조건에 계속 결려 발록을 견제하지 못하고 계속 지란트와 전투를 할 것임-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="99999,57,21,22">
+												<node name="SetValue" cooltime="3300" key="EmergencyBattleMode" value="0" />
+												<!--  CheckSummonMany -1  신호를 못받아서  CheckSummonMany = 0 이 안되어서 대박 버그가 생길 것을 대비한, 만약을 위한 별도 처리 로직 때 사용하는 변수를 만약 지란트를 다시 체크하여 공격 상태가 될 수 있기 때문에 이때는 0 초기화 함-->
+												<node name="skill" idx="1">
+													<node name="select" prob="99,1">
+														<!--2연타 휘두르기 -->
+														<node name="say" message="$Tristan_SOS$" durationTick="8000" cooltime="21000">
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" cooltime="62000" idx="8">
+													<!--2연타 휘두르기 후 폼잡기, 성우 음성 나오는 스킬이기 때문에 너무 자주 사용하면 안됨 -->
+													<node name="move" destination="4800, 3750, 2750" limit="3000">
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+												<node name="standby" limit="200" faceTarget="1" cooltime="21000">
+													<node name="select" prob="68,31,1">
+														<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="803" summonPos="5010, 3660, 2950" cooltime="74000">
+															<!--주의!!:  원래 여기에 master="None" 을 넣으려고 했는데, master="None" 을 넣으면 빈칸 채워 넣기 방식으로 소환 하는 것이 아닌 계속 무한으로 소환하기 때문에 어쩔 수 없이 master="None" 이거 뺐음-->
+															<node name="standby" limit="1120" faceTarget="1" />
+															<!--소환몹이 등장해서  CheckSummonMany +1 신호 받을 때까지 standby 상태로 0.8~1.2초 가만히 있기, 이거 없으면 소환몹은 나왔는데 CheckSummonMany +1 신호 받기 전에 다음 스텝으로 넘어가서 상황이 꼬일 수 있음-->
+														</node>
+														<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="804" summonPos="4550, 3520, 2950" cooltime="74000">
+															<!--주의!!:  원래 여기에 master="None" 을 넣으려고 했는데, master="None" 을 넣으면 빈칸 채워 넣기 방식으로 소환 하는 것이 아닌 계속 무한으로 소환하기 때문에 어쩔 수 없이 master="None" 이거 뺐음-->
+															<node name="standby" limit="1120" faceTarget="1" />
+														</node>
+														<node name="standby" limit="200" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<!--주의!: 지란트 소환몹이 죽었는데 간혹 CheckSummonMany -1  신호를 보내지 않아서, 그로인해 이 구간에 계속 머물러서 대박 버그 발생되는데 그때를 대비한 별도 설정이 필요함  -->
+											<node name="standby" limit="500" faceTarget="1">
+												<aiPreset name="EmergencyBattle" />
+												<!--  CheckSummonMany -1  신호를 받지 못하여,  CheckSummonMany = 0 이 안되어서 이 구간 계속 머무는 대박 버그가 생길 것을 대비한, 만약을 위한 별도 처리 로직-->
+											</node>
+										</condition>
+									</node>
+								</condition>
+								<condition name="true">
+									<!--소환몹을 다 죽이면 CheckSummonMany 이 변수가 0 이 되어 발록 끊기 공격 행동을 할 것임-->
+									<node name="standby" limit="120" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="near" center="4725, 4725, 2750" />
+										<!-- 발록이 서있는 지점을 타겟팅하여 트리스탄이 발록을 최우선 타겟팅 하도록 함, 혹시 이때 지란트 소환몹이 있을 수 있어서 좌표 기준 타겟팅 설정함 -->
+										<node name="move" destination="4800, 3750, 2750" limit="6000" />
+										<node name="say" message="$Tristan_StunAttack01$" durationTick="8000" />
+										<node name="skill" faceTarget="1" idx="4" />
+										<!--레벨13는 무적설정된 진짜 끊기 공격 기력모으기 스킬 데이터-->
+										<node name="skill" faceTarget="1" idx="5" />
+										<!--레벨14는 바닥쾅 스킬 데이터, 혹시 버그로 인해 기력모으기가 캔슬되면 바닥쾅 공격이 발동 안되는 대박 버그 나올 수 있어 두개 레벨로 나누었음-->
+										<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+										<!-- 지란트가 소환되어 신호 보내기 직전에 트리스탄이 발록 공격 끊기 공격 행동을 해서 상황이 꼬이는 경우가 가끔 있기 때문에 이럴 경우 트리스탄이 자살 신호를 보내서 제거하도록 함-->
+										<node name="standby" limit="3000" faceTarget="1" />
+										<node name="HideVibrateAll" />
+										<!--위 50101001 레벨14 스킬에서 Hide큐브 파괴 하기 때문에 이후 Hide 큐브 제거 명령 해야함,  이거 안하면 파괴된 Hide 큐브 리젠될 것임-->
+										<node name="SetValue" key="SummonBattleMode" value="0" />
+										<!--이 변수 초기화 하여 트리스탄이 노말 상태가 되게 함-->
+										<node name="SetValue" key="TristanStunAttack" value="0" />
+										<!--카오스 발록한테 받은 이 변수 0으로 초기화 하기-->
+										<!--혹시 모를 상황으로 꼬여서 위에 보낸 신호를 지란트 소환몹이  못 받을 수 있어, 만약을 위해 다시 한번더 자살 신호 보내기-->
+										<node name="RemoveSlaves" />
+										<!-- 이 NPC가  target="Slaves" 로 소환한 몬스터 전부 제거하기, Slaves 몬스터가 행동 도중에도 강제 제거 해버리는 기능-->
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<!--카오스 발록 6페이즈용-->
+			<condition name="extraData" key="TristanStunAttack" value="2">
+				<!--이 변수가 2이면 카오스 발록 6페이즈 전반부 진행에  광역 폭발 공격 끊기 패턴임-->
+				<node name="conditions">
+					<condition name="extraData" key="BurstInterruptionMode" value="1">
+						<!--이 변수가 1되면 카오스 발록이 광역 폭발 공격 카운드다운에 들어간 것이며, 이때 트리스탄은 아래 조건에 의해 끊기 공격을 할지 말기를 결정하게 됨-->
+						<node name="conditions">
+							<condition name="extraData" key="BurstInterruptionOK" value="2" op="lessEqual">
+								<!--BurstInterruptionOK 변수가 2 이하면 기력 모으다가 끊기 공격 실패해서 다시  <aiPreset name="MainBattle"/> 상태로 돌아오게 하기-->
+								<node name="move" destination="4200, 4200, 2750" limit="9900">
+									<!--꼭 이 지점으로 이동시켜야 발록의 레벨22짜리의 바위 드랍 공격 히트박스 범위 안에 들어오는 것임-->
+									<node name="buff" type="remove" id="50000263" level="1">
+										<!-- 무적버프 꼭 제거하기_발록의 돌 공격에 맞고 기절해야 하기 때문에 여기서 잠시 무척 버프 제거함-->
+										<node name="skill" faceTarget="1" idx="3">
+											<!--레벨12은 기모으기 동작 반복 많이함, 이것은 바위에 맞아 기절하기 위한 단순 보여주기 용도임-->
+											<node name="say" message="$Tristan_Fail$" durationTick="8000">
+												<node name="standby" limit="2900" faceTarget="1">
+													<!--기절하고 바로 공격하러 가면 어색하게 보여서 잠시 서있는 단계를 넣음-->
+													<node name="SetValue" key="BurstInterruptionMode" value="0">
+														<node name="select" prob="55,45">
+															<!--이 변수 초기화 안하면 이 단계에서 계속 머물기 때문에 한번 살행하고 나가게 하기 위해 변수 꼭 0으로 초기화 함-->
+															<node name="SetValue" key="BurstInterruptionOK" value="1" isModify="1" />
+															<!--높은 확률로 이 변수에 1 더하기-->
+															<node name="SetValue" cooltime="32000" key="BurstInterruptionOK" value="2" isModify="1" />
+															<!--낮은 확률로 이 변수에 2 더하기-->
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--BurstInterruptionOK 변수가 3 이상이면 끊기 공격 발동 성공함-->
+								<node name="move" destination="4200, 4200, 2750" limit="9900" isKeepBattle="true">
+									<!--꼭 이 지점으로 이동시켜야 발록의 레벨22짜리의 바위 드랍 공격 히트박스 범위 안에 들어오는 것임-->
+									<node name="skill" faceTarget="1" idx="4" />
+									<!--레벨13는 무적설정된 진짜 끊기 공격 기력모으기 스킬 데이터, 혹시 몰라서 이 스킬 자체에 무적 버프 부여되어 있음-->
+									<node name="skill" faceTarget="1" idx="5" />
+									<!--레벨14는 바닥쾅 스킬 데이터, 혹시 버그로 인해 기력모으기가 캔슬되면 바닥쾅 공격이 발동 안되는 대박 버그 나올 수 있어 레벨은 나누었음-->
+									<node name="SetValue" key="BurstInterruptionMode" value="0" />
+									<!--이 변수 초기화 안하면 이 단계에서 계속 머물기 때문에 한번 살행하고 나가게 하기 위해 변수 꼭 0으로 초기화 함-->
+									<node name="say" message="$Tristan_StunAttack03$" durationTick="8000" />
+									<node name="standby" limit="5000" faceTarget="1" />
+									<!--발록 공격 끊기 공격 후 연출을 위해 일부러 더 오래 서있게 함-->
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<aiPreset name="MainBattle" />
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="TristanStunAttack" value="3">
+				<node name="select" prob="9999,1">
+					<!--이 변수가 3이면 카오스 발록 6페이즈 후반 전투판 파괴  패턴임-->
+					<node name="standby" limit="120" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+						<node name="buff" type="remove" id="50000263" level="1" />
+						<!-- 무적버프 꼭 제거하기, 발록의 파멸의 갈고기 휘두르기 공격에 죽을 수 있어야 해서-->
+						<node name="move" destination="4758, 4894, 2750" limit="9000" />
+						<!--변수 3 신호를 보내 우호적NPC 트리스탄이 전투판 12시 방향으로 이동하도록 함, 전투판 70%가 파괴되는데 이거 안하면 공중에 떠있는 형태가 되어서 이 상횡에서 트리스탄에게 전투판 12시 방향 파괴되니 않는 전투판으로 오게 함-->
+						<node name="target" type="near" from="100" to="1300" />
+						<node name="say" message="$Tristan_Panic$" durationTick="8000" />
+						<node name="standby" limit="2500" faceTarget="1" />
+					</node>
+					<node name="skill" faceTarget="1" idx="7" />
+					<!--레벨16은 쫄아서 가만히 서있기-->
+				</node>
+			</condition>
+			<condition name="extraData" key="TristanStunAttack" value="4">
+				<!--이 변수가 4이면 카오스 발록 공격에도 살아남아 안도의 대사를 한 다음에 TristanStunAttack 변수 초기화 하여 평상시 상태로 돌아가게 함-->
+				<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+					<node name="say" message="$Tristan_Relief$" durationTick="8000" />
+					<node name="SetValue" key="TristanStunAttack" value="0" />
+					<!-- 이 변수 0으로 초기화 시켜서 평범한  공격 행동 상태가 되도록 함-->
+					<node name="SetValue" key="FinalStunAttack" value="1" />
+					<!-- 이 변수 1로 설정해 최종 마지막 페이즈 스턴 공격 행동하도록 함-->
+					<node name="standby" limit="5000" faceTarget="1" />
+				</node>
+			</condition>
+			<condition name="extraData" key="BalrogDead" value="1">
+				<node name="select" prob="99999,1">
+					<!--발록이 죽으면 이 신호를 받아서, 특정 행동을 하도록 함 -->
+					<node name="move" destination="4758, 4894, 2750" limit="9000" cooltime="9999999" />
+					<node name="skill" facePos="5375, 5375, 2600" isKeepBattle="true" idx="7">
+						<!--레벨16   발록 죽음 행동을 하고 있는 쪽으로 주시 방향 변경하기, 자연스러운 연출을 위해-->
+						<node name="standby" limit="5000" faceTarget="1" />
+						<node name="say" message="$Tristan_ClearThankyou$" durationTick="9000" />
+						<node name="standby" limit="62000" faceTarget="1" />
+					</node>
+				</node>
+			</condition>
+			<!--평상시 전투 상황-->
+			<condition name="true">
+				<aiPreset name="MainBattle" />
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="MainBattle">
+			<node name="select" prob="99999,99999,0">
+				<!-- 평상시  전투 중 트리스탄이 발록의 공격에 맞고 죽으면 안되기 때문에 여기서 무적 버프 걸기, 트리스탄이 죽는 경우는 오직 최종 마지막 페이즈에서 발록의 파멸의 갈고리 공격에 의해서만 죽어야 함-->
+				<node name="buff" type="add" id="50000263" level="1" cooltime="9000" />
+				<!-- 여기서 평소에 틈틈히 무적 버프 걸도록 함, 가끔 필요에 의해서 위 지점에서 무적버프 풀어내는 곳이 있기 때문에 여기서 종종 무적 버프를 걸도록 함-->
+				<node name="standby" limit="200" faceTarget="0" cooltime="11000">
+					<node name="conditions">
+						<condition name="extraData" key="FinalStunAttack" value="1">
+							<node name="select" prob="9999,60,40">
+								<!--이 변수가 1이라는 것은 최종 마지막 페이즈라는 뜻임-->
+								<!--이 부분 실행되면 최초에는 무조건 기절 공격 사용-->
+								<node name="move" destination="4750, 5235, 2750" limit="9000" cooltime="9999999" isKeepBattle="true">
+									<!--이 스킬 사용시 서있는 좌표는 11시 방향쪽-->
+									<node name="skill" faceTarget="1" idx="4" />
+									<!--레벨13는 무적설정된 진짜 끊기 공격 기력모으기 스킬 데이터-->
+									<node name="skill" faceTarget="1" idx="6" />
+									<!--레벨15는 마지막 페이즈용 바닥쾅 스킬 데이터, 혹시 버그로 인해 기력모으기가 캔슬되면 바닥쾅 공격이 발동 안되는 대박 버그 나올 수 있어 레벨은 나누었음-->
+									<!--레벨 15는 50004511레벨2 애디셔널이 없는 것이라 카오스발록이 이 스킬 맞아도  AI에서 기절 조건 애디셔널 체크를 안하게 됨-->
+									<node name="standby" limit="4000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+								<!--두번째 이후 실행될 때는 기절 공격 낮은 확률로 사용-->
+								<node name="move" destination="4750, 5235, 2750" limit="9000" cooltime="18000" isKeepBattle="true">
+									<!--이 스킬 사용시 서있는 좌표는 11시 방향쪽-->
+									<node name="skill" faceTarget="1" idx="4" />
+									<!--레벨13는 무적설정된 진짜 끊기 공격 기력모으기 스킬 데이터-->
+									<node name="skill" faceTarget="1" idx="6" />
+									<!--레벨15는 마지막 페이즈용 바닥쾅 스킬 데이터, 혹시 버그로 인해 기력모으기가 캔슬되면 바닥쾅 공격이 발동 안되는 대박 버그 나올 수 있어 레벨은 나누었음-->
+									<node name="standby" limit="4000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99,1">
+								<!--마지막  페이즈가 아니면 아무것도 안하고 그냥 넘어가기 -->
+								<node name="move" destination="4555, 4050, 2750" limit="2000" />
+								<!--마지막 페이즈가 아닌 상황에서 발록과 전투 중 종종 적당히 전투판 중앙 위치로 이동하도록 함-->
+								<!-- 너무 구석에 있으면 발록 흡수 패턴이나 광역 폭발 공격 패턴 때 트리스탄이 지정된 좌표로 이동해야 하는데 트리스탄이 너무 구석에 있으면 어색해 보여서 이 설정을 넣었음 -->
+								<node name="standby" limit="200" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="49,32,19">
+							<node name="skill" idx="1">
+								<!--2연타 휘두르기 -->
+								<node name="runaway" till="150" limit="2000">
+									<node name="select" prob="50,50">
+										<node name="standby" limit="900" faceTarget="1" />
+										<node name="standby" limit="1200" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="runaway" till="400" limit="2000" cooltime="25000">
+								<!--너무 보스하고 붙어있으면 어색하니 가끔 뒤로 이동함 -->
+								<node name="skill" idx="9">
+									<!--돌진 공격 -->
+									<node name="runaway" till="400" limit="2000" />
+								</node>
+							</node>
+							<node name="skill" cooltime="59000" idx="8">
+								<!--2연타 휘두르기 후 폼잡기, 이 공격 때 성우 대사 나오는데 너무 자주 나오면 안되기 때문에 발동 확률을 크게 낮춤 -->
+								<node name="runaway" till="150" limit="2000">
+									<node name="select" prob="50,50">
+										<node name="standby" limit="1100" faceTarget="1" />
+										<node name="standby" limit="1400" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="1500" skillIdx="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="EmergencyBattle">
+			<!--  CheckSummonMany -1  신호를 못받아서  CheckSummonMany = 0 이 안되어서 이 구간 계속 머무는 대박 버그가 생길 것을 대비한, 만약을 위한 별도 처리 로직-->
+			<node name="conditions">
+				<condition name="extraData" key="EmergencyBattleMode" value="8" op="greaterEqual">
+					<!--여기까지 왔다는 것은 지란트 소환몹 다 잡았는데, CheckSummonMany -1  신호를 못받  CheckSummonMany = 0 이 못되어 대박 버그 발생되었다는 것임 -->
+					<node name="say" message="$Tristan_EmergencyBattle$" durationTick="4000" isKeepBattle="true">
+						<!--이 단계까지 왔는지 명확하게 확인하기 위한 말풍선 출력 장치 -->
+						<node name="SetValue" key="CheckSummonMany" value="0" />
+						<!--여기서 CheckSummonMany = 0 셋팅을 해서 발록 끊기 공격 강제로 진행시킴 -->
+						<node name="SetValue" key="EmergencyBattleMode" value="0" />
+						<!--다음 사용을 위해 변수 초기화 하기 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="SetValue" key="EmergencyBattleMode" value="1" isModify="1">
+						<node name="target" type="near" from="10" to="1300" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,1000,0">
+			<!--최초 1회-->
+			<node name="standby" limit="10" faceTarget="0" cooltime="999999999">
+				<node name="jump" pos="-150, 150, 1850" speed="800" heightMultiplier="0.8" />
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--주기적인 타겟 전환-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--#1페이즈 -->
+			<node name="conditions">
+				<condition name="hpOver" value="65">
+					<node name="select" prob="100,100,100,30,30">
+						<node name="skill" cooltime="5000" idx="1">
+							<node name="select" prob="30,70">
+								<!--밀쳐내기-->
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="trace" limit="1500" skillIdx="2" />
+							</node>
+						</node>
+						<node name="skill" cooltime="5000" idx="2">
+							<node name="select" prob="30,70">
+								<!--크게 휘두르기-->
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="trace" limit="1500" skillIdx="2" />
+							</node>
+						</node>
+						<node name="skill" cooltime="5000" idx="3">
+							<node name="select" prob="30,70">
+								<!--내려찍기-->
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="trace" limit="1500" skillIdx="3" />
+							</node>
+						</node>
+						<node name="standby" limit="2000" faceTarget="1" />
+						<node name="trace" limit="1500" skillIdx="2" />
+					</node>
+				</condition>
+				<!--#2페이즈 -->
+				<condition name="true">
+					<node name="select" prob="9999,100">
+						<node name="skill" cooltime="60000" idx="7">
+							<node name="skill" idx="8" />
+							<!--전이-->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="7">
+								<node name="select" prob="100,100,100">
+									<node name="skill" cooltime="5000" idx="4">
+										<!-- 전기 밀쳐내기-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="5000" idx="5">
+										<!-- 전기 크게 휘두르기-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="5000" idx="6">
+										<!-- 전기 내려찍기-->
+										<node name="standby" limit="100" faceTarget="1" />
+										<node name="skill" idx="7" />
+										<!--전기 충전-->
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="1500" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="999991" key="RoundEnd" value="1" />
+	</battleEnd>
+</npcAi>

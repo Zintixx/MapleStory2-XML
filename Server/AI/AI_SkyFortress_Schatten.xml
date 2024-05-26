@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" key="BattleEnd" value="0" />
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,0">
+			<node name="buff" type="remove" id="50005013" cooltime="4000" />
+			<!--아머드체키한테 받는 감전 & 명중률 저하 디버프 애디셔널 주기적으로 제거하기, 보기 안좋아서 자주 제거함-->
+			<node name="conditions">
+				<condition name="extraData" key="BattleEnd" value="30" op="greaterEqual">
+					<!-- 보스가 죽으면  BattleEnd = 30 신호를 받아서 승리포즈 취하고 스스로 퇴장함-->
+					<node name="standby" limit="3000" faceTarget="1" isKeepBattle="true">
+						<node name="skill" facePos="-825, -2011, 3150" idx="2" />
+						<!-- 승리포즈 Bore동작 -->
+						<node name="standby" limit="1500" faceTarget="0" />
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="MoveGo" value="1" op="greaterEqual">
+					<!--!특수처리!: 보스가 우호적 NPC 에게 신호보내 특정 지점으로 이동하도록 하기, 보스가 4페이즈 지점에 있을 때 우호적 NPC가 길찾기를 못해서  가만히 있는 것이 어색해 보여서 특수 처리함-->
+					<node name="move" destination="1300, -360, 3050" limit="12000">
+						<node name="skill" facePos="-825, -2011, 3150" idx="2">
+							<!--  Bore동작 하면서 주시방향 보스 쪽으로 하기-->
+							<node name="SetValue" key="MoveGo" value="0" />
+							<!-- 초기화 하여 이 단계 벗어 나도록 함 -->
+						</node>
+					</node>
+				</condition>
+				<!--평상시 전투 상황-->
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="50,16,17,17">
+						<node name="skill" idx="1">
+							<node name="select" prob="50,17,17,16">
+								<node name="standby" limit="2000" faceTarget="1" />
+								<node name="runaway" till="710" limit="2000">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="runaway" till="670" limit="2000">
+									<node name="standby" limit="2100" faceTarget="1" />
+								</node>
+								<node name="runaway" till="750" limit="2000">
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<!--공격 하면서 적당히 이동하는 움직임을 보여주기 위한 설정-->
+						<node name="trace" till="430" limit="520" cooltime="15000" />
+						<node name="trace" till="430" limit="570" cooltime="15000" />
+						<node name="trace" till="430" limit="620" cooltime="15000" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="50,50">
+						<node name="trace" limit="4000" skillIdx="1" />
+						<node name="standby" limit="1100" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="98,2">
+						<!-- 보스와의 거리가 2000 이상 멀어지면 적극 trace 하기  -->
+						<node name="trace" limit="17000" cooltime="4000" skillIdx="1" />
+						<node name="standby" limit="1100" faceTarget="1">
+							<node name="SetValue" key="BattleEnd" value="1" isModify="1" />
+							<!-- AI_RobotCircleCoreBlue.xml 보스가 죽어서 보내는 신호를  혹시 못받아서 자기 자신 스스로 제거를 실행 못할 경우 대박 버그가 될 수 있기 때문에, 전투 끝나면 standby 만 계속 실행하는데 이거 실행할 때마다 1씩 더해서 최종 30 이상이 되어 스스로 사라지도록 설정한 것임  -->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

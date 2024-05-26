@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,1000,0">
+			<!--최초 1회-->
+			<node name="standby" limit="10" faceTarget="0" cooltime="999999999">
+				<node name="jump" pos="-150, 150, 1850" speed="800" heightMultiplier="0.8" />
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--주기적인 타겟 전환-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--#1페이즈 -->
+			<node name="conditions">
+				<condition name="hpOver" value="60">
+					<node name="select" prob="100,100,100,999,10,10">
+						<!--발도술-->
+						<node name="trace" limit="1500" skillIdx="1">
+							<node name="skill" idx="1" />
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!--검기 날리기-->
+						<node name="skill" cooltime="6000" idx="2">
+							<node name="standby" limit="1000" faceTarget="0" />
+						</node>
+						<!--십자베기-->
+						<node name="skill" cooltime="12000" idx="3">
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<!--대쉬 발도술-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="2000">
+							<node name="skill" idx="4" />
+							<node name="standby" limit="1000" faceTarget="0" />
+						</node>
+						<!--do nothing-->
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="trace" limit="1000" skillIdx="1" />
+					</node>
+				</condition>
+				<!--#2페이즈 -->
+				<condition name="true">
+					<node name="select" prob="150,100,100,300,300,10,10">
+						<!--검기 3개 날리기-->
+						<node name="skill" cooltime="6000" idx="5">
+							<node name="standby" limit="500" faceTarget="0" />
+						</node>
+						<!--십자베기-->
+						<node name="skill" cooltime="8000" idx="3">
+							<node name="select" prob="50,100">
+								<node name="trace" limit="500" skillIdx="1" />
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</node>
+						<!--대쉬 발도술-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="20000">
+							<node name="skill" idx="4" />
+							<node name="standby" limit="500" faceTarget="0" />
+						</node>
+						<!--십자베기 연타-->
+						<node name="skill" cooltime="15000" idx="6">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!--대쉬 3연타-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="20000">
+							<node name="skill" idx="4" />
+							<node name="skill" idx="4" />
+							<node name="skill" idx="4" />
+							<node name="standby" limit="500" faceTarget="0" />
+						</node>
+						<!--do nothing-->
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="trace" limit="1000" skillIdx="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="999991" key="RoundEnd" value="1" />
+	</battleEnd>
+</npcAi>

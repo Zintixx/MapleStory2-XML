@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 3페이지 맵 트리거에서 소환하는 몬스터, 트리거 영역에 플레이어가 벗어나면 트리거에 의해 이 몬스터 사라짐 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="select" prob="31,23,23,23">
+				<!-- 모든 몬스터가 똑같이 공격 행동 하는 것을 방지하기 위해 초반에 랜덤 standby 설정 넣기, 그리고 랜덤하게 공반 버프 생성되도록 하기 -->
+				<node name="buff" type="add" id="50003306" />
+				<!-- 공격 반사 랜덤 설정 -->
+				<node name="standby" limit="200" faceTarget="1" />
+				<node name="standby" limit="800" faceTarget="1" />
+				<node name="standby" limit="1100" faceTarget="1" />
+			</node>			
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,99999,0">
+			<node name="standby" limit="300" faceTarget="0" animation="Attack_01_A" cooltime="5000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<!-- 이 졸몹은 맵 트리거에 의해서 플레이어가 특정 트리거박스에 들어서면 15초 마다 3~5마리씩 무한 등장하기 때문에, AI에서 적당히 스스로 제거되도록 해야 함 -->
+			<node name="standby" limit="300" faceTarget="0" animation="Attack_01_A" cooltime="5000" initialCooltime="18000">
+				<node name="select" prob="25,25,25,25">
+					<!--다수 몬스터가 같은 타이밍에 죽으면 좀 어색해서, 적당히 확률 부여-->
+					<node name="RemoveMe" />
+					<node name="standby" limit="900" faceTarget="1" animation="Attack_01_A" cooltime="99000" />
+					<node name="standby" limit="900" faceTarget="1" animation="Attack_01_A" cooltime="99000" />
+					<node name="standby" limit="900" faceTarget="1" animation="Attack_01_A" cooltime="99000" />
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<!-- 레벨1: 거리 280 이내에 플레이어가 있다면, TypeB는 근접 이내 플레이어가 있으면 버프 부여 안하고 공격 행위만 함 -->
+					<node name="skill" faceTarget="1" idx="2">
+						<node name="select" prob="33,33,34">
+							<!-- 근접 공격 -->
+							<node name="standby" limit="500" faceTarget="1" animation="Attack_01_A" />
+							<node name="standby" limit="1800" faceTarget="1" animation="Attack_01_A" />
+							<node name="standby" limit="2500" faceTarget="1" animation="Attack_01_A" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="25,25,20,20,10">
+						<!-- 거리 800에 위아래 큐브 2칸 이상 높이까지 커버, 플레이어가 이 근처에 오면 무조건 trace 하도록 하기-->
+						<!-- 추적 거리가 똑같으면 다수 몬스터가 겹쳐 서있는 경우가 있어서 다양한 경우의 추척 거리 설정하였음 -->
+						<node name="trace" limit="1200" skillIdx="2" />
+						<!-- 거리 280 까지 추적 -->
+						<node name="trace" till="250" limit="1200" />
+						<!-- 거리 250 까지 추적 -->
+						<node name="trace" till="230" limit="1200" />
+						<!-- 거리 230 까지 추적 -->
+						<node name="trace" till="210" limit="1200" />
+						<!-- 거리 210 까지 추적 -->
+						<node name="trace" till="180" limit="1200" />
+						<!-- 거리 180 까지 추적 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<!-- 공격 후 standby 상태, 이 몬스터는 거리 800 이내에 플레이어가 있으면 바로 trace 해야해서 standby 설정 이렇게 하기 -->
+					<node name="standby" limit="100" facePos="-300, -1350, 1050" animation="Attack_01_A">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="90,10">
+						<node name="skill" facePos="-300, -1350, 1050" initialCooltime="6000" idx="1">
+							<node name="select" prob="33,33,34">
+								<!-- 본체에  투사체 버프 부여, 시작하자마자 바로 방업버프 쏘면 너무 어려운 상황 생길 수 있어서 초반 쿨타임 설정 넣기 -->
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<node name="SetValue" key="AttackDelay" value="33" />
+								<node name="SetValue" key="AttackDelay" value="42" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="12" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="ElementSignalCheck">
+			<node name="conditions">
+				<condition name="extraData" key="ElementSignalCall" value="1">
+					<!--   ElementSignal = 1 인 경우임, 화염약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006007">
+						<!-- 화염약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="2">
+					<!--   ElementSignal = 2 인 경우임, 빙결약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006008">
+						<!-- 빙결약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="3">
+					<!--   ElementSignal = 3 인 경우임, 전격약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006009">
+						<!-- 전격약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="4">
+					<!--   ElementSignal = 4 인 경우임, 신성약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006010">
+						<!-- 신성약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="5">
+					<!--   ElementSignal = 5 인 경우임, 암흑약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006011">
+						<!-- 암흑약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignalCall" value="6">
+					<!--   ElementSignal = 6 인 경우임, 독약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="buff" type="add" id="50006012">
+						<!-- 독약점 속성 버프를 자신 몸에 부여함 -->
+						<node name="SetValue" key="ElementSignalOk" value="99" />
+						<!-- 버프 부여 했으니, 이 변수 0이 아닌 다른 수로 셋팅해서 다음 단계로 넘어가 평상시 공격 행위를 하도록 함 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<!--   ElementSignal = 0 인 경우임, 즉 아직  AI_ElementSignal.xml 로 부터 신호 안받은 상태임 -->
+					<node name="standby" limit="300" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

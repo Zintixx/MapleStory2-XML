@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="FloorNumber" value="0" />
+				<node name="SetValue" key="BattleMode" value="0" />
+				<node name="buff" type="add" id="50001104" />
+				<!-- 타겟팅 예외 버프 부여하기-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="SummonDeath" value="1">
+				<!-- 소환 본체가 자살 명령 내리면-->
+				<node name="skill" idx="6" />
+				<!-- 자살 스킬 사용하기-->
+			</condition>
+			<condition name="extraData" key="BattleMode" value="1">
+				<!-- 이 변수가 1이되면 통상적인 공격 행동을 함-->
+				<aiPreset name="MainBattle" />
+			</condition>
+			<condition name="extraData" key="FloorNumber" value="1" op="greaterEqual">
+				<node name="select" prob="999,1">
+					<!-- 보스한테 FloorNumber 변수 할당 받으면 해당 층으로 저프 뛴 다음 통상적인 공격 행위를 함-->
+					<node name="standby" limit="100" faceTarget="0" animation="Idle_A" cooltime="9999999">
+						<node name="select" prob="99,1">
+							<node name="standby" limit="100" faceTarget="0" animation="Idle_A">
+								<!--99%확률로 점프 뛰기-->
+								<node name="SetValue" key="BattleMode" value="1">
+									<node name="SetMasterValue" key="MonsterNumber" value="1" isModify="1">
+										<node name="select" prob="33,33,33">
+											<!--몬스터가 추가되었기 때문에 보스의 MonsterNumber 이 변수에 1 더함, 이 변수가 0이 되어야 다음 스테이지로 넘어가는 구조임-->
+											<node name="standby" limit="250" faceTarget="0" animation="Idle_A">
+												<aiPreset name="JumpMove" />
+											</node>
+											<node name="standby" limit="450" faceTarget="0" animation="Idle_A">
+												<aiPreset name="JumpMove" />
+											</node>
+											<node name="standby" limit="700" faceTarget="0" animation="Idle_A">
+												<aiPreset name="JumpMove" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="standby" limit="1000" faceTarget="0" animation="Idle_A" />
+							<!--1%확률로 점프 안뛰고 가만히 있기-->
+						</node>
+					</node>
+					<node name="standby" limit="2000" faceTarget="0" animation="Idle_A" />
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="standby" limit="2000" faceTarget="1" animation="Idle_A" />
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="conditions">
+			<condition name="extraData" key="BattleMode" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+				<!--죽으면  소환몹 마리수 체크 -1 신호 보냄-->
+			</condition>
+			<condition name="true">
+				<!-- 전투판으로 점프 이동을 하지 않아서  BattleMode = 0 인 경우임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="JumpMove">
+			<!--건너편 지형에서 전투 판으로 점프 뛰는 상황-->
+			<node name="conditions">
+				<condition name="extraData" key="FloorNumber" value="2">
+					<!--보스가 석상기사한테 2층쪽으로 뛰라고 명령함-->
+					<!--2층 왼쪽 지점-->
+					<node name="skill" facePos="-1350, 1800, 2500" isKeepBattle="true" idx="3">
+						<!--점프 도약 -->
+						<node name="jump" pos="-1350, 1800, 2500" speed="1500" heightMultiplier="0.7" />
+						<node name="skill" faceTarget="0" idx="4" />
+						<!--착지 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="FloorNumber" value="3">
+					<!--보스가 석상기사한테 3층쪽으로 뛰라고 명령함-->
+					<!--3층 왼쪽 지점-->
+					<node name="skill" facePos="-450, 2700, 3100" isKeepBattle="true" idx="3">
+						<!--점프 도약 -->
+						<node name="jump" pos="-450, 2700, 3100" speed="1500" heightMultiplier="0.7" />
+						<node name="skill" faceTarget="0" idx="4" />
+						<!--착지 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="FloorNumber" value="4">
+					<!--보스가 석상기사한테 4층쪽으로 뛰라고 명령함-->
+					<!--4층 왼쪽 지점-->
+					<node name="skill" facePos="450, 3600, 3700" isKeepBattle="true" idx="3">
+						<!--점프 도약 -->
+						<node name="jump" pos="450, 3600, 3700" speed="1500" heightMultiplier="0.7" />
+						<node name="skill" faceTarget="0" idx="4" />
+						<!--착지 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="FloorNumber" value="5">
+					<!--보스가 석상기사한테 5층쪽으로 뛰라고 명령함-->
+					<!--5층 왼쪽 지점-->
+					<node name="skill" facePos="1350, 4500, 4300" isKeepBattle="true" idx="3">
+						<!--점프 도약 -->
+						<node name="jump" pos="1350, 4500, 4300" speed="1500" heightMultiplier="0.7" />
+						<node name="skill" faceTarget="0" idx="4" />
+						<!--착지 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="2000" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle">
+			<node name="select" prob="9999,9999,0">
+				<!--주 전투 행위-->
+				<node name="target" type="near" from="10" to="1200" cooltime="8000" />
+				<node name="buff" type="remove" id="50001104" cooltime="999999" />
+				<!--전투에 돌입하면 타겟팅 예외 버프 제거하기-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<!--거리 900~1000 이내 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="70,30">
+									<!--거리 170 이내 -->
+									<node name="skill" idx="1">
+										<!--근접 검 휘두르기 -->
+										<node name="standby" limit="1800" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="27000" idx="2">
+										<!--돌진 찌르기-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="45,55">
+											<!--거리 680 이내 -->
+											<node name="trace" limit="5000" skillIdx="1" />
+											<!--거리 170  이내 -->
+											<node name="skill" cooltime="16000" idx="2">
+												<!--돌진 찌르기-->
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" limit="5000" skillIdx="2" />
+										<!--거리 680  이내 -->
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="500" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

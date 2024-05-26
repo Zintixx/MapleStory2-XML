@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="buff" type="add" id="50001082" level="3" />
+				<!--레벨3 전함 몸체에 불이 붙는 이펙트-->
+				<node name="standby" limit="2000" faceTarget="0" />
+				<node name="move" destination="4350, 750, 1970" limit="19000" />
+				<!--위쪽으로 이동중-->
+				<node name="TriggerSetUserValue" triggerID="9990" key="ThirdPhase" value="1" />
+				<!--    ThirdPhase = 1 신호에 의해서 보내서 인페르녹 스폰시키고 3페이즈 시작을 알림	    main.xml 에서 받음   param1="9990" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<node name="TriggerSetUserValue" triggerID="9992" key="ThirdPhase" value="1" />
+				<!--   ThirdPhase = 1 신호에 의해서 부활불가 트리거가 작동됨	 즉 ResurrectionProhibition.xml 에서 받음      param1="9992" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<node name="TriggerSetUserValue" triggerID="9996" key="ThirdPhase" value="1" />
+				<!--   ThirdPhase = 1 신호에 의해서 파티전멸체크 트리거 부분이 작동됨  즉 ClearCheck.xml 에서 받음      param1="9996" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<node name="standby" limit="500" faceTarget="0" />
+				<node name="jump" pos="-450, 2500, 1250" speed="1500" heightMultiplier="0.3" />
+				<!--전투판 중앙 쪽으로 이동  , -450, 2800, 1250-->
+				<node name="SetValue" key="CannonShotOK" value="0" />
+				<!--이 변수 인페르녹한테 신호 받아서 대포 쏘는 공격 하도록 함-->
+				<node name="standby" limit="1000" faceTarget="0" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="15000">
+				<node name="target" type="rand" from="10" to="5500" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="CannonShotOK" value="1" op="greaterEqual">
+					<node name="announce" message="$AirshipBalrogCrimsonBroken_CannonAttack$" durationTick="7000">
+						<node name="select" prob="20,20,20,20,20">
+							<node name="skill" faceTarget="0" cooltime="180000" isKeepBattle="true" idx="1">
+								<!--대포 쏘는 스킬 레벨 별로 딱 한번만 발사함-->
+								<node name="SetValue" key="CannonShotOK" value="0" />
+								<!--대포 쏘는 이 변수 0으로 셋팅, 이거 0초기화 안하면 계속 대포 쏘게 됨-->
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+							<node name="skill" faceTarget="0" cooltime="180000" isKeepBattle="true" idx="2">
+								<node name="SetValue" key="CannonShotOK" value="0" />
+								<!--대포 쏘는 이 변수 0으로 셋팅, 이거 0초기화 안하면 계속 대포 쏘게 됨-->
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+							<node name="skill" faceTarget="0" cooltime="180000" isKeepBattle="true" idx="3">
+								<node name="SetValue" key="CannonShotOK" value="0" />
+								<!--대포 쏘는 이 변수 0으로 셋팅, 이거 0초기화 안하면 계속 대포 쏘게 됨-->
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+							<node name="skill" faceTarget="0" cooltime="180000" isKeepBattle="true" idx="4">
+								<node name="SetValue" key="CannonShotOK" value="0" />
+								<!--대포 쏘는 이 변수 0으로 셋팅, 이거 0초기화 안하면 계속 대포 쏘게 됨-->
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="5">
+								<node name="SetValue" key="CannonShotOK" value="0" />
+								<!--대포 쏘는 이 변수 0으로 셋팅, 이거 0초기화 안하면 계속 대포 쏘게 됨-->
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1000" faceTarget="0"></node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

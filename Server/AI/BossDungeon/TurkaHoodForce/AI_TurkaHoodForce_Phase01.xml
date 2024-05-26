@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" facePos="-3525, -3225, 5400" faceTarget="0" isKeepBattle="true">
+				<!-- option="masterHP" : 소환 주체의 HP 수치를 그대로 상속받음, option="linkHP" : 소환 주체와 HP를 공유함 -->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" option="masterHP,linkHP" summonPos="-4500, -3150, 5410" summonRot="0,0,-50" />
+				<!-- 투르카 분신 소환 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" option="masterHP,linkHP" summonPos="-2850, -3900, 5410" summonRot="0,0,-50" />
+				<!-- 투르카 분신 소환 -->
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				<node name="SetValue" key="TeleportCheck" value="0" />
+				<!--	마지막 페이즈에서 다수 몬스터와 함께 합동 순간이동 할 때 사용 되는 변수 -->
+				<node name="SetValue" key="Combine" value="0" />
+				<!-- 분신하고 레이저 합동 공격 혹은 합동 순간이동 신호 주고 받을 때 사용하는 변수-->
+				<node name="SetValue" key="WaitCombine" value="0" />
+				<!-- 분신하고 합동 공격 할때, 분신 신호 받을 때까대 대기 상태로 있어야 하는데, 그때 사용되는 변수-->
+				<node name="standby" limit="2400" faceTarget="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="35">
+			<node name="buff" type="add" id="50000370" level="1" />
+			<!-- 물방 극강 상승 버프 -->
+		</condition>
+		<!-- 이 몬스터는 죽지 않게 특수 설정 하였음-->
+		<condition name="hpLess" value="1">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<!-- 1페이즈 투르카 HP 1%이하가 되면, 2페이즈용 보스 등장시키기 위해 main.xml 트리거에 신호 보내기  -->
+				<node name="TriggerSetUserValue" triggerID="101" key="2PhaseSpawnStart" value="1" />
+				<!-- 2페이즈 등장시키기 위해  이 변수 1 신호를 main.xml  트리거에게 보냄      param1="101" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+				<node name="RemoveMe" />
+				<node name="standby" limit="3200" faceTarget="1" />
+				<!-- Remove 로 사라지는 도중에 AI가 다음 턴으로 넘어가서 공격 동작 취하는 도중 사라지는 모습이 어색해서 이 단계에서 standby 넣어서 Attack_Idle 상태에서 사라지는 상황이 나오도록 함-->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="target" type="rand" from="10" to="1200" cooltime="9000" />
+			<node name="conditions">
+				<condition name="extraData" key="Combine" value="1">
+					<node name="skill" faceTarget="1" isKeepBattle="true" idx="3">
+						<!-- 얼굴 바닥 레이저 발동, 레벨11은 단독 레이저 공격 전용-->
+						<node name="SetValue" key="Combine" value="0" />
+						<!--	변수 초기화	-->
+						<node name="SetValue" key="AttackDelay" value="25" />
+						<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						<node name="SetValue" key="WaitCombine" value="0" />
+						<!-- 분신하고 합동 공격 했으니,변수 초기화 하기-->
+					</node>
+				</condition>
+				<condition name="extraData" key="Combine" value="2">
+					<!-- Combine = 2 회전 레이저 -->
+					<node name="SetValue" key="Combine" value="0">
+						<!--	변수 초기화	-->
+						<node name="SetValue" key="AttackDelay" value="25">
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							<node name="SetValue" key="WaitCombine" value="0">
+								<node name="select" prob="50,50">
+									<!-- 분신하고 합동 공격 했으니,변수 초기화 하기-->
+									<node name="skill" facePos="-3525, -3225, 5400" idx="4" />
+									<!-- 회전 레이저, 반시계방향, 꼭 발사 방향이 1페이즈 전투판 중앙 기준이어야 함 -->
+									<node name="skill" facePos="-3525, -3225, 5400" idx="5" />
+									<!-- 회전 레이저, 시계방향, 꼭 발사 방향이 1페이즈 전투판 중앙 기준이어야 함 -->
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="Combine" value="10">
+					<!-- Combine = 10 합동 순간이동, 두마리의 분신에게 이 변수 +5 +5 그래서 10이 되면 순간이동 하기 -->
+					<node name="SetValue" key="Combine" value="0">
+						<!-- 순간이동 했으니 	변수  0 초기화	-->
+						<node name="SetValue" key="WaitCombine" value="0">
+							<!--	변수 초기화	-->
+							<node name="SetValue" key="AttackDelay" value="0">
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<aiPreset name="Teleport_Pattern" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="WaitCombine" value="1">
+					<!-- 분신한테 합동 공격 혹은 합동 순간이동 신호 받을 때까지 여기서 대기함 -->
+					<node name="standby" limit="100" faceTarget="1" />
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<!-- 공격 후 standby 상태 -->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<!-- ##  여기서부터 본격 공격 행동 정의함  ## -->
+				<condition name="hpOver" value="70">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="8">
+							<!-- 1페이지 같은 전투판 안에 있는지 거리체크-->
+							<aiPreset name="Normal_AttackPattern" />
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="35">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="8">
+							<!-- 1페이지 같은 전투판 안에 있는지 거리체크-->
+							<aiPreset name="Combine_AttackPattern" />
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 3페이지 부터 합동 순간이동 공격 패턴, <Rif hpLower="35"> 하고 HP 35% 부터 시작하는거 일치해야 함 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="8">
+							<!-- 1페이지 같은 전투판 안에 있는지 거리체크-->
+							<aiPreset name="Teleport_AttackPattern" />
+							<!-- 합동 순간이동 패턴-->
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="Normal_AttackPattern">
+			<node name="select" prob="399,0">
+				<!-- 바닥 레이저 합동 공격,  중요: initialCooltime 설정 꼭 필요 왜냐하면 분신 소환몹 등장하여 전투 상태로 전환 전에 이 부분 실행되면 로직이 꼬여 대박 버그 생길 수 있어서, 안전 장치로 꼭 initialCooltime 설정 해야 함, 보스가 HP극감 되엇 바로 2페이즈 부터 시작할 수 있으니 무조건 initialCooltime 설정하는 것이 좋음  -->
+				<node name="standby" limit="100" faceTarget="1" cooltime="35000" initialCooltime="17000">
+					<!-- 바닥 레이저  합동 공격 -->
+					<node name="SetSlaveValue" key="Combine" value="1">
+						<!-- 분신 소환몹에게 Combine= 1 신호를 보내서 같이 바닥 레이저 합동 공격 하도록 함 -->
+						<node name="SetValue" key="WaitCombine" value="1" />
+						<!-- 분신과 합동 공격을 위해 WaitCombine 이 변수 1로 만들어, 상위 단에서 신호 받을 때까지 대기 상태로 있도록 함 -->
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="33,33,34">
+							<!-- 사정거리 480 -->
+							<node name="skill" faceTarget="1" cooltime="9000" idx="1">
+								<!-- 낫 휘둘기 2연타, 레벨2는 이동 없음 -->
+								<node name="SetValue" key="AttackDelay" value="35" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" cooltime="15000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="SetValue" key="AttackDelay" value="33" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" idx="6">
+								<!--얼굴 발사, 레벨1은 사정거리 650 -->
+								<node name="SetValue" key="AttackDelay" value="37" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="50,50">
+							<!-- 사정거리 1100, 큐브 한칸 아래 범위 포함 -->
+							<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="SetValue" key="AttackDelay" value="28" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" idx="7">
+								<!-- 얼굴발사, 레벨2는 사정거리 1900-->
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="7">
+						<node name="select" prob="99,1">
+							<!-- 레벨2: 사정거리 1900 -->
+							<node name="skill" faceTarget="1" idx="7">
+								<!-- 얼굴발사, 레벨2는 사정거리 1900-->
+								<node name="SetValue" key="AttackDelay" value="13" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="SetValue" key="AttackDelay" value="13" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="target" type="near" from="10" to="1200" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Combine_AttackPattern">
+			<node name="select" prob="199,0">
+				<!-- 바닥 레이저 혹은 회전 레이저 합동 공격 둘중 하나 발동,  중요: initialCooltime 설정 꼭 필요 왜냐하면 분신 소환몹 등장하여 전투 상태로 전환 전에 이 부분 실행되면 로직이 꼬여 대박 버그 생길 수 있어서, 안전 장치로 꼭 initialCooltime 설정 해야 함, 보스가 HP극감 되엇 바로 2페이즈 부터 시작할 수 있으니 무조건 initialCooltime 설정하는 것이 좋음  -->
+				<node name="standby" limit="100" faceTarget="1" cooltime="42000" initialCooltime="6000">
+					<node name="select" prob="70,30">
+						<!-- 회전 레이저 합동 공격 -->
+						<node name="SetSlaveValue" key="Combine" value="2">
+							<!-- 분신 소환몹에게 Combine= 2 신호를 보내서 같이 회전 레이저 합동 공격 하도록 함 -->
+							<node name="SetValue" key="WaitCombine" value="1" />
+							<!-- 분신과 합동 공격을 위해 WaitCombine 이 변수 1로 만들어, 상위 단에서 신호 받을 때까지 대기 상태로 있도록 함 -->
+						</node>
+						<!-- 바닥 레이저  합동 공격 -->
+						<node name="SetSlaveValue" cooltime="142000" key="Combine" value="1">
+							<!-- 분신 소환몹에게 Combine= 1 신호를 보내서 같이 바닥 레이저 합동 공격 하도록 함 -->
+							<node name="SetValue" key="WaitCombine" value="1" />
+							<!-- 분신과 합동 공격을 위해 WaitCombine 이 변수 1로 만들어, 상위 단에서 신호 받을 때까지 대기 상태로 있도록 함 -->
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="32,33,35">
+							<!-- 사정거리 450 -->
+							<node name="skill" faceTarget="1" cooltime="9000" idx="1">
+								<!-- 낫 휘둘기 2연타, 레벨2는 이동 없음 -->
+								<node name="SetValue" key="AttackDelay" value="33" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" cooltime="8000" idx="6">
+								<!--얼굴 발사, 레벨1은 사정거리 650 -->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="34,33,33">
+							<!-- 사정거리 1100 -->
+							<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="SetValue" key="AttackDelay" value="29" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" idx="7">
+								<!-- 얼굴발사, 레벨2는 사정거리 1900-->
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" cooltime="32000" idx="3">
+								<!-- 얼굴 바닥 레이저 발동, 레벨11은 단독 레이저 공격 전용-->
+								<node name="SetValue" key="AttackDelay" value="33" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="7">
+						<!-- 레벨2: 사정거리 1900 -->
+						<node name="skill" faceTarget="1" idx="7">
+							<!-- 얼굴발사, 레벨2는 사정거리 1900-->
+							<node name="SetValue" key="AttackDelay" value="15" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="target" type="near" from="10" to="1200" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Teleport_AttackPattern">
+			<node name="select" prob="99,0">
+				<!-- 분신에게 신호 보내서 분신하고 함께 순간이동 하는 부분,  중요: initialCooltime 설정 꼭 필요 왜냐하면 분신 소환몹 등장하여 전투 상태로 전환 전에 이 부분 실행되면 로직이 꼬여 대박 버그 생길 수 있어서, 안전 장치로 꼭 initialCooltime 설정 해야 함, 보스가 HP극감 되어 바로 2페이즈 부터 시작할 수 있으니 무조건 initialCooltime 설정하는 것이 좋음  -->
+				<node name="standby" limit="100" faceTarget="1" cooltime="12000" initialCooltime="6000">
+					<node name="SetSlaveValue" key="Combine" value="10">
+						<!-- 분신 소환몹에게 Combine= 10 신호를 보내서 같이 순간이동 합동 하도록 함 -->
+						<node name="SetValue" key="WaitCombine" value="1" />
+						<!-- 분신과 합동 공격을 위해 WaitCombine 이 변수 1로 만들어, 상위 단에서 신호 받을 때까지 대기 상태로 있도록 함 -->
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="32,33,35">
+							<!-- 사정거리 450 -->
+							<node name="skill" faceTarget="1" idx="1">
+								<!-- 낫 휘둘기 2연타, 레벨2는 이동 없음 -->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" cooltime="15000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" cooltime="11000" idx="6">
+								<!--얼굴 발사, 레벨1은 사정거리 650 -->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="34,33,33">
+							<!-- 사정거리 1100 -->
+							<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="SetValue" key="AttackDelay" value="29" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" idx="7">
+								<!-- 얼굴발사, 레벨2는 사정거리 1900-->
+								<node name="SetValue" key="AttackDelay" value="29" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" faceTarget="1" cooltime="32000" idx="3">
+								<!-- 얼굴 바닥 레이저 발동, 레벨11은 단독 레이저 공격 전용-->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="7">
+						<!-- 레벨2: 사정거리 1900 -->
+						<node name="skill" faceTarget="1" idx="7">
+							<!-- 얼굴발사, 레벨2는 사정거리 1900-->
+							<node name="SetValue" key="AttackDelay" value="12" />
+							<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="target" type="near" from="10" to="1200" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Teleport_Pattern">
+			<node name="skill" idx="9">
+				<node name="conditions">
+					<condition name="extraData" key="TeleportCheck" value="0">
+						<node name="teleport" pos="-2550, -3150, 5410">
+							<!-- 1시 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="SetValue" key="TeleportCheck" value="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportCheck" value="1">
+						<node name="teleport" pos="-3450, -4200, 5410">
+							<!-- 4시 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="SetValue" key="TeleportCheck" value="2" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="TeleportCheck" value="2">
+						<node name="teleport" pos="-4200, -2550, 5410">
+							<!-- 9시 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="SetValue" key="TeleportCheck" value="3" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- TeleportCheck = 3 인 경우 -->
+						<node name="teleport" pos="-2850, -2550, 5410">
+							<!-- 12시, 최초 제자리로 오기 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="SetValue" key="TeleportCheck" value="0" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

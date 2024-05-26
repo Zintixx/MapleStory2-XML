@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--  첫번째 맵 졸구간 가운데 지점의 몬스터에게  ElementSignalCall 변수 신호 보내서, 이 몬스터가 약점속성 버프 사용하도록 하는 설정인데, 원래 이 설정 트리거에서해야 하는데, 트리거나 너무 복잡해지는 문제가 있어서, 가까 몬스터를 만들어 여기서 처리하도록 설정하였음 -->
+	<reserved>
+		<!--  그리고 졸구간 끝나서 2페이즈 본격 진행할 때 마력의 구슬 여기서 소환하고, 분신 투르카 2페이즈 전투판으로 순간이동 보내는 신호 여기서 관리함 -->
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="1">
+				<!--  최초 딱 한번 아래 ElementSignal 변수 1~6 까지 랜덤 설정 받음 -->
+				<node name="SetValue" key="ElementSignal" value="1" />
+				<!--   ElementSignal = 1 인 경우임, 화염약점 속성 신호-->
+				<node name="SetValue" key="ElementSignal" value="2" />
+				<!--   ElementSignal = 2 인 경우임, 빙결약점 속성 신호-->
+				<node name="SetValue" key="ElementSignal" value="3" />
+				<!--   ElementSignal = 3 인 경우임, 전격약점 속성 신호-->
+				<node name="SetValue" key="ElementSignal" value="4" />
+				<!--   ElementSignal = 4 인 경우임, 신성약점 속성 신호-->
+				<node name="SetValue" key="ElementSignal" value="5" />
+				<!--   ElementSignal = 5 인 경우임, 암흑약점 속성 신호-->
+				<node name="SetValue" key="ElementSignal" value="6" />
+				<!--   ElementSignal = 6 인 경우임, 독약점 속성 신호-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="100" faceTarget="1" cooltime="9999999" initialCooltime="18000" isKeepBattle="true">
+				<!--  투르카 보스가 2페이즈 메인 전투판으로 이동한 다음 잡힌 플레이어 내 던진 이후 마력의 구슬이 등장해야 하기 때문에 initialCooltime 시간 조절 중요 -->
+				<!--  마력의 구슬 각 위치별 등장 유무를 파악하기 위해 사용하는 변수 초기화 셋팅하기 -->
+				<node name="SetValue" key="MarblePosition10" value="0" />
+				<!-- 2페이즈 전투판 10시 시점에 마력 구슬 등장했으면, 이 변수 1이됨 -->
+				<node name="SetValue" key="MarblePosition02" value="0" />
+				<!-- 2페이즈 전투판 2시 시점에 마력 구슬 등장했으면, 이 변수 1 이상이됨, 2시 지역만은 다수 마력 구슬 등장함 -->
+				<node name="SetValue" key="MarblePosition04" value="0" />
+				<!-- 2페이즈 전투판 4시 시점에 마력 구슬 등장했으면, 이 변수 1이됨 -->
+				<node name="SetValue" key="MarblePosition08" value="0" />
+				<!-- 2페이즈 전투판 8시 시점에 마력 구슬 등장했으면, 이 변수 1이됨 -->
+				<node name="standby" limit="16500" faceTarget="1" />
+				<!--  마력의 구슬 등장시점을 standby 로 시간 타이밍 조절함 -->
+				<!--  $$ 2페이즈 투르카(AI_TurkaHoodForce_Phase02.xml)가 잡기 공격 후 2페이즈 메인 전투판에 도착할 때쯤 10시 방향의 마력의 구슬을 생성시킴 $$ -->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="4050, 6600, 2110" summonRot="0,0,0" />
+			</node>
+			<!--  @@  2페이즈 졸구간 진행 @@ -->
+			<node name="conditions">
+				<condition name="extraData" key="ElementSignal" value="1">
+					<!--   ElementSignal = 1 인 경우임, 화염약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="SetValueRangeTarget" key="ElementSignalCall" value="1" radius="53800" height="24500" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="2">
+					<!--   ElementSignal = 2 인 경우임, 빙결약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="SetValueRangeTarget" key="ElementSignalCall" value="2" radius="53800" height="24500" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="3">
+					<!--   ElementSignal = 3 인 경우임, 전격약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="SetValueRangeTarget" key="ElementSignalCall" value="3" radius="53800" height="24500" />
+						<!--  가운데 지형쪽 몬스터에게 신호 보내기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="4">
+					<!--   ElementSignal = 4 인 경우임, 신성약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="SetValueRangeTarget" key="ElementSignalCall" value="4" radius="53800" height="24500" />
+						<!--  가운데 지형쪽 몬스터에게 신호 보내기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="5">
+					<!--   ElementSignal = 5 인 경우임, 암흑약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="SetValueRangeTarget" key="ElementSignalCall" value="5" radius="53800" height="24500" />
+						<!--  가운데 지형쪽 몬스터에게 신호 보내기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementSignal" value="6">
+					<!--   ElementSignal = 6 인 경우임, 독약점 속성 신호를 다른 몬스터에게 보냄-->
+					<node name="standby" limit="300" faceTarget="1">
+						<node name="SetValueRangeTarget" key="ElementSignalCall" value="6" radius="53800" height="24500" />
+						<!--  가운데 지형쪽 몬스터에게 신호 보내기 -->
+					</node>
+				</condition>
+				<!--  @@ 졸구간 끝내고 2페이즈 본격 진행 @@ -->
+				<condition name="extraData" key="ElementSignal" value="99">
+					<node name="select" prob="99999,90,10">
+						<!--  AI_TurkaHoodForce_Phase02.xml로 부터 ElementSignal = 99 신호 받아서 본격 2페이즈 진행, 마력 구슬 호출하고 투르카 분신 순간이동 출현하도록 함-->
+						<node name="standby" limit="200" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="teleport" pos="11850, 11850, 4210" />
+							<!-- 졸구간 끝내고 2페이즈 본격 시작되면 제일 먼저 미니맵에서 안보이는 12시 방향 맨 구석 HiddenCube 지점으로 순간이동 하기, 즉 분신 투르카 대기 지점에 같이 있기 -->
+							<node name="standby" limit="800" faceTarget="1" />
+						</node>
+						<node name="standby" limit="200" faceTarget="1" cooltime="45000">
+							<aiPreset name="MarbleTurkaSupport_Call" />
+							<!-- 마력의 구슬 호출-->
+						</node>
+						<node name="skill" idx="1" />
+						<!-- Attack_Idle_A 동작으로 그냥 가만히 서있는 스킬임 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<!--  이론적으로 부부분 실행될일 없음 -->
+					<node name="skill" idx="1" />
+					<!-- Attack_Idle_A 동작으로 그냥 가만히 서있는 스킬임 -->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="MarbleTurkaSupport_Call">
+			<!-- 마력의 구슬은 10시 2시 지점을 최우선으로.....  "10시 8시 셋트",  "2시 4시 셋트"   이렇게 "왼쪽지점 그룹", "오른쪽지점 그룹" 형태로 등장하도록 함 -->
+			<!--참고로  MarblePosition?? 변수는 마력의 구슬 NPC의 AI에서 신호 받아서 등장시 +1 되고 파괴시 -1 됨 -->
+			<node name="conditions">
+				<condition name="extraData" key="MarblePosition10" value="1" op="greaterEqual">
+					<!--10시 시점에 마력 구슬이 이미 있다면, 8시 지점에 구슬 생성 시킴  -->
+					<!-- 8시 지점에 마력의 구슬 생성 & 분신 소환 -->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="81" summonPos="3300, 5550, 2110" summonRot="0,0,0">
+						<!--#-->
+						<node name="SetValueRangeTarget" key="CallSummon08" value="1" radius="900" height="300" />
+						<!-- 8시 지점 담당 분신 투르카 2시 지점으로 순간이동 오도록 신호보내기, 이 분신 졸몹은 2페이즈 투르카 보스가 소환한 것이기 때문에 신호 보낼 때 Distance 방식으로 해야 함 -->
+					</node>
+					<!-- !!중요: 신호 보내는 거리는 적당히 900 정도 함, 분신 투르카가 대기 상태일 때는 이 가짜 몬스터하고 같은 지점에 있기 때문에 신호 보내는 영역이 넓지 않아도 충분히 신호 보낼 수 있고, 그리고 분신 투르카가 이미 2페이즈 메인 전투판에 있는  상태에서 이 신호 보낼 수 있는데, 이때는 분신 투르카가 신호를 받아서는 안되기 때문에 신호 보내는 영역을 너무 넓게 하지 않아 이 때는 자연스럽게 시호 받지 안도록 함 -->
+				</condition>
+				<condition name="extraData" key="MarblePosition02" value="1" op="greaterEqual">
+					<!--2시 시점에 마력 구슬이 이미 있다면, 4시 지점에 구슬 생성 시킴  -->
+					<!-- 4시 지점에 마력의 구슬 생성 & 분신 소환 -->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="41" summonPos="5250, 3600, 2110" summonRot="0,0,0">
+						<!--#-->
+						<node name="SetValueRangeTarget" key="CallSummon04" value="1" radius="900" height="300" />
+						<!-- 4시 지점 담당 분신 투르카 2시 지점으로 순간이동 오도록 신호보내기, 이 분신 졸몹은 2페이즈 투르카 보스가 소환한 것이기 때문에 신호 보낼 때 Distance 방식으로 해야 함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="MarblePosition04" value="1" op="greaterEqual">
+					<!--4시 시점에 마력 구슬이 이미 있다면, 2시 지점에 구슬 *2개 생성 시킴  -->
+					<!-- 2시 지점에 마력의 구슬 *2개 생성 & 분신 소환  group="21"  group="22"  -->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="21" summonPos="6600, 5250, 2110" summonRot="0,0,0">
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="22" summonPos="6600, 4650, 2110" summonRot="0,0,0">
+							<!--#-->
+							<node name="SetValueRangeTarget" key="CallSummon02" value="1" radius="900" height="300" />
+							<!-- 2시 지점 담당 분신 투르카 2시 지점으로 순간이동 오도록 신호보내기, 이 분신 졸몹은 2페이즈 투르카 보스가 소환한 것이기 때문에 신호 보낼 때 Distance 방식으로 해야 함 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="MarblePosition08" value="1" op="greaterEqual">
+					<!--8시 시점에 마력 구슬이 이미 있다면, 10시 지점에 구슬  생성 시킴  -->
+					<!-- 10시 지점에 마력의 구슬 생성 & 분신 소환 -->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="4050, 6600, 2110" summonRot="0,0,0">
+						<!--#-->
+						<node name="SetValueRangeTarget" key="CallSummon10" value="1" radius="900" height="300" />
+						<!-- 10시 지점 담당 분신 투르카 10시 지점으로 순간이동 오도록 신호보내기, 이 분신 졸몹은 2페이즈 투르카 보스가 소환한 것이기 때문에 신호 보낼 때 Distance 방식으로 해야 함 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="25,25,25,25">
+						<!--마력 구슬이 하나도 없다면 , 10시 2시 4시 8시 4개 중 랜덤 선택함 -->
+						<!-- 10시 지점에 마력의 구슬 생성 & 분신 소환 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="4050, 6600, 2110" summonRot="0,0,0" cooltime="178000">
+							<!--#-->
+							<node name="SetValueRangeTarget" key="CallSummon10" value="1" radius="900" height="300" />
+							<!-- 10시 지점 담당 분신 투르카 10시 지점으로 순간이동 오도록 신호보내기 -->
+						</node>
+						<!-- 2시 지점에 마력의 구슬 *3개 생성 & 분신 소환  group="22"  group="23"  -->
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="22" summonPos="6600, 4650, 2110" summonRot="0,0,0" cooltime="178000">
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="23" summonPos="6600, 4050, 2110" summonRot="0,0,0">
+								<!--#-->
+								<node name="SetValueRangeTarget" key="CallSummon02" value="1" radius="900" height="300" />
+								<!-- 2시 지점 담당 분신 투르카 2시 지점으로 순간이동 오도록 신호보내기 -->
+							</node>
+						</node>
+						<!-- 4시 지점에 마력의 구슬 생성 & 분신 소환 -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="41" summonPos="5250, 3600, 2110" summonRot="0,0,0">
+							<!--#-->
+							<node name="SetValueRangeTarget" key="CallSummon04" value="1" radius="900" height="300" />
+							<!-- 4시 지점 담당 분신 투르카 2시 지점으로 순간이동 오도록 신호보내기 -->
+						</node>
+						<!-- 8시 지점에 마력의 구슬 생성 & 분신 소환 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="81" summonPos="3300, 5550, 2110" summonRot="0,0,0" cooltime="178000">
+							<!--#-->
+							<node name="SetValueRangeTarget" key="CallSummon08" value="1" radius="900" height="300" />
+							<!-- 8시 지점 담당 분신 투르카 2시 지점으로 순간이동 오도록 신호보내기 -->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

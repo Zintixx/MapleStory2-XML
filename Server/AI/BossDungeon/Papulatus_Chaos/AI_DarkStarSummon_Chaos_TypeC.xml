@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,0">
+			<node name="standby" limit="500" faceTarget="0" cooltime="999999">
+				<node name="SetValue" key="ReadySuicideBomb" value="0" />
+				<!--ReadySuicideBomb 변수로 두리번 거리기 몇번하고 자폭할지를 결정함-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="DeathSummonMob" value="1">
+					<node name="skill" idx="1" />
+					<!-- 보스 명령을 받고 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="extraData" key="ReadySuicideBomb" value="14" op="greaterEqual">
+							<!--14 이면 28초 -->
+							<node name="skill" idx="3">
+								<!--몸 부들부들 떤 다음에 폭발-->
+								<node name="ModifyRoomTime" timeTick="-90000" isShowEffect="1">
+									<!--던전시간 -90초 단축, param2="true" 이것을 넣어야 UI 표시를 함-->
+									<node name="skill" idx="2" />
+									<!--자살하기-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" idx="4">
+								<!-- 주변 두리번 거리기-->
+								<node name="SetValue" key="ReadySuicideBomb" value="1" isModify="1" />
+								<!-- ReadySuicideBomb 변수 1씩 더하기-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="CheckDarkStarMany" value="0">
+			<!--소환몹 다크스타 죽음 현황 체크, 이 변수 사용 안함, 혹시 나중에 사용할 수 있어 남겨둠-->
+		</node>
+	</battleEnd>
+</npcAi>
