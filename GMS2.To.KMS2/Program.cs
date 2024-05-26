@@ -164,7 +164,7 @@ IEnumerable<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> ConvertToSer
                         assistBonus = x.assistBonus,
                         uiItemRank = (short) (x.PackageUIShowGrade ?? 0),
                         gradeProbability = x.gradeProbability,
-                        grade = x.grade.Length > 0 ? x.grade.ToList().Select(y => (short) y).ToArray() : [(short) (x.PackageUIShowGrade ?? 0)],
+                        grade = x.grade.Length > 0 ? x.grade.ToList().Select(y => (short) y).ToArray() : x.PackageUIShowGrade == null ? [] : [(short) x.PackageUIShowGrade],
                         enchantLevel = x.enchantLevel,
                         socketDataID = x.socketDataID,
                         tradableCountDeduction = x.tradableCountDeduction,
