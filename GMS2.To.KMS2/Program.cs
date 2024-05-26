@@ -1,6 +1,4 @@
-﻿
-
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 using GMS2.To.KMS2;
@@ -156,8 +154,7 @@ IEnumerable<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> ConvertToSer
                     dropCountProbability = dropbox.Value.First().dropCountProbability,
                     serverDrop = dropbox.Value.First().serverDrop,
                     isApplySmartGenderDrop = dropbox.Value.First().isApplySmartGenderDrop,
-                    __v = dropbox.Value.Select(x => new Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop.Group.Item()
-                    {
+                    __v = dropbox.Value.Select(x => new Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop.Group.Item() {
                         itemID = x.item,
                         itemID2 = x.item2,
                         isAnnounce = x.isAnnounce,
@@ -165,9 +162,9 @@ IEnumerable<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> ConvertToSer
                         imProperJobWeight = x.imProperJobWeight,
                         weight = x.weight,
                         assistBonus = x.assistBonus,
-                        uiItemRank = (short)(x.PackageUIShowGrade ?? 0),
+                        uiItemRank = (short) (x.PackageUIShowGrade ?? 0),
                         gradeProbability = x.gradeProbability,
-                        grade = x.grade.Length > 0 ? x.grade.ToList().Select(y => (short)y).ToArray() : [(short) (x.PackageUIShowGrade ?? 0)],
+                        grade = x.grade.Length > 0 ? x.grade.ToList().Select(y => (short) y).ToArray() : [(short) (x.PackageUIShowGrade ?? 0)],
                         enchantLevel = x.enchantLevel,
                         socketDataID = x.socketDataID,
                         tradableCountDeduction = x.tradableCountDeduction,
