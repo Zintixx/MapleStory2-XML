@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,99999,0">
+			<!--시스템 메시지 출력 그리고 각종 변수 초기화 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<!--	<buff type ="add" id = "50001104"  prob="9999" cooltime = "999999"/>    타겟팅 예외 버프 부여하기, 비에른이 이 우호적NPC 타겟팅 하지 못하도록 하기 위해, 몬스터 코드 자체에 이 Hide 애디셔널 부여했음-->
+				<node name="SetValue" key="ShieldStopStun" value="0" />
+				<!--비에른한테 신호 받는 변수로 이 변수가 1이 되면 비에른을 공격한다.-->
+				<node name="SetValue" key="SnowKingDead" value="0" />
+				<!--비에른한테 신호 받는 변수로 이 변수가 1이 되면 베이른 죽음 관련 대사를 한다.-->
+				<node name="say" message="$SnowQueen_Appear$" durationTick="4000" />
+				<!--설콩이 등장을 알리는 시스템 메시지 출력-->
+			</node>
+			<!-- 타겟팅 renew, 6시 전투판 중앙에  있는 대상 최우선 타겟팅 -->
+			<node name="target" type="near" center="3975, 3975, 5250" cooltime="9000" />
+			<node name="conditions">
+				<condition name="extraData" key="SnowKingDead" value="1">
+					<node name="standby" limit="12000" faceTarget="1">
+						<node name="say" message="$SnowQueen_SnowKingDead$" durationTick="4000">
+							<node name="standby" limit="8000" faceTarget="1">
+								<node name="RemoveMe" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="ShieldStopStun" value="1">
+					<node name="skill" faceTarget="1" idx="1">
+						<node name="select" prob="50,50">
+							<node name="standby" limit="100" faceTarget="1">
+								<node name="say" message="$SnowQueen_Warning01$" durationTick="6000">
+									<node name="SetValue" key="ShieldStopStun" value="0" />
+								</node>
+							</node>
+							<node name="standby" limit="100" faceTarget="1">
+								<node name="say" message="$SnowQueen_Warning02$" durationTick="6000">
+									<node name="SetValue" key="ShieldStopStun" value="0" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="200" faceTarget="1" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

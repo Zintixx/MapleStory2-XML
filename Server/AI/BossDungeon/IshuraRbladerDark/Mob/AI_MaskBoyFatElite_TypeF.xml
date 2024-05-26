@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetMasterValue" key="MonsterNumber" value="1" isModify="1" />
+				<!--전투 상태가 되면 보스가 졸몹 마리수 체크할 때 +1 하기-->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="near" center="-2250, -5550, 6760" />
+			</node>
+			<!--끊어진길 건너편 원거리 클래스 어뷰징을 막기 위해 종종 전투판 중앙 지점으로 가도록 함 -->
+			<node name="move" destination="-2250, -5550, 6760" limit="15000" cooltime="9000" />
+			<node name="conditions">
+				<condition name="hpOver" value="75">
+					<!--#1페이즈 -->
+					<!--*****************HP 75% 이상 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="60,40">
+								<node name="skill" idx="1">
+									<!--1타 휘두르기 -->
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<node name="skill" idx="2">
+									<!--2연타 휘두르기 -->
+									<node name="standby" limit="2900" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="5">
+							<node name="select" prob="40,40,20">
+								<!--점프 내려찍기_원거리 거리 체크, 거리 550-->
+								<node name="skill" idx="5">
+									<!--점프 내려찍기_원거리 -->
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<node name="skill" idx="2">
+									<!--2연타 휘두르기 -->
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<node name="trace" limit="1500" skillIdx="1" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="3">
+							<!--원거리 투척 공격 같은 높이 대상 체크, 거리 1150-->
+							<node name="skill" idx="3">
+								<!--원거리 투척 공격 -->
+								<node name="target" type="near" from="10" to="1800">
+									<node name="standby" limit="1400" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="800" faceTarget="1">
+									<node name="target" type="near" from="10" to="1800" />
+								</node>
+								<node name="move" destination="-2250, -5550, 6760" limit="8000" />
+							</node>
+						</condition>
+					</node>
+					<!--*****************HP 75% 이상 -->
+				</condition>
+				<condition name="hpOver" value="33">
+					<!--#2페이즈 *****************HP 33% 이상 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="40,34,25,1">
+								<node name="skill" idx="2">
+									<!--2연타 휘두르기 -->
+									<node name="standby" limit="3200" faceTarget="1" />
+								</node>
+								<node name="skill" idx="6">
+									<!--준비 동작 후 회전공격 1타-->
+									<node name="standby" limit="3300" faceTarget="1" />
+								</node>
+								<node name="skill" idx="4">
+									<!--점프 내려찍기_근거리-->
+									<node name="standby" limit="3500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="5">
+							<node name="select" prob="60,40,1">
+								<!--점프 내려찍기_원거리 거리 체크, 거리 550-->
+								<node name="skill" idx="5">
+									<!--점프 내려찍기_원거리 -->
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<node name="trace" limit="1500" skillIdx="1" />
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="3">
+							<!--원거리 투척 공격 같은 높이 대상 체크, 거리 1150-->
+							<node name="skill" idx="3">
+								<!--원거리 투척 공격 -->
+								<node name="target" type="near" from="10" to="1800">
+									<node name="standby" limit="1400" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="800" faceTarget="1">
+									<node name="target" type="near" from="10" to="1800" />
+								</node>
+								<node name="move" destination="-2250, -5550, 6760" limit="8000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--#3페이즈   HP 33% 이하 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<node name="select" prob="10,30,30,30,1">
+								<node name="skill" idx="2">
+									<!--2연타 휘두르기 -->
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<!--회전공격 3연속-->
+								<node name="skill" idx="6">
+									<!--준비 동작 후 회전공격 1타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 2타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 3타-->
+									<node name="skill" idx="8" />
+									<!--회전공격_마무리 포함 -->
+									<node name="standby" limit="2900" faceTarget="1" />
+								</node>
+								<!--회전공격 4연속-->
+								<node name="skill" idx="6">
+									<!--준비 동작 후 회전공격 1타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 2타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 3타-->
+									<node name="skill" idx="7" />
+									<!--회전공격 3타-->
+									<node name="skill" idx="8" />
+									<!--회전공격_마무리 포함 -->
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<!--점프 내려찍기 2연속-->
+								<node name="skill" idx="4">
+									<!--점프 내려찍기_근거리-->
+									<node name="skill" idx="4" />
+									<!--점프 내려찍기_근거리-->
+									<node name="standby" limit="3300" faceTarget="1" />
+								</node>
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="3">
+							<!--원거리 투척 공격 같은 높이 대상 체크, 거리 1150-->
+							<node name="skill" idx="3">
+								<!--원거리 투척 공격 -->
+								<node name="target" type="near" from="10" to="1800">
+									<node name="standby" limit="1400" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="800" faceTarget="1">
+									<node name="target" type="near" from="10" to="1800" />
+								</node>
+								<node name="move" destination="-2250, -5550, 6760" limit="8000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기-->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+				<!--전투 상태가 되면 보스가 졸몹 마리수 체크할 때 -1 하기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

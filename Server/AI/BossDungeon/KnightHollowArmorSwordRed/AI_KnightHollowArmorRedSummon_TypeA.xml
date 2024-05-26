@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,99999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+				<node name="target" type="near" from="10" to="2600" />
+				<!--제일 가까운 대상 타겟팅 잡기 -->
+			</node>
+			<node name="standby" limit="10" faceTarget="0" cooltime="999999">
+				<!--  <buff type="add" id="50000333" level="1"   prob="100"/>  물방 극상  버프, 4인 던전으로 변경되면서 사용 안함-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="DeathSummonMob" value="1">
+					<node name="skill" idx="2" />
+					<!-- 보스 명령을 받고 자살 스킬 사용하기, 초보 유저를 위해 페이즈 넘어가면 힐졸 제거 시키기-->
+				</condition>
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="75,25">
+						<!--300~400 이내 이고 같은 높이에 있으면 아래 행위를 함-->
+						<node name="skill" idx="3">
+							<node name="select" prob="33,34,33">
+								<!--투척 공격-->
+								<node name="standby" limit="1400" faceTarget="1" />
+								<node name="standby" limit="2100" faceTarget="1" />
+								<node name="standby" limit="2700" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="23000" idx="1">
+							<node name="select" prob="33,34,33">
+								<!--낮은 확률로 회복 스킬 사용함, 레벨4가 첫번째 패턴구간에 사용하는 애디셔널 코드 보스 회복시키는 전용-->
+								<node name="standby" limit="2400" faceTarget="1" />
+								<node name="standby" limit="3300" faceTarget="1" />
+								<node name="standby" limit="4600" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="97,1,1,1">
+						<!--300~400 이상 떨어져 있으면 회복 곡사 투척 스킬 사용함-->
+						<node name="skill" cooltime="6800" idx="1">
+							<!--회복 시키기, 레벨4가 첫번째 패턴구간에 사용하는 애디셔널 코드 보스 회복시키는 전용-->
+						</node>
+						<node name="standby" limit="500" faceTarget="1" />
+						<node name="standby" limit="1500" faceTarget="1" />
+						<node name="standby" limit="950" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

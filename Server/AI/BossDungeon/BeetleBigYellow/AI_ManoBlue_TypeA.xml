@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,0">
+			<node name="standby" limit="500" faceTarget="0" cooltime="999999">
+				<node name="SetValue" key="HoldHide" value="0" />
+				<!--껍질 속으로 계속 숨을지 말지를 판단하는 변수, 0: 껍질로 들어가는 단계, 1: 껍질로 들어가서 계속 유지 단계, 2: 껍질에 나오는 단계, 3: 음파 공격 단계-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="HoldHide" value="0">
+					<node name="target" type="near" from="10" to="2000">
+						<node name="skill" idx="2">
+							<!--껍질로 들어가기-->
+							<node name="SetValue" key="HoldHide" value="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="HoldHide" value="1">
+					<node name="skill" idx="3">
+						<!--껍질로 들어가 계속 유지상태-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<!--4연속 음파 공격 사정거리에 있으면-->
+								<node name="SetValue" key="HoldHide" value="2">
+									<!--공격 사정거리 안에 들어오면 HoldHide 변수를 2로 만들어 껍질에 나오도록 함-->
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="SetValue" key="HoldHide" value="1"></node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="HoldHide" value="2">
+					<node name="skill" idx="4">
+						<!--껍질에 나오기-->
+						<node name="target" type="near" from="10" to="2000">
+							<node name="SetValue" key="HoldHide" value="3" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="skill" idx="1">
+						<!--  음파 공격  -->
+						<node name="standby" limit="2000" faceTarget="1">
+							<node name="target" type="near" from="10" to="2000">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<!--4연속 음파 공격 사정거리에 있으면-->
+										<node name="SetValue" key="HoldHide" value="3">
+											<!--공격 사정거리 안에 들어오면 HoldHide 변수를 3로 만들어 계속 음파 공격을 하도록 함-->
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="SetValue" key="HoldHide" value="0">
+											<!--공격 사정거리에 벗어나면 다시 껍질로 들어가도록 함-->
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

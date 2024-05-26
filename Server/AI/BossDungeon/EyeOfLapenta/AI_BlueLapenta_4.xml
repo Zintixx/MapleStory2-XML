@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<battle>
+		<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+			<node name="target" type="far" from="100" to="1000">
+				<node name="select" prob="99999,99999,0">
+					<node name="SetValue" cooltime="9999999" key="SpecialPattern" value="1" />
+					<!-- 전멸기 패턴으로 들어가기 위한 변수 값 지정 -->
+					<!-- 위의 변수 값으로 조건문 진입 -->
+					<!-- <standby limit="1000"  faceTarget="1"  prob="9999" cooltime = "9999999">		 -->
+					<node name="SetValue" cooltime="9999999" key="BreakPattern" value="0" />
+					<!-- 세부 전투 변경사항을 체크하기 위한 두 번째 변수 지정 -->
+					<node name="conditions">
+						<condition name="extraData" key="BreakPattern" value="0">
+							<!-- BreakPattern 변수가 0일 때, -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+								<!-- 색적하기 -->
+								<node name="target" type="rand" from="100" to="2000" />
+								<!-- 100에서 2000사이 거리에 랜덤하게 타겟 선정 -->
+								<node name="buff" type="add" id="62100016" isKeepBattle="true" />
+								<!-- 특정 라텐타 스킬로만 공격 해야만 공격이 먹히도록 하기 위한 애디셔널 부여하기 -->
+								<node name="buff" type="remove" id="62100028" level="2" />
+								<!-- ai발동 전 사망하는것을 방지 하기 위함, 라펜타 게이지가 생성되면 무적버프를 지워준다. -->
+								<node name="SetValue" key="BreakPattern" value="1" />
+								<!--  변수 1로 셋팅해여 아래 부분 실행하도록 하기 -->
+								<node name="TriggerSetUserValue" triggerID="900103" key="Lapenta_Attack_Guide" value="1" />
+								<!--블루 라펜타의 폭주 가이드-->
+							</node>
+						</condition>
+						<condition name="extraData" key="BreakPattern" value="1">
+							<!--  BreakPattern 변수가  0이 아닌 경우 이 부분 실행, 즉 이 몬스터가 쉴드 애디셔널이 붙고 난 다음에 이 쉴드 애디셔널이 사라질 때까지 계속 이부분 반복 실행함 -->
+							<node name="conditions">
+								<condition name="extraData" key="brokenShieldFail" value="1">
+									<!-- brokenShieldFail = 1  이라는 것은, 쉴드 애디셔널 파괴 실패했다는 뜻임  (1이면 true, 0이면 false임)  -->
+									<!-- 몬스터의 쉴드 애디셔널 유지 시간이 다 되었는데, 쉴드 애디셔널 HP를 전부 깎는데 실패하면, 이 부분 실행하여 플레이어에게 극 광역스킬 난사함 -->
+									<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+										<node name="skill" faceTarget="0" idx="1">
+											<!-- 전멸기 스킬 플레이어 전멸-->
+											<node name="SetValue" key="BreakPattern" value="2" />
+											<!-- 변수 초기화 -->
+											<node name="SetValue" key="SpecialPattern" value="0" />
+											<!-- 변수 초기화 -->
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+										<!--  변수 1로 셋팅해여 아래 부분 실행하도록 하기 -->
+										<node name="TriggerSetUserValue" triggerID="900005" key="Lapenta_Attack" value="1" />
+										<!--블루 라펜타의 폭주-->
+										<node name="TriggerSetUserValue" triggerID="900103" key="Lapenta_Attack_Guide" value="0" />
+										<!--블루 라펜타의 폭주 가이드-->
+										<node name="standby" limit="8000" faceTarget="0" />
+										<node name="RemoveMe" />
+									</node>
+								</condition>
+								<condition name="extraData" key="remainShieldHP" value="1" op="greaterEqual">
+									<!--쉴드 애디셔널의 HP가 1 이상인 경우:  remainShieldHP 는 쉴드 애디셔널의 HP 수치로 이 수치가 0이 되면 해당 애디셔널 제거되는데, 즉 이 쉴드 애디셔널이 남아있는지를 조건  체크 하는 것임  -->
+									<!--쉴드 애디셔널이 이 몬스터 몸에 존재하는 동안 이 부분을 계속 반복 실행함 -->
+									<node name="skill" faceTarget="0" idx="2" />
+									<!--기력 모으기 바닥 스킬 -->
+								</condition>
+								<condition name="extraData" key="brokenShieldSuccess" value="1">
+									<!-- brokenShieldSuccess = 1  이라는 것은, 쉴드 애디셔널 파괴 성공했다는 뜻임  (1이면 true, 0이면 false임)  -->
+									<!-- 몬스터의 쉴드 애디셔널의 HP를 전부 깎아서 이 쉴드 애디셔널 강제 제거를 성공하면, 이 부분 실행함 -->
+									<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+										<node name="skill" faceTarget="0" idx="3">
+											<!--셀프 사망-->
+											<node name="SetValue" key="BreakPattern" value="2" />
+											<!-- 변수 초기화 -->
+											<node name="SetValue" key="SpecialPattern" value="0" />
+											<!-- 변수 초기화 -->
+											<node name="TriggerSetUserValue" triggerID="900103" key="Lapenta_Attack_Guide" value="0" />
+											<!--블루 라펜타의 폭주 가이드-->
+											<node name="TriggerSetUserValue" triggerID="900104" key="SkillBreakSuccess_4" value="1" />
+											<!--블루 라펜타의 폭주 저지 시, 성공 여부 트리거 발동-->
+											<node name="TriggerSetUserValue" triggerID="900301" key="Light_On_4" value="2" />
+											<!--성공 후 조명 켜기-->
+											<node name="standby" limit="8000" faceTarget="0" />
+											<node name="RemoveMe" />
+										</node>
+										<!-- <standby limit="9400"  faceTarget="0"  prob="100"/>									 -->
+									</node>
+								</condition>
+								<condition name="true">
+									<!-- 이론적으로 여기 부분 올일 없음 -->
+									<node name="standby" limit="2000" faceTarget="0">
+										<node name="select" prob="100,0">
+											<node name="SetValue" key="BreakPattern" value="2" />
+											<!-- 변수 초기화 -->
+											<node name="TriggerSetUserValue" triggerID="900103" key="Lapenta_Attack_Guide" value="0" />
+											<!--블루 라펜타의 폭주 가이드-->
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</node>
+		</node>
+	</battle>
+</npcAi>

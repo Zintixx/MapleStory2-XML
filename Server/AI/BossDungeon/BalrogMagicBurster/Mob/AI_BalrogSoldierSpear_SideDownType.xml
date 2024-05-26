@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="buff" type="add" id="50004512" level="1" />
+				<!--	몸에 흐르는 붉은 전기 이펙트  출력하기	-->
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				<node name="SetValue" key="CannonShotPattern" value="0" />
+				<!--	발록전함에게 이 변수 신호를 받아서 1번: 가운데 -> 2번: 왼쪽 -> 3번: 오른쪽 대포 발사  -> 4번: 가운데 강제 죽이기 패턴 행위에 맞게 타겟팅 하도록 설정함	-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투 -->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--대포쪽 플레이어 타겟팅 최우선 설정하는 부분 정의 -->
+			<node name="standby" limit="200" faceTarget="0" cooltime="4000">
+				<node name="SetValue" key="AttackDelay" value="0">
+					<!-- 타겟팅 리뉴어 될때  AttackDelay = 0 초기화 시킴, 대포 대상 바로 견제 하도록 하기 위해 -->
+					<aiPreset name="TargetLogic" />
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<node name="skill" idx="5" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<!-- 이 몬스터는 전기볼 투척 공격 빈도가 높음-->
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="3">
+								<!--전기 에너지볼 투척 사정거리 이내이면-->
+								<node name="standby" limit="100" faceTarget="1" />
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="1000" skillIdx="3" />
+								<!--전기 에너지볼 투척 사정거리까지  추적 -->
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="50,50">
+								<!--창 찌르기 사정거리 이내이면-->
+								<node name="skill" idx="1">
+									<!--창 찌르기 -->
+									<node name="SetValue" key="AttackDelay" value="22">
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="target" type="near" from="2" to="1800" />
+									</node>
+								</node>
+								<node name="skill" idx="2">
+									<!--돌진 창 찌르기 -->
+									<node name="SetValue" key="AttackDelay" value="28" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="40,60">
+								<!--돌진 창 찌르기 사정거리 이내이면-->
+								<node name="trace" limit="3000" skillIdx="1" />
+								<!--창 찌르기 거리까지 추적 -->
+								<node name="skill" idx="2">
+									<!--돌진 창 찌르기 -->
+									<node name="SetValue" key="AttackDelay" value="31">
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="target" type="near" from="2" to="1800" />
+									</node>
+								</node>
+								<!-- 좁은 공간 전투시 전기 에너지볼 투척  사용하지 않음, 쾌적하지 못해서-->
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="70,30">
+								<!--전기 에너지볼 투척 사정거리 이내이면-->
+								<node name="skill" cooltime="5000" idx="3">
+									<!-- 전기 에너지볼 투척 -->
+									<node name="SetValue" key="AttackDelay" value="30" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								</node>
+								<node name="SetValue" key="AttackDelay" value="18" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<!--	50001288 은 전투판 안에 있는지를 판단하는 거리체크 용도	-->
+									<node name="trace" limit="8000" skillIdx="3" />
+									<!--전기 에너지볼 투척 거리까지 추적 -->
+								</condition>
+								<condition name="true">
+									<!--	파티원 전원 스타팅 포인트에 있다면	-->
+									<node name="standby" limit="300" faceTarget="1">
+										<node name="target" type="rand" from="10" to="2500" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="TargetLogic">
+			<node name="select" prob="50,50">
+				<node name="target" type="near" center="2625, -150, 2260" />
+				<node name="target" type="near" center="2475, -450, 2260" />
+				<!--	
+			<target type="rand" prob="1" from="10" to="5500"/>	
+				
+			<target type="near" prob="1" from="2" to="1800"/>			-->
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

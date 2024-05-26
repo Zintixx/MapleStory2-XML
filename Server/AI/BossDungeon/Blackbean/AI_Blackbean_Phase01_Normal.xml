@@ -1,0 +1,1332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="150" faceTarget="1" isKeepBattle="true">
+				<node name="buff" type="add" id="50001554" />
+				<!-- 몸 크기 줄이는 애디셔널, 자동차 탑승때 몸 크기 -30% 줄임 -->
+				<node name="standby" limit="2300" faceTarget="1" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" summonPosOffset="0, 0, 0" summonRot="0,0,-45" />
+				<node name="ride" type="slave" isRideOff="false" rideNpcIDs="23000097, 23000098, 23000105, 23000106" />
+				<!--  탑승해야할 자동차 코드 입력하기, 여려운 난이도: 23000097, 23000098(파괴) , 쉬운 난이도: 23000105, 23000106(파괴)-->
+				<node name="SetValue" key="BattleZonePosition" value="0" />
+				<!-- 현재 어느 넓은 전투판 있는지 알게 하는 변수, 혹은 도로 맵 이동중 바로 전 턴때 어느 넓은 전투판 있는지 알게 하는 변수 -->
+				<!-- 이  BattleZonePosition 변수는 자동차AI 트리거 BattleZone.xml에서 동일한 변수 네이밍으로 사용함, 네이밍 통일-->
+				<node name="SetValue" key="RoadZonePosition" value="-97" />
+				<!-- 자동차AI로 부터 신호 받는 변수, 초기값은 -97로 하기 @#중요!: 이 값 초기화는 자동차AI로 부터 신호 받이 이루어짐  -->
+				<node name="SetValue" key="ParkingAttackMode" value="0" />
+				<node name="SetValue" key="RideMode" value="1" />
+				<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+				<node name="SetValue" key="BalanceBlackbean" value="0" />
+				<!-- 자동차고속 이동 중에는 균형 잡는 동작 하도록 함, 이 변수 신호는 자동차 AI로 부터 받음 -->
+				<node name="SetValue" key="BalanceAction" value="0" />
+				<!-- 이 변수 1: 균형 잡는 동작 시작, 2: 균형 잡는 중 -->
+				<node name="SetValue" key="Stun" value="0" />
+				<!-- 자동차 고속 이동 끝나고 차 고장날때 블랙빈 기절동작 출력할 때 사용하는 변수 -->
+				<node name="SetValue" key="RollingAttackNumber" value="0" />
+				<!-- 9시 전투판에서 롤링어택 공격 횟수 체크하는데 사용하는 변수 -->
+				<node name="standby" limit="4000" faceTarget="1" />
+				<!--최초 시작하면 어느정도 standby 상태로 가만히 있도록, 바로 공격행동하면 어색해 보임-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="45">
+			<node name="conditions">
+				<condition name="extraData" key="9HoursParkingAttackMode" value="1">
+					<!-- 이미 9시 전투판에 있는 상황이라면 HP 45% 이하가 되도 자동차 교체 작업 하지 않음-->
+					<node name="SetValue" key="Temp" value="1" />
+					<!-- 아무것도 안함 -->
+				</condition>
+				<condition name="true">
+					<node name="SetValue" key="ChangeBroken" value="1">
+						<!-- HP 45% 이하가 되면 자기 자신 변수에 1 설정 -->
+						<node name="SetSlaveValue" key="ChangeBroken" value="1" />
+						<!-- 자동차에게  ChasgeBroken = 1 신호 보내서, 파괴된 자동차로 교체하는 작업을 하도록 함 -->
+					</node>
+				</condition>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="BalanceBlackbean" value="1" op="greaterEqual">
+				<!-- 자동차AI로 부터 BalanceBlackbean = 1  혹은 BalanceBlackbean = 2 신호 받은 경우임 -->
+				<node name="conditions">
+					<condition name="extraData" key="HangOnCrash" value="1">
+						<!-- 자동차 고속이동 중  자동차AI로 부터 HangOnCrash = 1 신호 받은 경우 -->
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+							<!-- 균형잡기 동작 풀고 바닥 쾅 공격 하기 -->
+							<node name="say" message="$Blackbean_SpeedRacing_GrabAttack$" durationTick="9000" />
+							<node name="skill" faceTarget="1" idx="3" />
+							<!-- 자동차 매달린 플레이어 떨구기 위한 쾅!~ 공격하기 -->
+							<node name="skill" faceTarget="0" idx="1" />
+							<!-- 균형잡기 동작 다시 하기 -->
+							<node name="SetValue" key="HangOnCrash" value="0" />
+							<node name="SetValue" key="AttackDelay" value="0" />
+						</node>
+					</condition>
+					<condition name="extraData" key="BalanceAction" value="0">
+						<!-- 자동차가 고속이동 시작때 자동차AI로 부터 BalanceBlackbean = 1 신호 받은 경우임, 최초 이부분 부터 실행함 -->
+						<node name="skill" faceTarget="0" idx="1">
+							<!-- 균형잡기 동작 최초 시작 하기 -->
+							<node name="TriggerSetUserValue" triggerID="553" key="SpeedRacingMode" value="1">
+								<!-- 순간이동 포탈 등장, PortalSpeedRacingMode.xml 트리거에  SpeedRacingMode= 1 신호 보내기,      param1="553" 은   MS2TriggerModel의 TriggerModelID 번호임,  -->
+								<node name="SetValue" key="BalanceAction" value="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="BalanceBlackbean" value="2">
+						<!-- 자동차 고속이동 끝나면  자동차AI로 부터 BalanceBlackbean = 2 신호 받은 경우 -->
+						<node name="skill" faceTarget="0" isKeepBattle="true" idx="2">
+							<!-- 균형잡기 동작 풀고 이 부분 벗어서 평소 상태로 돌아가기 -->
+							<node name="buff" type="add" id="50004591" level="1" />
+							<!-- &!& 고속이동 끝났으면,  이 애디셔널 부여하여 넓은 전투판에서 사용하는 특수 스킬 사용하지 못하게 하기-->
+							<node name="SetValue" key="BalanceBlackbean" value="0" />
+							<node name="SetValue" key="BalanceAction" value="0" />
+							<!-- 균형잡기 풀때 변수 초기화 하기,    1: 균형 잡는 동작 시작, 2: 균형 잡는 중 -->
+							<node name="TriggerSetUserValue" triggerID="553" key="SpeedRacingMode" value="0" />
+							<!-- 순간이동 포탈 감추기, PortalSpeedRacingMode.xml 트리거에  SpeedRacingMode= 0 신호 보내기,      param1="553" 은   MS2TriggerModel의 TriggerModelID 번호임,  -->
+						</node>
+					</condition>
+					<condition name="extraData" key="Stun" value="1">
+						<!-- 자동차 고속이동 끝나서 차 고장날때 블랙빈은 기절 동착 하도록 함 -->
+						<node name="standby" limit="1000" facePos="-8966, -7600, 1500" faceTarget="0" animation="Stun_A">
+							<node name="select" prob="999,1">
+								<!-- 기절 동작 중 -->
+								<node name="say" message="$Blackbean_SpeedRacing_Stun$" durationTick="9000" cooltime="24000" />
+								<node name="SetValue" key="Temp07" value="0" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="50,50">
+							<!-- BalanceAction = 1인 경우, 고속이동 중 자동차 AI 신호 안받으면 디폴트로 이부분 실행함 -->
+							<node name="standby" limit="867" faceTarget="0" animation="Balance_02_Ride" />
+							<!-- 균형잡기 동작 중 -->
+							<node name="standby" limit="867" faceTarget="0" animation="Balance_02_Ride" cooltime="17700">
+								<node name="select" prob="24,24,26,26">
+									<!-- 균형잡기 동작 중, 말풍선 대사 있는 부분 -->
+									<node name="say" message="$Blackbean_SpeedRacing01$" durationTick="9000" />
+									<node name="say" message="$Blackbean_SpeedRacing02$" durationTick="9000" />
+									<node name="say" message="$Blackbean_SpeedRacing03$" durationTick="9000" />
+									<node name="say" message="$Blackbean_SpeedRacing04$" durationTick="9000" />
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="HangOnCrash" value="1">
+				<!-- 자동차AI로 부터 HangOnCrash = 1 신호 받은 경우 -->
+				<node name="say" message="$Blackbean_SpeedRacing_GrabAttack$" durationTick="9000" isKeepBattle="true">
+					<node name="skill" faceTarget="1" idx="3" />
+					<!-- 자동차 매달린 플레이어 떨구기 위한 쾅!~ 공격하기 -->
+					<node name="SetValue" key="HangOnCrash" value="0" />
+					<node name="SetValue" key="AttackDelay" value="0" />
+				</node>
+			</condition>
+			<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+				<!-- 공격 후 잠시 standby 상태 유지 -->
+				<node name="standby" limit="100" faceTarget="1">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+				</node>
+			</condition>
+			<condition name="extraData" key="ParkingAttackMode" value="1">
+				<!-- 자동차AI로 부터 ParkingAttackMode = 1 신호 받은 경우임 -->
+				<node name="standby" limit="210" faceTarget="1">
+					<node name="conditions">
+						<condition name="extraData" key="BattleZonePosition" value="122">
+							<!--봄 컨셉 도로 중앙에 있는 경우 -->
+							<aiPreset name="Spring_MiddleRoadBattle" />
+						</condition>
+						<condition name="extraData" key="BattleZonePosition" value="45">
+							<!--여름 컨셉 도로 중앙에 있는 경우 -->
+							<aiPreset name="Summer_MiddleRoadBattle" />
+						</condition>
+						<condition name="extraData" key="BattleZonePosition" value="78">
+							<!--가을 컨셉 도로 중앙에 있는 경우 -->
+							<aiPreset name="Autumn_MiddleRoadBattle" />
+						</condition>
+						<condition name="extraData" key="BattleZonePosition" value="1011">
+							<!--겨울 컨셉 도로 중앙에 있는 경우 -->
+							<aiPreset name="Winter_MiddleRoadBattle" />
+						</condition>
+						<condition name="true">
+							<!-- 혹시 모를 BattleZone.xml 트리거에서 신호 못보낼 경우, BattleZonePosition 변수가 12 3 6 9 13일 것이기 때문에 이때는 그냥 아무것도 안하고 MainStateCheck =2로 넘어감 -->
+							<node name="SetValue" key="ParkingAttackMode" value="0">
+								<node name="SetSlaveValue" key="ParkingAttackMode" value="2" />
+								<!-- 자동차에게  ParkingAttackMode = 2 신호 보내서 주차 끝내고 다시 이동하도록 함 -->
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<!-- #!# 평상시 공격 행동 패턴 #!# -->
+				<!-- ## 계절 컨셉 도로 지나는 중 ##  ,  계절 컨셉 도로는 자동차 AI에서 신호 받음-->
+				<node name="conditions">
+					<condition name="extraData" key="RoadZonePosition" value="122">
+						<!--봄 컨셉 도로 지나가고 있는 경우 -->
+						<aiPreset name="Spring_RoadBattle" />
+					</condition>
+					<condition name="extraData" key="RoadZonePosition" value="45">
+						<!--여름 컨셉 도로 지나가고 있는 경우 -->
+						<aiPreset name="Summer_RoadBattle" />
+					</condition>
+					<condition name="extraData" key="RoadZonePosition" value="78">
+						<!--가을 컨셉 도로 지나가고 있는 경우 -->
+						<aiPreset name="Autumn_RoadBattle" />
+					</condition>
+					<condition name="extraData" key="RoadZonePosition" value="1011">
+						<!--겨울 컨셉 도로 지나가고 있는 경우 -->
+						<aiPreset name="Winter_RoadBattle" />
+					</condition>
+					<!-- ## 가운데 다리 도로 지나는 중 ##  , 중앙 다리 도로는 자동차 AI에서 신호 받음 -->
+					<condition name="extraData" key="RoadZonePosition" value="12000">
+						<!--12시쪽 다리 도로 지나가고 있는 경우 -->
+						<aiPreset name="12Bridge_RoadBattle" />
+					</condition>
+					<condition name="extraData" key="RoadZonePosition" value="3000">
+						<!--3시쪽 다리 도로 지나가고 있는 경우 -->
+						<aiPreset name="3Bridge_RoadBattle" />
+					</condition>
+					<condition name="extraData" key="RoadZonePosition" value="6000">
+						<!--6시쪽 다리 도로 지나가고 있는 경우 -->
+						<aiPreset name="6Bridge_RoadBattle" />
+					</condition>
+					<condition name="extraData" key="RoadZonePosition" value="9000">
+						<!--9시쪽 다리 도로 지나가고 있는 경우 -->
+						<aiPreset name="9Bridge_RoadBattle" />
+					</condition>
+					<!-- @#중요!: 자동차가 13 12 3 6 9의 넓은 전투판에 도착하면  RoadZonePosition = -97 신호를 보내는데, 블랙빈AI에서 이 -97 신호를 받게 되어 아래  BattleZonePosition = 13 12 3 6 9 부분이 실행되도록 함   #  -->
+					<!-- ## 넓은 전투판에 있는 중 ##  아래 5개의 BattleZonePosition 변수의 13 12  3  6  9 설정은 트리거 영역 안에 들어왔을 때 트리거 BattleZone.xml 신호를 통해 설정되는 경우임  -->
+					<condition name="extraData" key="BattleZonePosition" value="13">
+						<!--중앙 넓은 전투판에 있는 경우 -->
+						<aiPreset name="Center_MainBattle" />
+					</condition>
+					<condition name="extraData" key="BattleZonePosition" value="12">
+						<!--12시쪽 넓은 전투판에 있는 경우 -->
+						<aiPreset name="12_MainBattle" />
+					</condition>
+					<condition name="extraData" key="BattleZonePosition" value="3">
+						<!--3시쪽 넓은 전투판에 있는 경우 -->
+						<aiPreset name="3_MainBattle" />
+					</condition>
+					<condition name="extraData" key="BattleZonePosition" value="6">
+						<!--6시쪽 넓은 전투판에 있는 경우 -->
+						<aiPreset name="6_MainBattle" />
+					</condition>
+					<condition name="extraData" key="BattleZonePosition" value="9">
+						<!--9시쪽 넓은 전투판에 있는 경우 -->
+						<aiPreset name="9_MainBattle" />
+					</condition>
+					<condition name="true">
+						<!-- 이론적으로 이 부분 실행할 일 없음 -->
+						<node name="standby" limit="500" faceTarget="0" />
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd>
+		<node name="say" message="$Blackbean_1Phase_Dead$" durationTick="9000" isKeepBattle="true">
+			<node name="TriggerSetUserValue" triggerID="553" key="SpeedRacingMode" value="2" />
+			<!-- 순간이동 포탈 나오기, PortalSpeedRacingMode.xml 트리거에  SpeedRacingMode= 2 신호 보내기,      param1="553" 은   MS2TriggerModel의 TriggerModelID 번호임,  -->
+			<node name="TriggerSetUserValue" triggerID="551" key="NextPortal" value="1" />
+			<!-- 다음맵으로 이동하는 포탈 등장, main.xml 트리거에  NextPortal= 1 신호 보내기,      param1="551" 은   MS2TriggerModel의 TriggerModelID 번호임,  -->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Spring_MiddleRoadBattle">
+			<!-- 봄 컨셉 도로 중앙에서 전투할 때의 자동차 행동 패턴 -->
+			<node name="conditions">
+				<condition name="extraData" key="RideMode" value="1">
+					<node name="standby" limit="10" isKeepBattle="true">
+						<node name="skill" facePos="4350, 900, 1360" idx="16" />
+						<!--레벨1: 점프 시작 -->
+						<node name="ride" type="slave" isRideOff="true" />
+						<!-- 자동차에 내려오기-->
+						<node name="jump" pos="4350, 900, 1360" speed="800" heightMultiplier="0.9" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="buff" type="remove" id="50001554" />
+						<!-- 몸 크기 줄이는 애디셔널 제거하기 -->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetValue" key="RideMode" value="99" />
+						<!-- 1   2 가 아닌 숫자를 설정해 자동차에 내려와 공격 행동 하도록 함 -->
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="RideMode" value="2">
+					<node name="standby" limit="10" isKeepBattle="true">
+						<node name="buff" type="add" id="50001554" />
+						<!-- 몸 크기 줄이는 애디셔널, 자동차 탑승때 몸 크기 -30% 줄임 -->
+						<node name="skill" facePos="5375, 825, 1510" idx="16" />
+						<!--레벨1: 점프 시작 -->
+						<node name="jump" pos="5375, 825, 1510" speed="800" heightMultiplier="0.9" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="ride" type="slave" isRideOff="false" rideNpcIDs="23000097, 23000098, 23000105, 23000106" />
+						<!--  탑승해야할 자동차 코드 입력하기, 여려운 난이도: 23000097, 23000098(파괴) , 쉬운 난이도: 23000105, 23000106(파괴)-->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetSlaveValue" key="ParkingAttackMode" value="2" />
+						<!-- 자동차에게  ParkingAttackMode = 2 신호 보내서 주차 끝내고 다시 이동하도록 함 -->
+						<node name="SetValue" key="RideMode" value="1" />
+						<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+						<node name="SetValue" key="ParkingAttackMode" value="0" />
+						<!-- 다시 자동차AI로 분터 이 변수 신호 받을 때까지 0 초기화 하기  -->
+						<node name="standby" limit="5000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="60,40">
+						<!-- 자동차에 내려와서 공격행동 정의하는 부분 -->
+						<node name="skill" faceTarget="1" idx="27">
+							<!-- 발구르기 후 쾅 -->
+							<node name="SetValue" key="RideMode" value="2">
+								<node name="target" type="near" from="10" to="1100">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="28">
+											<!-- 공격 대상이 180 이내에 있으면 제자리 쾅 -->
+											<node name="skill" faceTarget="1" idx="28">
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<!-- 400거리 이동 쾅 -->
+											<node name="skill" faceTarget="1" idx="29">
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="23">
+							<!-- 스프레이 뿌리기 준비 -->
+							<node name="skill" faceTarget="0" idx="24" />
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="24" />
+							<node name="skill" faceTarget="0" idx="25" />
+							<node name="SetValue" key="RideMode" value="2" />
+							<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Summer_MiddleRoadBattle">
+			<!-- 여름 컨셉 도로 중앙에서 전투할 때의 자동차 행동 패턴 -->
+			<node name="conditions">
+				<condition name="extraData" key="RideMode" value="1">
+					<node name="standby" limit="10" isKeepBattle="true">
+						<node name="skill" facePos="-75, -5850, 1360" idx="16" />
+						<!--레벨1: 점프 시작 -->
+						<node name="ride" type="slave" isRideOff="true" />
+						<!-- 자동차에 내려오기-->
+						<node name="jump" pos="-75, -5850, 1360" speed="800" heightMultiplier="0.9" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="buff" type="remove" id="50001554" />
+						<!-- 몸 크기 줄이는 애디셔널 제거하기 -->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetValue" key="RideMode" value="99" />
+						<!-- 1   2 가 아닌 숫자를 설정해 자동차에 내려와 공격 행동 하도록 함 -->
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="RideMode" value="2">
+					<node name="standby" limit="10" isKeepBattle="true">
+						<node name="buff" type="add" id="50001554" />
+						<!-- 몸 크기 줄이는 애디셔널, 자동차 탑승때 몸 크기 -30% 줄임 -->
+						<node name="skill" facePos="-75, -4750, 1510" idx="16" />
+						<!--레벨1: 점프 시작 -->
+						<node name="jump" pos="-75, -4750, 1510" speed="800" heightMultiplier="0.9" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="ride" type="slave" isRideOff="false" rideNpcIDs="23000097, 23000098, 23000105, 23000106" />
+						<!--  탑승해야할 자동차 코드 입력하기, 여려운 난이도: 23000097, 23000098(파괴) , 쉬운 난이도: 23000105, 23000106(파괴)-->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetSlaveValue" key="ParkingAttackMode" value="2" />
+						<!-- 자동차에게  ParkingAttackMode = 2 신호 보내서 주차 끝내고 다시 이동하도록 함 -->
+						<node name="SetValue" key="RideMode" value="1" />
+						<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+						<node name="SetValue" key="ParkingAttackMode" value="0" />
+						<!-- 다시 자동차AI로 분터 이 변수 신호 받을 때까지 0 초기화 하기  -->
+						<node name="standby" limit="5000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="60,40">
+						<!-- 자동차에 내려와서 공격행동 정의하는 부분 -->
+						<node name="skill" faceTarget="1" idx="27">
+							<!-- 발구르기 후 쾅 -->
+							<node name="SetValue" key="RideMode" value="2">
+								<node name="target" type="near" from="10" to="1100">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="28">
+											<!-- 공격 대상이 180 이내에 있으면 제자리 쾅 -->
+											<node name="skill" faceTarget="1" idx="28">
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<!-- 400거리 이동 쾅 -->
+											<node name="skill" faceTarget="1" idx="29">
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="23">
+							<!-- 스프레이 뿌리기 준비 -->
+							<node name="skill" faceTarget="0" idx="24" />
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="24" />
+							<node name="skill" faceTarget="0" idx="25" />
+							<node name="SetValue" key="RideMode" value="2" />
+							<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Autumn_MiddleRoadBattle">
+			<!-- 가을 컨셉 도로 중앙에서 전투할 때의 자동차 행동 패턴 -->
+			<node name="conditions">
+				<condition name="extraData" key="RideMode" value="1">
+					<node name="standby" limit="10" isKeepBattle="true">
+						<node name="skill" facePos="-6675, 650, 1360" idx="16" />
+						<!--레벨1: 점프 시작 -->
+						<node name="ride" type="slave" isRideOff="true" />
+						<!-- 자동차에 내려오기-->
+						<node name="jump" pos="-6675, 650, 1360" speed="800" heightMultiplier="0.9" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="buff" type="remove" id="50001554" />
+						<!-- 몸 크기 줄이는 애디셔널 제거하기 -->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetValue" key="RideMode" value="99" />
+						<!-- 1   2 가 아닌 숫자를 설정해 자동차에 내려와 공격 행동 하도록 함 -->
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="RideMode" value="2">
+					<node name="standby" limit="10" isKeepBattle="true">
+						<node name="buff" type="add" id="50001554" />
+						<!-- 몸 크기 줄이는 애디셔널, 자동차 탑승때 몸 크기 -30% 줄임 -->
+						<node name="skill" facePos="-5700, 675, 1510" idx="16" />
+						<!--레벨1: 점프 시작 -->
+						<node name="jump" pos="-5700, 675, 1510" speed="800" heightMultiplier="0.9" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="ride" type="slave" isRideOff="false" rideNpcIDs="23000097, 23000098, 23000105, 23000106" />
+						<!--  탑승해야할 자동차 코드 입력하기, 여려운 난이도: 23000097, 23000098(파괴) , 쉬운 난이도: 23000105, 23000106(파괴)-->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetSlaveValue" key="ParkingAttackMode" value="2" />
+						<!-- 자동차에게  ParkingAttackMode = 2 신호 보내서 주차 끝내고 다시 이동하도록 함 -->
+						<node name="SetValue" key="RideMode" value="1" />
+						<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+						<node name="SetValue" key="ParkingAttackMode" value="0" />
+						<!-- 다시 자동차AI로 분터 이 변수 신호 받을 때까지 0 초기화 하기  -->
+						<node name="standby" limit="5000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="60,40">
+						<!-- 자동차에 내려와서 공격행동 정의하는 부분 -->
+						<node name="skill" faceTarget="1" idx="27">
+							<!-- 발구르기 후 쾅 -->
+							<node name="SetValue" key="RideMode" value="2">
+								<node name="target" type="near" from="10" to="1100">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="28">
+											<!-- 공격 대상이 180 이내에 있으면 제자리 쾅 -->
+											<node name="skill" faceTarget="1" idx="28">
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<!-- 400거리 이동 쾅 -->
+											<node name="skill" faceTarget="1" idx="29">
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="23">
+							<!-- 스프레이 뿌리기 준비 -->
+							<node name="skill" faceTarget="0" idx="24" />
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="24" />
+							<node name="skill" faceTarget="0" idx="25" />
+							<node name="SetValue" key="RideMode" value="2" />
+							<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Winter_MiddleRoadBattle">
+			<!-- 겨울 컨셉 도로 중앙에서 전투할 때의 자동차 행동 패턴 -->
+			<node name="conditions">
+				<condition name="extraData" key="RideMode" value="1">
+					<node name="standby" limit="10" isKeepBattle="true">
+						<node name="skill" facePos="-225, 5375, 1360" idx="16" />
+						<!--레벨1: 점프 시작 -->
+						<node name="ride" type="slave" isRideOff="true" />
+						<!-- 자동차에 내려오기-->
+						<node name="jump" pos="-225, 5375, 1360" speed="800" heightMultiplier="0.9" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="buff" type="remove" id="50001554" />
+						<!-- 몸 크기 줄이는 애디셔널 제거하기 -->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetValue" key="RideMode" value="99" />
+						<!-- 1   2 가 아닌 숫자를 설정해 자동차에 내려와 공격 행동 하도록 함 -->
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="RideMode" value="2">
+					<node name="standby" limit="10" isKeepBattle="true">
+						<node name="buff" type="add" id="50001554" />
+						<!-- 몸 크기 줄이는 애디셔널, 자동차 탑승때 몸 크기 -30% 줄임 -->
+						<node name="skill" facePos="-225, 6275, 1510" idx="16" />
+						<!--레벨1: 점프 시작 -->
+						<node name="jump" pos="-225, 6275, 1510" speed="800" heightMultiplier="0.9" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="ride" type="slave" isRideOff="false" rideNpcIDs="23000097, 23000098, 23000105, 23000106" />
+						<!--  탑승해야할 자동차 코드 입력하기, 여려운 난이도: 23000097, 23000098(파괴) , 쉬운 난이도: 23000105, 23000106(파괴)-->
+						<node name="skill" faceTarget="0" idx="17" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetSlaveValue" key="ParkingAttackMode" value="2" />
+						<!-- 자동차에게  ParkingAttackMode = 2 신호 보내서 주차 끝내고 다시 이동하도록 함 -->
+						<node name="SetValue" key="RideMode" value="1" />
+						<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+						<node name="SetValue" key="ParkingAttackMode" value="0" />
+						<!-- 다시 자동차AI로 분터 이 변수 신호 받을 때까지 0 초기화 하기  -->
+						<node name="standby" limit="5000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="60,40">
+						<!-- 자동차에 내려와서 공격행동 정의하는 부분 -->
+						<node name="skill" faceTarget="1" idx="27">
+							<!-- 발구르기 후 쾅 -->
+							<node name="SetValue" key="RideMode" value="2">
+								<node name="target" type="near" from="10" to="1100">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="28">
+											<!-- 공격 대상이 180 이내에 있으면 제자리 쾅 -->
+											<node name="skill" faceTarget="1" idx="28">
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<!-- 400거리 이동 쾅 -->
+											<node name="skill" faceTarget="1" idx="29">
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="23">
+							<!-- 스프레이 뿌리기 준비 -->
+							<node name="skill" faceTarget="0" idx="24" />
+							<node name="target" type="rand" from="10" to="1600" />
+							<node name="skill" faceTarget="1" idx="24" />
+							<node name="skill" faceTarget="0" idx="25" />
+							<node name="SetValue" key="RideMode" value="2" />
+							<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Spring_RoadBattle">
+			<node name="select" prob="9999,9999,99999,0">
+				<!-- 도로에 마법모자 소환 -->
+				<node name="say" message="$Blackbean_SpringBridge$" durationTick="7210" cooltime="24700" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="standby" limit="200" faceTarget="1" cooltime="72000" isKeepBattle="true">
+					<!-- 도로에 마법모자 소환 -->
+					<!-- 안쪽 라인-->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="301" lifeTime="60" summonPos="5100, 4650, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="302" lifeTime="60" summonPos="4950, 3900, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="303" lifeTime="60" summonPos="5250, 3150, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="304" lifeTime="60" summonPos="5100, 2250, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="305" lifeTime="60" summonPos="5100, 1350, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="306" lifeTime="60" summonPos="4950, 300, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="307" lifeTime="60" summonPos="5250, -450, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="308" lifeTime="60" summonPos="5100, -1350, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="309" lifeTime="60" summonPos="4950, -2400, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="310" lifeTime="60" summonPos="5100, -3150, 1500" summonRot="0,0,0" />
+					<!-- 바깥쪽  -->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="311" lifeTime="60" summonPos="5850, 4350, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="312" lifeTime="60" summonPos="5700, 3450, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="313" lifeTime="60" summonPos="5700, 2550, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="314" lifeTime="60" summonPos="5550, 1800, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="315" lifeTime="60" summonPos="5700, 900, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="316" lifeTime="60" summonPos="5700, 150, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="317" lifeTime="60" summonPos="5850, -900, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="318" lifeTime="60" summonPos="5700, -1950, 1500" summonRot="0,0,0" />
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="319" lifeTime="60" summonPos="5700, -2850, 1500" summonRot="0,0,0" />
+					<!-- 모자 마법 동작  -->
+					<node name="skill" faceTarget="1" idx="26" />
+					<node name="SetValue" key="AttackDelay" value="7" />
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="40,40,20">
+							<node name="skill" faceTarget="1" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+							<node name="standby" limit="100" faceTarget="1">
+								<node name="select" prob="49,50,1">
+									<!-- 앞뒤좌우 충격파-->
+									<node name="skill" faceTarget="1" cooltime="5800" idx="10">
+										<node name="SetValue" key="AttackDelay" value="17" />
+									</node>
+									<!-- 대각선 충격파-->
+									<node name="skill" faceTarget="1" cooltime="5800" idx="11">
+										<node name="SetValue" key="AttackDelay" value="17" />
+									</node>
+									<node name="standby" limit="100" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Summer_RoadBattle">
+			<node name="select" prob="9999,99999,9999,0">
+				<!-- 자동차에 튜브 대미지 필드 설치 -->
+				<node name="say" message="$Blackbean_SummerBridge$" durationTick="7000" cooltime="22960" />
+				<node name="skill" faceTarget="1" cooltime="55000" idx="7" />
+				<!-- 자동차에 튜브 대미지 필드 설치하기 -->
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="12">
+						<!--레벨1:  바닥 기준 한큐브 높은 대상만 체크해 공격함-->
+						<node name="skill" idx="12">
+							<node name="select" prob="33,34,33">
+								<!-- 브러쉬 거대 투서체 발사, 레벨1: 자동차 탑승 스킬, 바닥 기준 한큐브 높은 대상만 체크해 공격함-->
+								<node name="SetValue" key="AttackDelay" value="15" />
+								<node name="SetValue" key="AttackDelay" value="19" />
+								<node name="SetValue" key="AttackDelay" value="22" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="34,33,33">
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+							<!-- 얼굴 바닥 큐브 다수 설치, 레벨 1과 3은 단순 동작 차이임-->
+							<node name="standby" limit="250" faceTarget="1" cooltime="14000">
+								<node name="select" prob="49,51">
+									<node name="skill" faceTarget="1" idx="13">
+										<node name="SetValue" key="AttackDelay" value="17" />
+									</node>
+									<node name="skill" faceTarget="1" idx="15">
+										<node name="SetValue" key="AttackDelay" value="17" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Autumn_RoadBattle">
+			<node name="select" prob="9999,9999,99999,0">
+				<node name="say" message="$Blackbean_AutumnBridge$" durationTick="7000" cooltime="22960" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="standby" limit="200" faceTarget="1" cooltime="72000" isKeepBattle="true">
+					<!-- 도로에 자폭 몬스터 소환 -->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="651" lifeTime="60" summonPos="-5400, -2250, 1510" summonRot="0,0,90" />
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="652" lifeTime="60" summonPos="-6000, -300, 1510" summonRot="0,0,90" />
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="653" lifeTime="60" summonPos="-5400, 1950, 1510" summonRot="0,0,90" />
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="654" lifeTime="60" summonPos="-6000, 3450, 1510" summonRot="0,0,90" />
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="70,15,15">
+							<node name="standby" limit="100" faceTarget="1">
+								<node name="select" prob="49,50,1">
+									<!-- 앞뒤좌우 충격파-->
+									<node name="skill" faceTarget="1" cooltime="5800" idx="10">
+										<node name="SetValue" key="AttackDelay" value="17" />
+									</node>
+									<!-- 대각선 충격파-->
+									<node name="skill" faceTarget="1" cooltime="5800" idx="11">
+										<node name="SetValue" key="AttackDelay" value="17" />
+									</node>
+									<node name="standby" limit="100" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Winter_RoadBattle">
+			<node name="select" prob="9999,9999,99999,0">
+				<!-- 도로에 100톤 추 소환 -->
+				<node name="say" message="$Blackbean_WinterBridge$" durationTick="7000" cooltime="22960" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="standby" limit="200" faceTarget="1" cooltime="72000" isKeepBattle="true">
+					<!-- 도로에 100톤 추 소환 -->
+					<!-- 안쪽 라인 -->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="601" lifeTime="60" summonPos="-3750, 6000, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="602" lifeTime="60" summonPos="-2850, 6000, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="603" lifeTime="60" summonPos="-2250, 5850, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="604" lifeTime="60" summonPos="-1800, 6000, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="605" lifeTime="60" summonPos="-1200, 6000, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="606" lifeTime="60" summonPos="-450, 6000, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="607" lifeTime="60" summonPos="-150, 5850, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="608" lifeTime="60" summonPos="600, 6000, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="609" lifeTime="60" summonPos="1050, 5850, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="610" lifeTime="60" summonPos="1650, 5850, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="611" lifeTime="60" summonPos="2250, 6000, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="612" lifeTime="60" summonPos="2700, 6000, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="613" lifeTime="60" summonPos="3150, 5850, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="614" lifeTime="60" summonPos="3450, 6000, 1500" summonRot="0,0,90" />
+					<!-- 바깥쪽 라인 -->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="651" lifeTime="60" summonPos="-3900, 6750, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="652" lifeTime="60" summonPos="-3450, 6750, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="653" lifeTime="60" summonPos="-3150, 6600, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="654" lifeTime="60" summonPos="-2550, 6750, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="655" lifeTime="60" summonPos="-2100, 6600, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="656" lifeTime="60" summonPos="-1500, 6750, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="657" lifeTime="60" summonPos="-750, 6600, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="658" lifeTime="60" summonPos="150, 6600, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="659" lifeTime="60" summonPos="750, 6750, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="660" lifeTime="60" summonPos="1350, 6600, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="661" lifeTime="60" summonPos="2100, 6600, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="662" lifeTime="60" summonPos="2700, 6750, 1500" summonRot="0,0,90" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="663" lifeTime="60" summonPos="3300, 6600, 1500" summonRot="0,0,90" />
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="34,33,33">
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+							<!-- 유도탄 저주폭발, 레벨2 한발 발사 4인던전용-->
+							<node name="skill" faceTarget="1" cooltime="45000" idx="6">
+								<node name="SetValue" key="AttackDelay" value="17" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="12Bridge_RoadBattle">
+			<node name="select" prob="9999,9999,0">
+				<node name="say" message="$Blackbean_12Bridge$" durationTick="7000" cooltime="22960" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="299,34,33,33">
+							<!-- 유도탄 저주폭발, 레벨2 한발 발사 4인던전용-->
+							<node name="skill" faceTarget="1" cooltime="45000" idx="6">
+								<node name="SetValue" key="AttackDelay" value="5" />
+							</node>
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="11" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="13" />
+							</node>
+							<!-- 얼굴 바닥 큐브 다수 설치, 레벨 1과 3은 단순 동작 차이임-->
+							<node name="standby" limit="250" faceTarget="1" cooltime="14000">
+								<node name="select" prob="49,51">
+									<node name="skill" faceTarget="1" idx="13">
+										<node name="SetValue" key="AttackDelay" value="7" />
+									</node>
+									<node name="skill" faceTarget="1" idx="15">
+										<node name="SetValue" key="AttackDelay" value="7" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="3Bridge_RoadBattle">
+			<node name="select" prob="9999,9999,0">
+				<node name="say" message="$Blackbean_3Bridge$" durationTick="7000" cooltime="22960" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="299,50,50">
+							<!-- 유도탄 저주폭발, 레벨2 한발 발사 4인던전용-->
+							<node name="skill" faceTarget="1" cooltime="45000" idx="6">
+								<node name="SetValue" key="AttackDelay" value="5" />
+							</node>
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="22" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="6Bridge_RoadBattle">
+			<node name="select" prob="9999,9999,0">
+				<node name="say" message="$Blackbean_6Bridge$" durationTick="7000" cooltime="22960" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="299,34,33,33">
+							<!-- 유도탄 저주폭발, 레벨2 한발 발사 4인던전용-->
+							<node name="skill" faceTarget="1" cooltime="45000" idx="6">
+								<node name="SetValue" key="AttackDelay" value="5" />
+							</node>
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="11" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="13" />
+							</node>
+							<!-- 얼굴 바닥 큐브 다수 설치, 레벨 1과 3은 단순 동작 차이임-->
+							<node name="standby" limit="250" faceTarget="1" cooltime="14000">
+								<node name="select" prob="49,51">
+									<node name="skill" faceTarget="1" idx="13">
+										<node name="SetValue" key="AttackDelay" value="7" />
+									</node>
+									<node name="skill" faceTarget="1" idx="15">
+										<node name="SetValue" key="AttackDelay" value="7" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="9Bridge_RoadBattle">
+			<node name="select" prob="9999,9999,0">
+				<node name="say" message="$Blackbean_9Bridge$" durationTick="7000" cooltime="22960" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="299,34,33,33">
+							<!-- 유도탄 저주폭발, 레벨2 한발 발사 4인던전용-->
+							<node name="skill" faceTarget="1" cooltime="45000" idx="6">
+								<node name="SetValue" key="AttackDelay" value="5" />
+							</node>
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="11" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="13" />
+							</node>
+							<!-- 얼굴 바닥 큐브 다수 설치, 레벨 1과 3은 단순 동작 차이임-->
+							<node name="standby" limit="250" faceTarget="1" cooltime="14000">
+								<node name="select" prob="49,51">
+									<node name="skill" faceTarget="1" idx="13">
+										<node name="SetValue" key="AttackDelay" value="7" />
+									</node>
+									<node name="skill" faceTarget="1" idx="15">
+										<node name="SetValue" key="AttackDelay" value="7" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Center_MainBattle">
+			<node name="select" prob="9999,9999,0">
+				<node name="say" message="$Blackbean_CenterMain$" durationTick="7000" cooltime="13260" initialCooltime="11000" />
+				<!-- 블랙빈은 시작하자마자 바로 이부분 시작하는데 바로 이 대사 나오면 어색해서 initialCooltime 넣음, 쿨타임은 다른거 비해 다소 짧게 설정 -->
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="34,33,33">
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="35" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="13000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="33" />
+							</node>
+							<!-- 사방 큐브 땅지진 웨이브 -->
+							<node name="skill" faceTarget="1" cooltime="16000" initialCooltime="33000" idx="9">
+								<!-- 시작하자마자 이 스킬 사용하는 것을 피하기 위해 initialCooltime 설정 -->
+								<node name="SetValue" key="AttackDelay" value="30" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="12_MainBattle">
+			<node name="select" prob="9999,9999,99999,0">
+				<node name="say" message="$Blackbean_12Main$" durationTick="7000" cooltime="22960" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<!-- 소환몹 제거 명령 신호 보내기 100톤추 마법모자 블랙 미니빈 -->
+				<node name="SetSlaveValue" cooltime="65000" key="DeathSummonMob" value="1">
+					<node name="conditions">
+						<condition name="additional" id="50004591">
+							<!-- &!& 이 애디셔널이 있는 경우는, 바로 전에 고속이동해서 12시 전투판에 왔다는 뜻인데, 이때는 바로 도로로 이동하기 때문에 바닥 대미지 필드 설치하면 안됨 -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<!-- 아무것도 안함 -->
+						</condition>
+						<condition name="true">
+							<node name="skill" faceTarget="1" idx="14" />
+							<!-- 12시 넓은 전투판 얼굴 바닥 큐브 다수 설치 -->
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="34,33">
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="45" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="41" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="3_MainBattle">
+			<node name="select" prob="9999,99999,9999,0">
+				<!-- 자동차에 원 대미지 필드 설치 -->
+				<node name="say" message="$Blackbean_3Main$" durationTick="7000" cooltime="22960" />
+				<!-- 소환몹 제거 명령 신호 보내기 100톤추 마법모자 블랙 미니빈 -->
+				<node name="SetSlaveValue" cooltime="65000" key="DeathSummonMob" value="1">
+					<node name="conditions">
+						<condition name="additional" id="50004591">
+							<!-- &!& 이 애디셔널이 있는 경우는, 바로 전에 고속이동해서 3시 전투판에 왔다는 뜻인데, 이때는 바로 계절 도로로 이동하기 때문에 자동차 원 대미지 필드 설치하면 안됨 -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<!-- 아무것도 안함 -->
+						</condition>
+						<condition name="true">
+							<node name="skill" faceTarget="1" idx="8" />
+							<!-- 자동차에 원 대미지 필드 설치하기 -->
+						</condition>
+					</node>
+				</node>
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="12">
+						<!--레벨1:  바닥 기준 한큐브 높은 대상만 체크해 공격함-->
+						<node name="skill" idx="12">
+							<node name="select" prob="33,34,33">
+								<!-- 브러쉬 거대 투서체 발사, 레벨1: 자동차 탑승 스킬, 바닥 기준 한큐브 높은 대상만 체크해 공격함-->
+								<node name="SetValue" key="AttackDelay" value="39" />
+								<node name="SetValue" key="AttackDelay" value="45" />
+								<node name="SetValue" key="AttackDelay" value="51" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="34,33,33">
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="41" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="13000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="51" />
+							</node>
+							<!-- 얼굴 바닥 큐브 다수 설치-->
+							<node name="skill" faceTarget="1" cooltime="16000" idx="13">
+								<node name="SetValue" key="AttackDelay" value="44" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="6_MainBattle">
+			<node name="select" prob="9999,9999,999,99999,0">
+				<node name="say" message="$Blackbean_6Main$" durationTick="7000" cooltime="22960" />
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="SetSlaveValue" cooltime="65000" key="DeathSummonMob" value="1" />
+				<!-- 소환몹 제거 명령 신호 보내기 100톤추 마법모자  -->
+				<node name="standby" limit="200" faceTarget="1" cooltime="8000">
+					<node name="select" prob="95,5">
+						<!-- 자신 주변에 자주 소환몹 호출함 -->
+						<node name="standby" limit="200" faceTarget="1" cooltime="14000" isKeepBattle="true">
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="131" lifeTime="30" summonPosOffset="450, 0, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="132" lifeTime="30" summonPosOffset="-450, 0, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="133" lifeTime="30" summonPosOffset="0, 450, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="134" lifeTime="30" summonPosOffset="0, -450, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="135" lifeTime="30" summonPosOffset="450, 450, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="136" lifeTime="30" summonPosOffset="-450, 450, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="137" lifeTime="30" summonPosOffset="450, -450, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="138" lifeTime="30" summonPosOffset="-450, -450, 0" summonRot="0,0,0" />
+						</node>
+						<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+							<!-- 모자 + 졸몹  -->
+							<!-- 미니빈  -->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="131" lifeTime="30" summonPosOffset="450, 0, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="132" lifeTime="30" summonPosOffset="-450, 0, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="133" lifeTime="30" summonPosOffset="0, 450, 0" summonRot="0,0,0" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="134" lifeTime="30" summonPosOffset="0, -450, 0" summonRot="0,0,0" />
+							<!-- 모자  -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="141" lifeTime="30" summonPosOffset="450, 450, 0" summonRot="0,0,0" />
+							<!-- 모자 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="142" lifeTime="30" summonPosOffset="-450, 450, 0" summonRot="0,0,0" />
+							<!-- 모자 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="143" lifeTime="30" summonPosOffset="450, -450, 0" summonRot="0,0,0" />
+							<!-- 모자 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="144" lifeTime="30" summonPosOffset="-450, -450, 0" summonRot="0,0,0" />
+							<!-- 모자 -->
+							<!-- 모자 마법 동작  -->
+							<node name="skill" faceTarget="1" idx="26" />
+							<node name="SetValue" key="AttackDelay" value="7" />
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="5">
+						<node name="select" prob="40,60">
+							<node name="skill" idx="5">
+								<!-- 투사체 바닥 폭발-->
+								<node name="SetValue" key="AttackDelay" value="43" />
+							</node>
+							<!-- 투사체 큰거 3개 발사-->
+							<node name="skill" faceTarget="1" cooltime="11000" idx="4">
+								<node name="SetValue" key="AttackDelay" value="41" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="4">
+							<node name="target" type="rand" from="10" to="1500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="9_MainBattle">
+			<node name="select" prob="9999,9999,0">
+				<node name="say" message="$Blackbean_9Main$" durationTick="7000" cooltime="71520" />
+				<!-- 이 말풍선은 딱 한번 나오게 -->
+				<node name="target" type="rand" from="10" to="1800" cooltime="5000" />
+				<node name="conditions">
+					<condition name="extraData" key="9HoursParkingAttackMode" value="1">
+						<!-- 9시 넓은 전투판에 도착해서 자동차AI로 부터 9HoursParkingAttackMode = 1 신호 받으면 자동차에 내려와 공격 행동 시작하기 -->
+						<node name="conditions">
+							<condition name="extraData" key="ChangeBroken" value="1">
+								<!-- HP 45% 이하가 되어서 이 변수 1이 되면 파괴된 자동차 소환 행위 하고 <elseif extraKey="RideMode" equal="1">	부분 실행하도록 하기 -->
+								<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="777" delayTick="5300" summonPos="-6000, 6750, 1510" summonRot="0,0,45">
+									<node name="SetValue" key="ChangeBroken" value="99" />
+									<!-- 이 변수 꼭 1이 아닌 다른 숫자로 설정해 함 -->
+								</node>
+							</condition>
+							<condition name="extraData" key="RideMode" value="1">
+								<!-- 평상시 상태 -->
+								<node name="standby" limit="10" isKeepBattle="true">
+									<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+									<!-- 소환몹 제거 명령 신호 보내기 100톤추 마법모자  -->
+									<node name="skill" facePos="-5400, 6000, 1510" idx="16" />
+									<!--레벨1: 점프 시작 -->
+									<node name="ride" type="slave" isRideOff="true" />
+									<!-- 자동차에 내려오기-->
+									<node name="jump" pos="-5400, 6000, 1510" speed="800" heightMultiplier="0.9" />
+									<!--9시 넓은 전투판 중앙으로 오기-->
+									<node name="buff" type="remove" id="50001554" />
+									<!-- 몸 크기 줄이는 애디셔널 제거하기 -->
+									<node name="skill" faceTarget="0" idx="17" />
+									<!--레벨2: 점프 착지 -->
+									<node name="SetValue" key="RideMode" value="99" />
+									<!-- 1   2 가 아닌 숫자를 설정해 자동차에 내려와 공격 행동 하도록 함 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="extraData" key="RideMode" value="2">
+								<node name="standby" limit="10" isKeepBattle="true">
+									<node name="buff" type="add" id="50001554" />
+									<!-- 몸 크기 줄이는 애디셔널, 자동차 탑승때 몸 크기 -30% 줄임 -->
+									<node name="skill" facePos="-6150, 6750, 1510" idx="16" />
+									<!--레벨1: 점프 시작 -->
+									<node name="jump" pos="-6150, 6750, 1510" speed="800" heightMultiplier="0.9" />
+									<!--2셋트 전투판 중앙으로 오기-->
+									<node name="ride" type="slave" isRideOff="false" rideNpcIDs="23000097, 23000098, 23000105, 23000106" />
+									<!--  탑승해야할 자동차 코드 입력하기, 여려운 난이도: 23000097, 23000098(파괴) , 쉬운 난이도: 23000105, 23000106(파괴)-->
+									<node name="skill" faceTarget="0" idx="17" />
+									<!--레벨2: 점프 착지 -->
+									<node name="SetSlaveValue" key="ParkingAttackMode" value="2" />
+									<!-- 자동차에게  ParkingAttackMode = 2 신호 보내서 주차 끝내고 다시 이동하도록 함 -->
+									<node name="SetValue" key="RideMode" value="1" />
+									<!-- 자동차 탑승 때는  RideMode = 1, 자동차에 내려왔을 때는 RideMode = 2 -->
+									<node name="SetValue" key="9HoursParkingAttackMode" value="0" />
+									<!-- 다시 자동차AI로 분터 이 변수 신호 받을 때까지 0 초기화 하기  -->
+									<node name="standby" limit="5000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="extraData" key="RollingAttackNumber" value="4" op="greaterEqual">
+								<node name="SetValue" key="RideMode" value="2">
+									<!-- RideMode = 2 셋팅해서 자동차 다시 탑승 단계로 가기 -->
+									<node name="SetValue" key="RollingAttackNumber" value="0" />
+									<!-- 다음 사용을 위해 이 변수 0 초기화 하기 -->
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="8,92,1">
+									<!-- 자동차에 내려와서 공격행동 정의하는 부분 -->
+									<node name="skill" faceTarget="1" cooltime="9000" idx="27">
+										<!-- 발구르기 후 쾅 -->
+										<node name="SetValue" key="RollingAttackNumber" value="1" isModify="1">
+											<node name="target" type="near" from="10" to="1100">
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="28">
+														<!-- 공격 대상이 180 이내에 있으면 제자리 쾅 -->
+														<node name="skill" faceTarget="1" idx="28">
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</condition>
+													<condition name="true">
+														<!-- 400거리 이동 쾅 -->
+														<node name="skill" faceTarget="1" idx="29">
+															<node name="standby" limit="2500" faceTarget="1" />
+														</node>
+													</condition>
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="skill" cooltime="22000" idx="18">
+										<!-- 롤링어택 연속 공격 -->
+										<node name="skill" faceTarget="1" idx="19">
+											<node name="select" prob="33,33,34">
+												<!--패턴1-->
+												<node name="skill" faceTarget="0" cooltime="58000" isKeepBattle="true" idx="21">
+													<!--중거리 돌진-->
+													<node name="say" message="$Blackbean_Rolling01$" durationTick="9000" />
+													<node name="target" type="rand" from="10" to="1100" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="target" type="near" center="-5400, 6150, 1500" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="0" idx="20" />
+													<!--근거리 돌진-->
+													<node name="target" type="rand" from="10" to="1100" />
+													<node name="skill" faceTarget="1" idx="20" />
+													<!--근거리 돌진-->
+													<node name="target" type="rand" from="10" to="1100" />
+													<node name="skill" faceTarget="1" idx="20" />
+													<!--근거리 돌진-->
+													<node name="target" type="near" center="-5400, 6150, 1500" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="0" idx="21" />
+													<!--중거리 돌진-->
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="target" type="near" center="-5400, 6150, 1500" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="0" idx="21" />
+													<!--중거리 돌진-->
+													<node name="jump" pos="-5100, 6300, 1510" speed="800" heightMultiplier="0.9" />
+													<!--상단쪽으로 점프-->
+													<node name="skill" faceTarget="0" idx="17" />
+													<!--레벨2: 점프 착지 -->
+													<node name="standby" limit="2500" faceTarget="1" />
+													<node name="SetValue" key="RollingAttackNumber" value="1" isModify="1" />
+												</node>
+												<!--패턴2-->
+												<node name="skill" faceTarget="0" isKeepBattle="true" idx="20">
+													<!--근거리 돌진-->
+													<node name="say" message="$Blackbean_Rolling02$" durationTick="9000" />
+													<node name="target" type="rand" from="10" to="1800" />
+													<node name="skill" faceTarget="1" idx="21" />
+													<!--중거리 돌진-->
+													<node name="target" type="near" center="-5400, 6150, 1500" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="target" type="near" center="-5400, 6150, 1500" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="0" idx="21" />
+													<!--중거리 돌진-->
+													<node name="target" type="near" center="-5400, 6150, 1500" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="0" idx="20" />
+													<!--근거리 돌진-->
+													<node name="skill" faceTarget="1" idx="20" />
+													<!--근거리 돌진-->
+													<node name="skill" faceTarget="1" idx="21" />
+													<!--중거리 돌진-->
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="target" type="rand" from="10" to="1800" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="1" idx="22" />
+													<!--장거리 돌진-->
+													<node name="jump" pos="-5400, 5550, 1510" speed="800" heightMultiplier="0.9" />
+													<!--2셋트 전투판 중앙으로 오기-->
+													<node name="skill" faceTarget="0" idx="17" />
+													<!--레벨2: 점프 착지 -->
+													<node name="standby" limit="2500" faceTarget="1" />
+													<node name="SetValue" key="RollingAttackNumber" value="2" isModify="1" />
+												</node>
+												<!--패턴3-->
+												<node name="skill" faceTarget="0" cooltime="58000" isKeepBattle="true" idx="21">
+													<!--중거리 돌진-->
+													<node name="say" message="$Blackbean_Rolling03$" durationTick="9000" />
+													<node name="target" type="rand" from="10" to="1800" />
+													<node name="skill" faceTarget="1" idx="21" />
+													<!--중거리 돌진-->
+													<node name="target" type="near" center="-5400, 6150, 1500" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="target" type="rand" from="10" to="1800" />
+													<node name="skill" faceTarget="0" idx="21" />
+													<!--중거리 돌진-->
+													<node name="target" type="near" center="5250, 6000, 1500" />
+													<node name="skill" faceTarget="1" idx="21" />
+													<!--중거리 돌진-->
+													<node name="target" type="near" center="-5400, 6150, 1500" />
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="0" idx="21" />
+													<!--중거리 돌진-->
+													<node name="target" type="rand" from="10" to="1800" />
+													<node name="skill" faceTarget="1" idx="21" />
+													<!--중거리 돌진-->
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="skill" faceTarget="1" idx="19" />
+													<!--대기-->
+													<node name="jump" pos="-6000, 5700, 1510" speed="800" heightMultiplier="0.9" />
+													<!--2셋트 전투판 중앙으로 오기-->
+													<node name="skill" faceTarget="0" idx="17" />
+													<!--레벨2: 점프 착지 -->
+													<node name="standby" limit="2500" faceTarget="1" />
+													<node name="SetValue" key="RollingAttackNumber" value="1" isModify="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="300" faceTarget="1" />
+									<!--쿨타임 걸리면 이부분 실행 -->
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- 9HoursParkingAttackMode = 1 신호 받을 때까지 여기서 잠시 대기하기 -->
+						<node name="standby" limit="800" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

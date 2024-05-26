@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<!--White: 근거리 클래스가 상대하는 것이 유리하도록 AI를 셋팅함-->
+	<battle>
+		<node name="select" prob="999999,0">
+			<node name="skill" facePos="-2700, 750, 4850" cooltime="9999999" isKeepBattle="true" idx="12">
+				<!--점프 이동할 쪽으로 바라보도록 함, Attack_Idle_A -->
+				<node name="standby" limit="700" faceTarget="0" />
+				<node name="skill" facePos="-2400, 750, 4850" idx="9" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="-2700, 750, 4850" speed="1500" heightMultiplier="0.4" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="10" />
+				<!--레벨4: 점프 착지 (성우 음성 없는 버전) -->
+				<node name="SetValue" key="JumpPos" value="0" />
+				<!--JumpPos  이 변수를 통해 점프 이동을 하여 현재 어느 위치에 있는지를 알림 0: 남쪽, 1: 북쪽-->
+				<node name="standby" limit="4000" faceTarget="1" />
+				<node name="target" type="near" from="2" to="1500" />
+			</node>
+			<!--@@AI 단계1  최상위 선언-->
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="1" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<!--@@AI 단계1  최상위 선언,  평상시 상태-->
+					<!--## AI 단계2  선언   ##-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="13">
+							<!--## 레벨4가 분신용, 분신이 있는 곳에 플레이어가 한명이라도 있다면 이 부분을 실행함 ##-->
+							<!--**!! AI 단계3  선언,  AI 단계 3에서는 BarrierBrake 변수에 의해 행동 패턴이 정됨-->
+							<node name="conditions">
+								<condition name="extraData" key="BarrierBrake" value="1" op="greaterEqual">
+									<!--**!!보스한테 공방업 버프 생성 신호를 받아서 BarrierBrake = 1이 되면 본격 보호막 파괴 스킬 사용함**-->
+									<node name="standby" limit="10" faceTarget="1">
+										<node name="conditions">
+											<condition name="extraData" key="JumpPos" value="0">
+												<!--현재 남쪽에 있으면-->
+												<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+													<node name="move" destination="-2400, 750, 4850" limit="3000" />
+													<!--전투판 중앙쪽으로 이동-->
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="skill" idx="2" />
+													<!--보스의 보호막을 파괴하는 검기 충격파 공격-->
+													<node name="skill" faceTarget="0" idx="3" />
+													<!--레벨2: 루핑 1회-->
+													<node name="target" type="near" from="2" to="1800" />
+													<!--거리가 너무 멀면 보스 상대하고 있는 대상 타겟팅 잡을 수 있어 적당한 거리 설정 중요-->
+													<node name="skill" faceTarget="1" idx="3" />
+													<!--레벨2: 루핑 1회-->
+													<node name="target" type="near" from="2" to="1800" />
+													<!--거리가 너무 멀면 보스 상대하고 있는 대상 타겟팅 잡을 수 있어 적당한 거리 설정 중요-->
+													<node name="skill" faceTarget="1" idx="4" />
+													<!--레벨22: 루핑 없이 기모으는 길이 짧은 거-->
+													<node name="skill" faceTarget="0" idx="3" />
+													<node name="skill" faceTarget="0" idx="5" />
+													<!--레벨33: 성우 음성 없는 거 (분신은 성우 음성 없음)-->
+													<node name="SetValue" key="BarrierBrake" value="-1" isModify="1" />
+													<!--보호막 파괴 스킬 사용하면 BarrierBrake 변수 1 빼기, 총 두번 빼면 이 BarrierBrake 수치가 0이 되어 사용을 멈춤-->
+													<node name="standby" limit="2000" faceTarget="1" />
+													<node name="target" type="near" from="2" to="1800" />
+												</node>
+											</condition>
+											<condition name="true">
+												<!--현재 북쪽에 있으면-->
+												<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+													<node name="move" destination="1350, 750, 4700" limit="3000" />
+													<!--전투판 중앙쪽으로 이동-->
+													<node name="standby" limit="500" faceTarget="1" />
+													<node name="skill" idx="2" />
+													<!--보스의 보호막을 파괴하는 검기 충격파 공격-->
+													<node name="skill" faceTarget="0" idx="3" />
+													<!--레벨2: 루핑 1회-->
+													<node name="target" type="near" from="2" to="1800" />
+													<!--거리가 너무 멀면 보스 상대하고 있는 대상 타겟팅 잡을 수 있어 적당한 거리 설정 중요-->
+													<node name="skill" faceTarget="1" idx="3" />
+													<!--레벨2: 루핑 1회-->
+													<node name="target" type="near" from="2" to="1800" />
+													<!--거리가 너무 멀면 보스 상대하고 있는 대상 타겟팅 잡을 수 있어 적당한 거리 설정 중요-->
+													<node name="skill" faceTarget="1" idx="4" />
+													<!--레벨22: 루핑 없이 기모으는 길이 짧은 거-->
+													<node name="skill" faceTarget="0" idx="3" />
+													<node name="skill" faceTarget="0" idx="5" />
+													<!--레벨33: 성우 음성 없는 거 (분신은 성우 음성 없음)-->
+													<node name="SetValue" key="BarrierBrake" value="-1" isModify="1" />
+													<!--보호막 파괴 스킬 사용하면 BarrierBrake 변수 1 빼기, 총 두번 빼면 이 BarrierBrake 수치가 0이 되어 사용을 멈춤-->
+													<node name="standby" limit="2000" faceTarget="1" />
+													<node name="target" type="near" from="2" to="1800" />
+												</node>
+											</condition>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="999,399,50,30,20">
+										<!--**!!  AI 단계3  선언,  평상시 공격 행동, 즉 아직 보스한테 공방업 버프 생성 신호를 받지 않았음!!**-->
+										<!--전투판 북쪽과 남쪽 점프 이동하는 부분 -->
+										<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="40000">
+											<node name="conditions">
+												<condition name="extraData" key="JumpPos" value="0">
+													<!--현재 남쪽에 있으면 북쪽으로 점프 뛰기-->
+													<node name="skill" facePos="1650, 750, 4700" isKeepBattle="true" idx="9">
+														<!--레벨1 일반 점프 도약 -->
+														<node name="jump" pos="1650, 750, 4700" speed="1500" heightMultiplier="0.4" />
+														<!--2셋트 북쪽 전투판으로 오기-->
+														<node name="skill" faceTarget="0" idx="10" />
+														<!--레벨4: 점프 착지 (성우 음성 없는 버전)-->
+														<node name="SetValue" key="JumpPos" value="1" />
+														<!--JumpPos  이 변수에 1을 넣어 지금 북쪽에 있음을 알림-->
+														<node name="standby" limit="6000" faceTarget="1" />
+														<node name="target" type="near" from="2" to="2500" />
+													</node>
+												</condition>
+												<condition name="true">
+													<!--현재 북쪽에 있으면 남쪽으로 점프 뛰기-->
+													<node name="skill" facePos="-2700, 750, 4850" isKeepBattle="true" idx="9">
+														<!--레벨1 일반 점프 도약 -->
+														<node name="jump" pos="-2700, 750, 4850" speed="1500" heightMultiplier="0.4" />
+														<!--2셋트 남쪽 전투판으로 오기-->
+														<node name="skill" faceTarget="0" idx="10" />
+														<!--레벨4: 점프 착지 (성우 음성 없는 버전)-->
+														<node name="SetValue" key="JumpPos" value="0" />
+														<!--JumpPos  이 변수에 0을 넣어 지금 남쪽에 있음을 알림-->
+														<node name="standby" limit="6000" faceTarget="1" />
+														<node name="target" type="near" from="2" to="2500" />
+													</node>
+												</condition>
+											</node>
+										</node>
+										<!--========================외부 조건 없고 공격 대상이 같은 전투판에 있을 때 평소때의 공격 행동================================================================================================	 -->
+										<!--흰색 분신은 전투판 구석에 있으면 원활한 공략이 어려워서 전투판 가운데 쪽으로 오도록 하는 기능을 넣음 -->
+										<node name="standby" limit="10" faceTarget="0" cooltime="6000">
+											<node name="conditions">
+												<condition name="extraData" key="JumpPos" value="0">
+													<!--현재 남쪽에 있으면-->
+													<node name="move" destination="-2550, 750, 4850" limit="2000">
+														<!--남쪽 전투판 상단위치-->
+														<node name="target" type="near" from="2" to="2500" />
+													</node>
+												</condition>
+												<condition name="true">
+													<!--현재 북쪽에 있으면-->
+													<node name="move" destination="1500, 750, 4700" limit="2000">
+														<!--북쪽 전투판 상단위치-->
+														<node name="target" type="near" from="2" to="2500" />
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="skill" faceTarget="1" cooltime="24000" initialCooltime="24000" idx="6">
+											<!--마법진 내려찍기 레벨3이 분신 전용 스킬-->
+											<node name="standby" limit="1300" faceTarget="1">
+												<node name="target" type="near" from="2" to="1000" />
+											</node>
+										</node>
+										<!--전방 약  유도탄 3개 발사, 근접 클래스가  이 공격 발동 때 등 뒤로 회피해야 함-->
+										<node name="standby" limit="1300" faceTarget="1">
+											<!--바로 사용하면 플레이어가 죽을 수 밖에 없는 상황이 생길 수 있기 때문에 1~2초 딜레이 설정함 -->
+											<node name="skill" faceTarget="0" idx="8">
+												<!--전방 약 유도탄 3개 발사 -->
+												<node name="standby" limit="500" faceTarget="1">
+													<node name="target" type="near" from="2" to="1000" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" faceTarget="1" cooltime="8000" idx="11">
+											<!--돌진베기 공격 -->
+											<node name="standby" limit="1000" faceTarget="1">
+												<node name="target" type="near" from="2" to="1000" />
+											</node>
+										</node>
+										<!-- ========================================================================================================================	 -->
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--## AI 단계2  선언 단계,  분신이 있는 곳에 플레이어가 한명도 없을 경우 ##-->
+							<node name="conditions">
+								<condition name="extraData" key="JumpPos" value="0">
+									<node name="select" prob="998,1,1">
+										<!--현재 남쪽에 있으면-->
+										<node name="move" destination="-1950, 750, 4850" cooltime="25000">
+											<!--이 몬스터한테 아무도 가까이 붙지 않으면 유도탄 공격을 하는데, 잘 보이는 곳에서 발사하기 위해 이곳으로 우선 이동하도록 함 -->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+										<node name="skill" faceTarget="0" cooltime="5000" idx="7">
+											<!--소환몹에게 아무도 가까이 가지 않으면 초강력 유도탄 3발을 발사함 -->
+											<node name="standby" limit="1000" faceTarget="1">
+												<node name="target" type="near" from="2" to="2000" />
+											</node>
+										</node>
+										<node name="standby" limit="1000" faceTarget="1">
+											<node name="target" type="near" from="2" to="2000" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="998,1,1">
+										<!--현재 북쪽에 있으면-->
+										<node name="move" destination="750, 750, 4700" cooltime="21000">
+											<!--이 몬스터한테 아무도 가까이 붙지 않으면 유도탄 공격을 하는데, 잘 보이는 곳에서 발사하기 위해 이곳으로 우선 이동하도록 함 -->
+											<node name="target" type="near" from="2" to="2500" />
+										</node>
+										<node name="skill" faceTarget="0" cooltime="5000" idx="7">
+											<!--소환몹에게 아무도 가까이 가지 않으면 초강력 유도탄 3발을 발사함 -->
+											<node name="standby" limit="1000" faceTarget="1">
+												<node name="target" type="near" from="2" to="2000" />
+											</node>
+										</node>
+										<node name="standby" limit="1000" faceTarget="1">
+											<node name="target" type="near" from="2" to="2000" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="CheckBarkhantSummonMany" value="-1" isModify="1" />
+		<!--분신 소환몹이 죽으면  CheckBarkhantSummonMany 이 변수에 1을 빼서 한마리 죽었음을 알림-->
+	</battleEnd>
+</npcAi>

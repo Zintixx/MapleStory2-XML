@@ -1,0 +1,2563 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="StageCheck" value="1" />
+				<!-- 졸구간 몇 스테이인지 체크하기 위한 변수 -->
+				<node name="SetValue" key="2StageRandom" value="0" />
+				<!-- 2스테이지의 졸구간 해당 스테이지 랜던 선택되어 진행될 때 사용되는 변수 -->
+				<node name="SetValue" key="3StageRandom" value="0" />
+				<!-- 3스테이지의 졸구간 해당 스테이지 랜던 선택되어 진행될 때 사용되는 변수 -->
+				<node name="SetValue" key="4StageRandom" value="0" />
+				<!-- 4스테이지의 졸구간 해당 스테이지 랜던 선택되어 진행될 때 사용되는 변수 -->
+				<node name="SetValue" key="5StageRandom" value="0" />
+				<!-- 5스테이지의 졸구간 해당 스테이지 랜던 선택되어 진행될 때 사용되는 변수 -->
+				<node name="SetValue" key="Phase" value="1" />
+				<!--보스가 현재 몇 페이지 인지 체크하기 위한 변수-->
+				<node name="SetValue" key="MonsterNumber" value="-1" />
+				<!--보스가 현재 엘리트 쫄몹 몇마리 남았는지 체크하기 위한 변수,  이 변수는 졸몹의 AI와 서로 신호 주고 받는 형태로 사용함, 초기값은 꼭 0보다 작은 값으로 설정하기-->
+				<node name="SetValue" key="SummonMonsterNumber" value="0" />
+				<!--보스가 현재 잔챙이 쫄몹 몇마리 남았는지 체크하기 위한 변수,  이 변수는 졸몹의 AI와 서로 신호 주고 받는 형태로 사용함, 초기값은 0으로 설정하기-->
+				<node name="SetValue" key="DayNightChange" value="1" />
+				<!--맵의 낮과 밤을 변화시킬때 사용하는 변수, 1이면 낮 2이면 밤, 이 맵의 기본은 낮이기 때문에 1로 초기 셋팅하기-->
+				<node name="SetValue" key="SkillBreakPhaseOn" value="0" />
+				<!-- 이 변수가 1이 되면 플레이어가 보스 메인 전투판에 진입하였으니 본격 스킬 브레이크 공격 패턴을 하라는 뜻임-->
+				<node name="SetValue" key="SkillBreakTeleport" value="0" />
+				<!-- 이 변수가 6 이상 되면 순간이동 하도록 하기위해 사용하는 변수-->
+				<node name="SetValue" key="SkillBreakCoolTime" value="0" />
+				<!-- HP 75~65% 구간에서 스킬브레이크 사용후 몇번 공격행동하고 다시 스킬 브레이크 사용하는데, 이때 사용하는 변수-->
+				<node name="SetValue" key="FinalSkillBreakPhaseStop" value="0" />
+				<!-- 이 변수를 통해 마지막 페이즈 스킬브레이크 막으면 딱 한번만 사용하도록 설정하기 -->
+			</node>
+		</condition>
+		<!-- Phase = 1,  HP 75~65% 은 메인 전투판에 들어서면 바로 스킬 브레이크 패턴 돌입 @#$-->
+		<condition name="hpLess" value="65">
+			<!--HP 65~55% -->
+			<!--돌진 공격 + 구석으로 점프 뛰어 거대 투사체-->
+			<node name="SetValue" key="Phase" value="2" />
+		</condition>
+		<condition name="hpLess" value="55">
+			<!--HP 55~30% -->
+			<!--마법 기둥 -->
+			<node name="SetValue" key="Phase" value="3" />
+		</condition>
+		<condition name="hpLess" value="30">
+			<!--HP 30~20% -->
+			<!--구석으로 점프 뛰어 거대 투사체 -->
+			<node name="SetValue" key="Phase" value="4" />
+		</condition>
+		<condition name="hpLess" value="20">
+			<!--HP 20~0% -->
+			<!--스킬 브레이크 1회 이후 바닥 장판 깔기 -->
+			<node name="SetValue" key="Phase" value="5">
+				<node name="SetValue" key="FinalSkillBreakPhaseStop" value="0" />
+				<!--엄청중요: 마지막 페이즈 들어서면 이 변수 꼭 0 초기화 하기 이 변수를 통해 마지막 페이즈 스킬브레이크 막으면 딱 한번만 사용하도록 설정하기 -->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="MonsterNumber" value="0">
+				<!-- 이 변수가 0이라는 것은 졸구간의 스테이지 클리어로 다음 스테이지로 넘어가겠다는 뜻임 -->
+				<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+					<node name="SetValue" key="StageCheck" value="1" isModify="1" />
+					<!-- 이 변수 1씩 더해서 다음 스테이지로 넘어가게 설정함 -->
+					<node name="SetValue" key="MonsterNumber" value="-1" />
+					<!--이 변수 -1로 다시 초기화 셋팅하여 이 단계 벗어나도록 하기-->
+					<node name="RemoveSlaves" />
+					<!--이전 스테이지 전투판의 MonsterNumber 변수에 영향을 주지 않는 잔챙이 소환몹 제거하기, 이 NPC가  target="Slaves" 로 소환한 몬스터 전부 제거하기, Slaves 몬스터가 행동 도중에도 강제 제거 해버리는 기능-->
+				</node>
+			</condition>
+			<condition name="extraData" key="StageCheck" value="1">
+				<node name="select" prob="999999,97949,499,0">
+					<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+						<aiPreset name="OneStage_Summon" />
+					</node>
+					<!--######################################################################-->
+					<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기 , 다른 행동보다 우선 순위가 높아야 함 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="5170" initialCooltime="4000">
+						<aiPreset name="DayNightCurse_Check" />
+					</node>
+					<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="36000" initialCooltime="18000">
+						<aiPreset name="DayNightChange_Check" />
+					</node>
+					<!--######################################################################-->
+					<aiPreset name="OneStage_AttackPattern" />
+					<!-- 1 스테이지에서는 보스 전투 참전 안함 -->
+				</node>
+			</condition>
+			<condition name="extraData" key="StageCheck" value="2">
+				<!-- HP 95%, 이하면 이슈라 참전 안함-->
+				<node name="conditions">
+					<condition name="extraData" key="2StageRandom" value="0">
+						<node name="select" prob="33,33,33">
+							<!-- 이 스테이지로 넘어오면, 제일 처음  2StageRandom 변수에 1  2   3 을 랜덤 할당한 다음 해당 전투판으로 이동함 -->
+							<node name="TriggerSetUserValue" triggerID="902" key="Stage02" value="11">
+								<!--    Stage02 = 11 신호에 의해서 2스테이지로 이동하는 포탈 생성,  PortalStage02.xml의  param1="902" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+								<aiPreset name="2StageRandom_1" />
+								<!-- 여기서  2StageRandom = 1 변수 설정을 함-->
+							</node>
+							<node name="TriggerSetUserValue" triggerID="902" key="Stage02" value="21">
+								<!--    Stage02 = 21 신호에 의해서 2스테이지로 이동하는 포탈 생성,  PortalStage02.xml의  param1="902" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+								<aiPreset name="2StageRandom_2" />
+								<!-- 여기서  2StageRandom = 2 변수 설정을 함-->
+							</node>
+							<node name="TriggerSetUserValue" triggerID="902" key="Stage02" value="31">
+								<!--    Stage02 = 21 신호에 의해서 2스테이지로 이동하는 포탈 생성,  PortalStage02.xml의  param1="902" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+								<aiPreset name="2StageRandom_3" />
+								<!-- 여기서  2StageRandom = 3 변수 설정을 함-->
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="99999,97949,499,0">
+							<!-- 2StageRandom 변수가 할당 되면 해당 숫자에 맞가 아래 부분이 실행됨 -->
+							<!-- 2StageRandom 변수에 맞게 소환몹 생성하고, 이후 본격 공격 행동을 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+								<node name="conditions">
+									<condition name="extraData" key="2StageRandom" value="1">
+										<aiPreset name="TwoStage_Summon_Random01" />
+									</condition>
+									<condition name="extraData" key="2StageRandom" value="2">
+										<aiPreset name="TwoStage_Summon_Random02" />
+									</condition>
+									<condition name="true">
+										<!-- 2StageRandom = 3인 경우 -->
+										<aiPreset name="TwoStage_Summon_Random03" />
+									</condition>
+								</node>
+							</node>
+							<!--######################################################################-->
+							<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기, 다른 행동보다 우선 순위가 높아야 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="5170">
+								<aiPreset name="DayNightCurse_Check" />
+							</node>
+							<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+								<aiPreset name="DayNightChange_Check" />
+							</node>
+							<!--######################################################################-->
+							<node name="conditions">
+								<condition name="hpOver" value="95">
+									<!-- 2StageRandom 변수에  본격 공격 행동 정의 하는 부분-->
+									<node name="conditions">
+										<condition name="extraData" key="2StageRandom" value="1">
+											<aiPreset name="TwoStage_AttackPattern_Random01" />
+										</condition>
+										<condition name="extraData" key="2StageRandom" value="2">
+											<aiPreset name="TwoStage_AttackPattern_Random02" />
+										</condition>
+										<condition name="true">
+											<!-- 2StageRandom = 3인 경우 -->
+											<aiPreset name="TwoStage_AttackPattern_Random03" />
+										</condition>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99999,100">
+										<!-- 2스테이지 진행 중 보스 HP가 기준 이상 줄어들면 퇴장하기 -->
+										<node name="skill" cooltime="9999999" idx="26">
+											<!-- 순간이동 -->
+											<node name="teleport" pos="5715, 6285, 2450">
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" idx="40" />
+										<!-- 가만히 서있기 -->
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="StageCheck" value="3">
+				<!-- HP 90%, 이하면 이슈라 참전 안함-->
+				<node name="conditions">
+					<condition name="extraData" key="3StageRandom" value="0">
+						<!-- 이 스테이지로 넘어오면, 제일 처음  3StageRandom 변수에 1  2   3 을 랜덤 할당한 다음 해당 전투판으로 이동함 -->
+						<node name="conditions">
+							<condition name="extraData" key="2StageRandom" value="1">
+								<node name="select" prob="55,45">
+									<!-- 이전 2스테이지에서 왼쪽 지점 진행했을 경우 -->
+									<!-- 3스테이지에서 왼쪽 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="903" key="Stage03" value="11">
+										<!--    Stage03 = 11 신호에 의해서 3스테이지로 이동하는 포탈 생성,  PortalStage03.xml의  param1="903" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="3StageRandom_1" />
+										<!-- 여기서  3StageRandom = 1 변수 설정을 함-->
+									</node>
+									<!-- 3스테이지에서 가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="903" key="Stage03" value="12">
+										<!--    Stage03 = 12 신호에 의해서 3스테이지로 이동하는 포탈 생성,  PortalStage03.xml의  param1="903" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="3StageRandom_2" />
+										<!-- 여기서  3StageRandom = 2 변수 설정을 함-->
+									</node>
+								</node>
+							</condition>
+							<condition name="extraData" key="2StageRandom" value="2">
+								<node name="select" prob="33,33,33">
+									<!-- 이전 2스테이지에서 가운데 지점 진행했을 경우 -->
+									<!-- 3스테이지에서 왼쪽 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="903" key="Stage03" value="21">
+										<!--    Stage03 = 21 신호에 의해서 3스테이지로 이동하는 포탈 생성,  PortalStage03.xml의  param1="903" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="3StageRandom_1" />
+										<!-- 여기서  3StageRandom = 1 변수 설정을 함-->
+									</node>
+									<!-- 3스테이지에서 가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="903" key="Stage03" value="22">
+										<!--    Stage03 = 22 신호에 의해서 3스테이지로 이동하는 포탈 생성,  PortalStage03.xml의  param1="903" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="3StageRandom_2" />
+										<!-- 여기서  3StageRandom = 2 변수 설정을 함-->
+									</node>
+									<!-- 3스테이지에서 오른쪽 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="903" key="Stage03" value="23">
+										<!--    Stage03 = 23 신호에 의해서 3스테이지로 이동하는 포탈 생성,  PortalStage03.xml의  param1="903" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="3StageRandom_3" />
+										<!-- 여기서  3StageRandom = 3 변수 설정을 함-->
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="40,60">
+									<!-- 2StageRandom = 3, 이전 2스테이지에서 오른쪽 지점 진행했을 경우 -->
+									<!-- 3스테이지에서 가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="903" key="Stage03" value="31">
+										<!--    Stage03 = 31 신호에 의해서 3스테이지로 이동하는 포탈 생성,  PortalStage03.xml의  param1="903" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="3StageRandom_2" />
+										<!-- 여기서  3StageRandom = 2 변수 설정을 함-->
+									</node>
+									<!-- 3스테이지에서 오른쪽 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="903" key="Stage03" value="32">
+										<!--    Stage03 = 32 신호에 의해서 3스테이지로 이동하는 포탈 생성,  PortalStage03.xml의  param1="903" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="3StageRandom_3" />
+										<!-- 여기서  3StageRandom = 3 변수 설정을 함-->
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="99999,97949,499,0">
+							<!-- 3StageRandom 변수가 할당 되면 해당 숫자에 맞가 아래 부분이 실행됨 -->
+							<!-- 3StageRandom 변수에 맞게 소환몹 생성하고, 이후 본격 공격 행동을 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+								<node name="conditions">
+									<condition name="extraData" key="3StageRandom" value="1">
+										<aiPreset name="ThreeStage_Summon_Random01" />
+									</condition>
+									<condition name="extraData" key="3StageRandom" value="2">
+										<aiPreset name="ThreeStage_Summon_Random02" />
+									</condition>
+									<condition name="true">
+										<!-- 3StageRandom = 3인 경우 -->
+										<aiPreset name="ThreeStage_Summon_Random03" />
+									</condition>
+								</node>
+							</node>
+							<!--######################################################################-->
+							<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기, 다른 행동보다 우선 순위가 높아야 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="5170">
+								<aiPreset name="DayNightCurse_Check" />
+							</node>
+							<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+								<aiPreset name="DayNightChange_Check" />
+							</node>
+							<!--######################################################################-->
+							<node name="conditions">
+								<condition name="hpOver" value="90">
+									<!-- 3StageRandom 변수에  본격 공격 행동 정의 하는 부분-->
+									<node name="conditions">
+										<condition name="extraData" key="3StageRandom" value="1">
+											<aiPreset name="ThreeStage_AttackPattern_Random01" />
+										</condition>
+										<condition name="extraData" key="3StageRandom" value="2">
+											<aiPreset name="ThreeStage_AttackPattern_Random02" />
+										</condition>
+										<condition name="true">
+											<!-- 3StageRandom = 3인 경우 -->
+											<aiPreset name="ThreeStage_AttackPattern_Random03" />
+										</condition>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99999,100">
+										<!-- 3스테이지 진행 중 보스 HP가 기준 이상 줄어들면 퇴장하기 -->
+										<node name="skill" cooltime="9999999" idx="26">
+											<!-- 순간이동 -->
+											<node name="teleport" pos="5715, 6285, 2450">
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" idx="40" />
+										<!-- 가만히 서있기 -->
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="StageCheck" value="4">
+				<!-- HP 85%, 이하면 이슈라 참전 안함-->
+				<node name="conditions">
+					<condition name="extraData" key="4StageRandom" value="0">
+						<!-- 이 스테이지로 넘어오면, 제일 처음  4StageRandom 변수에 1  2   3  4 를 랜덤 할당한 다음 해당 전투판으로 이동함 -->
+						<node name="conditions">
+							<condition name="extraData" key="3StageRandom" value="1">
+								<node name="select" prob="60,40">
+									<!-- 이전 3스테이지에서 왼쪽 지점 진행했을 경우,  4-1 과 4-4 스테이지 선택 경우의 수가 상대적으로 낮아서 55% 정도 일부러 더 높게 설정하였음 -->
+									<!-- 4스테이지에서 왼쪽 지점으로 진행하기, 3-1에서 4-1로의 선택 확률을 상대적으로 더 높게 설정함 -->
+									<node name="TriggerSetUserValue" triggerID="904" key="Stage04" value="11">
+										<!--    Stage04 = 11 신호에 의해서 4스테이지로 이동하는 포탈 생성,  PortalStage04.xml의  param1="904" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="4StageRandom_1" />
+										<!-- 여기서  4StageRandom = 1 변수 설정을 함-->
+									</node>
+									<!-- 4스테이지에서 왼쪽가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="904" key="Stage04" value="12">
+										<!--    Stage04 = 12 신호에 의해서 4스테이지로 이동하는 포탈 생성,  PortalStage04.xml의  param1="904" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="4StageRandom_2" />
+										<!-- 여기서  4StageRandom = 2 변수 설정을 함-->
+									</node>
+								</node>
+							</condition>
+							<condition name="extraData" key="3StageRandom" value="2">
+								<node name="select" prob="50,50">
+									<!-- 이전 3스테이지에서 가운데 지점 진행했을 경우 -->
+									<!-- 4스테이지에서 왼쪽가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="904" key="Stage04" value="21">
+										<!--    Stage04 = 21 신호에 의해서 4스테이지로 이동하는 포탈 생성,  PortalStage04.xml의  param1="904" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="4StageRandom_2" />
+										<!-- 여기서  4StageRandom = 2 변수 설정을 함-->
+									</node>
+									<!-- 4스테이지에서 오른쪽가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="904" key="Stage04" value="22">
+										<!--    Stage04 = 22 신호에 의해서 4스테이지로 이동하는 포탈 생성,  PortalStage04.xml의  param1="904" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="4StageRandom_3" />
+										<!-- 여기서  4StageRandom = 3 변수 설정을 함-->
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="34,66">
+									<!-- 3StageRandom = 3, 이전 3스테이지에서 오른쪽 지점 진행했을 경우 -->
+									<!-- 4스테이지에서 오른쪽가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="904" key="Stage04" value="31">
+										<!--    Stage04 = 31 신호에 의해서 4스테이지로 이동하는 포탈 생성,  PortalStage04.xml의  param1="904" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="4StageRandom_3" />
+										<!-- 여기서  4StageRandom = 3 변수 설정을 함-->
+									</node>
+									<!-- 4스테이지에서 오른쪽 지점으로 진행하기, 3-3에서 4-4로의 선택 확률을 상대적으로 더 높게 설정함 -->
+									<node name="TriggerSetUserValue" triggerID="904" key="Stage04" value="32">
+										<!--    Stage04 = 32 신호에 의해서 4스테이지로 이동하는 포탈 생성,  PortalStage04.xml의  param1="904" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="4StageRandom_4" />
+										<!-- 여기서  4StageRandom = 4 변수 설정을 함-->
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="99999,97949,499,0">
+							<!-- 4StageRandom 변수가 할당 되면 해당 숫자에 맞가 아래 부분이 실행됨 -->
+							<!-- 4StageRandom 변수에 맞게 소환몹 생성하고, 이후 본격 공격 행동을 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+								<node name="conditions">
+									<condition name="extraData" key="4StageRandom" value="1">
+										<aiPreset name="FourStage_Summon_Random01" />
+									</condition>
+									<condition name="extraData" key="4StageRandom" value="2">
+										<aiPreset name="FourStage_Summon_Random02" />
+									</condition>
+									<condition name="extraData" key="4StageRandom" value="3">
+										<aiPreset name="FourStage_Summon_Random03" />
+									</condition>
+									<condition name="true">
+										<!-- 4StageRandom = 4인 경우 -->
+										<aiPreset name="FourStage_Summon_Random04" />
+									</condition>
+								</node>
+							</node>
+							<!--######################################################################-->
+							<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기, 다른 행동보다 우선 순위가 높아야 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="5170">
+								<aiPreset name="DayNightCurse_Check" />
+							</node>
+							<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+								<aiPreset name="DayNightChange_Check" />
+							</node>
+							<!--######################################################################-->
+							<node name="conditions">
+								<condition name="hpOver" value="85">
+									<!-- 4StageRandom 변수에  본격 공격 행동 정의 하는 부분-->
+									<node name="conditions">
+										<condition name="extraData" key="4StageRandom" value="1">
+											<aiPreset name="FourStage_AttackPattern_Random01" />
+										</condition>
+										<condition name="extraData" key="4StageRandom" value="2">
+											<aiPreset name="FourStage_AttackPattern_Random02" />
+										</condition>
+										<condition name="extraData" key="4StageRandom" value="3">
+											<aiPreset name="FourStage_AttackPattern_Random03" />
+										</condition>
+										<condition name="true">
+											<!-- 4StageRandom = 4인 경우 -->
+											<aiPreset name="FourStage_AttackPattern_Random04" />
+										</condition>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99999,100">
+										<!-- 4스테이지 진행 중 보스 HP가 기준 이상 줄어들면 퇴장하기 -->
+										<node name="skill" cooltime="9999999" idx="26">
+											<!-- 순간이동 -->
+											<node name="teleport" pos="5715, 6285, 2450">
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" idx="40" />
+										<!-- 가만히 서있기 -->
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="StageCheck" value="5">
+				<!-- 5스테이지에서 이슈라 본격 전투 참여: HP 75%, 이하면 이슈라 참전 안함-->
+				<node name="conditions">
+					<condition name="extraData" key="5StageRandom" value="0">
+						<!-- 이 스테이지로 넘어오면, 제일 처음  5StageRandom 변수에 1  2   3 을 랜덤 할당한 다음 해당 전투판으로 이동함 -->
+						<node name="conditions">
+							<condition name="extraData" key="4StageRandom" value="1">
+								<!-- 이전 4스테이지에서 왼쪽 지점 진행했을 경우 -->
+								<!-- 5스테이지에서 왼쪽 지점으로 진행하기 -->
+								<node name="TriggerSetUserValue" triggerID="905" key="Stage05" value="11">
+									<!--    Stage05 = 11 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage05.xml의  param1="905" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+									<aiPreset name="5StageRandom_1" />
+									<!-- 여기서  5StageRandom = 1 변수 설정을 함-->
+								</node>
+							</condition>
+							<condition name="extraData" key="4StageRandom" value="2">
+								<node name="select" prob="50,50">
+									<!-- 이전 4스테이지에서 왼쪽가운데 지점 진행했을 경우 -->
+									<!-- 4스테이지에서 왼쪽가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="905" key="Stage05" value="21">
+										<!--    Stage05 = 21 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage05.xml의  param1="905" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="5StageRandom_1" />
+										<!-- 여기서  5StageRandom = 1 변수 설정을 함-->
+									</node>
+									<!-- 4스테이지에서 오른쪽가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="905" key="Stage05" value="22">
+										<!--    Stage05 = 22 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage05.xml의  param1="905" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="5StageRandom_2" />
+										<!-- 여기서  5StageRandom = 2 변수 설정을 함-->
+									</node>
+								</node>
+							</condition>
+							<condition name="extraData" key="4StageRandom" value="3">
+								<node name="select" prob="50,50">
+									<!-- 이전 4스테이지에서 오른쪽가운데 지점 진행했을 경우 -->
+									<!-- 4스테이지에서 왼쪽가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="905" key="Stage05" value="31">
+										<!--    Stage05 = 31 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage05.xml의  param1="905" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="5StageRandom_2" />
+										<!-- 여기서  5StageRandom_2 = 2 변수 설정을 함-->
+									</node>
+									<!-- 4스테이지에서 오른쪽가운데 지점으로 진행하기 -->
+									<node name="TriggerSetUserValue" triggerID="905" key="Stage05" value="32">
+										<!--    Stage05 = 32 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage05.xml의  param1="905" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+										<aiPreset name="5StageRandom_3" />
+										<!-- 여기서  5StageRandom = 3 변수 설정을 함-->
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!-- 4StageRandom = 4, 이전 4스테이지에서 오른쪽 지점 진행했을 경우 -->
+								<!-- 4스테이지에서 오른쪽 지점으로 진행하기 -->
+								<node name="TriggerSetUserValue" triggerID="905" key="Stage05" value="41">
+									<!--    Stage05 = 31 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage05.xml의  param1="905" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+									<aiPreset name="5StageRandom_3" />
+									<!-- 여기서  5StageRandom = 3 변수 설정을 함-->
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="99999,97949,499,0">
+							<!-- 5StageRandom 변수가 할당 되면 해당 숫자에 맞가 아래 부분이 실행됨 -->
+							<!-- 5StageRandom 변수에 맞게 소환몹 생성하고, 이후 본격 공격 행동을 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+								<node name="conditions">
+									<condition name="extraData" key="5StageRandom" value="1">
+										<aiPreset name="FiveStage_Summon_Random01" />
+									</condition>
+									<condition name="extraData" key="5StageRandom" value="2">
+										<aiPreset name="FiveStage_Summon_Random02" />
+										<!--  여기서 바닥 망사 큐브 불 대미지 필드 설치함 -->
+									</condition>
+									<condition name="true">
+										<!-- 5StageRandom = 3인 경우 -->
+										<aiPreset name="FiveStage_Summon_Random03" />
+										<!--  여기서 바닥 망사 큐브 불 대미지 필드 설치함 -->
+									</condition>
+								</node>
+							</node>
+							<!--######################################################################-->
+							<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기, 다른 행동보다 우선 순위가 높아야 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="5170">
+								<aiPreset name="DayNightCurse_Check" />
+							</node>
+							<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+								<aiPreset name="DayNightChange_Check" />
+							</node>
+							<!--######################################################################-->
+							<node name="conditions">
+								<condition name="hpOver" value="75">
+									<!--@#$-->
+									<!-- 5StageRandom 변수에  본격 공격 행동 정의 하는 부분-->
+									<node name="conditions">
+										<condition name="extraData" key="5StageRandom" value="1">
+											<aiPreset name="FiveStage_AttackPattern_Random01" />
+										</condition>
+										<condition name="extraData" key="5StageRandom" value="2">
+											<aiPreset name="FiveStage_AttackPattern_Random02" />
+										</condition>
+										<condition name="true">
+											<!-- 5StageRandom = 3인 경우 -->
+											<aiPreset name="FiveStage_AttackPattern_Random03" />
+										</condition>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99999,100">
+										<!-- 5스테이지 진행 중 보스 HP가 기준 이상 줄어들면, 메인 전투판쪽으로 퇴장하기 -->
+										<node name="skill" cooltime="9999999" isKeepBattle="true" idx="26">
+											<!-- 순간이동 -->
+											<node name="teleport" pos="6450, 7050, 2410" />
+											<!--중앙 상단쪽으로 도착,   예비 좌표 5925, 6525, 2410-->
+											<node name="SetValue" key="MonsterNumber" value="0" />
+											<!--이 변수 0으로 셋팅하여, 다음 턴  <if extraKey="MonsterNumber" equal="0"> 부분 실행시켜 StageCheck 변수 6로 만들어, <elseif extraKey="StageCheck" equal="6">  단계로 넘어가도록 설정함 -->
+											<node name="standby" limit="1300" faceTarget="1" />
+										</node>
+										<node name="skill" idx="40" />
+										<!-- 가만히 서있기 -->
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="StageCheck" value="6">
+				<!-- StageCheck = 6 단계는 5스테이지에서 보스 전투판으로 넘어가는 포탈을 생성시키고 바로 넘어가는 단계임 -->
+				<!-- 5스테이지 전투판에서 보스 전투판쪽으로 이동하는 순간이동 포탈만 생성시키고, 이후 본격 전투 단계로 넘어감 -->
+				<node name="standby" limit="1000" faceTarget="1">
+					<node name="SetValue" key="MonsterNumber" value="0">
+						<!--이 변수 0으로 셋팅하여, 다음 턴에서  <if extraKey="MonsterNumber" equal="0">  부분 실행시켜 StageCheck 변수 7로 만들어, 이후 본격 Phase =  1 이후 단계로 넘어가도록 설정함 -->
+						<node name="conditions">
+							<condition name="extraData" key="5StageRandom" value="1">
+								<!-- 이전 5스테이지에서 왼쪽 지점 진행했을 경우 -->
+								<node name="TriggerSetUserValue" triggerID="906" key="Stage06" value="11" />
+								<!--    Stage06 = 11 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage06Boss.xml의  param1="906" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+							</condition>
+							<condition name="extraData" key="5StageRandom" value="2">
+								<!-- 이전 5스테이지에서 가운데 지점 진행했을 경우 -->
+								<node name="TriggerSetUserValue" triggerID="906" key="Stage06" value="21" />
+								<!--    Stage06 = 21 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage06Boss.xml의  param1="906" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+							</condition>
+							<condition name="true">
+								<!-- 5StageRandom =  3, 이전 5스테이지에서 오른쪽 지점 진행했을 경우 -->
+								<node name="TriggerSetUserValue" triggerID="906" key="Stage06" value="31" />
+								<!--    Stage06 = 31 신호에 의해서 5스테이지로 이동하는 포탈 생성,  PortalStage06Boss.xml의  param1="906" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+							</condition>
+						</node>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="1">
+				<!--메인전투판 1페이즈 전투 패턴:  메인전투판에 들어서면 바로 스킬브레이크 패턴, , 여기서는 저주 부여 밤낮 변화 행동 절대 사용 안함  HP 75~65%   @#$-->
+				<node name="conditions">
+					<condition name="extraData" key="SkillBreakCoolTime" value="1" op="greaterEqual">
+						<!--스킬브레이크 막기 성공하면 이 변수에 4가 할당되어 어느정도 일반 공격 후 다시 스킬브레이크 사용하도록 함-->
+						<aiPreset name="SkillBreakCoolTime_AttackPattern" />
+					</condition>
+					<condition name="extraData" key="SkillBreakPhaseOn" value="1">
+						<aiPreset name="SkillBreak_AttackPattern" />
+					</condition>
+					<condition name="skillRange" skillIdx="32">
+						<!--레벨1: 이슈라 4인 던전용 같은 전투판 거리체크 데이터, 수치 데이터 정밀 체크임-->
+						<!--플레이어가 메인 전투판에 들어서면 이 변수를 1로 셋팅하여 본격 스킬브레이크 공격 패턴을 진행하도록 함-->
+						<node name="SetValue" key="SkillBreakPhaseOn" value="1" />
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="900" faceTarget="1">
+							<node name="target" type="near" from="10" to="2800" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="2">
+				<node name="select" prob="9999,97949,499,0">
+					<!--메인전투판 2페이즈 전투 패턴:  돌진 공격 패턴,  HP 65~55%-->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="rand" from="10" to="1800" cooltime="9000" />
+					<!--######################################################################-->
+					<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기, 다른 행동보다 우선 순위가 높아야 함 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="5170">
+						<aiPreset name="DayNightCurse_Check" />
+					</node>
+					<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+						<aiPreset name="DayNightChange_Check" />
+					</node>
+					<!--######################################################################-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<node name="select" prob="999,0">
+								<!--사정거리 1200 -->
+								<node name="skill" cooltime="47500" isKeepBattle="true" idx="6">
+									<!-- 많이 이동하는 돌진 공격, 자주 사용하면 근거리 클래스가 넘 불편하니 가끔 사용하도록 -->
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="skill" faceTarget="1" idx="10" />
+									<!--돌진 전 투척 바닥 공격 -->
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--돌진 공격 발동 -->
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="target" type="rand" from="10" to="1800" />
+									<node name="skill" faceTarget="1" idx="10" />
+									<!--돌진 전 투척 바닥 공격 -->
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--돌진 공격 발동 -->
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="skill" faceTarget="1" idx="7" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--돌진 공격 발동 -->
+									<node name="skill" faceTarget="0" idx="9" />
+									<node name="standby" limit="2100" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="24,18,17,24,18">
+											<!-- 구석 점프 이동 후 거대 투사체 패턴-->
+											<node name="standby" limit="300" faceTarget="0" cooltime="49000">
+												<node name="select" prob="50,50">
+													<node name="skill" facePos="5850, 7500, 2410" cooltime="73000" isKeepBattle="true" idx="27">
+														<!-- 점프 이동-->
+														<node name="jump" pos="5850, 7500, 2410" speed="800" heightMultiplier="0.4" />
+														<node name="skill" faceTarget="0" idx="28" />
+														<!-- 착지 -->
+														<node name="target" type="mid" from="10" to="1500" />
+														<node name="standby" limit="500" faceTarget="1" />
+														<node name="skill" faceTarget="1" idx="19" />
+														<node name="skill" faceTarget="1" idx="20" />
+														<!-- 대기 -->
+														<node name="skill" faceTarget="0" idx="23" />
+														<!-- 거대발사 -->
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+													<node name="skill" facePos="6900, 6450, 2410" cooltime="73000" isKeepBattle="true" idx="27">
+														<!-- 점프 이동-->
+														<node name="jump" pos="6900, 6450, 2410" speed="800" heightMultiplier="0.4" />
+														<node name="skill" faceTarget="0" idx="28" />
+														<!-- 착지 -->
+														<node name="target" type="mid" from="10" to="1500" />
+														<node name="standby" limit="500" faceTarget="1" />
+														<node name="skill" faceTarget="1" idx="19" />
+														<node name="skill" faceTarget="1" idx="20" />
+														<!-- 대기 -->
+														<node name="skill" faceTarget="0" idx="23" />
+														<!-- 거대발사 -->
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="7000" idx="1">
+												<!--한번 베기 공격 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="3">
+												<!--2연혹 베기 공격 -->
+												<node name="skill" idx="4">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" cooltime="12000" idx="11">
+												<!--마법 채찍공격  정면-->
+												<node name="skill" idx="12">
+													<!--마법 채찍공격  측면-->
+													<node name="standby" limit="2100" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" idx="15">
+												<!--유도탄 바닥 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,50">
+											<node name="trace" limit="2500" skillIdx="6" />
+											<node name="skill" idx="15">
+												<!--유도탄 바닥 -->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="32">
+									<!--거리 1900 이내, 같은 전투판인 경우-->
+									<node name="trace" limit="2500" skillIdx="6" />
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="600" faceTarget="1">
+										<node name="target" type="near" from="10" to="1800" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="3">
+				<node name="select" prob="9999,97949,499,99999,0">
+					<!--메인전투판 3페이즈 전투 패턴:  마법 빛기둥 패턴,  HP 55~30% -->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="rand" from="10" to="1800" cooltime="9000" />
+					<!--######################################################################-->
+					<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기, 다른 행동보다 우선 순위가 높아야 함 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="5170">
+						<aiPreset name="DayNightCurse_Check" />
+					</node>
+					<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+						<aiPreset name="DayNightChange_Check" />
+					</node>
+					<!--######################################################################-->
+					<node name="skill" cooltime="9999999" isKeepBattle="true" idx="26">
+						<!-- 정 중앙으로 순간이동 -->
+						<node name="teleport" pos="5925, 6525, 2410" />
+						<node name="standby" limit="300" faceTarget="0" />
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="25">
+							<node name="select" prob="3999,19,19,16,16,15,15,1">
+								<!--사정거리 1300 -->
+								<node name="skill" cooltime="47000" idx="25">
+									<!--빛기둥 생성 -->
+									<node name="standby" limit="1300" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="21000" idx="24">
+									<node name="select" prob="60,40">
+										<!--기폭발-->
+										<node name="skill" faceTarget="1" isKeepBattle="true" idx="19">
+											<!-- 거대발사 -->
+											<node name="skill" faceTarget="1" idx="20" />
+											<!-- 대기 -->
+											<node name="skill" faceTarget="0" idx="23" />
+											<!-- 거대발사 -->
+											<node name="standby" limit="1300" faceTarget="1" />
+										</node>
+										<node name="standby" limit="1300" faceTarget="1" cooltime="57000" />
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="14000" isKeepBattle="true" idx="19">
+									<!-- 거대발사 -->
+									<node name="skill" faceTarget="1" idx="20" />
+									<!-- 대기 -->
+									<node name="skill" faceTarget="0" idx="23" />
+									<!-- 거대발사 -->
+									<node name="standby" limit="1300" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="18000" idx="5">
+									<!--사방 유도탄 HP 강제 절반 깎기 -->
+									<node name="standby" limit="1300" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="18000" idx="15">
+									<!--유도탄 바닥 -->
+									<node name="standby" limit="1300" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="18000" idx="11">
+									<!--채찍 전면 -->
+									<node name="standby" limit="1300" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="22000" idx="13">
+									<!--덩어리 투사체, 그 동안 너무 자주 사용해서 여기서는 사용 빈도 다소 낮게 설정 -->
+									<node name="standby" limit="1300" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="near" from="10" to="1800" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="4">
+				<node name="select" prob="9999,97949,499,0">
+					<!--메인전투판 4페이즈 전투 패턴:  잠시 일반 공격, HP 30~20%  -->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="rand" from="10" to="1800" cooltime="9000" />
+					<!--######################################################################-->
+					<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기, 다른 행동보다 우선 순위가 높아야 함 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="5170">
+						<aiPreset name="DayNightCurse_Check" />
+					</node>
+					<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+						<aiPreset name="DayNightChange_Check" />
+					</node>
+					<!--######################################################################-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="199,25,22,30,22,1">
+								<!-- 구석 점프 이동 후 거대 투사체 패턴-->
+								<node name="standby" limit="300" faceTarget="0" cooltime="32000">
+									<node name="select" prob="50,50">
+										<node name="skill" facePos="5850, 7500, 2410" cooltime="51000" isKeepBattle="true" idx="27">
+											<!-- 점프 이동-->
+											<node name="jump" pos="5850, 7500, 2410" speed="800" heightMultiplier="0.4" />
+											<node name="skill" faceTarget="0" idx="28" />
+											<!-- 착지 -->
+											<node name="target" type="mid" from="10" to="1500" />
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="19" />
+											<node name="skill" faceTarget="1" idx="20" />
+											<!-- 대기 -->
+											<node name="skill" faceTarget="0" idx="23" />
+											<!-- 거대발사 -->
+											<node name="standby" limit="1400" faceTarget="1" />
+										</node>
+										<node name="skill" facePos="6900, 6450, 2410" cooltime="51000" isKeepBattle="true" idx="27">
+											<!-- 점프 이동-->
+											<node name="jump" pos="6900, 6450, 2410" speed="800" heightMultiplier="0.4" />
+											<node name="skill" faceTarget="0" idx="28" />
+											<!-- 착지 -->
+											<node name="target" type="mid" from="10" to="1500" />
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="19" />
+											<node name="skill" faceTarget="1" idx="20" />
+											<!-- 대기 -->
+											<node name="skill" faceTarget="0" idx="23" />
+											<!-- 거대발사 -->
+											<node name="standby" limit="1400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="16000" idx="5">
+									<!--사방 유도탄 HP 강제 절반 깎기 -->
+									<node name="standby" limit="1300" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="12000" idx="3">
+									<!--2연속 베기 공격 -->
+									<node name="skill" idx="4">
+										<node name="standby" limit="2100" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" cooltime="12000" idx="11">
+									<!--마법 채찍공격, 정면 -->
+									<node name="skill" idx="12">
+										<!--마법 채찍공격, 측면 -->
+										<node name="standby" limit="1800" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" cooltime="12000" idx="15">
+									<!--유도탄 바닥 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="13">
+							<node name="select" prob="25,25,25,25">
+								<!--거리 1800 이내 -->
+								<node name="trace" limit="2500" skillIdx="1" />
+								<!--갈고리 공격  사정권으로 추적하기 -->
+								<node name="skill" idx="13">
+									<!--덩어리 투사체 -->
+									<node name="standby" limit="1600" faceTarget="1" />
+								</node>
+								<node name="skill" idx="15">
+									<!--유도탄 바닥 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="15000" idx="14">
+									<!--거대 판 투사체 -->
+									<node name="standby" limit="1700" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="near" from="10" to="1800" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<!-- Phase = 5 , 메인전투판 5페이즈 전투 패턴:   HP 20~0%-->
+				<node name="conditions">
+					<condition name="extraData" key="FinalSkillBreakPhaseStop" value="0">
+						<!--  FinalSkillBreakPhaseStop = 0 초기화 작업은  맨  위쪽 <Rif hpLower="20"> 구간에서 미리 하였음-->
+						<node name="conditions">
+							<condition name="extraData" key="SkillBreakPhaseOn" value="1">
+								<aiPreset name="SkillBreak_AttackPattern" />
+								<!--  스킬 브레이크 행동 패턴 정의-->
+							</condition>
+							<condition name="skillRange" skillIdx="32">
+								<!--레벨1: 이슈라 4인 던전용 같은 전투판 거리체크 데이터, 수치 데이터 정밀 체크임-->
+								<!--플레이어가 메인 전투판에 들어서 있는 상태라면 이 변수를 1로 셋팅하여 본격 스킬브레이크 공격 패턴을 진행하도록 함, 마지막 페이즈에서는 스킬프레이크 실패하고 메인 전투판에서 추방되고 다시 진입할 때 유의하게 작동할 것임-->
+								<node name="SetValue" key="SkillBreakPhaseOn" value="1" />
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="near" from="10" to="2800" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="9999,97949,499,0">
+							<!-- 위 스킬 브레이크 막기 성공하면, FinalSkillBreakPhaseStop = 1 설정됨 -->
+							<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+							<node name="target" type="rand" from="10" to="1800" cooltime="9000" />
+							<!--######################################################################-->
+							<!--## 10~15초 마다 저주 디버프 부여 행동 체크해서 쿨타임이 걸려있지 않다면 사용하기, 다른 행동보다 우선 순위가 높아야 함 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="5170">
+								<aiPreset name="DayNightCurse_Check" />
+							</node>
+							<!--## 30~40초 마다 밤낮 변환 행위 체크해서 쿨타임이 걸려있지 않다면 사용하기 -->
+							<node name="standby" limit="100" faceTarget="1" cooltime="36000">
+								<aiPreset name="DayNightChange_Check" />
+							</node>
+							<!--######################################################################-->
+							<aiPreset name="FinalPhase_AttackPattern" />
+							<!-- 위 스킬 브레이크 패턴 끝나면 이 페이즈에서의 본격 공격 행동 정의 하는 부분임-->
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" delayTick="4200" master="None" summonPosOffset="0, 0, 0" summonRot="0,0,-45">
+			<!--죽을 때 DayNightChange 이 변수 3 트리거 신호 보내서 태양 달빛 저주 관련 모든 디버프 모조리 제거시키기, 이 저주 제거는 보스 메인 전투판 안에 있는 플레이어에게만 적용함-->
+			<node name="TriggerSetUserValue" triggerID="121" key="DayNightChange" value="3" />
+			<!--DayNightChange = 3 신호를 맵 트리거에 보내면 플레이어의 각종 저주 모조리 제거함, 이 저주 제거는 보스 메인 전투판 안에 있는 플레이어에게만 적용함-->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="DayNightChange_Check">
+			<node name="select" prob="25,14,61">
+				<!--맵의 낮밤 변화 시키는 부분-->
+				<node name="standby" limit="30" faceTarget="1" />
+				<!-- 아무것도 안하기-->
+				<!-- 이 쿨타임이 104초 인 이유는 이 모듈 호출하는 주기가 36초인데 이것이 2회 왔을 때도 쿨타임 상태여야 하고 3회 왔을 때 사용 가능 상태야 해서,  즉 적당히 76초~107초 사이의 시간을 설정하는 것이 좋은데 76초 가까이 하면, 전투판 옮기면 바로 이 모듈 호출하는데, 이때 자주 발동되기 때문에 107초에 가까이 설정하는 것이 좋음-->
+				<node name="standby" limit="30" faceTarget="1" cooltime="104090">
+					<!-- 낮밤 변환하기 -->
+					<node name="conditions">
+						<condition name="extraData" key="DayNightChange" value="1">
+							<!--현재 맵이 낮인 경우-->
+							<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+								<node name="SetValue" key="DayNightChange" value="2" />
+								<!--이 변수 2로 설정하여 AI에서 현재 밤이 되었음을 알게 함-->
+								<node name="TriggerSetUserValue" triggerID="121" key="DayNightChange" value="2" />
+								<!--DayNightChange = 2 신호를 맵 트리거에 보내면 밤으로 변함-->
+								<node name="skill" idx="29" />
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!--  DayNightChange = 2,  현재 맵이 밤인 경우-->
+							<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+								<node name="SetValue" key="DayNightChange" value="1" />
+								<!--이 변수 1로 설정하여 AI에서 현재 낮이 되었음을 알게 함-->
+								<node name="TriggerSetUserValue" triggerID="121" key="DayNightChange" value="1" />
+								<!--DayNightChange = 1 신호를 맵 트리거에 보내면 낮으로 변함-->
+								<node name="skill" idx="29" />
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</node>
+				<!-- 이 쿨타임이 69.5초 인 이유는 이 모듈 호출하는 주기가 36초인데 이것이 2회 올때마다 사용하도록 하는것이 목적인데, 즉 적당히 40초~72초 사이의 시간을 설정하는 것이 좋은데 40초 가까이 하면, 전투판 옮기면 바로 이 모듈 호출하는데, 이때 거의 100% 발동되기 때문에 72초에 가까이 설정하는 것이 좋음-->
+				<node name="standby" limit="30" faceTarget="1" cooltime="69500" initialCooltime="45000">
+					<!-- 낮밤 변환하기, 이 모듈 호출하는 주기가 36초인데 이것이 1회 왔을 때는 쿨타임 걸리고 2회때 실행 하도록 하기 위해 -->
+					<node name="conditions">
+						<condition name="extraData" key="DayNightChange" value="1">
+							<!--현재 맵이 낮인 경우-->
+							<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+								<node name="SetValue" key="DayNightChange" value="2" />
+								<!--이 변수 2로 설정하여 AI에서 현재 밤이 되었음을 알게 함-->
+								<node name="TriggerSetUserValue" triggerID="121" key="DayNightChange" value="2" />
+								<!--DayNightChange = 2 신호를 맵 트리거에 보내면 밤으로 변함-->
+								<node name="skill" idx="29" />
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!--  DayNightChange = 2,  현재 맵이 밤인 경우-->
+							<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+								<node name="SetValue" key="DayNightChange" value="1" />
+								<!--이 변수 1로 설정하여 AI에서 현재 낮이 되었음을 알게 함-->
+								<node name="TriggerSetUserValue" triggerID="121" key="DayNightChange" value="1" />
+								<!--DayNightChange = 1 신호를 맵 트리거에 보내면 낮으로 변함-->
+								<node name="skill" idx="29" />
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="DayNightCurse_Check">
+			<node name="select" prob="97949,1">
+				<!--플레이어에게 낮 밤 저주 디버프 걸기-->
+				<node name="standby" limit="30" faceTarget="1" cooltime="106700">
+					<node name="select" prob="50,50">
+						<node name="skill" idx="38" />
+						<!-- 태양빛의 저주 2 : 달빛의 저주 4 -->
+						<node name="skill" idx="39" />
+						<!-- 태양빛의 저주 4 : 달빛의 저주 2 -->
+					</node>
+				</node>
+				<node name="standby" limit="30" faceTarget="1" />
+				<!-- 아무것도 안하기-->
+			</node>
+		</aiPreset>
+		<aiPreset name="OneStage_Summon">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!-- 최초 전투판에서 소환몹 생성 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="-7350, -6000, 7660" summonRot="0,0,-45" />
+				<!--왼쪽지점 -->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="-7800, -6000, 7660" summonRot="0,0,-45" />
+				<!--왼쪽지점 -->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="103" summonPos="-7575, -6150, 7660" summonRot="0,0,-45" />
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="104" summonPos="-6150, -7200, 7660" summonRot="0,0,-45" />
+				<!--오른쪽지점 -->
+				<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="105" summonPos="-6150, -7650, 7660" summonRot="0,0,-45" />
+				<!--오른쪽지점 -->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="106" summonPos="-6300, -7425, 7660" summonRot="0,0,-45" />
+				<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="107" summonPos="-7350, -6600, 7660" summonRot="0,0,-45" />
+				<!--가운데지점 -->
+				<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="108" summonPos="-7125, -6750, 7660" summonRot="0,0,-45" />
+				<!--가운데지점 -->
+				<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="109" summonPos="-6900, -6975, 7660" summonRot="0,0,-45" />
+				<!--가운데지점 -->
+				<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="110" summonPos="-6750, -7200, 7660" summonRot="0,0,-45" />
+				<!--가운데지점 -->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="-7350, -6900, 7660" summonRot="0,0,-45" />
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="-7050, -7200, 7660" summonRot="0,0,-45" />
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="skill" idx="26" />
+				<!-- 스테이지1의 건너편 지점으로 순간이동 하기 -->
+				<node name="teleport" pos="-6105, -5960, 7060" />
+				<node name="standby" limit="5500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="TwoStage_Summon_Random01">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고, 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!-- 2-1 스테이지의 몬스터 등장 -->
+				<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="101" summonPos="-6825, -1650, 6760" summonRot="0,0,-45" />
+				<!-- 엘리트 -->
+				<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="102" summonPos="-6150, -2325, 6760" summonRot="0,0,-45" />
+				<!-- 엘리트 -->
+				<!--이 졸몹은  aiPreset name="TwoStage_AttackPattern_Random01" 에서도 호출하는데, 엘리트 등장과 동시에 바로 등장해야 하기 때문에 여기서도 호출 설정함 -->
+				<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="201" summonPos="-6150, -1200, 6760" summonRot="0,0,-45" />
+				<!-- 건너펀 졸몹 -->
+				<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="202" summonPos="-6000, -1500, 6760" summonRot="0,0,-45" />
+				<!-- 건너펀 졸몹 -->
+				<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="203" summonPos="-5700, -1650, 6760" summonRot="0,0,-45" />
+				<!-- 건너펀 졸몹 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="TwoStage_Summon_Random02">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!-- 2-2 스테이지의 몬스터 등장 -->
+				<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="101" summonPos="-4950, -4050, 6760" summonRot="0,0,-45" />
+				<!-- 엘리트 -->
+				<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="102" summonPos="-4200, -4050, 6760" summonRot="0,0,-45" />
+				<!-- 엘리트 -->
+				<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="103" summonPos="-4200, -4800, 6760" summonRot="0,0,-45" />
+				<!-- 엘리트 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="TwoStage_Summon_Random03">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!-- 최초 전투판에서 소환몹 생성 -->
+				<node name="summon" npcId="15" npcCount="1" npcCountMax="1" group="101" summonPos="-2250, -5550, 6760" summonRot="0,0,-45" />
+				<!-- 엘리트 -->
+				<node name="summon" npcId="16" npcCount="1" npcCountMax="1" group="102" summonPos="-2400, -6450, 6760" summonRot="0,0,-45" />
+				<!-- 엘리트 -->
+				<!--이 졸몹은  aiPreset name="TwoStage_AttackPattern_Random03" 에서도 호출하는데, 엘리트 등장과 동시에 바로 등장해야 하기 때문에 여기서도 호출 설정함 -->
+				<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="201" summonPos="-2400, -5850, 6760" summonRot="0,0,-45" />
+				<!-- 건너펀 졸몹, 9시쪽 -->
+				<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="202" summonPos="-2250, -6650, 6760" summonRot="0,0,-45" />
+				<!-- 건너펀 졸몹, 5시쪽 -->
+				<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="203" summonPos="-1800, -6300, 6760" summonRot="0,0,-45" />
+				<!-- 건너펀 졸몹, 3시쪽 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="ThreeStage_Summon_Random01">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!-- 최초 전투판에서 소환몹 생성 -->
+				<node name="summon" npcId="17" npcCount="1" npcCountMax="1" group="101" summonPos="-4500, 1950, 5260" summonRot="0,0,-45" />
+				<!-- 거대 지란트 엘리트-->
+				<node name="summon" npcId="18" npcCount="1" npcCountMax="1" group="102" summonPos="-3600, 450, 5260" summonRot="0,0,-45" />
+				<!-- 거대 지란트 엘리트-->
+				<!--이 졸몹은  aiPreset name="ThreeStage_AttackPattern_Random01" 에서도 호출하는데, 엘리트 등장과 동시에 바로 등장해야 하기 때문에 여기서도 호출 설정함 -->
+				<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="202" summonPos="-4500, 1200, 5260" summonRot="0,0,-45" />
+				<!--  졸몹, aiPreset name="ThreeStage_AttackPattern_Random01"과 201 번호 겹침 -->
+				<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="204" summonPos="-4200, 900, 5260" summonRot="0,0,-45" />
+				<!--  졸몹, aiPreset name="ThreeStage_AttackPattern_Random01"과 202 번호 겹침 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="ThreeStage_Summon_Random02">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!-- 3-2 스테이지 전투판에서 소환몹 생성 -->
+				<node name="summon" npcId="20" npcCount="1" npcCountMax="1" group="101" summonPos="-1500, -1500, 5260" summonRot="0,0,-45" />
+				<!-- 이슈라 분신 , 추적  패턴-->
+				<node name="summon" npcId="21" npcCount="1" npcCountMax="1" group="102" summonPos="-750, -2250, 5260" summonRot="0,0,-45" />
+				<!-- 이슈라 분신 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="ThreeStage_Summon_Random03">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!-- 3-3 스테이지 전투판에서 소환몹 생성 -->
+				<node name="summon" npcId="22" npcCount="1" npcCountMax="1" group="101" summonPos="1200, -3600, 5260" summonRot="0,0,-45" />
+				<!--데브리나 -->
+				<node name="summon" npcId="23" npcCount="1" npcCountMax="1" group="102" summonPos="2100, -3600, 5260" summonRot="0,0,-45" />
+				<!--데브리나 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="FourStage_Summon_Random01">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!--  4-1 스테이지 전투판에서 소환몹 생성  켈베로스,   -1125, 5025, 4210       -1200, 4950, 4210 -->
+				<node name="summon" npcId="24" npcCount="1" npcCountMax="1" group="101" summonPos="-1125, 5025, 4210" summonRot="0,0,-45" />
+				<!--  켈베로스 -->
+				<!--이 졸몹은  aiPreset name="FourStage_AttackPattern_Random01" 에서도 호출하는데, 엘리트 등장과 동시에 바로 등장해야 하기 때문에 여기서도 호출 설정함 -->
+				<node name="summon" npcId="25" npcCount="1" npcCountMax="1" group="201" summonPos="-2250, 4350, 4060" summonRot="0,0,135" />
+				<!-- 건너펀 졸몹 -->
+				<node name="summon" npcId="25" npcCount="1" npcCountMax="1" group="203" summonPos="-1800, 3900, 4060" summonRot="0,0,135" />
+				<!-- 건너펀 졸몹 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="FourStage_Summon_Random02">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!--  4-2 스테이지 전투판에서 소환몹 생성 -->
+				<node name="summon" npcId="26" npcCount="1" npcCountMax="1" group="101" summonPos="-300, 2100, 4060" summonRot="0,0,-45" />
+				<!--  스핑거, 6시 -->
+				<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="102" summonPos="-75, 3075, 4060" summonRot="0,0,-45" />
+				<!--  스핑거, 11시 -->
+				<node name="summon" npcId="28" npcCount="1" npcCountMax="1" group="104" summonPos="675, 2325, 4060" summonRot="0,0,-45" />
+				<!--  스핑거, 1시 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="FourStage_Summon_Random03">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!--  4-3 스테이지 전투판에서 소환몹 생성 -->
+				<node name="summon" npcId="29" npcCount="1" npcCountMax="1" group="101" summonPos="1950, 1050, 4060" summonRot="0,0,-45" />
+				<!--  DesertDragonBig -->
+				<node name="summon" npcId="30" npcCount="1" npcCountMax="1" group="102" summonPos="2550, 450, 4060" summonRot="0,0,-45" />
+				<!--  DesertDragonBig -->
+				<!--이 졸몹은  aiPreset name="FourStage_AttackPattern_Random03" 에서도 호출하는데, 엘리트 등장과 동시에 바로 등장해야 하기 때문에 여기서도 호출 설정함 -->
+				<node name="summon" npcId="31" npcCount="1" npcCountMax="1" group="201" summonPos="1200, 0, 3910" summonRot="0,0,135" />
+				<!-- 건너펀 졸몹 -->
+				<node name="summon" npcId="31" npcCount="1" npcCountMax="1" group="202" summonPos="1500, -300, 3910" summonRot="0,0,135" />
+				<!-- 건너펀 졸몹 -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="FourStage_Summon_Random04">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="0" />
+				<!--이 변수 0으로 셋팅하고 이 이후 소환몹이 등장하면서 이 변수 1씩 더하게 하여, 현재 소환몹 총 몇마리 남았는지 알 수 있게 하기-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!-- 4-4 스테이지 전투판에서 소환몹 생성             4350, -900, 4360					4650, -600, 4360   -->
+				<node name="summon" npcId="32" npcCount="1" npcCountMax="1" group="101" summonPos="4500, -750, 4360" summonRot="0,0,-45" />
+				<!--  스컬위자드 -->
+				<!--이 졸몹은  aiPreset name="FourStage_AttackPattern_Random04" 에서도 호출하는데, 엘리트 등장과 동시에 바로 등장해야 하기 때문에 여기서도 호출 설정함 -->
+				<node name="summon" npcId="33" npcCount="1" npcCountMax="1" group="202" summonPos="3750, -1200, 4060" summonRot="0,0,135" />
+				<!-- 1층지형 졸몹, 이 쫄몹은 AI_SkullWizardCaptainWhite.xml  에서도 추가 소환함  -->
+				<node name="summon" npcId="33" npcCount="1" npcCountMax="1" group="203" summonPos="4050, -1500, 4060" summonRot="0,0,135" />
+				<!-- 1층지형 졸몹, 이 쫄몹은 AI_SkullWizardCaptainWhite.xml  에서도 추가 소환함  -->
+				<node name="standby" limit="6500" faceTarget="1" />
+				<!-- 소환몹이 전투 상태로 넘어가도록 충분히 standby 상태로 기다려 주기, 이 시간이 짧으면 졸몹 모두한테 MonsterNumber 변수 신호 다 받기 전에 다음 단계로 넘어가서 AI가 꼬이는 대박 버그가 생길 수 있기 때문에 이 시간 충분히 길게 설정해야 함 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="FiveStage_Summon_Random01">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="1" />
+				<!--이 변수 1으로 셋팅하고 잔챙이 소환몹이 다 죽으면, 그때 이 변수 건드는 형태로 진행함-->
+				<node name="SetValue" key="SummonMonsterNumber" value="50" />
+				<!--보스가 현재 잔챙이 쫄몹 몇마리 남았는지 체크하기 위한 변수,  잔챙이 졸몹 죽을 때마다 -1 할 것임-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!--  5-1 스테이지 전투판에서 잔챙이 소환몹 생성 -->
+				<node name="summon" npcId="34" npcCount="1" npcCountMax="1" group="201" summonPos="1350, 6000, 2860" summonRot="0,0,-45" />
+				<!-- Short -->
+				<node name="summon" npcId="35" npcCount="1" npcCountMax="1" group="202" summonPos="1650, 5850, 2860" summonRot="0,0,-45" />
+				<!-- Short -->
+				<node name="summon" npcId="35" npcCount="1" npcCountMax="1" group="203" summonPos="1800, 6250, 2860" summonRot="0,0,-45" />
+				<!-- Short -->
+				<node name="summon" npcId="34" npcCount="1" npcCountMax="1" group="204" summonPos="2100, 6000, 2860" summonRot="0,0,-45" />
+				<!-- Short -->
+				<node name="summon" npcId="36" npcCount="1" npcCountMax="1" group="205" summonPos="1800, 5550, 2860" summonRot="0,0,-45" />
+				<!-- Girl -->
+				<node name="summon" npcId="37" npcCount="1" npcCountMax="1" group="206" summonPos="1650, 6150, 2860" summonRot="0,0,-45" />
+				<!-- Girl -->
+				<node name="summon" npcId="36" npcCount="1" npcCountMax="1" group="207" summonPos="1950, 5850, 2860" summonRot="0,0,-45" />
+				<!-- Girl -->
+				<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="208" summonPos="1800, 6600, 2860" summonRot="0,0,-45" />
+				<!-- Tall 원거리 투척-->
+				<node name="summon" npcId="38" npcCount="1" npcCountMax="1" group="209" summonPos="2025, 6225, 2860" summonRot="0,0,-45" />
+				<!-- Tall 원거리 투척-->
+				<node name="summon" npcId="38" npcCount="1" npcCountMax="1" group="210" summonPos="2400, 6000, 2860" summonRot="0,0,-45" />
+				<!-- Tall 원거리 투척-->
+				<node name="standby" limit="2800" faceTarget="1" />
+				<!-- 5스테이지는 소환몹 마리수 체크 방식이 정밀하지 않기 때문에 standby 상태로 비교적 짧게 설정해도 됨, 이 시간이 짧으면 졸몹 모두한테 SummonMonsterNumber 변수 체크 방식이라 AI로찍 꼬일 염려 없음 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="FiveStage_Summon_Random02">
+			<!--  여기서 바닥 망사 큐브 불 대미지 필드 설치함 -->
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="1" />
+				<!--이 변수 1으로 셋팅하고 잔챙이 소환몹이 다 죽으면, 그때 이 변수 건드는 형태로 진행함-->
+				<node name="SetValue" key="SummonMonsterNumber" value="10" />
+				<!--보스가 현재 잔챙이 쫄몹 몇마리 남았는지 체크하기 위한 변수,  잔챙이 졸몹 죽을 때마다 -1 할 것임-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!--  5-2 스테이지 전투판에서 잔챙이 소환몹 생성 -->
+				<node name="summon" npcId="39" npcCount="1" npcCountMax="1" group="201" summonPos="3300, 3150, 2860" summonRot="0,0,-45" />
+				<node name="summon" npcId="39" npcCount="1" npcCountMax="1" group="202" summonPos="3300, 4500, 2860" summonRot="0,0,-45" />
+				<node name="skill" faceTarget="1" idx="30" />
+				<!--레벨1: 바닥 망사 전투판에 큐브 불 대미지 필드 설치 -->
+				<node name="standby" limit="2100" faceTarget="1" />
+				<!-- 5스테이지는 소환몹 마리수 체크 방식이 정밀하지 않기 때문에 standby 상태로 비교적 짧게 설정해도 됨, 이 시간이 짧으면 졸몹 모두한테 SummonMonsterNumber 변수 체크 방식이라 AI로찍 꼬일 염려 없음 -->
+			</node>
+		</aiPreset>
+		<aiPreset name="FiveStage_Summon_Random03">
+			<!--  여기서 바닥 망사 큐브 불 대미지 필드 설치함 -->
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="MonsterNumber" value="1" />
+				<!--이 변수 1으로 셋팅하고 잔챙이 소환몹이 다 죽으면, 그때 이 변수 건드는 형태로 진행함-->
+				<node name="SetValue" key="SummonMonsterNumber" value="10" />
+				<!--보스가 현재 잔챙이 쫄몹 몇마리 남았는지 체크하기 위한 변수,  잔챙이 졸몹 죽을 때마다 -1 할 것임-->
+				<node name="standby" limit="100" faceTarget="1" />
+				<!--  5-3 스테이지 전투판에서 잔챙이 소환몹 생성 -->
+				<node name="summon" npcId="40" npcCount="1" npcCountMax="1" group="201" summonPos="4950, 3000, 2860" summonRot="0,0,-45" />
+				<node name="summon" npcId="41" npcCount="1" npcCountMax="1" group="202" summonPos="6000, 1950, 2860" summonRot="0,0,-45" />
+				<node name="skill" faceTarget="1" idx="31" />
+				<!--레벨2: 바닥 망사 전투판에 큐브 불 대미지 필드 설치 -->
+				<node name="standby" limit="2100" faceTarget="1" />
+				<!-- 5스테이지는 소환몹 마리수 체크 방식이 정밀하지 않기 때문에 standby 상태로 비교적 짧게 설정해도 됨, 이 시간이 짧으면 졸몹 모두한테 SummonMonsterNumber 변수 체크 방식이라 AI로찍 꼬일 염려 없음 -->
+			</node>
+		</aiPreset>
+		<!--2스테이지 최초 시작때 주요 변수 할당하고, 보스 2스페이지 지점으로 이동시키기 -->
+		<aiPreset name="2StageRandom_1">
+			<node name="SetValue" key="2StageRandom" value="1">
+				<node name="skill" idx="26">
+					<!--순간이동으로 2-1스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="-5675, -1175, 6760" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="2StageRandom_2">
+			<node name="SetValue" key="2StageRandom" value="2">
+				<node name="skill" idx="26">
+					<!--순간이동으로 2-2스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="-4650, -4500, 7040" />
+					<!--트리거 박스 위로 순간이동함 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="2StageRandom_3">
+			<node name="SetValue" key="2StageRandom" value="3">
+				<node name="skill" idx="26">
+					<!--순간이동으로 2-3스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="-1650, -6000, 6760" />
+				</node>
+			</node>
+		</aiPreset>
+		<!--3스테이지 최초 시작때 주요 변수 할당하고, 보스 3스페이지 지점으로 이동시키기 -->
+		<aiPreset name="3StageRandom_1">
+			<node name="SetValue" key="3StageRandom" value="1">
+				<node name="skill" idx="26">
+					<!--순간이동으로 3-1스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="-3569, 641, 5660" />
+					<!--트리거 박스 위로 순간이동함 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="3StageRandom_2">
+			<node name="SetValue" key="3StageRandom" value="2">
+				<node name="skill" idx="26">
+					<!--순간이동으로 3-2스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="-405, -1235,  5260" />
+					<!--트리거 박스 위로 순간이동함 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="3StageRandom_3">
+			<node name="SetValue" key="3StageRandom" value="3">
+				<node name="skill" idx="26">
+					<!--순간이동으로 3-3스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="2700, -3600, 5260" />
+					<!--트리거 박스 위로 순간이동함 -->
+				</node>
+			</node>
+		</aiPreset>
+		<!--4스테이지 최초 시작때 주요 변수 할당하고, 보스 4스페이지 지점으로 이동시키기 -->
+		<aiPreset name="4StageRandom_1">
+			<node name="SetValue" key="4StageRandom" value="1">
+				<node name="skill" idx="26">
+					<!--순간이동으로 4-1스테이지 전투판 외부 지점으로 이동 -->
+					<node name="teleport" pos="-30, 4765, 4410" />
+					<!--트리거 박스 위로 순간이동함 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="4StageRandom_2">
+			<node name="SetValue" key="4StageRandom" value="2">
+				<node name="skill" idx="26">
+					<!--순간이동으로 4-2스테이지 전투판 외부 지점으로 이동 -->
+					<node name="teleport" pos="795, 3190, 4260" />
+					<!--트리거 박스 위로 순간이동함 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="4StageRandom_3">
+			<node name="SetValue" key="4StageRandom" value="3">
+				<node name="skill" idx="26">
+					<!--순간이동으로 4-3스테이지 전투판 외부 지점으로 이동 -->
+					<node name="teleport" pos="2745, 1240, 4260" />
+					<!--트리거 박스 위로 순간이동함 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="4StageRandom_4">
+			<node name="SetValue" key="4StageRandom" value="4">
+				<node name="skill" idx="26">
+					<!--순간이동으로 4-4스테이지 전투판 외부 지점으로 이동 -->
+					<node name="teleport" pos="4995, -260, 4560" />
+					<!--트리거 박스 위로 순간이동함 -->
+				</node>
+			</node>
+		</aiPreset>
+		<!--5스테이지 최초 시작때 주요 변수 할당하고, 보스 7스페이지 지점으로 이동시키기 -->
+		<aiPreset name="5StageRandom_1">
+			<node name="SetValue" key="5StageRandom" value="1">
+				<node name="skill" idx="26">
+					<!--순간이동으로 5-1스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="2250, 6450, 2860" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="5StageRandom_2">
+			<node name="SetValue" key="5StageRandom" value="2">
+				<node name="skill" idx="26">
+					<!--순간이동으로 5-2스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="3450, 4050, 3010" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="5StageRandom_3">
+			<node name="SetValue" key="5StageRandom" value="3">
+				<node name="skill" idx="26">
+					<!--순간이동으로 5-3스테이지 전투판으로 이동 -->
+					<node name="teleport" pos="5525, 2475, 2860" />
+				</node>
+			</node>
+		</aiPreset>
+		<!-- 이슈라의 공격 행동 정의하는 부분 -->
+		<aiPreset name="OneStage_AttackPattern">
+			<node name="select" prob="100,100">
+				<node name="target" type="near" from="10" to="3500" cooltime="12000" />
+				<node name="skill" idx="40">
+					<!-- 가만히 서있기 동작 -->
+					<node name="standby" limit="1200" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TwoStage_AttackPattern_Random01">
+			<node name="select" prob="99999,9999,0">
+				<!-- 2-1 스테이지에서의 주요 행동 패턴 -->
+				<node name="standby" limit="100" faceTarget="1" cooltime="21000" isKeepBattle="true">
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="201" summonPos="-6150, -1200, 6760" summonRot="0,0,-45" />
+					<!-- 건너펀 졸몹 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="202" summonPos="-6000, -1500, 6760" summonRot="0,0,-45" />
+					<!-- 건너펀 졸몹 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="203" summonPos="-5700, -1650, 6760" summonRot="0,0,-45" />
+					<!-- 건너펀 졸몹 -->
+				</node>
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="near" center="-5850, -1350, 6750" cooltime="6000" />
+				<!--2-1스테이지 전투판의 분리된 위쪽 부분의 좌표 대생을 최우선 타겟팅 함 -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="23,23,31,23">
+							<node name="skill" idx="1">
+								<!--한번 베기 공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="3">
+								<!--2연혹 베기 공격 -->
+								<node name="skill" idx="4">
+									<node name="target" type="near" from="10" to="1500">
+										<node name="standby" limit="2100" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="6000" idx="11">
+								<!--마법 채찍공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="35,35,30">
+							<!--거리 1800 이내 -->
+							<node name="skill" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="350" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="450" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="12000" idx="14">
+								<!--거대 판 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="400" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TwoStage_AttackPattern_Random02">
+			<node name="select" prob="9999,9999,0">
+				<!-- 2-2 스테이지에서의 주요 행동 패턴 -->
+				<node name="standby" limit="1000" faceTarget="0" cooltime="23000">
+					<node name="select" prob="33,33,33">
+						<node name="skill" facePos="-5225, -3800, 6760" cooltime="52000" isKeepBattle="true" idx="27">
+							<!-- 스테이지2-2의 9시 지점 -->
+							<node name="jump" pos="-5225, -3800, 6760" speed="800" heightMultiplier="0.4" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!-- 착지 -->
+							<node name="standby" limit="2300" faceTarget="1" />
+							<node name="target" type="near" from="10" to="1500" />
+						</node>
+						<node name="skill" facePos="-3950, -3800, 6760" cooltime="52000" isKeepBattle="true" idx="27">
+							<!-- 스테이지2-2의 12시 지점 -->
+							<node name="jump" pos="-3950, -3800, 6760" speed="800" heightMultiplier="0.4" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!-- 착지 -->
+							<node name="standby" limit="2300" faceTarget="1" />
+							<node name="target" type="near" from="10" to="1500" />
+						</node>
+						<node name="skill" facePos="-3950, -5075, 6760" cooltime="52000" isKeepBattle="true" idx="27">
+							<!-- 스테이지2-2의 3시 지점 -->
+							<node name="jump" pos="-3950, -5075, 6760" speed="800" heightMultiplier="0.4" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!-- 착지 -->
+							<node name="standby" limit="2300" faceTarget="1" />
+							<node name="target" type="near" from="10" to="1500" />
+						</node>
+					</node>
+				</node>
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="near" from="10" to="1800" cooltime="6000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="23,23,31,23">
+							<node name="skill" idx="1">
+								<!--한번 베기 공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="3">
+								<!--2연혹 베기 공격 -->
+								<node name="skill" idx="4">
+									<node name="target" type="near" from="10" to="1500">
+										<node name="standby" limit="2100" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="6000" idx="11">
+								<!--마법 채찍공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="50,50">
+							<!--거리 1800 이내 -->
+							<node name="skill" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="350" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="400" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TwoStage_AttackPattern_Random03">
+			<node name="select" prob="9999,9999,9999,0">
+				<!-- 2-3 스테이지에서의 주요 행동 패턴 -->
+				<node name="standby" limit="100" faceTarget="1" cooltime="21000" isKeepBattle="true">
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="201" summonPos="-2400, -5850, 6760" summonRot="0,0,-45" />
+					<!-- 건너펀 졸몹, 9시쪽 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="202" summonPos="-2250, -6650, 6760" summonRot="0,0,-45" />
+					<!-- 건너펀 졸몹, 5시쪽 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="203" summonPos="-1800, -6300, 6760" summonRot="0,0,-45" />
+					<!-- 건너펀 졸몹, 3시쪽 -->
+				</node>
+				<node name="standby" limit="1000" faceTarget="0" cooltime="31000">
+					<node name="select" prob="50,50,50">
+						<node name="skill" cooltime="52000" isKeepBattle="true" idx="26">
+							<!-- 스테이지2-3의 12시 지점 -->
+							<node name="teleport" pos="-1470, -5345, 6760" />
+							<node name="target" type="near" from="10" to="1500" />
+							<node name="standby" limit="2300" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="52000" isKeepBattle="true" idx="26">
+							<!-- 스테이지2-3의 2시 지점 -->
+							<node name="teleport" pos="-1065, -6150, 6760" />
+							<node name="target" type="near" from="10" to="1500" />
+							<node name="standby" limit="2300" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="52000" isKeepBattle="true" idx="26">
+							<!-- 스테이지2-3의 4시 지점 -->
+							<node name="teleport" pos="-1450, -6935, 6760" />
+							<node name="target" type="near" from="10" to="1500" />
+							<node name="standby" limit="2300" faceTarget="1" />
+						</node>
+					</node>
+				</node>
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="near" from="10" to="1800" cooltime="6000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="33,33,34">
+							<node name="skill" idx="1">
+								<!--한번 베기 공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="3">
+								<!--2연혹 베기 공격 -->
+								<node name="skill" idx="4">
+									<node name="target" type="near" from="10" to="1500">
+										<node name="standby" limit="2100" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="5000" idx="11">
+								<!--마법 채찍공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="35,35,30">
+							<!--거리 1800 이내 -->
+							<node name="skill" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="350" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="450" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="12000" idx="14">
+								<!--거대 판 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="400" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="ThreeStage_AttackPattern_Random01">
+			<node name="select" prob="9999,999,9999,0">
+				<!-- 3-1 스테이지에서의 주요 행동 패턴 -->
+				<node name="standby" limit="100" faceTarget="1" cooltime="22000" isKeepBattle="true">
+					<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="201" summonPos="-4725, 2475, 5260" summonRot="0,0,-45" />
+					<!--  졸몹 -->
+					<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="202" summonPos="-4500, 2400, 5260" summonRot="0,0,-45" />
+					<!--  졸몹 -->
+					<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="203" summonPos="-4275, 2400, 5260" summonRot="0,0,-45" />
+					<!--  졸몹 -->
+					<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="204" summonPos="-3525, 225, 5260" summonRot="0,0,-45" />
+					<!--  졸몹 -->
+					<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="205" summonPos="-3375, -75, 5260" summonRot="0,0,-45" />
+					<!--  졸몹 -->
+					<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="206" summonPos="-3225, 225, 5260" summonRot="0,0,-45" />
+					<!--  졸몹 -->
+				</node>
+				<node name="standby" limit="1000" faceTarget="0" cooltime="25000">
+					<node name="select" prob="999,999">
+						<node name="skill" cooltime="38000" idx="26">
+							<node name="teleport" pos="-3150, 1650, 5260">
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="38000" idx="26">
+							<node name="teleport" pos="-2475, 975, 5260">
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+				</node>
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="rand" from="10" to="1800" cooltime="6000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="35,12,13,40">
+							<!--거리 1800 이내 -->
+							<node name="skill" cooltime="8000" idx="14">
+								<!--넓은판 투사체 -->
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="standby" limit="1200" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="27000" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="standby" limit="1200" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="25000" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="standby" limit="1200" faceTarget="1" />
+								</node>
+							</node>
+							<node name="standby" limit="2100" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="ThreeStage_AttackPattern_Random02">
+			<node name="select" prob="999,0">
+				<!-- 3-2 스테이지에서의 주요 행동 패턴 -->
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="rand" from="10" to="1800" cooltime="6000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="15,15,70">
+							<!--거리 1800 이내 -->
+							<node name="skill" cooltime="25000" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="22000" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="standby" limit="1600" faceTarget="1" />
+								</node>
+							</node>
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="ThreeStage_AttackPattern_Random03">
+			<node name="select" prob="9999,0">
+				<!-- 3-3 스테이지에서의 주요 행동 패턴 -->
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="rand" from="10" to="1800" cooltime="9000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="23,23,31,23">
+							<node name="skill" idx="1">
+								<!--한번 베기 공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="3">
+								<!--2연혹 베기 공격 -->
+								<node name="skill" idx="4">
+									<node name="target" type="near" from="10" to="1500">
+										<node name="standby" limit="2100" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="6000" idx="11">
+								<!--마법 채찍공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="35,35,30">
+							<!--거리 1800 이내 -->
+							<node name="skill" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1600" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="15000" idx="14">
+								<!--거대 판 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="1700" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1000" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FourStage_AttackPattern_Random01">
+			<node name="select" prob="9999,9999,0">
+				<!-- 4-1 스테이지에서의 주요 행동 패턴 (켈베로스)  -->
+				<node name="target" type="rand" from="10" to="2500" cooltime="6000" />
+				<node name="standby" limit="100" faceTarget="1" cooltime="21000" isKeepBattle="true">
+					<node name="summon" npcId="25" npcCount="1" npcCountMax="1" group="201" summonPos="-2250, 4350, 4060" summonRot="0,0,135" />
+					<!-- 건너펀 졸몹 -->
+					<node name="summon" npcId="25" npcCount="1" npcCountMax="1" group="202" summonPos="-2025, 4125, 4060" summonRot="0,0,135" />
+					<!-- 건너펀 졸몹 -->
+					<node name="summon" npcId="25" npcCount="1" npcCountMax="1" group="203" summonPos="-1800, 3900, 4060" summonRot="0,0,135" />
+					<!-- 건너펀 졸몹 -->
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="16">
+						<!-- 레벱2: 플레이어가 점프 할 경우에만 이 사정거리에 들어오도록 하는 범위-->
+						<node name="skill" idx="16">
+							<!-- 레벱2: 원거리 투척 바닥 공격, 점프 공격을 하는 플레이어를 견제하기 위한 목적임-->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1100" faceTarget="1">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FourStage_AttackPattern_Random02">
+			<node name="select" prob="9999,0">
+				<!-- 4-2 스테이지에서의 주요 행동 패턴 -->
+				<node name="target" type="rand" from="10" to="2500" cooltime="6000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="16">
+						<!-- 레벱2: 플레이어가 점프 할 경우에만 이 사정거리에 들어오도록 하는 범위-->
+						<node name="skill" idx="16">
+							<!-- 레벱2: 원거리 투척 바닥 공격, 점프 공격을 하는 플레이어를 견제하기 위한 목적임-->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1100" faceTarget="1">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FourStage_AttackPattern_Random03">
+			<node name="select" prob="9999,99999,0">
+				<!-- 4-3 스테이지에서의 주요 행동 패턴 -->
+				<node name="target" type="rand" from="10" to="2500" cooltime="6000" />
+				<node name="standby" limit="100" faceTarget="1" cooltime="22000" isKeepBattle="true">
+					<node name="summon" npcId="31" npcCount="1" npcCountMax="1" group="201" summonPos="1200, 0, 3910" summonRot="0,0,135" />
+					<!-- 건너펀 졸몹 -->
+					<node name="summon" npcId="31" npcCount="1" npcCountMax="1" group="202" summonPos="1500, -300, 3910" summonRot="0,0,135" />
+					<!-- 건너펀 졸몹 -->
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="16">
+						<!-- 레벱2: 플레이어가 점프 할 경우에만 이 사정거리에 들어오도록 하는 범위-->
+						<node name="skill" idx="16">
+							<!-- 레벱2: 원거리 투척 바닥 공격, 점프 공격을 하는 플레이어를 견제하기 위한 목적임-->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1100" faceTarget="1">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FourStage_AttackPattern_Random04">
+			<node name="select" prob="9999,99999,0">
+				<!-- 4-4 스테이지에서의 주요 행동 패턴 -->
+				<node name="target" type="rand" from="10" to="2500" cooltime="6000" />
+				<node name="standby" limit="100" faceTarget="1" cooltime="31000" isKeepBattle="true">
+					<node name="summon" npcId="33" npcCount="1" npcCountMax="1" group="201" summonPos="3750, -900, 4060" summonRot="0,0,135" />
+					<!-- 1층지형 졸몹, 이 쫄몹은 AI_SkullWizardCaptainWhite.xml  에서도 추가 소환함  -->
+					<node name="summon" npcId="33" npcCount="1" npcCountMax="1" group="202" summonPos="3750, -1200, 4060" summonRot="0,0,135" />
+					<!-- 1층지형 졸몹, 이 쫄몹은 AI_SkullWizardCaptainWhite.xml  에서도 추가 소환함  -->
+					<node name="summon" npcId="33" npcCount="1" npcCountMax="1" group="203" summonPos="4050, -1500, 4060" summonRot="0,0,135" />
+					<!-- 1층지형 졸몹, 이 쫄몹은 AI_SkullWizardCaptainWhite.xml  에서도 추가 소환함  -->
+					<node name="summon" npcId="33" npcCount="1" npcCountMax="1" group="204" summonPos="4350, -1500, 4060" summonRot="0,0,135" />
+					<!-- 1층지형 졸몹, 이 쫄몹은 AI_SkullWizardCaptainWhite.xml  에서도 추가 소환함  -->
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="16">
+						<!-- 레벱2: 플레이어가 점프 할 경우에만 이 사정거리에 들어오도록 하는 범위-->
+						<node name="skill" idx="16">
+							<!-- 레벱2: 원거리 투척 바닥 공격, 점프 공격을 하는 플레이어를 견제하기 위한 목적임-->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1100" faceTarget="1">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FiveStage_AttackPattern_Random01">
+			<node name="select" prob="9999,9999,0">
+				<!-- 5-1 스테이지에서의 주요 행동 패턴 -->
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="rand" from="10" to="2400" cooltime="9000" />
+				<!--잔챙이 소환몹 일정 시간마다 호출,  비교적 자주 호출함, 여기 전투 컨셉이 때거지 졸몹 임-->
+				<node name="standby" limit="100" faceTarget="1" cooltime="11000">
+					<node name="conditions">
+						<condition name="extraData" key="SummonMonsterNumber" value="1" op="greaterEqual">
+							<!-- 이 변수는 잔챙이 졸몹이 죽을 때마다 -1 되는데 잔챙이가 많이 죽어서 이 변수가 0 이하가 되면 소환 행위 멈춤 -->
+							<node name="standby" limit="110" faceTarget="0" isKeepBattle="true">
+								<node name="summon" npcId="34" npcCount="1" npcCountMax="1" group="201" summonPos="1350, 6000, 2860" summonRot="0,0,-45" />
+								<!-- Short -->
+								<node name="summon" npcId="35" npcCount="1" npcCountMax="1" group="202" summonPos="1650, 5850, 2860" summonRot="0,0,-45" />
+								<!-- Short -->
+								<node name="summon" npcId="35" npcCount="1" npcCountMax="1" group="203" summonPos="1800, 6250, 2860" summonRot="0,0,-45" />
+								<!-- Short -->
+								<node name="summon" npcId="34" npcCount="1" npcCountMax="1" group="204" summonPos="2100, 6000, 2860" summonRot="0,0,-45" />
+								<!-- Short -->
+								<node name="summon" npcId="36" npcCount="1" npcCountMax="1" group="205" summonPos="1800, 5550, 2860" summonRot="0,0,-45" />
+								<!-- Girl -->
+								<node name="summon" npcId="37" npcCount="1" npcCountMax="1" group="206" summonPos="1650, 6150, 2860" summonRot="0,0,-45" />
+								<!-- Girl -->
+								<node name="summon" npcId="36" npcCount="1" npcCountMax="1" group="207" summonPos="1950, 5850, 2860" summonRot="0,0,-45" />
+								<!-- Girl -->
+								<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="208" summonPos="1800, 6450, 2860" summonRot="0,0,-45" />
+								<!-- Tall 원거리 투척-->
+								<node name="summon" npcId="38" npcCount="1" npcCountMax="1" group="209" summonPos="2025, 6225, 2860" summonRot="0,0,-45" />
+								<!-- Tall 원거리 투척-->
+								<node name="summon" npcId="38" npcCount="1" npcCountMax="1" group="210" summonPos="2400, 6000, 2860" summonRot="0,0,-45" />
+								<!-- Tall 원거리 투척-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="110" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="99,20,20,20,19,20,1">
+							<node name="skill" cooltime="19000" idx="14">
+								<!--거대 판 투사체 -->
+								<node name="standby" limit="1100" faceTarget="1" />
+								<!--여기 페이즈에서 HP 75% 이하가 되면 바로 메인 전투판으로 순간이동 해야 하기 때문에 standby 시간 너무 길게 하지 않음 -->
+							</node>
+							<node name="skill" cooltime="6000" idx="1">
+								<!--한번 베기 공격 -->
+								<node name="standby" limit="900" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="7000" idx="3">
+								<!--2연혹 베기 공격 -->
+								<node name="skill" idx="4">
+									<node name="standby" limit="1400" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="12000" idx="11">
+								<!--마법 채찍공격 -->
+								<node name="standby" limit="900" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="24000" idx="11">
+								<!--마법 채찍공격 -->
+								<node name="skill" faceTarget="0" idx="12">
+									<!--마법 채찍공격 -->
+									<node name="standby" limit="1200" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="15000" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="standby" limit="1300" faceTarget="1" />
+							</node>
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="25,25,25,25">
+							<!--거리 1800 이내 -->
+							<node name="skill" cooltime="22000" idx="14">
+								<!--거대 판 투사체 -->
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+							<node name="skill" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+							<node name="skill" idx="15">
+								<!--유도탄 바닥 -->
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+							<node name="trace" limit="2500" skillIdx="1" />
+							<!--거리 700 이내로 추적하기 -->
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="800" faceTarget="1">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FiveStage_AttackPattern_Random02">
+			<node name="select" prob="9999,9999,0">
+				<!-- 5-2 스테이지에서의 주요 행동 패턴, 여기는 전투판이 좁아서 standby 상대적으로 길게 설정해야 전투가 쾌적함 -->
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="near" from="10" to="2400" cooltime="9000" />
+				<!--잔챙이 소환몹 일정 시간마다 호출-->
+				<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+					<node name="conditions">
+						<condition name="extraData" key="SummonMonsterNumber" value="1" op="greaterEqual">
+							<!-- 이 변수는 잔챙이 졸몹이 죽을 때마다 -1 되는데 잔챙이가 많이 죽어서 이 변수가 0 이하가 되면 소환 행위 멈춤 -->
+							<node name="standby" limit="50" faceTarget="0" isKeepBattle="true">
+								<node name="summon" npcId="39" npcCount="1" npcCountMax="1" group="201" summonPos="3300, 3150, 2860" summonRot="0,0,-45" />
+								<node name="summon" npcId="39" npcCount="1" npcCountMax="1" group="202" summonPos="3300, 4500, 2860" summonRot="0,0,-45" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="50" faceTarget="0" />
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="30,30,14,13,13">
+							<!--레벨2 같은 높이 대상 거리 700 -->
+							<node name="skill" faceTarget="1" cooltime="9000" idx="11">
+								<!--마법 채찍공격, 가운데 공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="13000" idx="12">
+								<!--마법 채찍공격, 양측면 공격 , facePos = "2700, 3300, 3000"-->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="2">
+								<!--한번 베기 공격, 레벨2 같은 높이 대상만 공격 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="4">
+								<!--2연혹 베기 공격, 레벨2 같은 높이 대상만 공격 -->
+								<node name="skill" idx="4">
+									<node name="target" type="near" from="10" to="1500">
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" idx="17">
+								<!--유도탄 바닥, 레벨3: 같은 전투판에서만 공격 , 바닥 유지시간 짧음-->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="50,50">
+							<!--거리 1800 이내 -->
+							<node name="skill" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="18">
+								<!--유도탄 바닥, 레벨4: 바닥 유지시간 짧음-->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="800" faceTarget="1">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FiveStage_AttackPattern_Random03">
+			<node name="select" prob="9999,9999,0">
+				<!-- 5-3 스테이지에서의 주요 행동 패턴, 여기는 전투판이 좁아서 standby 상대적으로 길게 설정해야 전투가 쾌적함 -->
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="near" from="10" to="2400" cooltime="9000" />
+				<!--잔챙이 소환몹 일정 시간마다 호출-->
+				<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+					<node name="conditions">
+						<condition name="extraData" key="SummonMonsterNumber" value="1" op="greaterEqual">
+							<!-- 이 변수는 잔챙이 졸몹이 죽을 때마다 -1 되는데 잔챙이가 많이 죽어서 이 변수가 0 이하가 되면 소환 행위 멈춤 -->
+							<node name="standby" limit="50" faceTarget="0" isKeepBattle="true">
+								<node name="summon" npcId="40" npcCount="1" npcCountMax="1" group="201" summonPos="4950, 3000, 2860" summonRot="0,0,-45" />
+								<node name="summon" npcId="41" npcCount="1" npcCountMax="1" group="202" summonPos="6000, 1950, 2860" summonRot="0,0,-45" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="50" faceTarget="0" />
+						</condition>
+					</node>
+				</node>
+				<!--여기저기 순간이동 하기, 우선 12시 6시 순간이동만 사용, 3시 9시는 졸몹이 나오기 때문에-->
+				<!--		<skill id="50001341" level="1" prob="999" cooltime = "27000">	 
+				<teleport pos = "5850, 2850, 2860"  prob="82" cooltime = "41000"> 	  12시 
+					<standby limit="2100"  faceTarget="1"  prob="100"/>	
+				</teleport>		
+					
+			 <teleport pos = "5850, 2100, 2860"  prob="25" cooltime = "81000"> 	3시 
+					<standby limit="2100"  faceTarget="1"  prob="100"/>	
+				</teleport>		
+
+				<teleport pos = "5100, 2100, 2860"  prob="18" cooltime = "41000"> 	  6시
+					<standby limit="2100"  faceTarget="1"  prob="100"/>	
+				</teleport>		
+
+				<teleport pos = "5100, 2850, 2860"  prob="25" cooltime = "81000"> 	  9시 
+					<standby limit="2100"  faceTarget="1"  prob="100"/>	
+				</teleport>							
+			</skill>		-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="11">
+						<node name="select" prob="33,33,299,33">
+							<!--거리 1030, 같은 높이 전투판, 여기서는 이동없이, 대미지필드 중앙에서 채찍과 사방 유도탄 공격 패턴을 함 -->
+							<node name="skill" cooltime="9000" idx="11">
+								<!--마법 채찍공격 정면 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="9000" idx="11">
+								<!--마법 채찍공격 정면 -->
+								<node name="skill" idx="12">
+									<!--마법 채찍공격 측면-->
+									<node name="target" type="rand" from="10" to="1500">
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="21000" idx="5">
+								<!--사방 유도탄 HP 강제 절반 깎기 -->
+								<node name="standby" limit="1300" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="9000" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="13">
+						<node name="select" prob="50,50">
+							<!--거리 1800 이내 -->
+							<node name="skill" idx="13">
+								<!--덩어리 투사체 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" idx="18">
+								<!--유도탄 바닥, 레벨4 바닥 유지시간 짧은거 -->
+								<node name="target" type="near" from="10" to="1500">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="800" faceTarget="1">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="SkillBreak_AttackPattern">
+			<node name="select" prob="99999,0">
+				<!--스킬 브레이크 패턴 사용-->
+				<node name="SetValue" cooltime="9999999" key="BreakPattern" value="0">
+					<!--전투 상태가 되자마자 바로 변수 셋팅-->
+					<!--스킬 브레이크 패턴 시작때 저주 상태면 전투가 쾌적하지 못해서 이 트리거 신호를 통해 플레이어 저주를 제거시켜줌 -->
+					<node name="TriggerSetUserValue" triggerID="121" key="DayNightChange" value="3" />
+					<!--DayNightChange = 3 신호를 맵 트리거에 보내면 플레이어의 각종 저주 모조리 제거함, 이 저주 제거는 보스 메인 전투판 안에 있는 플레이어에게만 적용함-->
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="BreakPattern" value="0">
+						<node name="skill" facePos="6000, 6600, 2410" isKeepBattle="true" idx="27">
+							<!-- 점프 도약-->
+							<node name="sidePopup" type="cutin" illust="Cutin_Ishura_Dark_01" duration="5000" />
+							<!-- ##연출: 강력 스킬 발동 때 컷인 이미지 출력-->
+							<node name="jump" pos="6000, 6600, 2410" speed="800" heightMultiplier="0.4" />
+							<!-- 점프 이동중-->
+							<node name="skill" faceTarget="0" idx="28" />
+							<!-- 점프 착지-->
+							<node name="buff" type="add" id="50004546" level="1" />
+							<!--레벨1이 4인 던전용: 특정 라텐타 스킬로만 공격 해야만 공격이 먹히도록 하기 위한 애디셔널 부여하기, DungeonMissionCheckSkillBreakTime.xml 이 트리거에서 체크함 -->
+							<node name="skill" facePos="5250, 5850, 2410" idx="32" />
+							<!--기력 모으기 시작 동작-->
+							<node name="skill" faceTarget="0" idx="33" />
+							<node name="SetValue" key="BreakPattern" value="1" />
+							<!--  변수 1로 셋팅해여 아래 부분 실행하도록 하기 -->
+							<node name="SetValue" key="SkillBreakTeleport" value="0" />
+							<!-- 이 변수가 6 이상 되면 순간이동 하도록 하기위해 사용하는 변수 0으로 꼭 초기화 하기-->
+						</node>
+					</condition>
+					<condition name="true">
+						<!--  BreakPattern 변수가  0이 아닌 경우 이 부분 실행, 즉 이 몬스터가 쉴드 애디셔널이 붙고 난 다음에 이 쉴드 애디셔널이 사라질 때까지 계속 이부분 반복 실행함 -->
+						<node name="conditions">
+							<condition name="extraData" key="brokenShieldFail" value="1">
+								<!-- brokenShieldFail = 1  이라는 것은, 쉴드 애디셔널 파괴 실패했다는 뜻임  (1이면 true, 0이면 false임)  -->
+								<!-- 몬스터의 쉴드 애디셔널 유지 시간이 다 되었는데, 쉴드 애디셔널 HP를 전부 깎는데 실패하면, 이 부분 실행하여 플레이어에게 극 광역스킬 난사함 -->
+								<node name="TriggerSetUserValue" isKeepBattle="true" triggerID="123" key="SkillBreakStart" value="1">
+									<!-- MS2TriggerModel  ID : 123   SkillBreakStart = 1 신호를 BgmChangeSkillBreakReset.xml 트리거에 보내서 스킬브레이크 실패 초기화 처리하기, 시간까지 전부 초기화 함-->
+									<node name="teleport" pos="5700, 6300, 2410" />
+									<!-- 내려찍기 공격 직전 중앙으로 순간이동으로 이동하기 -->
+									<node name="sidePopup" type="talk" illust="Ishura_Dark_smile" script="$IshuraRbladerDark_Break_IshuraAttack$" voice="ko/Npc/00002195" duration="12000" />
+									<!-- ##연출: 강력 스킬 발동 때 컷인 이미지 출력-->
+									<node name="skill" facePos="5250, 5850, 2410" idx="34" />
+									<!-- 레벨3: 광역 스킬 난사  플레이어 전멸, 레벨3에는 무적 HP 회복 애디셔널 부여, 4인 이슈라 던전 전용 스킬, 플레이어 죽이는 것이 목적이 아니라서 대미지는 없음-->
+									<node name="standby" limit="5000" faceTarget="1" />
+									<node name="SetValue" key="BreakPattern" value="0" />
+									<!-- 다음번 사용을 위해 변수 초기화 -->
+									<node name="SetValue" key="SkillBreakPhaseOn" value="0" />
+									<!--이 변수도 다음 사용을 위해 초기화 하기 , 스킬브레이크 다시 시작할때 플레이어가 이슈라 근처에 있다면 위 상위 단계에서 거리체크로 이 변수 1로 셋팅하여 다시 사용하게 할 것임   중요: 스킬브레이크 막기 실패하면 모든 플레이어 메인 전투판에서 쫓겨나고 이 변수 다시 0으로 초기화 해서, 플레이어가 메인 전투판에 들어서야 스킬 브레이크 패턴 시작하도록 함-->
+									<!-- 이 맵에 설정된 모든 트리거에 초기화 신호 보내기 -->
+									<node name="TriggerSetUserValue" triggerID="121" key="DungeonReset" value="1" />
+									<!--    보스가 스킬 브레이크 발동하면 던전 초기화 실행하기, DayNightChangeDebuff.xml-->
+									<node name="TriggerSetUserValue" triggerID="123" key="DungeonReset" value="1" />
+									<!--    보스가 스킬 브레이크 발동하면 던전 초기화 실행하기, BgmChangeSkillBreakReset.xml-->
+									<node name="TriggerSetUserValue" triggerID="902" key="DungeonReset" value="1" />
+									<!--    보스가 스킬 브레이크 발동하면 던전 초기화 실행하기, PortalStage02.xml -->
+									<node name="TriggerSetUserValue" triggerID="903" key="DungeonReset" value="1" />
+									<!--    보스가 스킬 브레이크 발동하면 던전 초기화 실행하기, PortalStage03.xml -->
+									<node name="TriggerSetUserValue" triggerID="904" key="DungeonReset" value="1" />
+									<!--    보스가 스킬 브레이크 발동하면 던전 초기화 실행하기, PortalStage04.xml -->
+									<node name="TriggerSetUserValue" triggerID="905" key="DungeonReset" value="1" />
+									<!--    보스가 스킬 브레이크 발동하면 던전 초기화 실행하기, PortalStage05.xml -->
+									<node name="TriggerSetUserValue" triggerID="906" key="DungeonReset" value="1" />
+									<!--    보스가 스킬 브레이크 발동하면 던전 초기화 실행하기, PortalStage06Boss.xml -->
+									<node name="standby" limit="300" faceTarget="0" />
+									<!-- 최종 초기화 하는 bossSpawn.xml 는 약간 0.3초 뒤에 사용하도록 하는 것이 안정성이 있음-->
+									<node name="TriggerSetUserValue" triggerID="120" key="DungeonReset" value="1" />
+									<!--    보스가 스킬 브레이크 발동하면 던전 초기화 실행하기, bossSpawn.xml , 이곳에 <action name="몬스터소멸시킨다" arg1="all" > 기능이 실행되기 때문에 이 초기화는 맨 마지막에 하는 것이 좋음 -->
+								</node>
+							</condition>
+							<condition name="extraData" key="remainShieldHP" value="1" op="greaterEqual">
+								<!--쉴드 애디셔널의 HP가 1 이상인 경우:  remainShieldHP 는 쉴드 애디셔널의 HP 수치로 이 수치가 0이 되면 해당 애디셔널 제거되는데, 즉 이 쉴드 애디셔널이 남아있는지를 조건  체크 하는 것임  -->
+								<!--쉴드 애디셔널이 이 몬스터 몸에 존재하는 동안 이 부분을 계속 반복 실행함 -->
+								<node name="conditions">
+									<condition name="extraData" key="SkillBreakTeleport" value="4" op="lessEqual">
+										<node name="SetValue" key="SkillBreakTeleport" value="1" isModify="1">
+											<node name="select" prob="35,65">
+												<!--이 변수 0으로 시작해서 1씩 더해서 5 이상 되면 순간이동 하도록 하기 -->
+												<node name="skill" faceTarget="0" idx="33" />
+												<!--기력 모으기 동작 진행 -->
+												<node name="skill" faceTarget="0" cooltime="3200" idx="37">
+													<!--기력 모으기 바닥 스킬 -->
+													<node name="target" type="near" from="10" to="2300" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<!--SkillBreakTeleport 변수가 5 이상이 되면 딱 한번 순간이동하도록 하기 -->
+										<node name="SetValue" key="SkillBreakTeleport" value="-99">
+											<!--순간이동 단계로 넘어오면 이 변수 -99로 만들어, 이 모드 도중에 다시는 5이상이 절대 되지 못하도로 하기 -->
+											<node name="skill" faceTarget="0" idx="33">
+												<node name="select" prob="20,30,20,30">
+													<!--기력 모으기 동작 중 순간이동 하기 -->
+													<node name="teleport" pos="6525, 7125, 2410" cooltime="18000">
+														<!--12시쪽 -->
+														<node name="skill" faceTarget="0" idx="33" />
+														<!--순간이동 끝나고 기력 모으기 동작 꼭 넣기, 순간이동에 의해 순간 어긋나는 상황이 가끔 발생해서 버그 예방 차원으로 -->
+													</node>
+													<node name="teleport" pos="6525, 5925, 2410" cooltime="18000">
+														<!--3시쪽 -->
+														<node name="skill" faceTarget="0" idx="33" />
+														<!--순간이동 끝나고 기력 모으기 동작 꼭 넣기, 순간이동에 의해 순간 어긋나는 상황이 가끔 발생해서 버그 예방 차원으로 -->
+													</node>
+													<node name="teleport" pos="5250, 5850, 2410" cooltime="18000">
+														<!--6시쪽 -->
+														<node name="skill" faceTarget="0" idx="33" />
+														<!--순간이동 끝나고 기력 모으기 동작 꼭 넣기, 순간이동에 의해 순간 어긋나는 상황이 가끔 발생해서 버그 예방 차원으로 -->
+													</node>
+													<node name="teleport" pos="5325, 7125, 2410" cooltime="18000">
+														<!--9시쪽 -->
+														<node name="skill" faceTarget="0" idx="33" />
+														<!--순간이동 끝나고 기력 모으기 동작 꼭 넣기, 순간이동에 의해 순간 어긋나는 상황이 가끔 발생해서 버그 예방 차원으로 -->
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="extraData" key="brokenShieldSuccess" value="1">
+								<!-- brokenShieldSuccess = 1  이라는 것은, 쉴드 애디셔널 파괴 성공했다는 뜻임  (1이면 true, 0이면 false임)  -->
+								<!-- 몬스터의 쉴드 애디셔널의 HP를 전부 깎아서 이 쉴드 애디셔널 강제 제거를 성공하면, 이 부분 실행함 -->
+								<node name="SetValue" key="BreakPattern" value="0">
+									<!-- 다음번 사용을 위해 변수 초기화 -->
+									<node name="SetValue" key="SkillBreakPhaseOn" value="0">
+										<!--이 변수도 다음 사용을 위해 초기화 하기 , 스킬브레이크 다시 시작할때 플레이어가 이슈라 근처에 있다면 위 상위 단계에서 거리체크로 이 변수 1로 셋팅하여 다시 사용하게 할 것임   중요: 스킬브레이크 막기 실패하면 모든 플레이어 메인 전투판에서 쫓겨나고 이 변수 다시 0으로 초기화 해서, 플레이어가 메인 전투판에 들어서야 스킬 브레이크 패턴 시작하도록 함-->
+										<node name="SetValue" key="FinalSkillBreakPhaseStop" value="1">
+											<!-- 중요 : 이 변수를 1로 셋팅해 마지막 페이지에서의 스킬 브레이크 인 경우에는 막기 성공시 딱 한번만 사용하도록 설정하기, 마지막 페이즈에 들어서면 이변수 0 초기화 하기 때문에 75%~65% 구간에서 이렇게 설정해도 괜찮음-->
+											<node name="buff" type="add" id="70002171">
+												<!-- 스킬브레이크 정해진 시간 내에 잘 막았는지 트리거에서 체크하기 위한 버프 부여하기 , DungeonMissionCheckSkillBreakTime.xml 이 트리거에서 체크해 던전 미션 클리어 처리 하기- -->
+												<node name="SetValue" key="SkillBreakCoolTime" value="4">
+													<!-- 스킬브레이크 막으면 잠시 몇번 일반 공격 행동하고 다시 스킬브레이크 사용하게 하기 위해 이 변수에 숫자 셋팅-->
+													<node name="TriggerSetUserValue" triggerID="124" key="SkillBreakSuccess" value="1">
+														<!--SkillBreakSuccess = 1 신호를 DungeonMissionCheckSkillBreakClear.xml 맵 트리거에 보내 던전 미션 클리어 처리 하기-->
+														<node name="say" message="$IshuraRbladerDark_Break_IshuraDamage$" durationTick="8000" delayTick="0">
+															<node name="select" prob="99,1">
+																<node name="skill" faceTarget="0" cooltime="39000" idx="35">
+																	<!-- 약공격 동작 출력-->
+																	<node name="standby" limit="2370" faceTarget="0" />
+																</node>
+																<node name="skill" faceTarget="0" idx="36">
+																	<!-- 기절 동작 출력-->
+																	<node name="standby" limit="2370" faceTarget="0" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!-- 이론적으로 여기 부분 올일 없음 -->
+								<node name="standby" limit="2000" faceTarget="0">
+									<node name="SetValue" key="BreakPattern" value="0" />
+									<!-- 다음번 사용을 위해 변수 초기화 -->
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="SkillBreakCoolTime_AttackPattern">
+			<node name="select" prob="9999,0">
+				<node name="target" type="rand" from="10" to="1800" cooltime="8000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="SetValue" key="SkillBreakCoolTime" value="-1" isModify="1">
+							<node name="select" prob="1,33,33,33">
+								<node name="skill" idx="1">
+									<!--한번 베기 공격 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="15000" idx="3">
+									<!--2연혹 베기 공격 -->
+									<node name="skill" idx="4">
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" cooltime="15000" isKeepBattle="true" idx="11">
+									<!--마법 채찍공격  정면-->
+									<node name="skill" idx="12" />
+									<!--마법 채찍공격  정면-->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="SetValue" key="SkillBreakCoolTime" value="-1" isModify="1" />
+								</node>
+								<node name="skill" faceTarget="1" cooltime="15000" isKeepBattle="true" idx="19">
+									<node name="skill" faceTarget="1" idx="20" />
+									<!-- 대기 -->
+									<node name="skill" faceTarget="0" idx="23" />
+									<!-- 거대발사 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="SetValue" key="SkillBreakCoolTime" value="-1" isModify="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="13">
+						<!--거리 1800 이내 -->
+						<node name="trace" limit="3500" skillIdx="1" />
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="800" faceTarget="1">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FinalPhase_AttackPattern">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="19">
+					<node name="select" prob="9999,299,0">
+						<!-- 거리 1200 -->
+						<!-- 투척 연속 패턴, 넓은 대미지 필드설치 -->
+						<node name="skill" facePos="6050, 6650, 2410" cooltime="121000" isKeepBattle="true" idx="27">
+							<!-- 순간이동 -->
+							<node name="jump" pos="6050, 6650, 2410" speed="800" heightMultiplier="0.4" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!-- 착지 -->
+							<node name="skill" faceTarget="1" idx="19" />
+							<node name="skill" faceTarget="1" idx="21" />
+							<!-- 바닥 넓은 대미지 필드 설치 -->
+							<node name="skill" faceTarget="1" idx="20" />
+							<!-- 대기 -->
+							<node name="skill" faceTarget="1" idx="22" />
+							<!-- 발사 -->
+							<node name="skill" faceTarget="1" idx="20" />
+							<!-- 대기 -->
+							<node name="skill" faceTarget="1" idx="20" />
+							<!-- 대기 -->
+							<node name="skill" faceTarget="1" idx="22" />
+							<!-- 발사 -->
+							<node name="skill" faceTarget="1" idx="20" />
+							<!-- 대기 -->
+							<node name="skill" faceTarget="1" rob="100" idx="22" />
+							<!-- 발사 -->
+							<node name="skill" faceTarget="1" idx="20" />
+							<!-- 대기 -->
+							<node name="skill" faceTarget="0" idx="23" />
+							<!-- 거대발사 -->
+							<node name="standby" limit="1300" faceTarget="1" />
+						</node>
+						<!-- 돌진 연속 패턴, 자주 사용하면 근거리 클래스가 넘 불편하니 가끔 사용하도록 -->
+						<node name="skill" faceTarget="1" cooltime="48000" isKeepBattle="true" idx="6">
+							<node name="skill" faceTarget="1" idx="7" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<!--돌진 전 투척 바닥 공격 -->
+							<node name="skill" faceTarget="1" idx="7" />
+							<node name="skill" faceTarget="1" idx="7" />
+							<node name="skill" faceTarget="0" idx="8" />
+							<!--돌진 공격 발동 -->
+							<node name="skill" faceTarget="1" idx="7" />
+							<node name="target" type="rand" from="10" to="1800" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<!--돌진 전 투척 바닥 공격 -->
+							<node name="skill" faceTarget="1" idx="7" />
+							<node name="skill" faceTarget="1" idx="7" />
+							<node name="skill" faceTarget="0" idx="8" />
+							<!--돌진 공격 발동 -->
+							<node name="skill" faceTarget="0" idx="9" />
+							<node name="standby" limit="1300" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="40,20,20,20">
+									<!-- 점프 이동 후 투척 연속 패턴 -->
+									<node name="skill" facePos="6600, 7200, 2410" cooltime="36000" isKeepBattle="true" idx="27">
+										<!-- 점프 이동-->
+										<node name="jump" pos="6600, 7200, 2410" speed="800" heightMultiplier="0.4" />
+										<node name="skill" faceTarget="0" idx="28" />
+										<!-- 착지 -->
+										<node name="standby" limit="2100" faceTarget="1" />
+										<node name="skill" faceTarget="1" idx="19" />
+										<node name="skill" faceTarget="1" idx="20" />
+										<!-- 대기 -->
+										<node name="skill" faceTarget="1" idx="22" />
+										<!-- 발사 -->
+										<node name="skill" faceTarget="1" idx="20" />
+										<!-- 대기 -->
+										<node name="skill" faceTarget="1" idx="22" />
+										<!-- 발사 -->
+										<node name="skill" faceTarget="0" idx="23" />
+										<!-- 거대발사 -->
+										<node name="standby" limit="1800" faceTarget="1" />
+										<node name="skill" faceTarget="1" idx="19" />
+										<node name="skill" faceTarget="1" idx="20" />
+										<!-- 대기 -->
+										<node name="skill" faceTarget="0" idx="23" />
+										<!-- 거대발사 -->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="7000" idx="1">
+										<!--한번 베기 공격 -->
+										<node name="standby" limit="1100" faceTarget="1" />
+									</node>
+									<node name="skill" idx="3">
+										<!--2연혹 베기 공격 -->
+										<node name="skill" idx="4">
+											<node name="standby" limit="1300" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" cooltime="8000" idx="11">
+										<!--마법 채찍공격  정면-->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="2500" skillIdx="6" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="800" faceTarget="1">
+						<node name="target" type="near" from="10" to="2500" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

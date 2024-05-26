@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="StageSummonMany" value="1" isModify="1" />
+				<!--전투 상태가 되면 소환몹 마리수 체크 +1 신호 보냄-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투 -->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="SummonStageDeath" value="1">
+				<!--  인페르녹이 졸구간에서 HP 10% 이상 깎이면 이 신호를 보냄-->
+				<node name="skill" idx="3" />
+				<!-- 자살 스킬 사용하기-->
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,0">
+					<node name="target" type="near" from="2" to="2800" cooltime="3000" />
+					<aiPreset name="Normal_Attack" />
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="StageSummonMany" value="-1" isModify="1">
+					<!--죽으면  소환몹 마리수 체크 -1 신호 보냄-->
+					<node name="SetValueRangeTarget" key="ColleagueMonsterMany" value="-1" radius="12500" height="1500" isModify="1" />
+					<!-- 크림슨발록에게 죽음 -1 신호를 보내서 동료 몬스터가 얼마 없으면 방어 버프 스킬 사용 멈추고 일반 공격 행동 하도록 함-->
+				</node>
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<!--근접 공격-->
+					<node name="skill" idx="2">
+						<node name="select" prob="33,33,34">
+							<!--근접 공격-->
+							<node name="standby" limit="100" faceTarget="0" />
+							<node name="standby" limit="120" faceTarget="0" />
+							<node name="standby" limit="200" faceTarget="0" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<!--원거리 공격-->
+					<node name="skill" idx="1">
+						<node name="select" prob="33,33,34">
+							<!--원거리 공격-->
+							<node name="standby" limit="2900" faceTarget="1" />
+							<node name="standby" limit="3800" faceTarget="1" />
+							<node name="standby" limit="4500" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1500" faceTarget="1">
+						<node name="target" type="near" from="2" to="1600" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,9999,9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<node name="standby" limit="10" faceTarget="1" cooltime="20000" initialCooltime="5000">
+				<node name="select" prob="100,100">
+					<node name="runaway" till="1500" limit="2000">
+						<node name="standby" limit="2500" faceTarget="1" />
+					</node>
+					<node name="target" type="far" from="10" to="1000">
+						<node name="trace" limit="2000" skillIdx="8" />
+						<!--distance 200짜리 가짜 스킬 데이터-->
+					</node>
+				</node>
+			</node>
+			<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="15000">
+				<node name="runaway" till="900" limit="2000">
+					<node name="standby" limit="3000" faceTarget="1" />
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<!--1페이즈 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<node name="select" prob="20,20,60">
+								<node name="skill" idx="6">
+									<!-- P1_1 : 평타 점프 공격-->
+									<node name="trace" limit="4000" skillIdx="6" />
+								</node>
+								<node name="skill" idx="1">
+									<!-- P1_2 : 대쉬 점프 공격 + 연속 제자리 공격-->
+									<node name="skill" cooltime="5000" idx="3">
+										<node name="standby" limit="2500" faceTarget="0" />
+									</node>
+								</node>
+								<node name="skill" cooltime="10000" idx="6">
+									<!-- P1_3 : 평타 점프 공격 후 대쉬 점프 공격-->
+									<node name="skill" cooltime="5000" idx="1">
+										<node name="select" prob="50,50">
+											<node name="standby" limit="2500" faceTarget="0" />
+											<node name="trace" limit="4000" skillIdx="6" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="100,100">
+								<!--P1_4 : 2회 대쉬 점프 공격-->
+								<node name="skill" cooltime="5000" idx="1">
+									<node name="skill" idx="1">
+										<node name="select" prob="50,50">
+											<node name="standby" limit="2500" faceTarget="0" />
+											<node name="trace" limit="4000" skillIdx="6" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="1">
+									<!--P1_5 : 대쉬 점프 공격 후 평타 점프 공격-->
+									<node name="skill" idx="6">
+										<node name="select" prob="50,50">
+											<node name="standby" limit="2500" faceTarget="0" />
+											<node name="trace" limit="4000" skillIdx="6" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="3000" skillIdx="1" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="40">
+					<!--2페이즈 소환+ 큐브-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="10,10,0">
+								<node name="skill" cooltime="15000" idx="1">
+									<node name="select" prob="40,999">
+										<!--대쉬 점프 공격-->
+										<node name="skill" cooltime="5000" idx="3">
+											<node name="select" prob="50,50">
+												<!--연속 제자리 공격-->
+												<node name="standby" limit="2000" faceTarget="0" />
+												<node name="trace" limit="4000" skillIdx="6" />
+											</node>
+										</node>
+										<node name="skill" cooltime="10000" initialCooltime="1" idx="5">
+											<!--펑펑 버블링 소환-->
+											<node name="standby" limit="2000" faceTarget="0" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="15000" idx="1">
+									<node name="select" prob="20,70,100">
+										<!--2연속 대쉬 점프 공격-->
+										<node name="skill" cooltime="6000" idx="1">
+											<node name="select" prob="40,50">
+												<node name="skill" idx="2">
+													<node name="select" prob="30,70">
+														<!--연속 제자리 공격-->
+														<node name="standby" limit="2000" faceTarget="0" />
+														<node name="trace" limit="4000" skillIdx="6" />
+													</node>
+												</node>
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+										<node name="skill" cooltime="10000" idx="2">
+											<!--광역 슬로우 후-->
+											<node name="standby" limit="2000" faceTarget="0" />
+										</node>
+										<node name="standby" limit="1000" faceTarget="0" />
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="6">
+										<node name="skill" idx="6">
+											<node name="select" prob="30,70">
+												<!--평타 점프 공격-->
+												<node name="standby" limit="1000" faceTarget="0" />
+												<node name="trace" limit="4000" skillIdx="6" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" limit="4000" skillIdx="6" />
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="3000" skillIdx="1" />
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="100,0">
+						<!--HP 40% 이하 페이즈-->
+						<node name="skill" cooltime="15000" idx="4">
+							<!--작아져랏-->
+							<node name="standby" limit="2000" faceTarget="0" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="30,30,30">
+									<node name="skill" cooltime="5000" idx="2">
+										<node name="standby" limit="2000" faceTarget="0" />
+									</node>
+									<node name="skill" cooltime="10000" idx="1">
+										<node name="skill" cooltime="10000" initialCooltime="1" idx="1">
+											<!--대쉬 2회 후 소환-->
+											<node name="standby" limit="2000" faceTarget="0" />
+										</node>
+									</node>
+									<node name="skill" idx="7">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="3">
+												<node name="skill" idx="3">
+													<node name="standby" limit="2000" faceTarget="0" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="trace" limit="3000" skillIdx="3" />
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="7">
+								<!--큐브 쓰고  연속찍기까지 추적한후 소환 -->
+								<node name="skill" idx="7">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="3">
+											<node name="skill" idx="3">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="trace" limit="3000" skillIdx="3" />
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="2">
+								<!--큐브 스킬 쓰고 광역 쓰고 다시 큐브 스킬-->
+								<node name="skill" idx="7">
+									<node name="select" prob="999,30">
+										<node name="skill" cooltime="10000" initialCooltime="1" idx="1">
+											<!--대쉬 2회 후 소환-->
+											<node name="standby" limit="2000" faceTarget="0" />
+										</node>
+										<node name="skill" idx="2">
+											<node name="skill" idx="7">
+												<node name="select" prob="50,50">
+													<node name="standby" limit="500" faceTarget="0" />
+													<node name="skill" cooltime="10000" initialCooltime="1" idx="5">
+														<!--광역 쿵하고 소환하고 큐브스킬 이후 점프대쉬공격-->
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="5000" skillIdx="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

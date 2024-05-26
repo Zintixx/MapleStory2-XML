@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="101">
+			<node name="MinimumHp" hpPercent="1" />
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="skill" idx="2" initialCooltime="15000">
+				<node name="standby" limit="500" faceTarget="1" />
+				<node name="skill" idx="4" />
+				<node name="standby" limit="5000" faceTarget="1" />
+				<!-- 화살이 보스에게 닿을때 까지 살아있어야 한다.-->
+				<node name="TriggerSetUserValue" triggerID="99999995" key="Remove1" value="1" />
+				<node name="RemoveMe" />
+			</node>
+			<node name="conditions">
+				<condition name="hpLess" value="2">
+					<!--체력 2% 이하로 떨어지면 체력하한 제거 및 자폭-->
+					<node name="skill" idx="3" level="1" />
+					<node name="standby" limit="500" faceTarget="1" />
+					<node name="TriggerSetUserValue" triggerID="99999995" key="Remove1" value="1" />
+					<node name="MinimumHp" />
+					<node name="Suicide" />
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<node name="target" type="far" from="10" to="2700" cooltime="10000" initialCooltime="10000">
+							<node name="standby" limit="500" faceTarget="0" />
+							<node name="skill" idx="1" />
+						</node>
+						<node name="standby" limit="200" faceTarget="0" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

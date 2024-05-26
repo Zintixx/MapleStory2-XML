@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,9999,0">
+			<!--맨 마지막 페이즈에서 사용하기 위한 변수 최초 선언-->
+			<node name="standby" limit="500" faceTarget="0" cooltime="999999" isKeepBattle="true">
+				<node name="setData" key="aiBattleTime" value="0" />
+				<!--battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+				<node name="SetValue" key="PhysicalOrLaserMode" value="0" />
+				<!--PhysicalOrLaserMode  현재 물리공격 모드인지 레이저공격 모드인지를 체크하기 위한 변수-->
+				<node name="SetValue" key="ModeChange" value="0" />
+				<!--ModeChange 공격 모드 전환되면 최초로 모드전환 동작을 하기위해 체크하기는 변수-->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="15000">
+				<node name="target" type="rand" from="10" to="1800" />
+			</node>
+			<node name="conditions">
+				<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="20000" battleTimeLoop="9900000">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="9">
+							<node name="select" prob="55,44,1">
+								<!--사정거리 800 이내에 있으면-->
+								<!--##도중에 자세 변경하는 행위-->
+								<node name="skill" idx="7">
+									<!--손뼉치기 페이크-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="23">
+											<!--사정거리 360 이내에 있으면-->
+											<node name="skill" faceTarget="0" idx="23">
+												<!--사방 바닥쾅!~  공격-->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="skill" faceTarget="0" idx="8">
+												<!--그냥 손뼉치기 사용-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+								<node name="skill" idx="9">
+									<!--주먹 휘두르기 준비동작-->
+									<node name="skill" faceTarget="0" idx="10">
+										<!--주먹 휘두르기 1타 -->
+										<node name="skill" faceTarget="0" idx="11">
+											<!--주먹 휘두르기 2타 -->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99,1">
+								<node name="trace" limit="2500" skillIdx="1" />
+								<!--거리 250까지 쫒아가기-->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="combatTime" battleTimeBegin="20000" battleTimeEnd="60000" battleTimeLoop="9900000">
+					<node name="select" prob="9999,0">
+						<!--시계 설치 최초 -->
+						<node name="skill" cooltime="99000" idx="15">
+							<!--시계 설치-->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="9">
+								<!--사정거리 800 이내에 있으면-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="23">
+										<node name="select" prob="75,25">
+											<!--사정거리 360 이내에 있으면-->
+											<node name="skill" idx="23">
+												<!--사방 바닥쾅!~  공격-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="6">
+												<!--손뼉치기-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="30,40,30">
+											<!--##도중에 자세 변경하는 행위-->
+											<node name="skill" idx="7">
+												<!--손뼉치기 페이크-->
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="23">
+														<!--사정거리 360 이내에 있으면-->
+														<node name="skill" faceTarget="0" idx="23">
+															<!--사방 바닥쾅!~  공격-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="skill" faceTarget="0" idx="8">
+															<!--그냥 손뼉치기 사용-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</condition>
+												</node>
+											</node>
+											<node name="skill" idx="9">
+												<!--주먹 휘두르기 준비동작-->
+												<node name="skill" faceTarget="0" idx="10">
+													<!--주먹 휘두르기 1타-->
+													<node name="skill" faceTarget="0" idx="11">
+														<node name="select" prob="60,40">
+															<!--주먹 휘두르기 2타-->
+															<node name="move" destination="-750, -900, 1700" limit="3000" cooltime="22000" />
+															<!--종종 맵 중앙으로 이동함-->
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="30000" initialCooltime="30000" idx="16">
+												<!--양손 지속 레이저-->
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="70,30">
+									<node name="trace" limit="3000" skillIdx="1" />
+									<!--거리 250까지 쫒아가기-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="combatTime" battleTimeBegin="60000" battleTimeEnd="95000" battleTimeLoop="9900000">
+					<node name="select" prob="9999,99,0">
+						<!--회전 레이저 최초 -->
+						<node name="skill" cooltime="990000" idx="15">
+							<!--시계 설치-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<!--90도 회전 레이저 공격 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="26000">
+							<node name="select" prob="50,50">
+								<node name="skill" cooltime="43000" idx="2">
+									<!--앞뒤 회전 레이저 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="43000" idx="4">
+									<!--좌우 회전 레이저 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="9">
+								<node name="select" prob="36,32,32">
+									<node name="skill" idx="16">
+										<!--양손 지속 레이저-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="6">
+										<!--손뼉치기-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<!--##도중에 자세 변경하는 행위-->
+									<node name="skill" idx="9">
+										<!--주먹 휘두르기 준비동작-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="23">
+												<!--사정거리 360 이내에 있으면-->
+												<node name="skill" faceTarget="0" idx="23">
+													<!--사방 바닥쾅!~  공격-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" faceTarget="0" idx="10">
+													<!--그냥 주먹 휘두르기 1타-->
+													<node name="skill" faceTarget="0" idx="11">
+														<node name="select" prob="60,40">
+															<!--그냥 주먹 휘두르기 1타-->
+															<node name="move" destination="-750, -900, 1700" limit="4000" cooltime="25000" />
+															<!--종종 맵 중앙으로 이동함-->
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<node name="trace" limit="3000" skillIdx="1" />
+									<!--거리 250까지 쫒아가기-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="combatTime" battleTimeBegin="95000" battleTimeEnd="130000" battleTimeLoop="9900000">
+					<node name="select" prob="9999,999,0">
+						<node name="skill" cooltime="99000" idx="15">
+							<!--시계 설치-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<!--90도 회전 레이저 공격 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="26000">
+							<node name="select" prob="34,33,33">
+								<node name="skill" idx="2">
+									<!--앞뒤 회전 레이저 -->
+									<node name="skill" faceTarget="0" idx="4">
+										<!--좌우 회전 레이저 -->
+										<node name="move" destination="-750, -900, 1700" limit="4000" />
+										<!--종종 맵 중앙으로 이동함-->
+									</node>
+								</node>
+								<node name="skill" cooltime="45000" idx="2">
+									<!--앞뒤 회전 레이저 -->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="45000" idx="4">
+									<!--좌우 회전 레이저 -->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="9">
+								<node name="select" prob="45,30,25">
+									<!--사정거리 800 이내에 있으면-->
+									<node name="skill" idx="16">
+										<!--양손 지속 레이저-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<!--##도중에 자세 변경하는 행위-->
+									<node name="skill" idx="7">
+										<!--손뼉치기 페이크-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="23">
+												<!--사정거리 360 이내에 있으면-->
+												<node name="skill" faceTarget="0" idx="23">
+													<!--사방 바닥쾅!~  공격-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" faceTarget="0" idx="8">
+													<!--그냥 손뼉치기 사용-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="9">
+										<!--주먹 휘두르기 준비동작-->
+										<node name="skill" faceTarget="0" idx="10">
+											<!--주먹 휘두르기 1타-->
+											<node name="skill" faceTarget="0" idx="11">
+												<node name="select" prob="50,50">
+													<!--주먹 휘두르기 2타-->
+													<node name="move" destination="-750, -900, 1700" limit="4000" cooltime="45000" />
+													<!--종종 맵 중앙으로 이동함-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<node name="trace" limit="2500" skillIdx="1" />
+									<!--거리 250까지 쫒아가기-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="combatTime" battleTimeBegin="130000" battleTimeEnd="200000" battleTimeLoop="9900000">
+					<node name="select" prob="9999,9999,999,0">
+						<!--곱하기 나누기 설치 최초 -->
+						<node name="skill" cooltime="999000" idx="15">
+							<!--시계 설치-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="10" faceTarget="1" cooltime="30000">
+							<node name="select" prob="50,50">
+								<node name="skill" cooltime="50000" idx="18">
+									<!--곱하기 나누기 설치, 곱하기가 2개 더 많음-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="50000" idx="19">
+									<!--곱하기 나누기 설치, 나누기가 2개 더 많음-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<!--90도 회전 레이저 공격 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="26000">
+							<node name="select" prob="25,25,25,25">
+								<node name="skill" idx="2">
+									<!--앞뒤 회전 레이저 -->
+									<node name="skill" faceTarget="0" idx="4">
+										<!--좌우 회전 레이저 -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" idx="2">
+									<!--앞뒤 회전 레이저 -->
+									<node name="skill" faceTarget="0" idx="4">
+										<!--좌우 회전 레이저 -->
+										<node name="skill" faceTarget="0" idx="2">
+											<!--앞뒤 회전 레이저 -->
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="45000" idx="4">
+									<!--좌우 회전 레이저 -->
+									<node name="skill" faceTarget="0" cooltime="45000" idx="2">
+										<!--앞뒤 회전 레이저 -->
+										<node name="move" destination="-750, -900, 1700" limit="4000" />
+										<!--종종 맵 중앙으로 이동함-->
+									</node>
+								</node>
+								<node name="skill" cooltime="45000" idx="2" />
+								<!--앞뒤 회전 레이저 -->
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="9">
+								<!--사정거리 800 이내에 있으면-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="23">
+										<node name="select" prob="75,25">
+											<!--사정거리 360 이내에 있으면-->
+											<node name="skill" idx="23">
+												<!--사방 바닥쾅!~  공격-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="6">
+												<node name="select" prob="50,50">
+													<!--손뼉치기-->
+													<node name="move" destination="-750, -900, 1700" limit="3000" cooltime="22000" />
+													<!--종종 맵 중앙으로 이동함-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="40,30,30">
+											<node name="skill" idx="16">
+												<!--양손 지속 레이저-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="6">
+												<!--손뼉치기-->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<node name="skill" idx="9">
+												<!--주먹 휘두르기 준비동작-->
+												<node name="skill" faceTarget="0" idx="10">
+													<!--주먹 휘두르기-->
+													<node name="skill" faceTarget="0" idx="11">
+														<node name="select" prob="60,40">
+															<!--주먹 휘두르기 2타-->
+															<node name="move" destination="-750, -900, 1700" limit="4000" cooltime="22000" />
+															<!--종종 맵 중앙으로 이동함-->
+															<node name="standby" limit="500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<node name="trace" limit="3000" skillIdx="1" />
+									<!--거리 250까지 쫒아가기-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="combatTime" battleTimeBegin="200000" battleTimeEnd="300000" battleTimeLoop="9900000">
+					<node name="select" prob="99,99,999,0">
+						<!--나누기 큐브 바닥에 많이 뿌리기 -->
+						<node name="skill" cooltime="45000" idx="15">
+							<!--시계 설치-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="10" faceTarget="1" cooltime="35000">
+							<node name="move" destination="-750, -900, 1700" limit="4000">
+								<node name="select" prob="999,33,33,33">
+									<!--종종 맵 중앙으로 이동함-->
+									<node name="skill" cooltime="999000" idx="20">
+										<!--곱하기 나누기 설치, 곱하기가 무지 많음-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" idx="20">
+										<!--곱하기 나누기 설치, 곱하기가 무지 많음-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="50000" idx="18">
+										<!--곱하기 나누기 설치, 곱하기가 2개 더 많음-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="50000" idx="19">
+										<!--곱하기 나누기 설치, 나누기가 2개 더 많음-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--90도 회전 레이저 공격 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="30000">
+							<node name="select" prob="25,25,25,25">
+								<node name="skill" idx="2">
+									<!--앞뒤 회전 레이저 -->
+									<node name="skill" faceTarget="0" idx="4">
+										<!--좌우 회전 레이저 -->
+										<node name="move" destination="-750, -900, 1700" limit="3000" cooltime="22000" />
+										<!--종종 맵 중앙으로 이동함-->
+									</node>
+								</node>
+								<node name="skill" idx="2">
+									<!--앞뒤 회전 레이저 -->
+									<node name="skill" faceTarget="0" idx="4">
+										<!--좌우 회전 레이저 -->
+										<node name="skill" faceTarget="0" idx="2">
+											<!--앞뒤 회전 레이저 -->
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="45000" idx="4">
+									<!--좌우 회전 레이저 -->
+									<node name="skill" faceTarget="0" idx="2">
+										<!--앞뒤 회전 레이저 -->
+									</node>
+								</node>
+								<node name="skill" cooltime="45000" idx="2" />
+								<!--앞뒤 회전 레이저 -->
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="9">
+								<node name="select" prob="33,27,20,20">
+									<node name="skill" cooltime="45000" idx="16">
+										<!--양손 지속 레이저-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<!--##도중에 자세 변경하는 행위-->
+									<node name="skill" cooltime="45000" idx="7">
+										<!--손뼉치기 페이크-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="23">
+												<!--사정거리 360 이내에 있으면-->
+												<node name="skill" faceTarget="0" idx="23">
+													<!--사방 바닥쾅!~  공격-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" faceTarget="0" idx="8">
+													<!--그냥 손뼉치기 사용-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="9">
+										<!--주먹 휘두르기 준비동작-->
+										<node name="skill" faceTarget="0" idx="10">
+											<!--주먹 휘두르기 1타-->
+											<node name="skill" faceTarget="0" idx="11">
+												<node name="select" prob="60,40">
+													<!--주먹 휘두르기 1타-->
+													<node name="move" destination="-750, -900, 1700" limit="4000" cooltime="22000" />
+													<!--종종 맵 중앙으로 이동함-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<!--##도중에 자세 변경하는 행위-->
+									<node name="skill" idx="9">
+										<!--주먹 휘두르기 준비동작-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="23">
+												<!--사정거리 360 이내에 있으면-->
+												<node name="skill" faceTarget="0" idx="23">
+													<!--사방 바닥쾅!~  공격-->
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" faceTarget="0" idx="10">
+													<!--그냥 주먹 휘두르기 사용 1타-->
+													<node name="skill" faceTarget="0" idx="11">
+														<!--그냥 주먹 휘두르기 사용 2타-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<node name="trace" limit="2500" skillIdx="1" />
+									<!--거리 250까지 쫒아가기-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="combatTime" battleTimeBegin="300000" battleTimeEnd="480000" battleTimeLoop="9900000">
+					<!--5~8분 구간에 물리공격모드 레이저 공격 모드 전환하기, 한방 엄청 후덜덜 -->
+					<node name="conditions">
+						<condition name="extraData" key="ModeChange" value="0">
+							<!--공격 모드 전환하기 위해, 변환 행동을 취하는 부분 -->
+							<node name="conditions">
+								<condition name="extraData" key="PhysicalOrLaserMode" value="1">
+									<!--현재 물리 공격 모드이면-->
+									<node name="skill" isKeepBattle="true" idx="22">
+										<!-- 레이저공격 모드로 전환하기-->
+										<node name="SetValue" key="PhysicalOrLaserMode" value="2" />
+										<!-- PhysicalOrLaserMode에 2을 넣어 레이저공격 모드임을 알림-->
+										<node name="SetValue" key="ModeChange" value="4" />
+										<!-- ModeChange = 4 을 넣고 실제 공격 행동때 -1씩 빼기 -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--현재 레이저 공격 모드이면-->
+									<node name="skill" isKeepBattle="true" idx="21">
+										<!-- 물리공격 모드로 전환하기-->
+										<node name="SetValue" key="PhysicalOrLaserMode" value="1" />
+										<!-- PhysicalOrLaserMode에 1을 넣어 물리공격 모드임을 알림-->
+										<node name="SetValue" key="ModeChange" value="4" />
+										<!-- ModeChange = 4 을 넣고 실제 공격 행동때 -1씩 빼기 -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,99,0">
+								<!--여기서 현재 공격 모드에 맞게, 공격 행위를 함-->
+								<node name="skill" cooltime="60000" initialCooltime="400000" idx="15">
+									<!--시계 설치, 이 페이지 들어서고 100초 지나면 사용함-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="50000">
+									<node name="select" prob="50,25,25">
+										<node name="skill" idx="20" />
+										<!--곱하기 나누기 설치, 곱하기가 무지 많음-->
+										<node name="skill" idx="18" />
+										<!--곱하기 나누기 설치, 곱하기가 2개 더 많음-->
+										<node name="skill" idx="19" />
+										<!--곱하기 나누기 설치, 나누기가 2개 더 많음-->
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="extraData" key="PhysicalOrLaserMode" value="1">
+										<!--PhysicalOrLaserMode = 1 은 물리공격 모드-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="24">
+												<node name="select" prob="70,30">
+													<!--사정거리 360 이내에 있으면-->
+													<node name="skill" idx="24">
+														<!--사방 바닥쾅!~  공격-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="skill" isKeepBattle="true" idx="12">
+														<!--주먹 휘두르기 준비동작-->
+														<node name="skill" faceTarget="0" idx="13" />
+														<!--주먹 휘두르기 1타-->
+														<node name="skill" faceTarget="0" idx="14" />
+														<!--주먹 휘두르기 2타-->
+														<node name="SetValue" key="ModeChange" value="-1" isModify="1" />
+														<node name="move" destination="-750, -900, 1700" limit="4000" />
+														<!--종종 맵 중앙으로 이동함-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="52,48">
+													<node name="skill" isKeepBattle="true" idx="12">
+														<!--주먹 휘두르기 준비동작-->
+														<node name="skill" faceTarget="0" idx="13" />
+														<!--주먹 휘두르기-->
+														<node name="skill" faceTarget="0" idx="14" />
+														<!--주먹 휘두르기 2타-->
+														<node name="SetValue" key="ModeChange" value="-1" isModify="1" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="skill" isKeepBattle="true" idx="12">
+														<!--주먹 휘두르기 준비동작-->
+														<node name="skill" faceTarget="0" idx="13" />
+														<!--주먹 휘두르기 1타-->
+														<node name="skill" faceTarget="0" idx="14" />
+														<!--주먹 휘두르기 2타-->
+														<node name="skill" idx="12" />
+														<!--주먹 휘두르기 준비동작-->
+														<node name="skill" faceTarget="0" idx="13" />
+														<!--주먹 휘두르기-->
+														<node name="skill" faceTarget="0" idx="14" />
+														<!--주먹 휘두르기 2타-->
+														<node name="SetValue" key="ModeChange" value="-1" isModify="1" />
+														<node name="move" destination="-750, -900, 1700" limit="4000" />
+														<!--종종 맵 중앙으로 이동함-->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</condition>
+									<condition name="true">
+										<!--PhysicalOrLaserMode = 2 은 마법공격 모드-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="9">
+												<node name="select" prob="35,35,30">
+													<!--사정거리 800 이내에 있으면-->
+													<node name="skill" cooltime="15000" isKeepBattle="true" idx="17">
+														<!--양손 레이저 공격       레벨2: 레이저 모드용-->
+														<node name="SetValue" key="ModeChange" value="-1" isModify="1" />
+														<node name="move" destination="-750, -900, 1700" limit="4000" />
+														<!--종종 맵 중앙으로 이동함-->
+													</node>
+													<node name="skill" isKeepBattle="true" idx="17">
+														<!--양손 레이저 공격       레벨2: 레이저 모드용-->
+														<node name="skill" idx="17" />
+														<node name="SetValue" key="ModeChange" value="-1" isModify="1" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<!--90도 회전 레이저 공격, 레벨2: 레이저 공격모드용 (스턴기능 있음)-->
+													<node name="standby" limit="10" faceTarget="1" cooltime="15000">
+														<node name="select" prob="35,35,30">
+															<node name="skill" cooltime="42000" isKeepBattle="true" idx="3">
+																<!--앞뒤 회전 레이저 -->
+																<node name="skill" faceTarget="0" idx="5" />
+																<!--좌우 회전 레이저 -->
+																<node name="SetValue" key="ModeChange" value="-1" isModify="1" />
+																<node name="move" destination="-750, -900, 1700" limit="4000" />
+																<!--종종 맵 중앙으로 이동함-->
+															</node>
+															<node name="skill" cooltime="42000" isKeepBattle="true" idx="5">
+																<!--좌우 회전 레이저 -->
+																<node name="skill" faceTarget="0" idx="3" />
+																<!--앞뒤 회전 레이저 -->
+																<node name="SetValue" key="ModeChange" value="-1" isModify="1" />
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+															<node name="skill" isKeepBattle="true" idx="3">
+																<!--앞뒤 회전 레이저 -->
+																<node name="skill" faceTarget="1" idx="3" />
+																<!--앞뒤 회전 레이저 -->
+																<node name="SetValue" key="ModeChange" value="-1" isModify="1" />
+																<node name="standby" limit="1000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="90,9,1">
+													<node name="move" destination="-750, -900, 1700" limit="4000" cooltime="35000" />
+													<!--종종 맵 중앙으로 이동함-->
+													<node name="trace" limit="2500" skillIdx="1" />
+													<!--거리 250까지 쫒아가기-->
+													<node name="standby" limit="2000" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,5">
+						<!--8~10분 마지막까지 무조건 알람 공격만 하기 -->
+						<node name="buff" type="remove" id="50001020" cooltime="999000">
+							<!--물리 공격 모드 이펙트  제거-->
+							<node name="buff" type="remove" id="50001021">
+								<!--레이저 공격 모드 이펙트  제거-->
+								<node name="move" destination="-750, -900, 1700" limit="6000" />
+								<!--맵 중앙으로 이동함-->
+							</node>
+						</node>
+						<!--알람 공격 무한 반복-->
+						<node name="standby" limit="500" facePos="-1350, -1500, 1700" isKeepBattle="true">
+							<node name="skill" facePos="-1950, -2100, 1700" idx="25" />
+							<node name="skill" faceTarget="0" idx="26" />
+							<!--공격 Tick 2번 -->
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="27" />
+							<!--공격 Tick 1번, 밀치기 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="27" />
+							<!--공격 Tick 1번, 밀치기 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="27" />
+							<!--공격 Tick 1번, 밀치기 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="27" />
+							<!--공격 Tick 1번, 밀치기 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="28" />
+							<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+							<node name="skill" faceTarget="0" idx="26" />
+							<node name="skill" faceTarget="0" idx="27" />
+							<!--공격 Tick 1번, 밀치기 -->
+							<node name="skill" faceTarget="0" idx="29" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

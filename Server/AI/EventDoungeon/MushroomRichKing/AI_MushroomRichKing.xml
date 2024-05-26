@@ -1,0 +1,2860 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_BB" isKeepBattle="true">
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" summonPosOffset="0,0,0" summonRot="0,0,-45" />
+				<!-- 가마 호출하기 -->
+				<node name="standby" limit="400" faceTarget="1" animation="Attack_Idle_BB" />
+				<!-- Attack_Idle_BB 는 의자 없는 형태의 컬리전 박스 위치 높게 설정해 플레이어가 때리지 못하게 설정한 것임-->
+				<node name="ride" type="slave" isRideOff="false" />
+				<node name="standby" limit="30" faceTarget="1" animation="Attack_Idle_BB" />
+				<node name="standby" limit="500" faceTarget="1" animation="Attack_Idle_AA" />
+				<!-- Attack_Idle_AA 는 의자 있는 형태의 컬리전 박스 위치 높게 설정해 플레이어가 때리지 못하게 설정한 것임-->
+				<node name="SetValue" key="AttackMode" value="1" />
+				<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+				<!--이 변수  AttackMode =  2 로 셋팅되는 것은 메인 전투에서의 공격 횟수가 다 되면 이동 모드로 전환 되는 것이라서 자기 자신이 하이 하나, AttackMode =  1 로 셋팅되는 것은 이동 모드에서 다 도착하는 것이 기준이라서 가마쪽 AI에서 신호 받도록 설정했음  -->
+				<node name="SetValue" key="MainZone" value="1" />
+				<!-- MainZone-->
+				<node name="SetValue" key="RoadMove" value="1" />
+				<!-- RoadMove-->
+				<node name="SetValue" key="MainZoneContinue" value="0" />
+				<!-- 무지 중요한 변수로  MainZone에서의 공격 모드에서  0 이면 공격 행동 하기 위한 각종 수치 초기화 작업, 1이면 공격 행도 끝내고 다음 턴으로 넘어가기 위한 각종 수치 초기화 작업, 2이면 메인존에서 전투 끝내고 빠져나오기, 3 이상이면 공격 행동 모드임 -->
+				<!-- 즉 이 변수가 MainZoneContinue = 1 혹은 2가 된다는 것은 굉장히 중요한 의미가 있기 때문에 주의해야 함-->
+				<node name="SetValue" key="RoadMoveArrive" value="0" />
+				<!-- 정해진 지점으로 도착했는 지를 알려주는 변수 1: 도착을 알림, MainZone 모드와 RoadMove 모드에서 둘다 이 변수 사용함, 이 변수는 가마AI가 머쉬킹AI에게 신호 보내서 자신이 목표 지점에 도착했는지 알게 하는데 사용하는 것임-->
+				<!--가마 파괴 머쉬킹 땅으로 내려오기 작업시 싱크 맞추기 위해 사용하는 변수-->
+				<node name="SetValue" key="VehicleComeDownReady" value="0" />
+				<!-- 이 변수가 1이 되면 가마 내려오게 하기 위한 싱크 맞추기 작업에 들어가게 하기 위해 사용하는 변수-->
+				<node name="SetValue" key="DeathVehicleReadyOk" value="0" />
+				<!-- 이 변수 1 신호를 가마한테 받으면 가마는 자살할 준비가 되었음을 알게 되어서 가마 파괴 머쉬킹 땅으로 내려오기 작업을 실행함 -->
+				<node name="SetValue" key="VehicleOff" value="0" />
+				<!-- 이 변수가 1이 되어 머쉬킹이 가마에 내려와 땅에서 싸우고 있는 상태임을 자신에게 알리는데 사용하는 변수-->
+				<node name="standby" limit="1500" faceTarget="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="30">
+			<!-- HP 30% 이하가 되면 이 변수 1로 만들어 가마 내려오고 싱크 맞추기 작업에 들어가도록 함-->
+			<node name="SetValue" key="VehicleComeDownReady" value="1" />
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="target" type="rand" from="10" to="1500" cooltime="9000" />
+			<node name="conditions">
+				<condition name="extraData" key="VehicleComeDownReady" value="1">
+					<!-- 머쉬킹 HP 30% 이하가 되어 가마파괴 머쉬킹 땅으로 내려오기 작업을 진행함, 가마 파괴 애니와 머쉬킹 땅에 내려오는 모습을 자연스럽게 표현하기 위해 머쉬킹과 가마가 여러번 신호 주고 받는 작업이 이루어 져야 하기 때문에 이 부분 스크립크 코드 다소 복잡하게 설정하였음-->
+					<node name="conditions">
+						<condition name="extraData" key="DeathVehicleReadyOk" value="0">
+							<node name="select" prob="99999,5,1">
+								<!-- 이 단계에 오면 이 부분 최초 실행해서, 가마한테 자살 할 준비를 하라고 신호를 보냄-->
+								<node name="standby" limit="230" faceTarget="0" cooltime="197704">
+									<node name="SetSlaveValue" key="DeathVehicleReady" value="1" />
+									<!-- 가마에게  이 변수 1을 보내서 자살 할 준비를 취하도록 신호를 보냄-->
+								</node>
+								<!-- 가마에게 DeathVehicleReady = 1  신호 보낸 이후에,  다시 가마한테 DeathVehicleReadyOk = 1 신호 받기 이전까지 머쉬킹이 가만히 있으면 어색하니 적당히 일반 공격 행동 하도록 설정함-->
+								<node name="skill" cooltime="4300" idx="10" />
+								<node name="standby" limit="300" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- DeathVehicleReadyOk = 1 인 경우로 가마에게 이 변수 1 신호를 받아서 지금 자살 명령 내려도 괜찮다는 상황임을 머쉬킹 AI에서 알 수 있도록 함-->
+							<node name="SetSlaveValue" isKeepBattle="true" key="DeathVehicleAction" value="1" isModify="1">
+								<!-- 가마에게  이 변수 1을 보내서 가마에게 자살 명령을 내림-->
+								<node name="standby" limit="900" faceTarget="0" />
+								<node name="ride" type="slave" isRideOff="true" />
+								<!-- 가마에 내려오기-->
+								<node name="skill" faceTarget="0" idx="52" />
+								<!-- 점프 뛰어 땅으로 내려오는 동작-->
+								<node name="SetValue" key="VehicleOff" value="1" />
+								<!-- 이 변수 1로 셋팅하여 자신이 가마에 내려왔음을 알림-->
+								<node name="SetValue" key="VehicleComeDownReady" value="0" />
+								<!-- 중요: 이 변수 0으로 초기화 하여 이후 이 단계에 오지 않도록 함-->
+								<node name="standby" limit="3000" faceTarget="1" animation="Attack_Idle_B" />
+								<!--이미 가마에 내려온 상태이니 머쉬킹 몸에 의자가 있어서는 안되기 때문에 이후로는 꼭 standby 에서  animation="Attack_Idle_B" 넣어야 함 -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="VehicleOff" value="1">
+					<!--가마가 파괴되어 머쉬킹이 땅에 있는 상태에서의 행동 패턴을 정의하는 부분-->
+					<aiPreset name="VehicleOff_AttackPattern" />
+				</condition>
+				<condition name="extraData" key="AttackMode" value="1">
+					<node name="conditions">
+						<condition name="extraData" key="MainZone" value="1">
+							<node name="select" prob="99999,999999,0">
+								<!--메인존 전투판을 총 몇번 들르게 할지를 경정하는데 사용하는 변수, 이 변수 메인존 3부터 사용함 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<node name="select" prob="31,31,31,7">
+										<!-- 전투판 한바퀴 다 돌면 이거 다시 실행해야 하기 때문에 쿨타임 적당히 길게 설정해야 함 -->
+										<node name="SetValue" key="MainZoneMany" value="3" />
+										<node name="SetValue" key="MainZoneMany" value="4" />
+										<node name="SetValue" key="MainZoneMany" value="5" />
+										<node name="SetValue" key="MainZoneMany" value="6" />
+									</node>
+								</node>
+								<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="1" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="MainZone01" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="2">
+							<node name="select" prob="999999,0">
+								<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="1" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="MainZone02" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="3">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="5" op="greaterEqual">
+												<node name="select" prob="50,50">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, MainZoneMany 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="extraData" key="MainZoneMany" value="3" op="greaterEqual">
+												<node name="select" prob="30,70">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, MainZoneMany 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone03" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="4">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="4" op="greaterEqual">
+												<node name="select" prob="50,50">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="extraData" key="MainZoneMany" value="3" op="greaterEqual">
+												<node name="select" prob="30,70">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone04" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="5">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="4" op="greaterEqual">
+												<node name="select" prob="50,50">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="extraData" key="MainZoneMany" value="3" op="greaterEqual">
+												<node name="select" prob="30,70">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone05" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="6">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="4" op="greaterEqual">
+												<node name="select" prob="60,40">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="extraData" key="MainZoneMany" value="3" op="greaterEqual">
+												<node name="select" prob="50,50">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone06" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="7">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="4" op="greaterEqual">
+												<node name="select" prob="70,30">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="extraData" key="MainZoneMany" value="3" op="greaterEqual">
+												<node name="select" prob="50,50">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone07" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="8">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="4" op="greaterEqual">
+												<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+												<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+											</condition>
+											<condition name="extraData" key="MainZoneMany" value="2" op="greaterEqual">
+												<node name="select" prob="50,50">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone08" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="9">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="4" op="greaterEqual">
+												<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+												<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+											</condition>
+											<condition name="extraData" key="MainZoneMany" value="2" op="greaterEqual">
+												<node name="select" prob="60,40">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone09" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="10">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="1" op="greaterEqual">
+												<node name="select" prob="80,20">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone10" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="11">
+							<node name="select" prob="99999,0">
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<!-- 머쉬킹이 우선 AttackMode = 1 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 1 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+									<node name="SetSlaveValue" key="VehicleMode" value="1">
+										<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+										<node name="conditions">
+											<condition name="extraData" key="MainZoneMany" value="1" op="greaterEqual">
+												<node name="select" prob="90,10">
+													<!-- 이 변수 -1 하고 메인존에 들어서기, 이 변수가 0이 되면 더이상 메인존에 들어서지 않음-->
+													<node name="SetValue" key="MainZoneMany" value="-1" isModify="1" />
+													<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+													<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+														<node name="SetValue" key="RoadMoveArrive" value="1" />
+														<node name="SetSlaveValue" key="MainZoning" value="0" />
+														<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- MainZoneMany = 0 이면 메인존 전투판에 더이상 들어서지 않는 다는 뜻임-->
+												<!--  MainZoneContinue 변수하고 RoadMoveArrive 변수를 1로 셋팅하는것은 해당 메인존 거치지 않고 건너뛴다는 것임-->
+												<node name="SetValue" isKeepBattle="true" key="MainZoneContinue" value="1">
+													<node name="SetValue" key="RoadMoveArrive" value="1" />
+													<node name="SetSlaveValue" key="MainZoning" value="0" />
+													<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수로 이 MainZone 들어서지 않을 거기 때문에 가마에게 0 셋팅 신호를 보냄-->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<!-- ## 메인존에 들어살지 말지를 MainZoneMany 이 변수의 수자 크기에 의해 결정하는 부분 ## -->
+								<aiPreset name="MainZone11" />
+							</node>
+						</condition>
+						<condition name="extraData" key="MainZone" value="12">
+							<node name="select" prob="999999,0">
+								<!-- ## 메인존12는 무조건 들르는 단계임, 내리막길 점프이동하는 부분임 ## -->
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="1" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="MainZone12" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 이론적으로 이 단계 올일 없음-->
+							<node name="skill" idx="51">
+								<!-- 점프 도약-->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackMode" value="2">
+					<node name="conditions">
+						<condition name="extraData" key="RoadMove" value="1">
+							<node name="select" prob="999999,0">
+								<!-- 머쉬킹이 우선 AttackMode = 2 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 2 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove01" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="2">
+							<node name="select" prob="999999,999999,0">
+								<!-- 머쉬킹이 우선 AttackMode = 2 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 2 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<!-- @@이전 RoadMove = 1 에서 나왔던 졸병 소환몹 제거@@-->
+								<node name="SetSlaveValue" cooltime="197704" key="DeathSummonMob" value="1" />
+								<!--맵 한바퀴 돌면 이거 다시 실행해야 하기 때문에 쿨타임 3분 정도 설정함-->
+								<aiPreset name="RoadMove02" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="3">
+							<node name="select" prob="999999,0">
+								<!-- 머쉬킹이 우선 AttackMode = 2 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 2 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove03" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="4">
+							<node name="select" prob="999999,0">
+								<!-- 머쉬킹이 우선 AttackMode = 2 모드로 넘어간 이후 뒤이어 가마의 VehicleMode = 2 가 되도록 하기 위해 가마의 모드 전환을 여기서 설정함-->
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove04" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="5">
+							<node name="select" prob="999999,999999,0">
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<!-- @@이전 MainZone = 5 에서 나왔던 졸병 소환몹 제거@@-->
+								<node name="SetSlaveValue" cooltime="197704" key="DeathSummonMob" value="1" />
+								<!--맵 한바퀴 돌면 이거 다시 실행해야 하기 때문에 쿨타임 3분 정도 설정함-->
+								<aiPreset name="RoadMove05" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="6">
+							<node name="select" prob="999999,0">
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove06" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="7">
+							<node name="select" prob="999999,0">
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove07" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="8">
+							<node name="select" prob="999999,0">
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove08" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="9">
+							<node name="select" prob="999999,0">
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove09" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="10">
+							<node name="select" prob="999999,0">
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove10" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="11">
+							<node name="select" prob="999999,999999,0">
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<!-- @@이전 MainZone = 10 단계에서 나왔던 졸병 소환몹 제거@@-->
+								<node name="SetSlaveValue" cooltime="197704" key="DeathSummonMob" value="1" />
+								<!--맵 한바퀴 돌면 이거 다시 실행해야 하기 때문에 쿨타임 3분 정도 설정함-->
+								<aiPreset name="RoadMove11" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoadMove" value="12">
+							<node name="select" prob="999999,0">
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleMode" value="2" />
+								<!-- #가마에게 신호 보내기 VehicleMode =  1 : 전투판 공격 패턴,  VehicleMode =  2 : 길 이동 모드-->
+								<aiPreset name="RoadMove12" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 이론적으로 이 단계 올일 없음-->
+							<node name="skill" idx="51">
+								<!-- 점프 도약-->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 이론적으로 이 단계 올일 없음-->
+					<node name="skill" idx="51">
+						<!-- 점프 도약-->
+						<node name="standby" limit="2000" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<node name="TriggerSetUserValue" triggerID="2423" key="PortalHidden" value="1" />
+		<!--   PortalHidden= 1 신호에 의해서 트리거쪽에서 순간이동 포탈을 다시 생성시킴      param1="2423" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="MainZone01">
+			<node name="conditions">
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--최초에는 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="6" />
+						<!-- $#$ 메인존1 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--  공격 횟수 + 1 -->
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 1 이 되어서 다음 턴으로 넘어가기 위한 각종 변수 설정 하도록 함, 즉 길 이동 모드 전환 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- $#$ 메인존1 에서 실제 전투 행위 정의하는 부분 $#$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="33,34,33">
+								<!-- 투척 바닥 폭발-->
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<!-- 독버섯-->
+								<node name="skill" cooltime="15000" idx="11">
+									<node name="standby" limit="2000" faceTarget="1">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									</node>
+								</node>
+								<!-- 거대 투사체 3개 발사-->
+								<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $#$ 메인존1 에서 실제 전투 행위 정의하는 부분 $#$-->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone02">
+			<!--MainZone02 에서는 전투 도중 점프이동 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+					<!--	<say message="$MushroomRichKing_MainZone02$" durationTick="5000" prob="99999" cooltime = "197704"/>	 메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+					<!-- 메인존에 도착 중인 상태에서의 공격 행동 정의-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<!-- 전방 발사 공격-->
+							<node name="skill" idx="10">
+								<node name="standby" limit="2200" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- 메인존에 도착 중인 상태에서의 공격 행동 정의-->
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="8" />
+						<!-- $#$ 메인존2 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 1, 점프 이동 행동에 이 변수가 영향을 끼침-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 1 이 되어서 다음 턴으로 넘어가기 위한 각종 변수 설정 하도록 함, 즉 길 이동 모드 전환 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 메인 존에서 실제 전투 행위 정의하는 부분-->
+					<node name="conditions">
+						<condition name="extraData" key="MainZoneContinue" value="4" op="greaterEqual">
+							<!--4이상이면 그냥 공격-->
+							<!-- $#$ 메인존2 에서 점프 이동 이전 실제 전투 행위 정의하는 부분 $#$-->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="10">
+									<node name="select" prob="33,25,25,17">
+										<!-- 투척 바닥 폭발-->
+										<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+											<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+											<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<!-- 독버섯-->
+										<node name="skill" cooltime="220000" idx="11">
+											<node name="standby" limit="2000" faceTarget="1">
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+											</node>
+										</node>
+										<!-- 거대 투사체-->
+										<node name="skill" faceTarget="1" cooltime="130000" isKeepBattle="true" idx="12">
+											<node name="skill" faceTarget="1" idx="13" />
+											<node name="skill" faceTarget="0" idx="14" />
+											<node name="standby" limit="1000" faceTarget="1" />
+											<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										</node>
+										<!-- 방향키 반대 상태이상-->
+										<node name="skill" cooltime="33000" idx="15">
+											<node name="standby" limit="2000" faceTarget="1">
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="300" faceTarget="1">
+										<node name="target" type="rand" from="10" to="1300" />
+									</node>
+								</condition>
+							</node>
+							<!-- $#$ 메인존2 에서 점프 이동 이전 실제 전투 행위 정의하는 부분 $#$-->
+						</condition>
+						<condition name="true">
+							<node name="select" prob="999999,0">
+								<!--3 이하면 점프 이동 명령 내리기-->
+								<!--머쉬킹이 점프 이동 하면서 벽타기 큐브 설치 Type 1~3  3개 중 1개 랜덤 설치 함-->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<node name="select" prob="33,33,34">
+										<node name="skill" isKeepBattle="true" idx="4">
+											<!--레벨11: 벽타기 큐브 설치 Type1, 점프 명령 내리기 위해 지팡이 올리기-->
+											<node name="SetSlaveValue" key="MainZoning" value="11" />
+											<!-- 이 변수 11 신호를 가마한테 보내서 점프이동 명령을 내림-->
+											<node name="skill" faceTarget="0" idx="2" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<node name="standby" limit="5000" faceTarget="1" />
+										</node>
+										<node name="skill" isKeepBattle="true" idx="5">
+											<!--레벨12: 벽타기 큐브 설치 Type2, 점프 명령 내리기 위해 지팡이 올리기-->
+											<node name="SetSlaveValue" key="MainZoning" value="11" />
+											<!-- 이 변수 11 신호를 가마한테 보내서 점프이동 명령을 내림-->
+											<node name="skill" faceTarget="0" idx="2" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<node name="standby" limit="5000" faceTarget="1" />
+										</node>
+										<node name="skill" isKeepBattle="true" idx="6">
+											<!--레벨13: 벽타기 큐브 설치 Type3, 점프 명령 내리기 위해 지팡이 올리기-->
+											<node name="SetSlaveValue" key="MainZoning" value="11" />
+											<!-- 이 변수 11 신호를 가마한테 보내서 점프이동 명령을 내림-->
+											<node name="skill" faceTarget="0" idx="2" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<node name="standby" limit="5000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<!-- $#$ 메인존2 에서 점프 이동 이후 실제 전투 행위 정의하는 부분 $#$-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="10">
+										<node name="select" prob="33,34,33">
+											<!-- 투척 바닥 폭발-->
+											<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+												<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+											<!-- 독버섯-->
+											<node name="skill" cooltime="22000" isKeepBattle="true" idx="11">
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+												<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+											<!-- 거대 투사체-->
+											<node name="skill" faceTarget="1" isKeepBattle="true" idx="12">
+												<node name="skill" faceTarget="1" idx="13" />
+												<node name="skill" faceTarget="0" idx="14" />
+												<node name="standby" limit="1000" faceTarget="1" />
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="standby" limit="300" faceTarget="1">
+											<node name="target" type="rand" from="10" to="1300" />
+										</node>
+									</condition>
+								</node>
+								<!-- $#$ 메인존2 에서 점프 이동 이전 실제 전투 행위 정의하는 부분 $#$-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone03">
+			<!--MainZone03 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<node name="select" prob="99999,1">
+						<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+						<!-- 	<say message="$MushroomRichKing_MainZone03$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+						<!--점프 이동으로 메인존에 들어서기 때문에 공격 행동 하지 않고 지팡이 올리는 행동을 함-->
+						<node name="skill" faceTarget="0" cooltime="197704" isKeepBattle="true" idx="1">
+							<node name="skill" faceTarget="0" idx="2" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="standby" limit="2200" faceTarget="1" />
+						</node>
+						<node name="standby" limit="900" faceTarget="1" />
+					</node>
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="10" />
+						<!-- $#$ 메인존3 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,0">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone03 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!--가마가 메인존 전투판 다 빠져나오면 MainZoneContinue = 1 신호를 보낼건데, 이 신호 받을 때까지 이곳에 계속 머물게 됨-->
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="60,40">
+									<!-- 전방 발사 공격-->
+									<node name="skill" idx="10">
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+									<!-- 거대 투사체 3개 발사-->
+									<node name="skill" faceTarget="1" cooltime="8000" isKeepBattle="true" idx="12">
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="0" idx="14" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone03 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- $#$ 메인존3 에서 실제 전투 행위 정의하는 부분, 구석에서 거대 투사체 공격이 핵심 특징 $#$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="299,50,50">
+								<!-- 거대 투사체-->
+								<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+								<!-- 거대 투사체-->
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+								<!-- 투척 바닥 폭발-->
+								<node name="skill" faceTarget="1" cooltime="8000" isKeepBattle="true" idx="10">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $#$ 메인존3 에서 실제 전투 행위 정의하는 부분 $#$-->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone04">
+			<!--MainZone04 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<node name="select" prob="99999,1">
+						<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+						<!-- 	<say message="$MushroomRichKing_MainZone04$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+						<!--점프 이동으로 메인존에 들어서기 때문에 공격 행동 하지 않고 지팡이 올리는 행동을 함-->
+						<node name="skill" faceTarget="0" cooltime="197704" isKeepBattle="true" idx="1">
+							<node name="skill" faceTarget="0" idx="2" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="standby" limit="2200" faceTarget="1" />
+						</node>
+						<node name="standby" limit="900" faceTarget="1" />
+					</node>
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="10" />
+						<!-- $#$ 메인존4 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,0">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone04 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!--가마가 메인존 전투판 다 빠져나오면 MainZoneContinue = 1 신호를 보낼건데, 이 신호 받을 때까지 이곳에 계속 머물게 됨-->
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="999,50,50">
+									<!-- 버프& 디버프 스위치 설치, 레벨 12 디버프 스위치 많은 거-->
+									<node name="skill" cooltime="98000" idx="22">
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+									<!-- 전방 발사 공격-->
+									<node name="skill" idx="10">
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+									<!-- 거대 투사체 3개 발사-->
+									<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="0" idx="14" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone04 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- $#$ 메인존4 에서 점프 이동 이전 실제 전투 행위 정의하는 부분, 점프쾅 공격이 핵심 특징 $#$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="299,65,15,10,10">
+								<!-- 점프 쾅 공격을 명령 신호를 가마에게 보내기, 높은 확률 사용ver-->
+								<node name="SetSlaveValue" cooltime="12000" isKeepBattle="true" key="VehicleAttackMode" value="3">
+									<node name="skill" faceTarget="1" idx="40" />
+									<!-- 의자 잡기-->
+									<node name="skill" faceTarget="0" idx="41" />
+									<node name="skill" faceTarget="0" idx="42" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="200" faceTarget="1" />
+								</node>
+								<!-- 점프 쾅 공격을 명령 신호를 가마에게 보내기-->
+								<node name="SetSlaveValue" isKeepBattle="true" key="VehicleAttackMode" value="3">
+									<node name="skill" faceTarget="1" idx="40" />
+									<!-- 의자 잡기-->
+									<node name="skill" faceTarget="0" idx="41" />
+									<node name="skill" faceTarget="0" idx="42" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="200" faceTarget="1" />
+								</node>
+								<!-- 투척 바닥 폭발-->
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<!-- 독버섯-->
+								<node name="skill" cooltime="12000" idx="11">
+									<node name="standby" limit="2000" faceTarget="1">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									</node>
+								</node>
+								<!-- 거대 투사체-->
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $#$ 메인존4 에서 전투 행위 정의하는 부분 $#$-->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone05">
+			<!--MainZone05 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+					<!-- 	<say message="$MushroomRichKing_MainZone05$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+					<!-- 메인존에서 들어설때의 공격 행동 정의-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="50,50">
+								<!-- 전방 발사 공격-->
+								<node name="skill" idx="10">
+									<node name="standby" limit="2200" faceTarget="1" />
+								</node>
+								<!-- 거대 투사체 3개 발사-->
+								<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- 메인존에서 들어설때의 공격 행동 정의-->
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="10" />
+						<!-- $#$ 메인존5 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,0">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone05 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!--가마가 메인존 전투판 다 빠져나오면 MainZoneContinue = 1 신호를 보낼건데, 이 신호 받을 때까지 이곳에 계속 머물게 됨-->
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="60,40">
+									<!-- 전방 발사 공격-->
+									<node name="skill" idx="10">
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+									<!-- 거대 투사체 3개 발사-->
+									<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="0" idx="14" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone05 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- @@졸병 소환몹 호출@@-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="18000" isKeepBattle="true">
+							<!--		<say message="$MushroomRichKing_SummonCall03$" durationTick="5000" prob="99999" cooltime = "15000">	-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="7050, 1050, 3320" />
+							<!--  근+원 타입-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="6750, 750, 3320" />
+							<!--  근+원 타입-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="6750, 450, 3320" />
+							<!--  근+원 타입-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="104" summonPos="7050, 150, 3320" />
+							<!--  근+원 타입-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!-- $#$ 메인존5 에서 실제 전투 행위 정의하는 부분, 다리 길목에서 전투 진행 $#$-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="35,35,30">
+									<!-- 투척 바닥 폭발-->
+									<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<!-- 거대 투사체-->
+									<node name="skill" faceTarget="1" isKeepBattle="true" idx="12">
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="0" idx="14" />
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									</node>
+									<!--바닥 광역 충격파 공격, VehicleAttackMode = 2 가마 AI에게 신호 보내기-->
+									<node name="SetSlaveValue" cooltime="21000" isKeepBattle="true" key="VehicleAttackMode" value="2">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+										<node name="standby" limit="6000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- $#$ 메인존5 에서 실제 전투 행위 정의하는 부분 $#$-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone06">
+			<!--MainZone06 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<node name="select" prob="99999,1">
+						<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+						<!-- 	<say message="$MushroomRichKing_MainZone06$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+						<!--점프 이동으로 메인존에 들어서기 때문에 공격 행동 하지 않고 지팡이 올리는 행동을 함-->
+						<node name="skill" faceTarget="0" cooltime="197704" isKeepBattle="true" idx="1">
+							<node name="skill" faceTarget="0" idx="2" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="standby" limit="2200" faceTarget="1" />
+						</node>
+						<node name="standby" limit="900" faceTarget="1" />
+					</node>
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="6" />
+						<!-- $#$ 메인존6 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2, !!중요: 거대 레이저 발사 부분이 기본적으로 3회 정도 하기 때문에 여기서는 이 변수 숫자 크기 상대적으로 작게 설정함-->
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,0">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone06 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!--가마가 메인존 전투판 다 빠져나오면 MainZoneContinue = 1 신호를 보낼건데, 이 신호 받을 때까지 이곳에 계속 머물게 됨-->
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="60,40">
+									<!-- 전방 발사 공격-->
+									<node name="skill" idx="10">
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+									<!-- 거대 투사체 3개 발사-->
+									<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="0" idx="14" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone06 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- $#$ 메인존6 에서 실제 전투 행위 정의하는 부분, 전방 거대 레이저 발사 패턴 $#$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="9999,99,65,35">
+								<!--바닥 레이저 발사 2연속-->
+								<node name="skill" faceTarget="1" cooltime="197704" isKeepBattle="true" idx="23">
+									<node name="skill" faceTarget="1" idx="24" />
+									<!--바닥 레이저 발사 TypeA-->
+									<node name="target" type="rand" from="10" to="2000" />
+									<node name="skill" faceTarget="1" idx="25" />
+									<!--자세변경-->
+									<node name="skill" faceTarget="1" idx="27" />
+									<!--바닥 레이저 발사 TypeB-->
+									<node name="skill" faceTarget="0" idx="26" />
+									<!--마무리-->
+									<node name="standby" limit="500" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+								</node>
+								<node name="skill" faceTarget="1" cooltime="35000" isKeepBattle="true" idx="28">
+									<!--거대 레이저 포 준비-->
+									<node name="skill" faceTarget="1" idx="29" />
+									<!--거대 레이저 포 타겟팅 표시 후 발사-->
+									<node name="target" type="rand" from="10" to="2000" />
+									<node name="skill" faceTarget="1" idx="30" />
+									<!--거대 레이저 포 타겟팅 표시-->
+									<node name="target" type="rand" from="10" to="2000" />
+									<node name="skill" faceTarget="1" idx="29" />
+									<!--거대 레이저 포 타겟팅 표시 후 발사-->
+									<node name="target" type="rand" from="10" to="2000" />
+									<node name="skill" faceTarget="1" idx="30" />
+									<!--거대 레이저 포 타겟팅 표시-->
+									<node name="skill" faceTarget="1" idx="30" />
+									<!--거대 레이저 포 타겟팅 표시-->
+									<node name="skill" faceTarget="1" idx="29" />
+									<!--거대 레이저 포 타겟팅 표시 후 발사-->
+									<node name="skill" faceTarget="0" idx="31" />
+									<!-- 마무리 -->
+									<node name="standby" limit="4800" faceTarget="1" />
+									<!-- 의도적으로 standby 시간 더 길게 설정 -->
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+								</node>
+								<node name="skill" faceTarget="1" cooltime="21000" isKeepBattle="true" idx="28">
+									<!--거대 레이저 포 준비-->
+									<node name="target" type="rand" from="10" to="2000" />
+									<node name="skill" faceTarget="1" idx="30" />
+									<!--거대 레이저 포 타겟팅 표시-->
+									<node name="skill" faceTarget="1" idx="29" />
+									<!--거대 레이저 포 타겟팅 표시 후 발사-->
+									<node name="target" type="rand" from="10" to="2000" />
+									<node name="skill" faceTarget="1" idx="29" />
+									<!--거대 레이저 포 타겟팅 표시 후 발사-->
+									<node name="target" type="rand" from="10" to="2000" />
+									<node name="skill" faceTarget="1" idx="30" />
+									<!--거대 레이저 포 타겟팅 표시-->
+									<node name="skill" faceTarget="1" idx="29" />
+									<!--거대 레이저 포 타겟팅 표시 후 발사-->
+									<node name="skill" faceTarget="0" idx="31" />
+									<!-- 마무리 -->
+									<node name="standby" limit="4800" faceTarget="1" />
+									<!-- 의도적으로 standby 시간 더 길게 설정 -->
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+								</node>
+								<!-- 투척 바닥 폭발-->
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $#$ 메인존6 에서 실제 전투 행위 정의하는 부분 $#$-->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone07">
+			<!--MainZone07 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+					<!-- 	<say message="$MushroomRichKing_MainZone07$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+					<!--이 메인존은 순간 이동 하기 때문에 목적지 도착전 상황에서 공격행동 하지 않음-->
+					<node name="standby" limit="300" faceTarget="1" />
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="10" />
+						<!-- $#$ 메인존7 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2-->
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,0">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone07 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!--가마가 메인존 전투판 다 빠져나오면 MainZoneContinue = 1 신호를 보낼건데, 이 신호 받을 때까지 이곳에 계속 머물게 됨-->
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="60,40">
+									<!-- 전방 발사 공격-->
+									<node name="skill" idx="10">
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+									<!-- 거대 투사체 3개 발사-->
+									<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="0" idx="14" />
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone07 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- $#$ 메인존7 에서 실제 전투 행위 정의하는 부분, 12시쪽 구석에서 좌우브레스  $#$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="35,35,15,15">
+								<!-- 예고 이후 폭발, 맵 중앙 지점을 최우선 타겟팅 해야 해서 스킬 사용 방식을 이렇게 설정 -->
+								<node name="standby" limit="1000" faceTarget="1">
+									<node name="select" prob="50,50">
+										<node name="target" type="near" center="8850, 4200, 3300" isKeepBattle="true">
+											<node name="skill" idx="16" />
+											<node name="standby" limit="3000" faceTarget="1" />
+											<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										</node>
+										<node name="target" type="near" center="8700, 4500, 3300" isKeepBattle="true">
+											<node name="skill" idx="16" />
+											<node name="standby" limit="3000" faceTarget="1" />
+											<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										</node>
+									</node>
+								</node>
+								<!-- 좌우 브레스-->
+								<node name="skill" facePos="7800, 3300, 3300" cooltime="9000" isKeepBattle="true" idx="17">
+									<node name="skill" faceTarget="0" idx="18" />
+									<node name="standby" limit="3000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+								<!-- 투척 바닥 폭발-->
+								<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="10">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<!-- 거대 투사체-->
+								<node name="skill" faceTarget="1" cooltime="11000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $#$ 메인존7 에서 실제 전투 행위 정의하는 부분 $#$-->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone08">
+			<!--MainZone08 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+					<!--	<say message="$MushroomRichKing_MainZone08$" durationTick="5000" prob="99999" cooltime = "197704"/>	 메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+					<!-- 메인존에서 들어설때의 공격 행동 정의-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="999,60,40">
+								<!-- 버프& 디버프 스위치 설치, 레벨 12 디버프 스위치 많은 거-->
+								<node name="skill" cooltime="85000" idx="22">
+									<node name="standby" limit="2200" faceTarget="1" />
+								</node>
+								<!-- 전방 발사 공격-->
+								<node name="skill" idx="10">
+									<node name="standby" limit="2200" faceTarget="1" />
+								</node>
+								<!-- 거대 투사체 3개 발사-->
+								<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- 메인존에서 들어설때의 공격 행동 정의-->
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="7" />
+						<!-- $#$ 메인존8 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2, !!중요: 회전 레이저 발사 부분이 기본적으로 오래 공격 하기 때문에 여기서는 이 변수 숫자 크기 상대적으로 작게 설정함-->
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,100">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone08 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!--가마가 메인존 전투판 다 빠져나오면 MainZoneContinue = 1 신호를 보낼건데, 이 신호 받을 때까지 이곳에 계속 머물게 됨-->
+						<!-- 메인존 8 순간이동으로 빠져 나오기 때문에 공격 행동 필요 없음-->
+						<node name="standby" limit="1200" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone08 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 0 이 되어서 다음 턴으로 넘어가기 위한 각종 변수 설정 하도록 함, 즉 길 이동 모드 전환 -->
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- $#$ 메인존8 에서 실제 전투 행위 정의하는 부분, 회전 레이저 패턴 $#$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="99999,19,19,19,19,18,3,3">
+								<!-- 도넛모양 대미지 필드 생성하라고 가마 AI에게 신호 보내기-->
+								<node name="SetSlaveValue" cooltime="197704" key="VehicleAttackMode" value="1">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1">
+										<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+										<node name="standby" limit="2000" faceTarget="0" />
+									</node>
+								</node>
+								<!--회전 레이저 1회-->
+								<node name="skill" faceTarget="1" cooltime="28000" isKeepBattle="true" idx="32">
+									<node name="skill" faceTarget="0" idx="33" />
+									<!--레벨2는 구슬 이펙트 에디셔널 지우기 용도-->
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="4800" faceTarget="1" />
+									<!--회전 레이저 공격 후 standby 시간 의도적으로 더 길게 설정-->
+								</node>
+								<!--회전 레이저 2회-->
+								<node name="skill" faceTarget="1" cooltime="28000" isKeepBattle="true" idx="34">
+									<node name="skill" faceTarget="0" idx="35" />
+									<!--레벨2는 구슬 이펙트 에디셔널 지우기 용도-->
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="4800" faceTarget="1" />
+									<!--회전 레이저 공격 후 standby 시간 의도적으로 더 길게 설정-->
+								</node>
+								<!--앞뒤 회전 레이저 TypeA-->
+								<node name="skill" faceTarget="1" cooltime="28000" isKeepBattle="true" idx="36">
+									<node name="skill" faceTarget="0" idx="37" />
+									<!--레벨2는 구슬 이펙트 에디셔널 지우기 용도-->
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="4800" faceTarget="1" />
+									<!--회전 레이저 공격 후 standby 시간 의도적으로 더 길게 설정-->
+								</node>
+								<!--앞뒤 회전 레이저 TypeB-->
+								<node name="skill" faceTarget="1" cooltime="28000" isKeepBattle="true" idx="38">
+									<node name="skill" faceTarget="0" idx="39" />
+									<!--레벨2는 구슬 이펙트 에디셔널 지우기 용도-->
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="4800" faceTarget="1" />
+									<!--회전 레이저 공격 후 standby 시간 의도적으로 더 길게 설정-->
+								</node>
+								<!--바닥  레이저 -->
+								<node name="skill" faceTarget="1" cooltime="45000" isKeepBattle="true" idx="23">
+									<node name="skill" faceTarget="1" idx="24" />
+									<!-- 레이저 발사TypeA -->
+									<node name="target" type="rand" from="10" to="1300" />
+									<node name="skill" faceTarget="1" idx="25" />
+									<!-- 자세변경 -->
+									<node name="skill" faceTarget="1" idx="27" />
+									<!-- 레이저 발사TypeB -->
+									<node name="skill" faceTarget="0" idx="26" />
+									<!-- 마무리 -->
+									<node name="standby" limit="3000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+								<!-- 투척 바닥 폭발-->
+								<node name="skill" faceTarget="1" cooltime="8000" isKeepBattle="true" idx="10">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+								<!-- 독버섯-->
+								<node name="skill" cooltime="96000" idx="11">
+									<node name="standby" limit="3000" faceTarget="1">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $#$ 메인존8 에서 실제 전투 행위 정의하는 부분 $#$-->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone09">
+			<!--MainZone09 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<node name="select" prob="99999,1">
+						<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+						<!-- 	<say message="$MushroomRichKing_MainZone09$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+						<!--점프 이동으로 메인존에 들어서기 때문에 공격 행동 하지 않고 지팡이 올리는 행동을 함-->
+						<node name="skill" faceTarget="0" cooltime="9999000" isKeepBattle="true" idx="1">
+							<node name="skill" faceTarget="0" idx="2" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="standby" limit="2200" faceTarget="1" />
+						</node>
+						<node name="standby" limit="900" faceTarget="1" />
+					</node>
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="10" />
+						<!-- $#$ 메인존9 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2-->
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,0">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone09 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="999,1">
+									<!-- 버프&디버프 스위치 설치, 이 전투판 빠져나올때 바닥 설치함, 레벨 12 디버프 스위치 많은 거-->
+									<node name="skill" cooltime="85000" idx="22">
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+									<!-- 전방 발사 공격-->
+									<node name="skill" idx="10">
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone09 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- $#$ 메인존9 에서 실제 전투 행위 정의하는 부분, 왼쪽 오른쪽 바닥치기 공격 특징 $#$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="30,30,26,7,7">
+								<!--오른쪽 바닥 치기-->
+								<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="19">
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+								<!--왼쪽 바닥 치기-->
+								<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="20">
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+								<!--바닥 광역 충격파 공격, VehicleAttackMode = 2 가마 AI에게 신호 보내기-->
+								<node name="SetSlaveValue" cooltime="12000" isKeepBattle="true" key="VehicleAttackMode" value="2">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="6000" faceTarget="1" />
+								</node>
+								<!-- 투척 바닥 폭발-->
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<!-- 거대 투사체-->
+								<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $#$ 메인존9 에서 실제 전투 행위 정의하는 부분 $#$-->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone10">
+			<!--MainZone10 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+					<!-- 	<say message="$MushroomRichKing_MainZone10$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+					<!--이 메인존은 순간 이동 하기 때문에 목적지 도착전 상황에서 공격행동 하지 않음-->
+					<node name="standby" limit="2500" faceTarget="1" />
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="10" />
+						<!-- $#$ 메인존10 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,0">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone10 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!--가마가 메인존 전투판 다 빠져나오면 MainZoneContinue = 1 신호를 보낼건데, 이 신호 받을 때까지 이곳에 계속 머물게 됨-->
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="80,20">
+									<!--바닥  레이저 -->
+									<node name="skill" faceTarget="1" cooltime="25000" isKeepBattle="true" idx="23">
+										<node name="skill" faceTarget="1" idx="24" />
+										<!-- 발사 -->
+										<node name="skill" faceTarget="0" idx="26" />
+										<!-- 마무리 -->
+										<node name="standby" limit="4200" faceTarget="1" />
+									</node>
+									<node name="skill" idx="10">
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone10 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- @@졸병 소환몹 호출@@-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="21000" isKeepBattle="true">
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="1200, 7200, 3320" />
+							<!--  근+원 타입-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="900, 7050, 3320" />
+							<!--  근+원 타입-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="675, 6900, 3320" />
+							<!--  근+원 타입-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="104" summonPos="375, 6750, 3320" />
+							<!--  근+원 타입-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="150, 7050, 3320" />
+							<!--  근+원 타입-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="0, 7350, 3320" />
+							<!--  근+원 타입-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!-- $#$ 메인존10 에서 실제 전투 행위 정의하는 부분, 다리 길목에서의 특징 전투 $#$-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="999,50,50">
+									<!-- 투척 바닥 폭발 연속-->
+									<node name="skill" faceTarget="1" cooltime="15000" isKeepBattle="true" idx="10">
+										<node name="standby" limit="1200" faceTarget="1" />
+										<node name="skill" faceTarget="1" idx="10" />
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<!-- 투척 바닥 폭발-->
+									<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<!-- 거대 투사체-->
+									<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="0" idx="14" />
+										<node name="standby" limit="4500" faceTarget="1" />
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- $#$ 메인존10 에서 실제 전투 행위 정의하는 부분 $#$-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone11">
+			<!--MainZone11 에서는 전투판 빠져나오는 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<node name="select" prob="99999,1">
+						<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+						<!-- 	<say message="$MushroomRichKing_MainZone11$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+						<!--점프 이동으로 메인존에 들어서기 때문에 공격 행동 하지 않고 지팡이 올리는 행동을 함-->
+						<node name="skill" faceTarget="0" cooltime="9999000" isKeepBattle="true" idx="1">
+							<node name="skill" faceTarget="0" idx="2" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<node name="standby" limit="2200" faceTarget="1" />
+						</node>
+						<node name="standby" limit="900" faceTarget="1" />
+					</node>
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="400" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="10" />
+						<!-- $#$ 메인존11 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 2-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="2">
+					<node name="select" prob="99999,0">
+						<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 2 가 되어서 가마에게 신호 보내 MainZone11 는 전투판 빠져 나오도록 함 -->
+						<node name="SetSlaveValue" cooltime="197704" key="MainZoneQuit" value="1" />
+						<!-- MainZoneQuit =1 신호를 보내서 가마가 메인존 전투판 빠져나오도록 함 -->
+						<!--가마가 메인존 전투판 다 빠져나오면 MainZoneContinue = 1 신호를 보낼건데, 이 신호 받을 때까지 이곳에 계속 머물게 됨-->
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="skill" idx="10">
+									<node name="standby" limit="400" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- 메인존에서 빠져 나올때의 공격 행동 정의-->
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--주의:   MainZone11 는 전투판 다 빠져 나오면 가마에게  MainZoneContinue =  1 신호를 받아서 아래 부분 진행하도록 함 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- @@졸병 소환몹 호출@@-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="11000" isKeepBattle="true">
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="750, 11050, 3460" />
+							<!--근타입-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="1050, 10750, 3460" />
+							<!-- 근타입-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="1050, 10350, 3460" />
+							<!-- 근타입-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="900, 9850, 3460" />
+							<!-- 근타입-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="105" summonPos="150, 10050, 3460" />
+							<!-- 근타입-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="106" summonPos="150, 10750, 3460" />
+							<!-- 근타입-->
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!-- $#$ 메인존11 에서 실제 전투 행위 정의하는 부분, 사방 소환몹 + 방향키 반대  $#$-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="99999,99,1">
+									<!-- 방향키 반대-->
+									<node name="skill" faceTarget="1" cooltime="95000" isKeepBattle="true" idx="15">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<!-- 버프&디버프 스위치 설치, 레벨 1-->
+									<node name="skill" cooltime="85000" idx="21">
+										<node name="standby" limit="2200" faceTarget="1" />
+									</node>
+									<!-- 투척 바닥 폭발-->
+									<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+										<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- $#$ 메인존11 에서 실제 전투 행위 정의하는 부분 $#$-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainZone12">
+			<!--MainZone12 에서는 전투 도중 점프이동 단계가 있음-->
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!--아직 목적지 도착 이전 상태에서의 공격 행동, 이 변수 가마AI에게 신호 받는 변수임-->
+					<!-- 	<say message="$MushroomRichKing_MainZone12$" durationTick="5000" prob="99999" cooltime = "197704"/>	메인존 이동중 이라는 것을 메시지로 알림 테스트용 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="50,50">
+								<!-- 전방 발사 공격-->
+								<node name="skill" idx="10">
+									<node name="standby" limit="2200" faceTarget="1" />
+								</node>
+								<!-- 거대 투사체 3개 발사-->
+								<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- 이후는  RoadMoveArrive =  1 인 경우로 가마가 메인존 전투판 지점에 도착했기 때문에 메인존 전투판에서 본격 행동을 함-->
+				<condition name="extraData" key="MainZoneContinue" value="0" op="lessEqual">
+					<!--목적지 도착 이후 MainZoneContinue 변수 0이 되기 때문에 이 부분 실행-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--목적지 즉 메인 존에서 도착하면 메인 존 전투 패턴 행위를 위한 기본 셋팅 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetValue" key="MainZoneContinue" value="11" />
+						<!-- $#$ 메인존12 에서 공격 횟수 얼만큼 할지 정하는데 사용하는 변수 $#$-->
+						<!--공격 횟수 + 1-->
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MainZoneContinue" value="1">
+					<!--목적지 즉 메인 존에서 공격 행위를 다 했으면 변수 MainZoneContinue = 1 이 되어서 다음 턴으로 넘어가기 위한 각종 변수 설정 하도록 함, 즉 길 이동 모드 전환 -->
+					<!--머쉬킹이 이 메인 존에 들어서지 않을 경우에도 아래 변수 셋팅 부분만은 꼭 하고 지나가기 때문에 이 부분 주의해야 함 -->
+					<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MainZoneContinue" value="0" />
+						<!--다음 사용을 위해 이 변수 0 초기화 하기(중요)-->
+						<node name="SetValue" key="AttackMode" value="2" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="MainZone" value="1" />
+						<!-- 중요: 마지막 12번 전투판에 오면 이 변수 1로 초기화 하기-->
+						<!-- #가마에게 VehicleMode = 2 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 2 전환된 다음에 VehicleMode = 2 실행 하도록 함-->
+						<node name="SetSlaveValue" key="MainZone" value="1" />
+						<!-- 중요: 가마에게  이마지막 12번 전투판에 오면 이 변수 1로 초기화 하는 신호 보내기-->
+						<node name="SetSlaveValue" key="RoadMoving" value="3" />
+						<!-- 가마 이동 상태 일때 3번에 걸쳐서 이동하는데 사용하는 변수 3으로 셋팅하기(중요)-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기,   이 부분 이 설정 혹시 빼먹을 수 있기 때문에 주의-->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="extraData" key="MainZoneContinue" value="7" op="greaterEqual">
+							<node name="select" prob="45,40,5">
+								<!-- 7이상이면 그냥 공격-->
+								<!-- 투척 바닥 폭발-->
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="900" faceTarget="1" />
+									<!-- standby  시간 의도적으로 짧게 하기-->
+								</node>
+								<!-- 투사체 큰거 3개 발사-->
+								<node name="skill" faceTarget="1" cooltime="8000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<!-- 방향키 반대 상태이상-->
+								<node name="skill" cooltime="25000" idx="15">
+									<node name="standby" limit="3500" faceTarget="1">
+										<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="999999,0">
+								<!-- 6이 이하면 점프 이동 명령 내리기-->
+								<!--머쉬킹이 점프 이동 하면서 내리막길 큐브 설치 Type 1~3  3개 중 1개 랜덤 설치 함-->
+								<node name="standby" limit="100" faceTarget="1" cooltime="197704">
+									<node name="select" prob="33,33,34">
+										<node name="skill" isKeepBattle="true" idx="7">
+											<!-- 레벨21: 내리막길 큐브 설치, 점프 명령 내리기 위해 지팡이 올리기-->
+											<node name="SetSlaveValue" key="MainZoning" value="11" />
+											<!-- 이 변수 11 신호를 가마한테 보내서 점프이동 명령을 내림-->
+											<node name="skill" faceTarget="0" idx="2" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<node name="standby" limit="5000" faceTarget="1" />
+										</node>
+										<node name="skill" isKeepBattle="true" idx="8">
+											<!-- 레벨22: 내리막길 큐브 설치, 점프 명령 내리기 위해 지팡이 올리기-->
+											<node name="SetSlaveValue" key="MainZoning" value="11" />
+											<!-- 이 변수 11 신호를 가마한테 보내서 점프이동 명령을 내림-->
+											<node name="skill" faceTarget="0" idx="2" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<node name="standby" limit="5000" faceTarget="1" />
+										</node>
+										<node name="skill" isKeepBattle="true" idx="9">
+											<!-- 레벨23: 내리막길 큐브 설치, 점프 명령 내리기 위해 지팡이 올리기-->
+											<node name="SetSlaveValue" key="MainZoning" value="11" />
+											<!-- 이 변수 11 신호를 가마한테 보내서 점프이동 명령을 내림-->
+											<node name="skill" faceTarget="0" idx="2" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<node name="standby" limit="5000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<!-- $#$ 메인존12 에서 점프 이동 이후의 실제 전투 행위 정의하는 부분 $#$-->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="10">
+										<node name="select" prob="999,50,20,20,10">
+											<!-- 점프 쾅 공격을 명령 신호를 가마에게 보내기-->
+											<node name="SetSlaveValue" cooltime="12000" isKeepBattle="true" key="VehicleAttackMode" value="3">
+												<node name="skill" faceTarget="1" idx="40" />
+												<!-- 의자 잡기-->
+												<node name="skill" faceTarget="0" idx="41" />
+												<node name="skill" faceTarget="0" idx="42" />
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+												<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+											<!-- 점프 쾅 공격을 명령 신호를 가마에게 보내기-->
+											<node name="SetSlaveValue" isKeepBattle="true" key="VehicleAttackMode" value="3">
+												<node name="skill" faceTarget="1" idx="40" />
+												<!-- 의자 잡기-->
+												<node name="skill" faceTarget="0" idx="41" />
+												<node name="skill" faceTarget="0" idx="42" />
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+												<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+											<!-- 투척 바닥 폭발-->
+											<node name="skill" faceTarget="1" isKeepBattle="true" idx="10">
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+												<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+											<!-- 독버섯-->
+											<node name="skill" cooltime="12000" idx="11">
+												<node name="standby" limit="2000" faceTarget="1">
+													<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+												</node>
+											</node>
+											<!-- 거대 투사체-->
+											<node name="skill" faceTarget="1" isKeepBattle="true" idx="12">
+												<node name="skill" faceTarget="1" idx="13" />
+												<node name="skill" faceTarget="0" idx="14" />
+												<node name="standby" limit="1000" faceTarget="1" />
+												<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="standby" limit="300" faceTarget="1">
+											<node name="target" type="rand" from="10" to="1300" />
+										</node>
+									</condition>
+								</node>
+								<!-- $#$ 메인존12 에서 전투 행위 정의하는 부분 $#$-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove01">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<node name="select" prob="99999,0">
+						<!-- @@졸병 소환몹 호출@@-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="20000" isKeepBattle="true">
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="101" summonPos="750, -1500, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="102" summonPos="1050, -1650, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="103" summonPos="300, -2850, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="104" summonPos="600, -2850,1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="105" summonPos="1800, -1800, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="106" summonPos="2100, -2100, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="107" summonPos="1350, -3300, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="108" summonPos="2550, -2400, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="109" summonPos="2850, -2550, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="110" summonPos="2100, -3750, 1370" />
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="2400, -3900, 1370" />
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!-- $R$ 로드무브1 에서 실제 전투 행위 정의하는 부분 $R$-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="34,33,33">
+									<!-- 정면 발사 바닥 폭발-->
+									<node name="skill" faceTarget="1" idx="10">
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<!-- 독버섯-->
+									<node name="skill" cooltime="22000" idx="11">
+										<node name="standby" limit="2000" faceTarget="1"></node>
+									</node>
+									<!-- 거대 투사체-->
+									<node name="skill" faceTarget="1" cooltime="13000" isKeepBattle="true" idx="12">
+										<node name="skill" faceTarget="1" idx="13" />
+										<node name="skill" faceTarget="0" idx="14" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="300" faceTarget="0">
+									<node name="target" type="rand" from="10" to="1300" />
+								</node>
+							</condition>
+						</node>
+						<!-- $R$ 메인존1 에서 실제 전투 행위 정의하는 부분 $R$-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove02">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!--	<say message="$MushroomRichKing_RoadMove02$" durationTick="5000" prob="9999" cooltime = "197704"/>	-->
+					<!-- $R$ 로드무브2 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="75,25">
+								<node name="skill" idx="10">
+									<node name="standby" limit="2300" faceTarget="1" />
+								</node>
+								<!--바닥 광역 충격파 공격, VehicleAttackMode = 2 가마 AI에게 신호 보내기-->
+								<node name="SetSlaveValue" cooltime="21000" key="VehicleAttackMode" value="2">
+									<node name="standby" limit="6000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브2 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove03">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!--	<say message="$MushroomRichKing_RoadMove03$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브3 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="50,50">
+								<node name="skill" idx="10">
+									<node name="standby" limit="2300" faceTarget="1" />
+								</node>
+								<!-- 투사체 큰거 3개 발사-->
+								<node name="skill" faceTarget="1" cooltime="11000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브3 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove04">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove04$" durationTick="5000" prob="9999" cooltime = "197704"/>			-->
+					<!-- $R$ 로드무브4 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<!-- 로드무드 4 5 는 거리가 짧아서 평이한 공격 행동 설정만 넣음	-->
+							<node name="skill" idx="10">
+								<node name="standby" limit="2300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브4 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove05">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove05$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브5 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<!-- 로드무드 4 5 는 거리가 짧아서 평이한 공격 행동 설정만 넣음	-->
+							<node name="skill" idx="10">
+								<node name="standby" limit="2300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브5 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove06">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove06$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브6 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="40,60">
+								<node name="skill" idx="10">
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<!--바닥 광역 충격파 공격, VehicleAttackMode = 2 가마 AI에게 신호 보내기-->
+								<node name="SetSlaveValue" cooltime="21000" key="VehicleAttackMode" value="2">
+									<node name="standby" limit="6000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브6 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove07">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove07$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브7 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="skill" idx="10">
+								<node name="standby" limit="2300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브7 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove08">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove08$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브8 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="40,60">
+								<!-- 기본 투척 공격-->
+								<node name="skill" idx="10">
+									<node name="standby" limit="3100" faceTarget="1" />
+								</node>
+								<!-- 방향키 반대 상태이상-->
+								<node name="skill" cooltime="21000" idx="15">
+									<node name="standby" limit="3500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브8 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove09">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove09$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브9 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="50,50">
+								<node name="skill" idx="10">
+									<node name="standby" limit="2300" faceTarget="1" />
+								</node>
+								<!-- 투사체 큰거 3개 발사-->
+								<node name="skill" faceTarget="1" cooltime="11000" isKeepBattle="true" idx="12">
+									<node name="skill" faceTarget="1" idx="13" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브9 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove10">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove10$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브10 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<!-- 로드무드 10 은 거리가 짧아서 평이한 공격 행동 설정만 넣음	-->
+							<node name="skill" idx="10">
+								<node name="standby" limit="800" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브10 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove11">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove11$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브11 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="30,70">
+								<node name="skill" idx="10">
+									<node name="standby" limit="2800" faceTarget="1" />
+								</node>
+								<!--바닥 광역 충격파 공격, VehicleAttackMode = 2 가마 AI에게 신호 보내기-->
+								<node name="SetSlaveValue" cooltime="12000" isKeepBattle="true" key="VehicleAttackMode" value="2">
+									<node name="SetValue" key="MainZoneContinue" value="-1" isModify="1" />
+									<!-- MainZoneContinue 이 변수가 1이 되면 공격 행동 끝나고 다음 턴으로 넘어가도록 함-->
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브11 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 이 변수 1씩 더함-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" isModify="1" />
+						<!-- 가마에게  이 변수 1씩 더하기 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RoadMove12">
+			<node name="conditions">
+				<condition name="extraData" key="RoadMoveArrive" value="0">
+					<!-- <say message="$MushroomRichKing_RoadMove12$" durationTick="5000" prob="9999" cooltime = "197704"/>		-->
+					<!-- $R$ 로드무브12 에서 실제 전투 행위 정의하는 부분 $R$-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="10">
+							<node name="select" prob="45,45,10">
+								<node name="skill" idx="10">
+									<node name="standby" limit="3200" faceTarget="1" />
+								</node>
+								<!-- 방향키 반대 상태이상-->
+								<node name="skill" cooltime="26000" idx="15">
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<!--바닥 광역 충격파 공격, VehicleAttackMode = 2 가마 AI에게 신호 보내기-->
+								<node name="SetSlaveValue" cooltime="23000" key="VehicleAttackMode" value="2">
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+					<!-- $R$ 로드무브12 에서 실제 전투 행위 정의하는 부분 $R$-->
+				</condition>
+				<condition name="true">
+					<!-- RoadMoveArrive =  1 인 경우로 가마가 목표 지점에 도착했기 때문에 AttackMode = 1 모드로 전환하기 위한 변수 셋팅 작업을 함 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="AttackMode" value="1" />
+						<!-- AttackMode =  1 : 전투판에서 공격 모드,  AttackMode =  2 :  길 이동 모드-->
+						<node name="SetValue" key="RoadMove" value="1" />
+						<!-- 중요: 12번 마지막 로드에 오면 이 변수 1로 초기화 하기-->
+						<!-- #가마에게 VehicleMode = 1 신호 보내기 부분은 여기서 설정하면 가마가 머쉬킹보다 한템포 더 빨리 실행되기 때문에 머쉬킹의  AttackMode = 1 전환된 다음에 VehicleMode = 1 실행 하도록 함-->
+						<node name="SetSlaveValue" key="RoadMove" value="1" />
+						<!-- 중요: 가마에게  이마지막 10번 로드에 오면 이 변수 1로 초기화 하는 신호 보내기-->
+						<node name="SetSlaveValue" key="MainZoning" value="1" />
+						<!-- 가마의 길목 이동 모드 끝나서 메인존으로 이동할 때 사용되는 변수 1로 초기화 하기-->
+						<node name="SetValue" key="RoadMoveArrive" value="0" />
+						<!-- 나중에 다시 사용을 위해 이 변수 0으로 초기화 하기-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!-- 가마 파괴되어서 땅으로 내려왔때의 공격 행동 패턴 정의하는 부분-->
+		<aiPreset name="VehicleOff_AttackPattern">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="43">
+					<node name="select" prob="99,33,33,33">
+						<node name="skill" faceTarget="1" cooltime="43000" isKeepBattle="true" idx="45">
+							<!-- 마법 브레스 공격-->
+							<node name="skill" faceTarget="0" idx="46" />
+							<node name="skill" faceTarget="0" idx="46" />
+							<node name="skill" faceTarget="0" idx="46" />
+							<node name="target" type="far" from="10" to="950" />
+							<!-- 방향 전환 할때 적당히 멀리 있는 대상을 타겟팅 하도록 함-->
+							<node name="skill" faceTarget="1" idx="48" />
+							<node name="skill" faceTarget="0" idx="46" />
+							<node name="skill" faceTarget="0" idx="46" />
+							<node name="target" type="far" from="10" to="950" />
+							<!-- 방향 전환 할때 적당히 멀리 있는 대상을 타겟팅 하도록 함-->
+							<node name="skill" faceTarget="1" idx="48" />
+							<node name="skill" faceTarget="0" idx="46" />
+							<node name="skill" faceTarget="0" idx="46" />
+							<node name="skill" faceTarget="0" idx="47" />
+							<node name="standby" limit="2400" faceTarget="1" animation="Attack_Idle_B" />
+						</node>
+						<node name="skill" faceTarget="1" idx="43">
+							<!-- 정면 발사-->
+							<node name="standby" limit="1200" faceTarget="1" animation="Attack_Idle_B" />
+						</node>
+						<node name="skill" faceTarget="1" cooltime="9000" idx="44">
+							<!-- 사방 독버섯-->
+							<node name="standby" limit="1200" faceTarget="1" animation="Attack_Idle_B" />
+						</node>
+						<!-- 점프 쾅 공격 패턴-->
+						<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_B">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="49">
+									<node name="skill" idx="49">
+										<node name="standby" limit="1200" faceTarget="1" animation="Attack_Idle_B" />
+									</node>
+								</condition>
+								<condition name="skillRange" skillIdx="50">
+									<node name="skill" idx="50">
+										<node name="standby" limit="1200" faceTarget="1" animation="Attack_Idle_B" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="2500" skillIdx="50">
+										<node name="skill" idx="50">
+											<node name="standby" limit="1200" faceTarget="1" animation="Attack_Idle_B" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="500" faceTarget="1" animation="Attack_Idle_B">
+						<node name="target" type="rand" from="10" to="1300" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

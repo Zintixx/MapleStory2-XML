@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--전투 최초 시작 때 제일 먼저 꼭 이루어 져야 하는 거 설정-->
+			<node name="standby" limit="650" faceTarget="1" />
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="DeathSummonMob" value="1">
+				<node name="RemoveMe" />
+				<!-- 보스 명령을 받고 스스로 사라짐-->
+			</condition>
+			<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+				<!-- 공격 후 잠시 standby 상태 유지 -->
+				<node name="standby" limit="100" faceTarget="0">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,0">
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="near" from="10" to="2500" cooltime="3100" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="skill" faceTarget="1" idx="1">
+								<node name="select" prob="33,33,34">
+									<node name="SetValue" key="AttackDelay" value="47" />
+									<node name="SetValue" key="AttackDelay" value="69" />
+									<node name="SetValue" key="AttackDelay" value="72" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="near" from="10" to="1500" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="CheckSummonMany" value="-1" isModify="1"></node>
+	</battleEnd>
+</npcAi>

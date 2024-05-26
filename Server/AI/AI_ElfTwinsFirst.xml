@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<!--#1페이즈 -->
+		<node name="conditions">
+			<condition name="hpOver" value="65">
+				<!--*****************HP 65% 이상 -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="8">
+						<node name="select" prob="9999,0">
+							<!-- 근거리 범위 체크를 하기 위한 가짜 스킬 코드 -->
+							<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 공격 단계에서 특정 기획 의도에 의해 타겟팅 세부 설정한 경우에는 trace 단계에서 타겟팅 renew 부분을 넣는다   -->
+							<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+								<node name="target" type="rand" from="10" to="700" />
+							</node>
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="99999,39,30,30,1">
+										<!--텔레포트 2번 발동 후 거대 레이저 포   일정 시간마다 발동-->
+										<node name="skill" cooltime="30000" initialCooltime="30000" idx="6">
+											<node name="select" prob="25,25,25,25">
+												<!--텔레포트 4개 중 A-Type-->
+												<node name="teleport" pos="-3750, 5100, 4000">
+													<node name="skill" idx="7">
+														<node name="teleport" pos="-3900, 5550, 4000">
+															<node name="skill" idx="4">
+																<!-- 강 레이저포 -->
+																<node name="standby" limit="2000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<!--텔레포트 4개 중 B-Type-->
+												<node name="teleport" pos="-3600, 4800, 4000">
+													<node name="skill" idx="7">
+														<node name="teleport" pos="-3900, 4650, 4000">
+															<node name="skill" idx="4">
+																<!-- 강 레이저포 -->
+																<node name="standby" limit="2000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<!--텔레포트 4개 중 C-Type-->
+												<node name="teleport" pos="-3150, 5100, 4000">
+													<node name="skill" idx="7">
+														<node name="teleport" pos="-2850, 4950, 4000">
+															<node name="skill" idx="4">
+																<!-- 강 레이저포 -->
+																<node name="standby" limit="2000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</node>
+												<!--텔레포트 4개 중 D-Type-->
+												<node name="teleport" pos="-3000, 5400, 4000">
+													<node name="skill" idx="7">
+														<node name="teleport" pos="-3150, 5700, 4000">
+															<node name="skill" idx="4">
+																<!-- 강 레이저포 -->
+																<node name="standby" limit="2000" faceTarget="1" />
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="skill" idx="2">
+											<!-- 넝어뜨리기 근거리 공격 -->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" idx="5">
+											<!-- 강베기 근거리 공격 -->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<!--텔레포트 1번 발동 후 약  레이저 포-->
+										<node name="skill" idx="6">
+											<node name="select" prob="25,25,25,25">
+												<!--텔레포트 4개 중 A-Type-->
+												<node name="teleport" pos="-3300, 5550, 4000">
+													<node name="skill" idx="3">
+														<!-- 약 레이저포 -->
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+												<!--텔레포트 4개 중 B-Type-->
+												<node name="teleport" pos="-3900, 5250, 4000">
+													<node name="skill" idx="3">
+														<!-- 약 레이저포 -->
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+												<!--텔레포트 4개 중 C-Type-->
+												<node name="teleport" pos="-3450, 4800, 4000">
+													<node name="skill" idx="3">
+														<!-- 약 레이저포 -->
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+												<!--텔레포트 4개 중 D-Type-->
+												<node name="teleport" pos="-3000, 5250, 4000">
+													<node name="skill" idx="3">
+														<!-- 약 레이저포 -->
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+										</node>
+										<!--텔레포트 1번 발동 후 약  레이저 포-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99,1">
+										<node name="trace" limit="2500" skillIdx="2" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<!-- 근거리 범위 체크를 하기 위한 가짜 스킬 코드 -->
+					<condition name="true">
+						<!-- 공격 대상이 건너편 전투판에 있을 때 멀리서 원거리 공격으로 견제함 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="3">
+								<node name="select" prob="60,35,5">
+									<node name="skill" idx="3">
+										<!-- 약 레이저포 -->
+										<node name="target" type="near" from="10" to="2400">
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" idx="4">
+										<!-- 강 레이저포 -->
+										<node name="target" type="near" from="10" to="2400">
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="95,5,9999">
+									<node name="trace" limit="2500" skillIdx="3" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 공격 단계에서 특정 기획 의도에 의해 타겟팅 세부 설정한 경우에는 trace 단계에서 타겟팅 renew 부분을 넣는다   -->
+									<node name="standby" limit="10" faceTarget="1" cooltime="4000" initialCooltime="1">
+										<node name="target" type="near" from="10" to="2400" />
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+				<!--*****************HP 65% 이상 -->
+			</condition>
+			<condition name="hpOver" value="25">
+				<node name="select" prob="100,0">
+					<!--#2페이즈 -->
+					<!--*****************HP 25% 이상 -->
+					<node name="skill" cooltime="9999999" initialCooltime="1" idx="1">
+						<!-- 페이즈 전환시 최초 발동 **!!거대  회오리  공격!!** -->
+						<node name="standby" limit="3000" faceTarget="1" />
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="8">
+							<node name="select" prob="9999,0">
+								<!-- 근거리 범위 체크를 하기 위한 가짜 스킬 코드 -->
+								<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 공격 단계에서 특정 기획 의도에 의해 타겟팅 세부 설정한 경우에는 trace 단계에서 타겟팅 renew 부분을 넣는다   -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="8000" initialCooltime="1">
+									<node name="target" type="rand" from="10" to="700" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="20,20,30,29,1">
+											<node name="skill" idx="2">
+												<!-- 넝어뜨리기 근거리 공격 -->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="skill" idx="5">
+												<!-- 강베기 근거리 공격 -->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<!--텔레포트 1번 발동 후 약  레이저 포-->
+											<node name="skill" idx="6">
+												<node name="select" prob="25,25,25,25">
+													<!--텔레포트 4개 중 A-Type-->
+													<node name="teleport" pos="-3300, 5550, 4000">
+														<node name="skill" idx="3">
+															<!-- 약 레이저포 -->
+															<node name="standby" limit="2000" faceTarget="0" />
+														</node>
+													</node>
+													<!--텔레포트 4개 중 B-Type-->
+													<node name="teleport" pos="-3900, 5250, 4000">
+														<node name="skill" idx="3">
+															<!-- 약 레이저포 -->
+															<node name="standby" limit="2000" faceTarget="0" />
+														</node>
+													</node>
+													<!--텔레포트 4개 중 C-Type-->
+													<node name="teleport" pos="-3450, 4800, 4000">
+														<node name="skill" idx="3">
+															<!-- 약 레이저포 -->
+															<node name="standby" limit="2000" faceTarget="0" />
+														</node>
+													</node>
+													<!--텔레포트 4개 중 D-Type-->
+													<node name="teleport" pos="-3000, 5250, 4000">
+														<node name="skill" idx="3">
+															<!-- 약 레이저포 -->
+															<node name="standby" limit="2000" faceTarget="0" />
+														</node>
+													</node>
+												</node>
+											</node>
+											<!--텔레포트 1번 발동 후 약  레이저 포-->
+											<node name="skill" idx="6">
+												<node name="select" prob="25,25,25,25">
+													<!-- 순간이동 강 레이저포 -->
+													<!--텔레포트 4개 중 A-Type-->
+													<node name="teleport" pos="-3750, 5100, 4000">
+														<node name="skill" idx="7">
+															<node name="teleport" pos="-3900, 5550, 4000">
+																<node name="skill" idx="4">
+																	<!-- 강 레이저포 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<!--텔레포트 4개 중 B-Type-->
+													<node name="teleport" pos="-3600, 4800, 4000">
+														<node name="skill" idx="7">
+															<node name="teleport" pos="-3900, 4650, 4000">
+																<node name="skill" idx="4">
+																	<!-- 강 레이저포 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<!--텔레포트 4개 중 C-Type-->
+													<node name="teleport" pos="-3150, 5100, 4000">
+														<node name="skill" idx="7">
+															<node name="teleport" pos="-2850, 4950, 4000">
+																<node name="skill" idx="4">
+																	<!-- 강 레이저포 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<!--텔레포트 4개 중 D-Type-->
+													<node name="teleport" pos="-3000, 5400, 4000">
+														<node name="skill" idx="7">
+															<node name="teleport" pos="-3150, 5700, 4000">
+																<node name="skill" idx="4">
+																	<!-- 강 레이저포 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2500" skillIdx="2" />
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<!-- 근거리 범위 체크를 하기 위한 가짜 스킬 코드 -->
+						<condition name="true">
+							<!-- 공격 대상이 건너편 전투판에 있을 때 멀리서 원거리 공격으로 견제함 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="3">
+									<node name="select" prob="45,50,5">
+										<node name="skill" idx="3">
+											<!-- 약 레이저포 -->
+											<node name="target" type="near" from="10" to="2400">
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" idx="4">
+											<!-- 강 레이저포 2연속 발사-->
+											<node name="standby" limit="100" faceTarget="1">
+												<node name="skill" idx="4">
+													<node name="standby" limit="2000" faceTarget="1">
+														<node name="target" type="near" from="10" to="2400" />
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="95,5,9999">
+										<node name="trace" limit="2500" skillIdx="3" />
+										<node name="standby" limit="1000" faceTarget="1" />
+										<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 공격 단계에서 특정 기획 의도에 의해 타겟팅 세부 설정한 경우에는 trace 단계에서 타겟팅 renew 부분을 넣는다   -->
+										<node name="standby" limit="10" faceTarget="1" cooltime="4000" initialCooltime="1">
+											<node name="target" type="near" from="10" to="2400" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+					<!--*****************HP 30% 이상 -->
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="100,0">
+					<!--#3페이즈 -->
+					<node name="skill" cooltime="35000" initialCooltime="1" idx="1">
+						<!-- 페이즈 전환시 최초 발동 **!!거대  회오리  공격!!** -->
+						<node name="standby" limit="2000" faceTarget="1" />
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="8">
+							<node name="select" prob="9999,0">
+								<!-- 근거리 범위 체크를 하기 위한 가짜 스킬 코드 -->
+								<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 공격 단계에서 특정 기획 의도에 의해 타겟팅 세부 설정한 경우에는 trace 단계에서 타겟팅 renew 부분을 넣는다   -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="8000" initialCooltime="1">
+									<node name="target" type="rand" from="10" to="700" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="5">
+										<node name="select" prob="49,50,1">
+											<node name="skill" idx="5">
+												<!-- 강베기 근거리 공격 -->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="skill" idx="6">
+												<node name="select" prob="25,25,25,25">
+													<!-- 순간이동 강 레이저포 -->
+													<!--텔레포트 4개 중 A-Type-->
+													<node name="teleport" pos="-3750, 5100, 4000">
+														<node name="skill" idx="7">
+															<node name="teleport" pos="-3900, 5550, 4000">
+																<node name="skill" idx="4">
+																	<!-- 강 레이저포 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<!--텔레포트 4개 중 B-Type-->
+													<node name="teleport" pos="-3600, 4800, 4000">
+														<node name="skill" idx="7">
+															<node name="teleport" pos="-3900, 4650, 4000">
+																<node name="skill" idx="4">
+																	<!-- 강 레이저포 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<!--텔레포트 4개 중 C-Type-->
+													<node name="teleport" pos="-3150, 5100, 4000">
+														<node name="skill" idx="7">
+															<node name="teleport" pos="-2850, 4950, 4000">
+																<node name="skill" idx="4">
+																	<!-- 강 레이저포 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<!--텔레포트 4개 중 D-Type-->
+													<node name="teleport" pos="-3000, 5400, 4000">
+														<node name="skill" idx="7">
+															<node name="teleport" pos="-3150, 5700, 4000">
+																<node name="skill" idx="4">
+																	<!-- 강 레이저포 -->
+																	<node name="standby" limit="2000" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2500" skillIdx="5" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<!-- 근거리 범위 체크를 하기 위한 가짜 스킬 코드 -->
+						<condition name="true">
+							<!-- 공격 대상이 건너편 전투판에 있을 때 멀리서 원거리 공격으로 견제함 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="95,5">
+										<node name="skill" idx="4">
+											<!-- 강 레이저포 연속 발사-->
+											<node name="standby" limit="100" faceTarget="1">
+												<node name="skill" idx="4">
+													<node name="standby" limit="100" faceTarget="1">
+														<node name="skill" idx="4">
+															<node name="standby" limit="3000" faceTarget="1">
+																<node name="target" type="near" from="10" to="2400" />
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="95,5,9999">
+										<node name="trace" limit="2500" skillIdx="4" />
+										<node name="standby" limit="2000" faceTarget="1" />
+										<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 공격 단계에서 특정 기획 의도에 의해 타겟팅 세부 설정한 경우에는 trace 단계에서 타겟팅 renew 부분을 넣는다   -->
+										<node name="standby" limit="10" faceTarget="1" cooltime="4000" initialCooltime="1">
+											<node name="target" type="near" from="10" to="2400" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

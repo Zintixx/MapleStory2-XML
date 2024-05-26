@@ -1,0 +1,1044 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,9999,0">
+			<!--보스 AI 로직을 위해 필요한 변수를 여기서 전부 선언함-->
+			<node name="standby" limit="500" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="HealSummonOn" value="0" />
+				<!--페이즈 도중에 회복 졸병 소환 시키기 위해 사용하는 변수 -->
+				<node name="SetSlaveValue" key="HealStop" value="0" />
+				<!--소환몹에게 회복 스킬 사용을 멈추게 하기 위해 사용하는 변수-->
+				<node name="SetValue" key="NowZone" value="0" />
+				<!--데보라크가 현재 어느 전투판에 있는지 파악하기 위해 사용하는 변수 값은 7, 3, 11   NowZone 값이 0 이 아닌 경우는 페이즈  4페이즈 넘어갔다는 뜻이므로 HP 회복해서 다시 4페이즈에 와도 90도 레이저 공격 사용하지 못하도록 함 -->
+				<node name="SetValue" key="LastCrazyAttackMode" value="3" />
+				<!--마지막 페이즈 때 최후의 일격 스킬 발동을 결정하는 변수로, 값이 3이면 발동시키도록 한다.  초기값을 3으로 해서 마지막 페이즈 들어서면 바로 사용하도록 함-->
+				<!--던전시간 늘리기 테스트용 나중에 삭제해야 함     -->
+				<!--	<event eventName="ModifyRoomTime" param1="900000"/>  -->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="93">
+					<!--#1페이즈    어둠의 화살 + 그림자 추척기                           7%    2페이즈에서 HP 회복받고 다시 1페이즈로 넘어오는 경우가 있기 때문에 이것에 대한 처리가 들어가 있음 -->
+					<node name="conditions">
+						<condition name="state" targetState="holdme">
+							<!-- 타겟팅 된 대상이 매달려 있다면 공격해서 무조건 떨구게 함-->
+							<node name="skill" idx="11" />
+							<!-- 기 내뿜기, HP회복제 효과 저하-->
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,0">
+								<node name="skill" faceTarget="0" cooltime="42000" initialCooltime="16000" idx="11">
+									<!-- 기 내뿜기, HP회복제 효과 저하, 레벨1-->
+									<node name="standby" limit="2000" faceTarget="0" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="99,39,30,30,1">
+											<!-- 사정거리가 1700 이라서 전투판 벗어날일 없을거 같음  -->
+											<!--그림자 추적기 -->
+											<node name="standby" limit="100" faceTarget="0" cooltime="24000" initialCooltime="15000">
+												<node name="target" type="rand" from="10" to="1500">
+													<node name="skill" idx="4">
+														<node name="standby" limit="2000" faceTarget="0">
+															<node name="SetSlaveValue" key="HealStop" value="1" />
+															<!-- 졸병한테 회복받아서 HP 90% 이상되면 이 변수가 1이 되어서 회복 멈추도록 함-->
+														</node>
+													</node>
+												</node>
+											</node>
+											<!--손바닥 대미지 필드 -->
+											<node name="standby" limit="100" faceTarget="0" cooltime="10000" initialCooltime="100">
+												<node name="target" type="near" from="10" to="800">
+													<node name="skill" idx="8">
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+											<!--어둠의 화살 쿨타임A-->
+											<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="100">
+												<node name="target" type="rand" from="10" to="1500">
+													<node name="skill" idx="2">
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+											<!--어둠의 화살 쿨타임B-->
+											<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="100">
+												<node name="target" type="rand" from="10" to="1500">
+													<node name="skill" idx="2">
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="60,40">
+											<node name="standby" limit="100" faceTarget="0">
+												<node name="target" type="rand" from="10" to="4500">
+													<node name="skill" idx="3">
+														<!-- 대상이 멀리 떨어져 있으면 어둠의 화살 발사 -->
+														<node name="standby" limit="1000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="75">
+					<node name="select" prob="9999,0">
+						<!--#2페이즈   가끔 8초  회전레이저 공격 사용                  18%   3페이즈에서 HP 회복받고 다시 2페이즈로 넘어오는 경우가 있기 때문에 이것에 대한 처리가 들어가 있음-->
+						<node name="skill" cooltime="9999999" initialCooltime="1" faceTarget="0" idx="1">
+							<node name="select" prob="48,52">
+								<!--가슴 쿵쾅 치면서 강제로 HP 90%깍기 -->
+								<!--냉기속성 소환몹 전투판 중앙에 호출 -->
+								<node name="skill" isKeepBattle="true" idx="19">
+									<!--다른 전투판으로 순간이동 하기, 성우 목소리 나오기 -->
+									<node name="teleport" pos="2550, -2850, 1900" />
+									<!--3시 방향  전투판으로 순간이동 하기 -->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="750, -750,  1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="300, -750, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="600, 0, 1700" summonRot="0,0,-50" />
+									<node name="SetValue" key="NowZone" value="3" />
+									<!--이 변수에 3을 넣어 3시 전투판으로 갔음을 알림 -->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<!--불속성 소환몹 전투판 중앙에 호출 -->
+								<node name="skill" isKeepBattle="true" idx="19">
+									<!--다른 전투판으로 순간이동 하기, 성우 목소리 나오기 -->
+									<node name="teleport" pos="2550, -2850, 1900" />
+									<!--3시 방향  전투판으로 순간이동 하기 -->
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="750, -750,  1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="300, -750, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="600, 0, 1700" summonRot="0,0,-50" />
+									<node name="SetValue" key="NowZone" value="3" />
+									<!--이 변수에 3을 넣어 3시 전투판으로 갔음을 알림 -->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="state" targetState="holdme">
+								<!-- 타겟팅 된 대상이 매달려 있다면 공격해서 무조건 떨구게 함-->
+								<node name="skill" idx="11" />
+								<!-- 기 내뿜기, HP회복제 효과 저하-->
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="extraData" key="HealSummonOn" value="2">
+										<!-- **HP회복시키는 소환몹 호출 조건을 만족했으면 소환몹 호출함,  회전 레이저 1 or 2회 사용시 나오도록 함  -->
+										<node name="conditions">
+											<condition name="extraData" key="NowZone" value="3">
+												<!-- NowZone 변수가 3이면 현재 3시 전투판에 있다는 것임  -->
+												<!-- 11시 방향에서 소환몹 호출 -->
+												<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+													<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="2850, -3150, 2300" summonRot="0,0,-50" />
+													<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="2250, -3450, 2300" summonRot="0,0,-50" />
+													<node name="SetValue" key="HealSummonOn" value="0" />
+													<!--  "0"으로 설정해 레이저 페턴 2번쓴 다음에 소환몹 나오돌고 함,   이것을 넣지 않으면 여기서 계속 머물기 때문에 값 변경 필수-->
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- NowZone 변수가 3이 아니면 현재 11시 전투판에 있다는 것임, 3페이즈에서 HP를 회복받고 다시 2페이즈로 넘어온 경우기 때문에 이럴때는 11시 방향에서 졸병을 소환시켜야 함  -->
+												<!-- 11시 방향에서 소환몹 호출 -->
+												<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+													<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="121" summonPos="1200, 2250, 2300" summonRot="0,0,-50" />
+													<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="122" summonPos="1800, 2250, 2300" summonRot="0,0,-50" />
+													<node name="SetValue" key="HealSummonOn" value="0" />
+													<!--  "0"으로 설정해 레이저 페턴 2번쓴 다음에 소환몹 나오돌고 함,   이것을 넣지 않으면 여기서 계속 머물기 때문에 값 변경 필수-->
+												</node>
+											</condition>
+										</node>
+									</condition>
+									<condition name="true">
+										<!-- **HP회복시키는 소환몹 호출 조건을 만족 못했으면 평소대로 공격 행동을 함-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="4">
+												<node name="select" prob="999,999,999,51,29,19,1">
+													<!-- 사정거리가 1550 이라서 전투판 벗어날일 없을거 같음  -->
+													<!--##회전 레이저 패턴##-->
+													<node name="skill" cooltime="34000" idx="18">
+														<node name="conditions">
+															<condition name="extraData" key="NowZone" value="3">
+																<!-- NowZone 변수가 3이면 현재 3시 전투판에 있다는 것임  -->
+																<node name="teleport" pos="2010, -2400, 1900">
+																	<!--3시 방향  전투판 중앙으로 순간이동 하기 -->
+																	<node name="standby" limit="1500" faceTarget="0">
+																		<node name="select" prob="50,50">
+																			<node name="skill" faceTarget="0" isKeepBattle="true" idx="20">
+																				<!--회전레이저 8초 반시계 -->
+																				<node name="standby" limit="1000" faceTarget="0" />
+																				<node name="target" type="near" from="10" to="800" />
+																				<node name="skill" idx="8" />
+																				<node name="standby" limit="2000" faceTarget="0" />
+																				<!--HP회복 시켜주는 졸병 소환몹 컨트롤 하기 위한 변수 선언 부분-->
+																				<node name="SetValue" key="HealSummonOn" value="1" isModify="1" />
+																				<!--HealSummonOn 값을 1 더함, 이 값이 2가 되면 소환몹 호출함-->
+																				<node name="SetSlaveValue" key="HealStop" value="0" />
+																				<!--이 변수를 0으로 해서 졸병이 다시 HP회복 행위 하도록 함-->
+																			</node>
+																			<node name="skill" faceTarget="0" isKeepBattle="true" idx="21">
+																				<!--회전레이저 8초 시계 -->
+																				<node name="standby" limit="1000" faceTarget="0" />
+																				<node name="target" type="near" from="10" to="800" />
+																				<node name="skill" idx="8" />
+																				<node name="standby" limit="2000" faceTarget="0" />
+																				<!--HP회복 시켜주는 졸병 소환몹 컨트롤 하기 위한 변수 선언 부분-->
+																				<node name="SetValue" key="HealSummonOn" value="1" isModify="1" />
+																				<!--HealSummonOn 값을 1 더함, 이 값이 2가 되면 소환몹 호출함-->
+																				<node name="SetSlaveValue" key="HealStop" value="0" />
+																				<!--이 변수를 0으로 해서 졸병이 다시 HP회복 행위 하도록 함-->
+																			</node>
+																		</node>
+																	</node>
+																</node>
+															</condition>
+															<condition name="true">
+																<!-- NowZone 변수가 3이 아니면 현재 11시 전투판에 있다는 것임, 3페이즈에서 HP를 회복받고 다시 2페이즈로 넘어온 경우기 때문에 이럴때는 11시 전투판 중앙으로 순간이동 시켜야 함  -->
+																<node name="teleport" pos="1850, 1200, 1900">
+																	<!--11시 방향  전투판 중앙으로 순간이동 하기 -->
+																	<node name="standby" limit="1500" faceTarget="0">
+																		<node name="select" prob="50,50">
+																			<node name="skill" faceTarget="0" isKeepBattle="true" idx="20">
+																				<!--회전레이저 8초 반시계 -->
+																				<node name="standby" limit="1000" faceTarget="0" />
+																				<node name="target" type="near" from="10" to="800" />
+																				<node name="skill" idx="8" />
+																				<node name="standby" limit="2000" faceTarget="0" />
+																				<!--HP회복 시켜주는 졸병 소환몹 컨트롤 하기 위한 변수 선언 부분-->
+																				<node name="SetValue" key="HealSummonOn" value="1" isModify="1" />
+																				<!--HealSummonOn 값을 1 더함, 이 값이 2가 되면 소환몹 호출함-->
+																				<node name="SetSlaveValue" key="HealStop" value="0" />
+																				<!--이 변수를 0으로 해서 졸병이 다시 HP회복 행위 하도록 함-->
+																			</node>
+																			<node name="skill" faceTarget="0" isKeepBattle="true" idx="21">
+																				<!--회전레이저 8초 시계 -->
+																				<node name="standby" limit="1000" faceTarget="0" />
+																				<node name="target" type="near" from="10" to="800" />
+																				<node name="skill" idx="8" />
+																				<node name="standby" limit="2000" faceTarget="0" />
+																				<!--HP회복 시켜주는 졸병 소환몹 컨트롤 하기 위한 변수 선언 부분-->
+																				<node name="SetValue" key="HealSummonOn" value="1" isModify="1" />
+																				<!--HealSummonOn 값을 1 더함, 이 값이 2가 되면 소환몹 호출함-->
+																				<node name="SetSlaveValue" key="HealStop" value="0" />
+																				<!--이 변수를 0으로 해서 졸병이 다시 HP회복 행위 하도록 함-->
+																			</node>
+																		</node>
+																	</node>
+																</node>
+															</condition>
+														</node>
+													</node>
+													<!--##평소에 사용하는 스킬 목록##-->
+													<!--그림자 추적기 -->
+													<node name="standby" limit="100" faceTarget="0" cooltime="65000" initialCooltime="63000">
+														<node name="target" type="rand" from="10" to="1500">
+															<node name="skill" idx="4">
+																<node name="standby" limit="2000" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<!-- 기 내뿜기, HP회복제 효과 저하, 레벨1-->
+													<node name="skill" faceTarget="0" cooltime="42000" idx="11">
+														<node name="standby" limit="1500" faceTarget="0">
+															<node name="SetValue" key="HealSummonOn" value="1" isModify="1" />
+															<!--기 내뿜기 공격 후 소환몹 등장조건 +1 하기 -->
+														</node>
+													</node>
+													<!--손바닥 대미지 필드 -->
+													<node name="standby" limit="100" faceTarget="0" cooltime="8000" initialCooltime="100">
+														<node name="target" type="near" from="10" to="800">
+															<node name="skill" idx="8">
+																<node name="standby" limit="2000" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<!--어둠의 화살 쿨타임A-->
+													<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="100">
+														<node name="target" type="rand" from="10" to="1500">
+															<node name="skill" idx="2">
+																<node name="standby" limit="2000" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<!--어둠의 화살 쿨타임B-->
+													<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="100">
+														<node name="target" type="rand" from="10" to="1500">
+															<node name="skill" idx="2">
+																<node name="standby" limit="2000" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="0" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="70,30">
+													<node name="standby" limit="100" faceTarget="0">
+														<node name="target" type="rand" from="10" to="4500">
+															<node name="skill" idx="3">
+																<!-- 대상이 멀리 떨어져 있으면 어둠의 화살 발사, 플레이어가 다음 전투판으로 이동할 때까지 계속 이 스킬을 사용할 것임 -->
+																<node name="standby" limit="500" faceTarget="0">
+																	<node name="target" type="rand" from="10" to="4500" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="0" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="57">
+					<node name="select" prob="9999,0">
+						<!--#3페이즈   가끔 5초 연속 회전레이저 공격 사용           18% -->
+						<node name="skill" cooltime="999999" initialCooltime="1" faceTarget="0" idx="1">
+							<node name="select" prob="48,52">
+								<!--가슴 쿵쾅 치면서 강제로 HP 90%깍기 -->
+								<!--냉기속성 소환몹 전투판 중앙에 호출 -->
+								<node name="skill" isKeepBattle="true" idx="19">
+									<!--다른 전투판으로 순간이동 하기, 성우 목소리 나오기 -->
+									<node name="teleport" pos="2100, 1950, 1900" />
+									<!--11시 방향  전투판으로 순간이동 하기 -->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="750, -750,  1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="300, -750, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="600, 0, 1700" summonRot="0,0,-50" />
+									<node name="SetValue" key="HealSummonOn" value="0" />
+									<!--페이즈 도중에 회복 졸병 소환 시키기 위해 사용하는 변수 다시 초기화 하기 -->
+									<node name="SetValue" key="NowZone" value="11" />
+									<!--이 변수에 11을 넣어 11시 전투판으로 갔음을 알림 -->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+								<!--불속성 소환몹 전투판 중앙에 호출 -->
+								<node name="skill" isKeepBattle="true" idx="19">
+									<!--다른 전투판으로 순간이동 하기, 성우 목소리 나오기 -->
+									<node name="teleport" pos="2100, 1950, 1900" />
+									<!--11시 방향  전투판으로 순간이동 하기 -->
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="750, -750,  1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="300, -750, 1700" summonRot="0,0,-50" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="600, 0, 1700" summonRot="0,0,-50" />
+									<node name="SetValue" key="HealSummonOn" value="0" />
+									<!--페이즈 도중에 회복 졸병 소환 시키기 위해 사용하는 변수 다시 초기화 하기 -->
+									<node name="SetValue" key="NowZone" value="11" />
+									<!--이 변수에 11을 넣어 11시 전투판으로 갔음을 알림 -->
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="state" targetState="holdme">
+								<!-- 타겟팅 된 대상이 매달려 있다면 공격해서 무조건 떨구게 함-->
+								<node name="skill" idx="12" />
+								<!-- 기 내뿜기, HP회복제 효과 저하-->
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="extraData" key="HealSummonOn" value="2">
+										<!-- **HP회복시키는 소환몹 호출 조건을 만족했으면 소환몹 호출함 -->
+										<!-- 11시 방향에서 소환몹 호출 -->
+										<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+											<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="121" summonPos="1200, 2250, 2300" summonRot="0,0,-50" />
+											<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="122" summonPos="1800, 2250, 2300" summonRot="0,0,-50" />
+											<node name="SetValue" key="HealSummonOn" value="0" />
+											<!--  "0"으로 설정해 레이저 페턴 2번쓴 다음에 소환몹 나오돌고 함,   이것을 넣지 않으면 여기서 계속 머물기 때문에 값 변경 필수-->
+										</node>
+									</condition>
+									<condition name="true">
+										<!-- **HP회복시키는 소환몹 호출 조건을 만족 못했으면 평소대로 공격 행동을 함-->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="4">
+												<node name="select" prob="999,999,999,51,29,20,1">
+													<!-- 사정거리가 1300 이라서 전투판 벗어날일 없을거 같음  -->
+													<!--##회전 레이저 패턴##-->
+													<node name="skill" cooltime="34000" idx="18">
+														<node name="teleport" pos="1850, 1200, 1900">
+															<!--11시 방향  전투판 중앙으로 순간이동 하기 -->
+															<node name="SetValue" key="HealSummonOn" value="1" isModify="1">
+																<!--HealSummonOn 값을 1 더함, 이 값이 2가 되면 소환몹 호출함-->
+																<node name="standby" limit="1500" faceTarget="0">
+																	<node name="select" prob="34,33,33">
+																		<node name="skill" faceTarget="0" cooltime="80000" idx="22">
+																			<node name="standby" limit="1000" faceTarget="0">
+																				<node name="target" type="near" from="10" to="800">
+																					<node name="skill" idx="8">
+																						<node name="standby" limit="2000" faceTarget="0" />
+																					</node>
+																				</node>
+																			</node>
+																		</node>
+																		<node name="skill" faceTarget="0" cooltime="80000" idx="23">
+																			<node name="standby" limit="1000" faceTarget="0">
+																				<node name="target" type="near" from="10" to="800">
+																					<node name="skill" idx="8">
+																						<node name="standby" limit="2000" faceTarget="0" />
+																					</node>
+																				</node>
+																			</node>
+																		</node>
+																		<node name="skill" faceTarget="0" cooltime="45000" idx="24">
+																			<!--회전레이저 연속 2번 5초 반시계 -->
+																			<node name="standby" limit="1000" faceTarget="0">
+																				<node name="target" type="near" from="10" to="800">
+																					<node name="skill" idx="8">
+																						<node name="standby" limit="2000" faceTarget="0" />
+																					</node>
+																				</node>
+																			</node>
+																		</node>
+																	</node>
+																</node>
+															</node>
+														</node>
+													</node>
+													<!--##평소에 사용하는 스킬 목록##-->
+													<!--그림자 추적기 -->
+													<node name="standby" limit="100" faceTarget="0" cooltime="65000" initialCooltime="63000">
+														<node name="target" type="rand" from="10" to="1500">
+															<node name="skill" idx="4">
+																<node name="standby" limit="2000" faceTarget="0">
+																	<node name="SetValue" key="HealSummonOn" value="1" isModify="1" />
+																	<!--그림자 추적기 공격 후 소환몹 등장조건 +1 하기 -->
+																</node>
+															</node>
+														</node>
+													</node>
+													<!-- 기 내뿜기, HP회복제 효과 저하, 레벨2-->
+													<node name="skill" faceTarget="0" cooltime="41000" idx="12">
+														<node name="standby" limit="1500" faceTarget="0" />
+													</node>
+													<!--손바닥 대미지 필드 -->
+													<node name="standby" limit="100" faceTarget="0" cooltime="8000" initialCooltime="100">
+														<node name="target" type="near" from="10" to="800">
+															<node name="skill" idx="8">
+																<node name="standby" limit="2000" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<!--어둠의 화살 쿨타임A-->
+													<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="100">
+														<node name="target" type="rand" from="10" to="1500">
+															<node name="skill" idx="2">
+																<node name="standby" limit="2000" faceTarget="0">
+																	<node name="SetValue" key="HealSummonOn" value="1" isModify="1" />
+																	<!--손바닥 치기 공격 후 소환몹 등장조건 +1 하기 -->
+																</node>
+															</node>
+														</node>
+													</node>
+													<!--어둠의 화살 쿨타임B-->
+													<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="100">
+														<node name="target" type="rand" from="10" to="1500">
+															<node name="skill" idx="2">
+																<node name="standby" limit="2000" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="0" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="70,30">
+													<node name="standby" limit="100" faceTarget="0">
+														<node name="target" type="rand" from="10" to="4500">
+															<node name="skill" idx="3">
+																<!-- 대상이 멀리 떨어져 있으면 어둠의 화살 발사, 플레이어가 다음 전투판으로 이동할 때까지 계속 이 스킬을 사용할 것임 -->
+																<node name="standby" limit="500" faceTarget="0">
+																	<node name="target" type="rand" from="10" to="4500" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="0" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="39">
+					<node name="select" prob="99999,0">
+						<!--#4페이즈   맵 7시 방향으로 이동해서 레이저 90도 발사  18%   5페이즈에서 HP 회복받고 다시 4페이즈로 넘어오는 경우가 있기 때문에 이것에 대한 처리가 들어가 있음-->
+						<node name="standby" limit="500" faceTarget="0" cooltime="9999999">
+							<!--이 페이즈 시작되면 맵 중앙으로 순간이동 한 다음에 즉사 스킬 발동시킴 -->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="12">
+								<!-- 기 내뿜기, HP회복제 효과 저하, 레벨2, 물약 효과 저하 상태에서 최후의 일격을 사용해야 물약을 빨아도 효과가 없음-->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--다른 전투판으로 순간이동 하기, 레벨1은 성우 목소리 없음 -->
+								<node name="teleport" pos="600, -750, 1700" />
+								<!--전투판 중앙으로 순간이동 하기 -->
+								<node name="skill" facePos="1850, 1200, 1900" idx="7" />
+								<!--최후의 일격 발동!!~~  이 스킬 사용할 때의 바라보는 방향은 11시 -->
+								<node name="standby" limit="2000" faceTarget="1" />
+								<!--맵 전체를 휘쓰는 회전 레이저 사용하기 전에 몇초간 잠시 대기  -->
+								<node name="skill" faceTarget="0" idx="9" />
+								<!--맵 전체를 휘쓰는 회전 레이저 발동 -->
+								<node name="standby" limit="500" faceTarget="0" />
+								<node name="skill" faceTarget="0" idx="19" />
+								<!--다른 전투판으로 순간이동 하기, 성우 목소리 나오기 -->
+								<node name="teleport" pos="-1950, -900, 1900" />
+								<!--7시 방향 전투판으로 순간이동 하기 -->
+								<!--냉기속성 소환몹 전투판 중앙에 호출 -->
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="750, -750,  1700" summonRot="0,0,-50" />
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="300, -750, 1700" summonRot="0,0,-50" />
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="600, 0, 1700" summonRot="0,0,-50" />
+								<node name="SetValue" key="NowZone" value="7" />
+								<!--이 변수에 7을 넣어 7시 전투판으로 갔음을 알림 -->
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="state" targetState="holdme">
+								<!-- 타겟팅 된 대상이 매달려 있다면 공격해서 무조건 떨구게 함-->
+								<node name="skill" idx="12" />
+								<!-- 기 내뿜기, HP회복제 효과 저하-->
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="999,999,999,51,29,20,1">
+											<!-- 사정거리가 1700 이라서 전투판  전투판 벗어날일 없을거 같음  -->
+											<!--## 회전레이저 패턴##-->
+											<node name="standby" limit="100" faceTarget="0" cooltime="27000">
+												<!-- 맵 끝으로 순간이동한 다음 레이저 발사  -->
+												<node name="conditions">
+													<condition name="extraData" key="NowZone" value="7">
+														<!-- NowZone 변수가 7이면 현재 7시 전투판에 있다는 것임  -->
+														<node name="skill" idx="18">
+															<node name="select" prob="34,33,33">
+																<node name="teleport" pos="-1350, -2100, 1750" cooltime="70000">
+																	<node name="select" prob="50,50">
+																		<node name="skill" facePos="-1350, -750,1900" idx="26">
+																			<node name="skill" faceTarget="0" idx="18">
+																				<node name="teleport" pos="-1350, -750, 1900">
+																					<node name="skill" idx="8" />
+																					<!-- 손바닥 치기 공격 -->
+																				</node>
+																			</node>
+																		</node>
+																		<node name="skill" facePos="-1350, -750,1900" idx="27">
+																			<node name="skill" faceTarget="0" idx="18">
+																				<node name="teleport" pos="-1350, -750, 1900" />
+																			</node>
+																		</node>
+																	</node>
+																</node>
+																<node name="teleport" pos="-600, 300, 1750" cooltime="70000">
+																	<node name="select" prob="50,50">
+																		<node name="skill" facePos="-1350, -750,1900" idx="26">
+																			<node name="skill" faceTarget="0" idx="18">
+																				<node name="teleport" pos="-1350, -750,1900" />
+																			</node>
+																		</node>
+																		<node name="skill" facePos="-1350, -750,1900" idx="27">
+																			<node name="skill" faceTarget="0" idx="18">
+																				<node name="teleport" pos="-1350, -750, 1900">
+																					<node name="skill" idx="8" />
+																					<!-- 손바닥 치기 공격 -->
+																				</node>
+																			</node>
+																		</node>
+																	</node>
+																</node>
+																<node name="teleport" pos="-300, -1650, 1750" cooltime="70000">
+																	<node name="select" prob="50,50">
+																		<node name="skill" facePos="-1350, -750,1900" idx="26">
+																			<node name="skill" faceTarget="0" idx="18">
+																				<node name="teleport" pos="-1350, -750, 1900">
+																					<node name="skill" idx="8" />
+																					<!-- 손바닥 치기 공격 -->
+																				</node>
+																			</node>
+																		</node>
+																		<node name="skill" facePos="-1350, -750,1900" idx="27">
+																			<node name="skill" faceTarget="0" idx="18">
+																				<node name="teleport" pos="-1350, -750, 1900" />
+																			</node>
+																		</node>
+																	</node>
+																</node>
+															</node>
+														</node>
+													</condition>
+													<condition name="true">
+														<!-- NowZone 변수가 7이 아니라는 것은 3 혹은 11로 다시 4페이즈로 넘어왔다는 뜻이므로 이 경우는 90도 회전 레이저 안쓰고  HP 강제로 80% 스킬을 사용함-->
+														<node name="skill" faceTarget="0" idx="1">
+															<node name="standby" limit="1500" faceTarget="1">
+																<node name="SetSlaveValue" key="HealStop" value="1" />
+																<!-- 졸병한테 회복받아서 페이즈 4로 다시 온 경우에, 이 변수가 1이 되어서 회복 스킬 사용 멈추도록 함-->
+															</node>
+														</node>
+													</condition>
+												</node>
+											</node>
+											<!--## 평소에 사용하는 스킬 목록##-->
+											<!--그림자 추적기, 레벨2 4발 발사 -->
+											<node name="standby" limit="100" faceTarget="0" cooltime="62000" initialCooltime="62000">
+												<node name="target" type="rand" from="10" to="1500">
+													<node name="skill" idx="5">
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+											<!-- 기 내뿜기, HP회복제 효과 저하, 레벨2-->
+											<node name="skill" faceTarget="0" cooltime="41000" idx="12">
+												<node name="standby" limit="1500" faceTarget="0" />
+											</node>
+											<!--손바닥 대미지 필드 -->
+											<node name="standby" limit="100" faceTarget="0" cooltime="8000" initialCooltime="100">
+												<node name="target" type="near" from="10" to="800">
+													<node name="skill" idx="8">
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+											<!--어둠의 화살 쿨타임A-->
+											<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="100">
+												<node name="target" type="rand" from="10" to="1500">
+													<node name="skill" idx="2">
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+											<!--어둠의 화살 쿨타임B-->
+											<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="100">
+												<node name="target" type="rand" from="10" to="1500">
+													<node name="skill" idx="2">
+														<node name="standby" limit="2000" faceTarget="0" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="70,30">
+											<node name="standby" limit="100" faceTarget="0">
+												<node name="target" type="rand" from="10" to="4500">
+													<node name="skill" idx="3">
+														<!-- 대상이 멀리 떨어져 있으면 어둠의 화살 발사, 플레이어가 다음 전투판으로 이동할 때까지 계속 이 스킬을 사용할 것임 -->
+														<node name="standby" limit="500" faceTarget="0">
+															<node name="target" type="rand" from="10" to="4500" />
+														</node>
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="14">
+					<node name="select" prob="999,0">
+						<!--#5-1페이즈  전투판 11시 3시 순간이동하며 이동하는 페이즈  -->
+						<node name="standby" limit="100" faceTarget="0" cooltime="36000">
+							<node name="select" prob="75,25">
+								<!-- 전투판 3시 11시  순간이동하는 부분, 36초 마다 발동함, 최초 실행은 3시로 가는 것으로 우선순위 높임  -->
+								<node name="skill" cooltime="52000" idx="19">
+									<!-- 성우 목소리 나오며 3시 전투판으로 순간이동-->
+									<node name="teleport" pos="2100, -2400, 1900">
+										<node name="select" prob="999,10">
+											<!--3시 전투판 중앙으로 순간이동-->
+											<node name="standby" limit="200" cooltime="120000" isKeepBattle="true">
+												<!-- 전투판 중앙에 졸병몹 소환하는 버전, 최우선으로 소환하고 이게 쿨타임 걸리면 소환 안하는 버전이 걸리게 함-->
+												<node name="skill" idx="3" />
+												<node name="SetValue" key="NowZone" value="3" />
+												<!--NowZone 변수에 3을 넣어서 현재 3시방향 전투판에 있음을 알림-->
+												<!--불속성 소환몹 전투판 중앙에 호출 -->
+												<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="750, -750,  1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="300, -750, 1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="600, 0, 1700" summonRot="0,0,-50" />
+												<node name="standby" limit="2000" />
+											</node>
+											<node name="standby" limit="200" cooltime="120000" isKeepBattle="true">
+												<!-- 전투판 중앙에 졸병몹 소환 안 하는 버전, 사용 빈도를 낮추기 위해 쿨타임을 넣음-->
+												<node name="skill" idx="3" />
+												<node name="SetValue" key="NowZone" value="3" />
+												<!--NowZone 변수에 3을 넣어서 현재 3시방향 전투판에 있음을 알림-->
+												<!--냉기속성 소환몹 전투판 중앙에 호출 -->
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="750, -750,  1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="300, -750, 1700" summonRot="0,0,-50" />
+												<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="600, 0, 1700" summonRot="0,0,-50" />
+												<node name="standby" limit="2000" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="52000" idx="19">
+									<!-- 성우 목소리 나오며 11시 전투판으로 순간이동-->
+									<node name="teleport" pos="1950, 1350, 1900">
+										<node name="select" prob="999,10">
+											<!--11시 전투판 중앙으로 순간이동-->
+											<node name="standby" limit="200" cooltime="120000" isKeepBattle="true">
+												<!--전투판 중앙에 졸병몹 소환 안 하는 버전, 사용 빈도를 낮추기 위해 쿨타임을 넣음, 최우선으로 소환 안하고 이게 쿨타임 걸리면 소환 하는 버전이 걸리게 함-->
+												<node name="skill" idx="3" />
+												<node name="SetValue" key="NowZone" value="11" />
+												<!--NowZone 변수에 11을 넣어서 현재 11시방향 전투판에 있음을 알림-->
+												<node name="standby" limit="1500" />
+											</node>
+											<node name="standby" limit="200" cooltime="120000" isKeepBattle="true">
+												<!--전투판 중앙에 졸병몹 소환하는 버전-->
+												<node name="skill" idx="3" />
+												<node name="SetValue" key="NowZone" value="11" />
+												<!--NowZone 변수에 11을 넣어서 현재 11시방향 전투판에 있음을 알림-->
+												<node name="standby" limit="2500" />
+												<!--회복  소환몹 11 전투판에 호출 -->
+												<node name="SetSlaveValue" key="HealStop" value="0" />
+												<!--HealStop 변수가 0 이 아니면 졸병이 회복 스킬을 사용하지 않기 떄문에 이곳에서 꼭 값을 초기화 함, 데보라크가 HP 회복 받아서 4페이즈로 넘어가면 이 변수를 1로 설정해서 회복을 멈추게 하기 떄문에 다시 5페이즈로 오면 꼭 0으로 초기화 해야함 -->
+												<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="121" summonPos="1200, 2250, 2300" summonRot="0,0,-50" />
+												<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="122" summonPos="1800, 2250, 2300" summonRot="0,0,-50" />
+												<node name="standby" limit="1000" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="9999,99,999,33,33,33,1">
+									<!-- 사정거리가 1700 이라서 전투판 벗어날일 없을거 같음  -->
+									<!--전투판 1/4 불바다 만들기  -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="28000">
+										<node name="select" prob="25,25,25,25">
+											<node name="skill" idx="14" />
+											<node name="skill" idx="15" />
+											<node name="skill" idx="16" />
+											<node name="skill" idx="17" />
+										</node>
+									</node>
+									<!--HP회복시키는 졸병 소환하는 부분, 몇시방향 전투판에 있는냐에 따라서 졸병 소환 위치를 달리 해야하기 때문에 if 조건문을 넣음-->
+									<node name="standby" limit="10" faceTarget="0" cooltime="15000">
+										<node name="conditions">
+											<condition name="extraData" key="NowZone" value="3">
+												<!--현재 데보라크가 3시 방향 전투판에 있다면 -->
+												<!--3시 방향 전투판에서 졸병 소환 -->
+												<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+													<node name="SetSlaveValue" key="HealStop" value="0" />
+													<!--HealStop 변수가 0 이 아니면 졸병이 회복 스킬을 사용하지 않기 떄문에 이곳에서 꼭 값을 초기화 함, 데보라크가 HP 회복 받아서 4페이즈로 넘어가면 이 변수를 1로 설정해서 회복을 멈추게 하기 떄문에 다시 5페이즈로 오면 꼭 0으로 초기화 해야함 -->
+													<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="2850, -3150, 2300" summonRot="0,0,-50" />
+													<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="2250, -3450, 2300" summonRot="0,0,-50" />
+												</node>
+											</condition>
+											<condition name="extraData" key="NowZone" value="11">
+												<!--현재 데보라크가 11시 방향 전투판에 있다면 -->
+												<!--11시 방향 전투판에서 졸병 소환 -->
+												<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+													<node name="SetSlaveValue" key="HealStop" value="0" />
+													<!--HealStop 변수가 0 이 아니면 졸병이 회복 스킬을 사용하지 않기 떄문에 이곳에서 꼭 값을 초기화 함, 데보라크가 HP 회복 받아서 4페이즈로 넘어가면 이 변수를 1로 설정해서 회복을 멈추게 하기 떄문에 다시 5페이즈로 오면 꼭 0으로 초기화 해야함 -->
+													<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="121" summonPos="1200, 2250, 2300" summonRot="0,0,-50" />
+													<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="122" summonPos="1800, 2250, 2300" summonRot="0,0,-50" />
+												</node>
+											</condition>
+											<condition name="true">
+												<!--현재 데보라크가 7시 방향 전투판에 있다면 -->
+												<!--혹시 7시 방향 전투판에 있다면 아무것도 안함 -->
+												<node name="standby" limit="10" faceTarget="1" />
+											</condition>
+										</node>
+									</node>
+									<!-- 기 내뿜기, HP회복제 효과 저하, 레벨3-->
+									<node name="skill" faceTarget="0" cooltime="40000" idx="13">
+										<node name="standby" limit="1500" faceTarget="0" />
+									</node>
+									<!--어둠의 화살 -->
+									<node name="standby" limit="100" faceTarget="0">
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="skill" idx="2">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<!--그림자 추적기: 레벨2 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="25000" initialCooltime="25000">
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="skill" idx="5">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<!--손바닥 대미지 필드 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="9000" initialCooltime="100">
+										<node name="target" type="near" from="10" to="800">
+											<node name="skill" idx="8">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="70,30">
+									<node name="standby" limit="100" faceTarget="0">
+										<node name="target" type="rand" from="10" to="4500">
+											<node name="skill" idx="3">
+												<!-- 대상이 멀리 떨어져 있으면 어둠의 화살 발사, 플레이어가 다음 전투판으로 이동할 때까지 계속 이 스킬을 사용할 것임 -->
+												<node name="standby" limit="500" faceTarget="0">
+													<node name="target" type="rand" from="10" to="4500" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="9">
+					<node name="select" prob="999,0">
+						<!--#5-2페이즈   4페이즈 마지막 때 전투판 7시 지점에 있어야 함으로 이 부분을 넣음  -->
+						<node name="standby" limit="100" faceTarget="0" cooltime="999999">
+							<!-- 7시 전투판  맵 끝으로 순간이동 -->
+							<node name="skill" idx="19">
+								<!--성우 목소리 나오며 순간이동 -->
+								<node name="teleport" pos="-1500, -750, 1900">
+									<!--7시 전투판 -->
+									<node name="standby" limit="200" isKeepBattle="true">
+										<node name="skill" idx="3" />
+										<!-- 대상이 멀리 떨어져 있으면 어둠의 화살 발사-->
+										<node name="SetValue" key="NowZone" value="7" />
+										<!--NowZone 변수에 7을 넣어서 현재 7시방향 전투판에 있음을 알림-->
+										<!--불속성 소환몹 전투판 중앙에 호출 -->
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="750, -750,  1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="105" summonPos="300, -750, 1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="106" summonPos="600, 0, 1700" summonRot="0,0,-50" />
+										<node name="standby" limit="1500" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="999,999,49,50,1">
+									<!-- 사정거리가 1700 이라서 전투판 벗어날일 없을거 같음  -->
+									<node name="skill" faceTarget="0" cooltime="35000" idx="13">
+										<!-- 기 내뿜기, HP회복제 효과 저하, 레벨3-->
+										<node name="standby" limit="500" faceTarget="0" />
+									</node>
+									<!--그림자 추적기 : 레벨3 6발 발사-->
+									<node name="standby" limit="100" faceTarget="0" cooltime="15000" initialCooltime="15000">
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="skill" faceTarget="0" idx="6">
+												<!--레벨3: 6발 발사-->
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<!--손바닥 대미지 필드 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="10000" initialCooltime="10000">
+										<node name="target" type="near" from="10" to="800">
+											<node name="skill" idx="8">
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<!--어둠의 화살 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="10000" initialCooltime="10000">
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="skill" idx="2">
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="70,40">
+									<node name="standby" limit="100" faceTarget="0">
+										<node name="target" type="rand" from="10" to="4500">
+											<node name="skill" idx="3">
+												<!-- 대상이 멀리 떨어져 있으면 어둠의 화살 발사, 플레이어가 다음 전투판으로 이동할 때까지 계속 이 스킬을 사용할 것임 -->
+												<node name="standby" limit="500" faceTarget="0">
+													<node name="target" type="rand" from="10" to="4500" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--#5페이즈   최후의 발악 -->
+					<node name="conditions">
+						<condition name="extraData" key="LastCrazyAttackMode" value="3" op="greaterEqual">
+							<!-- LastCrazyAttackMode 변수가 3 이상이면 최후의 일격 스킬 발동-->
+							<node name="standby" limit="500" faceTarget="0">
+								<node name="select" prob="98,2">
+									<!--이 페이즈 시작되면 맵 중앙으로 순간이동 한 다음에 즉사 스킬 발동시킴, 그리고 63초 마다 반복 -->
+									<!--냉기속성 부기 소환ver  +  최후의 일격 + 맵 전체를 휘쓰는 회전 레이저 발동, 나이트의 전사의 보호 스킬 쿨타임 2분대를 맞춤-->
+									<node name="skill" faceTarget="0" cooltime="110000" isKeepBattle="true" idx="18">
+										<!--다른 전투판으로 순간이동 하기, 레벨1은 성우 목소리 없음 -->
+										<node name="teleport" pos="1050, -450, 1700" />
+										<!--전투판 중앙으로 순간이동 하기 -->
+										<node name="skill" faceTarget="1" idx="7" />
+										<!--최후의 일격 발동!!~~  -->
+										<node name="standby" limit="3000" faceTarget="1" />
+										<!--맵 전체를 휘쓰는 회전 레이저 사용하기 전에 몇초간 잠시 대기  -->
+										<node name="skill" faceTarget="0" idx="10" />
+										<!--맵 전체를 휘쓰는 회전 레이저 발동, 레벨2: 시계방향 -->
+										<node name="standby" limit="1000" faceTarget="0" />
+										<!--냉기속성 소환몹 전투판 중앙에 호출 -->
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+										<node name="SetValue" key="LastCrazyAttackMode" value="1" />
+										<!-- 여기서는 LastCrazyAttackMode 변수 꼭 1으로 해야함 그래야 다음 턴에 회전 레이저 2번 사용하고 맵 중앙으로 순간이동 함, 즉 회전 레이저 3 +2 해야 전사 기사의 의지 스킬 쿨타임 120초에 딱 맞음-->
+									</node>
+									<!--불속성 부기 소환ver   +   맵 전체를 휘쓰는 회전 레이저 발동 : 이때는 최후의 일격 스킬 사용 안함, 나이트의 전사의 의지 스킬 쿨타임 120초에 맞추기 위해-->
+									<node name="skill" faceTarget="0" isKeepBattle="true" idx="18">
+										<!--다른 전투판으로 순간이동 하기, 레벨1은 성우 목소리 없음 -->
+										<node name="teleport" pos="1050, -450, 1700" />
+										<!--전투판 중앙으로 순간이동 하기 -->
+										<node name="standby" limit="6000" faceTarget="1" />
+										<!--맵 전체를 휘쓰는 회전 레이저 사용하기 전에 몇초간 잠시 대기  -->
+										<node name="skill" faceTarget="0" idx="9" />
+										<!--맵 전체를 휘쓰는 회전 레이저 발동, 레벨1: 반시계방향-->
+										<node name="standby" limit="1000" faceTarget="0" />
+										<!--불속성 소환몹 전투판 중앙에 호출 -->
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="900, -150, 1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="450, -450, 1700" summonRot="0,0,-50" />
+										<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="1050, -600, 1700" summonRot="0,0,-50" />
+										<node name="SetValue" key="LastCrazyAttackMode" value="0" />
+										<!-- LastCrazyAttackMode 변수 꼭 0으로 해야함 그래야 다음 턴에 회전 레이저 3번 사용하고 맵 중앙으로 순간이동 함-->
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99,1">
+								<!-- LastCrazyAttackMode 변수가 0, 1, 2 면 평소 회전 레이저 공격 발동-->
+								<node name="skill" idx="18">
+									<node name="select" prob="20,20,20,20">
+										<node name="teleport" pos="-900, -300, 1900" cooltime="20000" initialCooltime="1">
+											<node name="standby" limit="2000" faceTarget="0">
+												<node name="select" prob="50,50">
+													<node name="skill" faceTarget="0" idx="24">
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="SetValue" key="LastCrazyAttackMode" value="1" isModify="1" />
+															<!--최후의 일격 스킬 발동시키기 위한 변수에 1씩 더하기-->
+														</node>
+													</node>
+													<node name="skill" faceTarget="0" idx="25">
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="SetValue" key="LastCrazyAttackMode" value="1" isModify="1" />
+															<!--최후의 일격 스킬 발동시키기 위한 변수에 1씩 더하기-->
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="-900, -1200, 1900" cooltime="20000" initialCooltime="1">
+											<node name="standby" limit="2000" faceTarget="0">
+												<node name="select" prob="50,50">
+													<node name="skill" faceTarget="0" idx="24">
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="SetValue" key="LastCrazyAttackMode" value="1" isModify="1" />
+															<!--최후의 일격 스킬 발동시키기 위한 변수에 1씩 더하기-->
+														</node>
+													</node>
+													<node name="skill" faceTarget="0" idx="25">
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="SetValue" key="LastCrazyAttackMode" value="1" isModify="1" />
+															<!--최후의 일격 스킬 발동시키기 위한 변수에 1씩 더하기-->
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="-1950, -1200, 1900" cooltime="20000" initialCooltime="1">
+											<node name="standby" limit="2000" faceTarget="0">
+												<node name="select" prob="50,50">
+													<node name="skill" faceTarget="0" idx="24">
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="SetValue" key="LastCrazyAttackMode" value="1" isModify="1" />
+															<!--최후의 일격 스킬 발동시키기 위한 변수에 1씩 더하기-->
+														</node>
+													</node>
+													<node name="skill" faceTarget="0" idx="25">
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="SetValue" key="LastCrazyAttackMode" value="1" isModify="1" />
+															<!--최후의 일격 스킬 발동시키기 위한 변수에 1씩 더하기-->
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="-1350, -750, 1900" cooltime="20000" initialCooltime="1">
+											<node name="standby" limit="2000" faceTarget="0">
+												<node name="select" prob="50,50">
+													<node name="skill" faceTarget="0" idx="24">
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="SetValue" key="LastCrazyAttackMode" value="1" isModify="1" />
+															<!--최후의 일격 스킬 발동시키기 위한 변수에 1씩 더하기-->
+														</node>
+													</node>
+													<node name="skill" faceTarget="0" idx="25">
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="SetValue" key="LastCrazyAttackMode" value="1" isModify="1" />
+															<!--최후의 일격 스킬 발동시키기 위한 변수에 1씩 더하기-->
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

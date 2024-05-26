@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1600" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="41">
+					<node name="select" prob="100,0">
+						<!--#1페이즈 -->
+						<!--*****************HP 40% 이상 -->
+						<node name="skill" facePos="-18, 592, 1651" cooltime="35000" initialCooltime="60000" isKeepBattle="true" idx="14">
+							<!--폭탄 선물-->
+							<node name="say" message="$Schatten__AI_SCHATTEN_FR_LV2__0$" durationTick="3000" delayTick="3000" />
+							<node name="jump" pos="-18, 592, 1651" speed="1400" heightMultiplier="0.9" />
+							<node name="skill" faceTarget="1" idx="15" />
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="100,100">
+									<!--기본 공격 두가지 중 랜덤으로 발생 시키기 위한 거리체크 시작 스킬-->
+									<node name="skill" idx="2">
+										<!--엑스 베기 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="2">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 엑스베기 1회 사용 후 올려차기 사용-->
+													<node name="trace" limit="2000" cooltime="15000" skillIdx="2">
+														<node name="skill" idx="2" />
+														<node name="standby" limit="500" faceTarget="1" />
+														<node name="runaway" till="400" limit="2000" />
+														<node name="skill" idx="4" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="skill" idx="2">
+														<!--올려차기 쿨타임일 때 엑스베기만-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="100,100">
+													<node name="standby" limit="100" faceTarget="1" cooltime="10000" initialCooltime="20000">
+														<!--올려차기의 빈도수를 높이기위한 부분-->
+														<node name="runaway" till="400" limit="2000" />
+														<node name="skill" idx="4" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="standby" limit="100" faceTarget="1">
+														<node name="trace" till="200" limit="2000" />
+														<node name="skill" idx="1" />
+														<node name="skill" idx="3" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="1">
+										<!--찌르고 후퇴 사격 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="3">
+												<!--후퇴사격 후 대쉬 나이프 거리체크 -->
+												<node name="standby" limit="100" faceTarget="1">
+													<!--교차 사격 사용 후 대쉬 나이프-->
+													<node name="skill" idx="5" />
+													<node name="standby" limit="400" faceTarget="1" />
+													<node name="trace" till="600" limit="2000" />
+													<node name="skill" idx="3" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" idx="6">
+													<!--대쉬 나이프 거리 안되면 버닝샷-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="8">
+										<node name="select" prob="100,100,100">
+											<!--건호크 거리 체크-->
+											<node name="skill" cooltime="20000" initialCooltime="20000" idx="8">
+												<!--건호크 1단계-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="standby" limit="500" faceTarget="1" cooltime="50000" initialCooltime="40000" isKeepBattle="true">
+												<!--즉결심판 -->
+												<node name="say" message="$Schatten__AI_SCHATTEN_FR_LV2__1$" durationTick="3000" delayTick="0" />
+												<node name="skill" faceTarget="1" idx="10" />
+												<node name="sidePopup" type="cutin" illust="Cutin_Schatten_01" duration="2000" sound="System_FortressRumble_CutIn_01" />
+												<node name="teleport" pos="-18, 592, 1651" />
+												<node name="say" message="$Schatten__AI_SCHATTEN_FR_LV2__2$" durationTick="3000" delayTick="0" />
+												<node name="skill" faceTarget="1" idx="11" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="trace" till="200" limit="2000" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" till="200" limit="2000" />
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="100,100,0">
+						<!--#2페이즈 -->
+						<node name="standby" limit="500" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<!--#2페이즈 각성 시작 -->
+							<node name="sidePopup" type="talk" illust="Schatten_surprise" script="$Schatten__AI_SCHATTEN_FR_LV2__3$" duration="3000" />
+							<node name="conditions">
+								<condition name="feature" feature="FameChallengeBuff_01">
+									<node name="skill" faceTarget="1" idx="16" />
+								</condition>
+								<condition name="true">
+									<node name="skill" faceTarget="1" idx="17" />
+								</condition>
+							</node>
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" facePos="-18, 592, 1651" cooltime="35000" initialCooltime="60000" isKeepBattle="true" idx="14">
+							<!--폭탄 선물-->
+							<node name="say" message="$Schatten__AI_SCHATTEN_FR_LV2__4$" durationTick="3000" delayTick="3000" />
+							<node name="jump" pos="-18, 592, 1651" speed="1400" heightMultiplier="0.9" />
+							<node name="skill" faceTarget="1" idx="15" />
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="100,100">
+									<!--기본 공격 두가지 중 랜덤으로 발생 시키기 위한 거리체크 시작 스킬-->
+									<node name="skill" idx="2">
+										<!--엑스 베기 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="2">
+												<node name="select" prob="100,100">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 엑스베기 1회 사용 후 올려차기 사용-->
+													<node name="trace" limit="2000" cooltime="15000" skillIdx="2">
+														<node name="skill" idx="2" />
+														<node name="standby" limit="500" faceTarget="1" />
+														<node name="runaway" till="400" limit="2000" />
+														<node name="skill" idx="4" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="skill" idx="2">
+														<!--올려차기 쿨타임일 때 엑스베기만-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="100,100">
+													<node name="standby" limit="100" faceTarget="1" cooltime="10000" initialCooltime="20000">
+														<!--올려차기의 빈도수를 높이기위한 부분-->
+														<node name="runaway" till="400" limit="2000" />
+														<node name="skill" idx="4" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="standby" limit="100" faceTarget="1">
+														<node name="trace" till="200" limit="2000" />
+														<node name="skill" idx="1" />
+														<node name="skill" idx="3" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+									<node name="skill" idx="1">
+										<!--찌르고 후퇴 사격 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="3">
+												<!--후퇴사격 후 대쉬 나이프 거리체크 -->
+												<node name="standby" limit="100" faceTarget="1">
+													<!--교차 사격 사용 후 대쉬 나이프-->
+													<node name="skill" idx="5" />
+													<node name="standby" limit="400" faceTarget="1" />
+													<node name="trace" till="600" limit="2000" />
+													<node name="skill" idx="3" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" idx="7">
+													<!--대쉬 나이프 거리 안되면 버닝샷 2단계-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="8">
+										<node name="select" prob="100,100,100">
+											<!--건호크 거리 체크-->
+											<node name="skill" cooltime="20000" initialCooltime="20000" idx="9">
+												<!--건호크 2단계-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="standby" limit="500" faceTarget="1" cooltime="50000" initialCooltime="40000" isKeepBattle="true">
+												<!--즉결심판 2단계 -->
+												<node name="say" message="$Schatten__AI_SCHATTEN_FR_LV2__5$" durationTick="3000" delayTick="0" />
+												<node name="skill" faceTarget="1" idx="12" />
+												<node name="sidePopup" type="cutin" illust="Cutin_Schatten_01" duration="2000" sound="System_FortressRumble_CutIn_01" />
+												<node name="teleport" pos="-18, 592, 1651" />
+												<node name="say" message="$Schatten__AI_SCHATTEN_FR_LV2__6$" durationTick="3000" delayTick="0" />
+												<node name="skill" faceTarget="1" idx="13" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="trace" till="200" limit="2000" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" till="200" limit="2000" />
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

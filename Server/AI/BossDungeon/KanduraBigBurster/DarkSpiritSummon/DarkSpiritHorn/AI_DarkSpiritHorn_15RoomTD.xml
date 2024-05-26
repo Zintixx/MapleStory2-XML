@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--5시 방에 있는 "순간이동"형-->
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,99999,0">
+			<node name="standby" limit="2000" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<!--최초 등장때 2초 정도 정지 상태로 있음-->
+				<node name="SetValue" key="DeathSummon" value="0" />
+				<!--소환몹 자살 명령 받는  변수, 이 변수는 마스터인 칸두라 보스한테 신호 받는 변수임 -->
+				<node name="SetValue" key="MasterCome" value="0" />
+				<!--  칸두라 보스가 직접 해당 방으로 왔을 때 이것을 알리는데 사용하는 변수, 이 변수는 마스터인 칸두라 보스한테 신호 받는 변수임 -->
+				<node name="SetValue" key="SoulSendReady" value="0" />
+				<!-- 암흑정령이 몇초 뒤에 소울을 흡수 당해 죽게 할지를 결정하는 변수-->
+			</node>
+			<node name="standby" limit="100" faceTarget="1" cooltime="3000">
+				<node name="SetValue" key="SoulSendReady" value="1" isModify="1" />
+				<!--언제 소울 흡수 동작을 취할지 카운드다운을 세는 부분-->
+				<node name="target" type="near" from="10" to="1300" />
+				<!--항상 제일 가까운 대상 타겟팅 하도록 함-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SoulSendReady" value="10" op="greaterEqual">
+					<!-- 시간이 다 되어서 다크소울을 몸에서 방출하고 죽음, 암흑정령이 등장해서 몇초뒤에 소울을 방출할지  결정하는 숫자, 이걸로 조절하자-->
+					<!-- 빨리 죽는 암흑정령은 이 숫자가 상대적으로 낮게 설정함-->
+					<node name="conditions">
+						<condition name="extraData" key="MasterCome" value="1" op="greaterEqual">
+							<!-- 칸두라 보스가 방에 왔으면  안에서 죽음 직접 왔을 경우 -->
+							<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true">
+								<node name="skill" idx="8" />
+								<node name="SetMasterValue" key="DarkSoulAbsorb" value="1" isModify="1" />
+								<!-- 다크소울 흡수 당한 후 보스의 DarkSoulAbsorb 변수에 1을 더함-->
+								<node name="announce" message="$KanduraBigBurster_DarkSoulAbsorb$" durationTick="6000" />
+								<node name="skill" faceTarget="0" idx="9" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 칸두라 보스가 중안 전투판에 있으면  중앙으로 순간이동 한 다음에  죽음 직접 왔을 경우 -->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="5">
+								<!--순간이동 동작 시작 -  땅속으로 들어가기 -->
+								<node name="skill" idx="6" />
+								<!--땅속에서 잠시 대기 -->
+								<node name="teleport" pos="-150, -1950, 3750" />
+								<node name="skill" idx="7" />
+								<node name="standby" limit="1000" faceTarget="0" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--몸 기력 발산 -->
+								<node name="standby" limit="1000" faceTarget="0" />
+								<node name="skill" idx="8" />
+								<node name="SetMasterValue" key="DarkSoulAbsorb" value="1" isModify="1" />
+								<!-- 다크소울 흡수 당한 후 보스의 DarkSoulAbsorb 변수에 1을 더함-->
+								<node name="announce" message="$KanduraBigBurster_DarkSoulAbsorb$" durationTick="6000" />
+								<node name="skill" faceTarget="0" idx="9" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="DeathSummon" value="1">
+					<!-- 칸두라한테 자살하라는 명령을 받았으면 -->
+					<node name="skill" faceTarget="0" idx="9" />
+					<!-- 자살 스킬 사용하기 -->
+				</condition>
+				<condition name="extraData" key="MasterCome" value="1">
+					<node name="select" prob="99999,0">
+						<!-- 칸두라 보스가 해당 방으로 직접 왔을 경우 -->
+						<!--다크소울 방출  카운드다운을 시간을 줄임-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="999999">
+							<node name="SetValue" key="SoulSendReady" value="2" isModify="1" />
+						</node>
+						<aiPreset name="MainBattle" />
+						<!-- 기본 주 공격 행위  -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- 통상적인 공격 행동 - 이곳에 "순간이동",  "돌진",  "땅속이동", "걸어서 이동"  같은  베리에이션별 특징 스킬을 정의함  -->
+						<!--순간이동 로직 -->
+						<node name="skill" faceTarget="0" cooltime="8000" initialCooltime="15000" idx="5">
+							<!--순간이동 동작 시작 -  땅속으로 들어가기 -->
+							<node name="skill" idx="6">
+								<node name="select" prob="33,33,34">
+									<!--땅속에서 잠시 대기 -->
+									<node name="teleport" pos="0, -3150, 3750">
+										<node name="skill" idx="7" />
+										<!--땅속에서 나오기 -->
+									</node>
+									<node name="teleport" pos="-900, -3150, 3750">
+										<node name="skill" idx="7" />
+										<!--땅속에서 나오기 -->
+									</node>
+									<node name="teleport" pos="-300, -3450, 3750">
+										<node name="skill" idx="7" />
+										<!--땅속에서 나오기 -->
+									</node>
+								</node>
+							</node>
+						</node>
+						<aiPreset name="MainBattle" />
+						<!-- 기본 주 공격 행위  -->
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<!-- 기본 주 공격 행위  정의-->
+		<aiPreset name="MainBattle">
+			<node name="select" prob="99999,0">
+				<node name="skill" faceTarget="0" cooltime="3800" idx="4">
+					<node name="select" prob="50,50">
+						<!--몸에 기력 발산, 칸두라 저주 걸린 플레이어 접근 금지 시키기위한 용도 -->
+						<node name="standby" limit="1200" faceTarget="1" />
+						<node name="standby" limit="800" faceTarget="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="35,65">
+							<!--거리 250 이내 -->
+							<node name="skill" idx="1">
+								<!--근접 손치기 공격 -->
+								<node name="standby" limit="800" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="4000" idx="2">
+								<!--회전 돌진 공격 -->
+								<node name="standby" limit="800" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="3">
+								<node name="select" prob="30,30,40">
+									<!--거리 9900 이내 -->
+									<node name="skill" idx="3">
+										<!--직사 관통 공격 -->
+										<node name="skill" faceTarget="0" idx="4">
+											<!--몸에 기력 발산 -->
+											<node name="standby" limit="3100" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="2100" faceTarget="1">
+										<node name="skill" idx="3">
+											<!--직사 관통 공격 -->
+											<node name="skill" faceTarget="0" idx="4">
+												<!--몸에 기력 발산 -->
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="700" faceTarget="1" />
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

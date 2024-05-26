@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 호루스-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1200" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<node name="select" prob="9999,9999,9999,0">
+						<!--1페이즈 땅에서 전투  -->
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="22000" initialCooltime="15000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="2500" skillIdx="17" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="skill" cooltime="35000" initialCooltime="16000" idx="10">
+							<!--2연속 바람 밀기 -->
+							<node name="target" type="near" from="200" to="1200">
+								<node name="skill" idx="10">
+									<node name="standby" limit="3500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="23000" initialCooltime="21000" idx="11">
+							<!-- 2연속 돌진공격-->
+							<node name="target" type="near" from="300" to="1200">
+								<node name="skill" idx="12">
+									<!-- 돌진공격 2Lv 준비동작 속도 2배 빠름-->
+									<node name="target" type="near" from="300" to="1200">
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="14">
+								<node name="select" prob="70,30,20">
+									<!--횡베기 사정권에 들어오면 -->
+									<node name="skill" idx="14">
+										<!--횡베기 -->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="11">
+										<!-- 돌진공격-->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<node name="trace" limit="1333" skillIdx="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="state" targetState="holdme">
+										<!-- 타겟팅 된 대상이 매달려 있다면 돌진 할퀴기 공격을 하여 무조건 떨구게 함-->
+										<node name="skill" idx="11" />
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,100">
+											<node name="trace" limit="2000" skillIdx="14" />
+											<!--횡베기 스킬  거리 좁히기-->
+											<node name="standby" limit="600" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="75">
+					<node name="select" prob="9999,100">
+						<!--2페이즈 비행 패턴  -->
+						<node name="skill" cooltime="9999999" initialCooltime="1" idx="15" />
+						<!--페이즈 전환시 1번만 사용함  -->
+						<node name="standby" limit="300" faceTarget="0">
+							<node name="announce" message="$GriffonPharaoh01Boss_Grab$" durationTick="6000">
+								<!-- 보스 몸에 매달리라고 알리는 메시지 -->
+								<node name="skill" faceTarget="0" idx="2">
+									<!-- 공중패턴 시작, 트로피 체크 -->
+									<node name="target" type="near" from="1" to="5000">
+										<!-- 호루스한테 매달리지 못한 대상을 우선 타겟팅 잡기 위해 이렇게 설정함, 그러나 완벽하게 작동하지는 않음  -->
+										<node name="conditions">
+											<condition name="state" targetState="holdme">
+												<!--모든 플레이어가 몸에 매달려 있으면  -->
+												<node name="skill" isKeepBattle="true" idx="6">
+													<!--그냥 날기  -->
+													<node name="skill" idx="3" />
+													<!-- 날면서 공격 4개 발사 -->
+													<node name="skill" facePos="900, 1800, 8350" idx="6" />
+													<!-- 착지 전에 맵 중앙쪽으로 향하기, 매달린 유저가 맵 밖으로 떨어지는 것을 막기위한 장치  -->
+													<node name="skill" facePos="900, 1800, 8350" idx="4" />
+													<!-- 마무리 직전 대기  바닥 경고 이펙트 뜸-->
+													<node name="skill" facePos="900, 1800, 8350" idx="5" />
+													<!-- 쾅 공격후 마무리  -->
+												</node>
+											</condition>
+											<condition name="true">
+												<!--타겟팅 된 플레이어가 바닥에 있으면  -->
+												<node name="skill" isKeepBattle="true" idx="3">
+													<!-- 날면서 공격 4개 발사 -->
+													<node name="target" type="rand" from="1" to="1500" />
+													<!-- 타겟팅 다시 잡기  -->
+													<node name="skill" idx="3" />
+													<!-- 날면서 공격 4개 발사 -->
+													<node name="target" type="rand" from="1" to="1500" />
+													<!-- 타겟팅 다시 잡기  -->
+													<node name="skill" idx="3" />
+													<!-- 날면서 공격 4개 발사 -->
+													<node name="target" type="rand" from="1" to="1500" />
+													<!-- 타겟팅 다시 잡기  -->
+													<node name="skill" idx="3" />
+													<!-- 날면서 공격 4개 발사  -->
+													<node name="target" type="rand" from="1" to="1500" />
+													<!-- 타겟팅 다시 잡기  -->
+													<node name="skill" idx="3" />
+													<!-- 날면서 공격 4개 발사  -->
+													<node name="target" type="rand" from="1" to="1500" />
+													<!-- 타겟팅 다시 잡기  -->
+													<node name="skill" idx="3" />
+													<!-- 날면서 공격 4개 발사  -->
+													<node name="target" type="rand" from="1" to="1500" />
+													<!-- 타겟팅 다시 잡기  -->
+													<node name="skill" facePos="900, 1800, 8350" idx="6" />
+													<!-- 착지 전에 맵 중앙쪽으로 향하기, 매달린 유저가 맵 밖으로 떨어지는 것을 막기위한 장치  -->
+													<node name="skill" facePos="900, 1800, 8350" idx="4" />
+													<!-- 마무리 직전 대기  바닥 경고 이펙트 뜸-->
+													<node name="skill" facePos="900, 1800, 8350" idx="5" />
+													<!-- 쾅 공격후 마무리  -->
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="55">
+					<node name="select" prob="9999,9999,9999,0">
+						<!--3페이즈 땅에서 전투  -->
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="30000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="2500" skillIdx="17" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="skill" cooltime="35000" initialCooltime="14000" idx="8">
+							<!--2연속 바람 밀며 깃털 발사 -->
+							<node name="skill" faceTarget="0" idx="9">
+								<node name="target" type="near" from="200" to="1200">
+									<node name="skill" idx="8">
+										<node name="skill" faceTarget="0" idx="9">
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="27000" initialCooltime="26000" idx="11">
+							<!-- 2연속 돌진공격-->
+							<node name="target" type="near" from="300" to="1200">
+								<node name="skill" idx="12">
+									<!-- 돌진공격 2Lv 준비동작 속도 2배 빠름-->
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="14">
+								<node name="select" prob="15,20,45,20">
+									<!--횡베기 사정권에 들어오면 -->
+									<node name="skill" idx="14">
+										<!--횡베기 -->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="11">
+										<!-- 돌진공격-->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="13">
+										<!--종베기 -->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<node name="trace" limit="1333" skillIdx="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="state" targetState="holdme">
+										<!-- 타겟팅 된 대상이 매달려 있다면 돌진 할퀴기 공격을 하여 무조건 떨구게 함-->
+										<node name="skill" idx="11" />
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,19,30,1">
+											<node name="skill" idx="13">
+												<!--종베기 -->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="skill" idx="11">
+												<!-- 돌진공격-->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2000" skillIdx="14" />
+											<!--횡베기 스킬  거리 좁히기-->
+											<node name="standby" limit="600" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="50">
+					<!--4페이즈 비행 패턴  -->
+					<!--		<skill id="50000384" level="1" prob="9999" cooltime = "999999" initialCooltime = "1"/>   -->
+					<!--바닥 충격파 페이즈 전환시 1번만 사용함  -->
+					<node name="standby" limit="300" faceTarget="0">
+						<node name="announce" message="$GriffonPharaoh01Boss_Grab$" durationTick="6000">
+							<!-- 보스 몸에 매달리라고 알리는 메시지 -->
+							<node name="skill" faceTarget="0" idx="2">
+								<!-- 공중패턴 시작, 트로피 체크 -->
+								<node name="target" type="near" from="1" to="5000">
+									<!-- 호루스한테 매달리지 못한 대상을 우선 타겟팅 잡기 위해 이렇게 설정함, 그러나 완벽하게 작동하지는 않음  -->
+									<node name="conditions">
+										<condition name="state" targetState="holdme">
+											<!--모든 플레이어가 몸에 매달려 있으면  -->
+											<node name="skill" isKeepBattle="true" idx="6">
+												<!--그냥 날기  -->
+												<node name="skill" idx="3" />
+												<!-- 날면서 공격 4개 발사 -->
+												<node name="skill" facePos="900, 1800, 8350" idx="6" />
+												<!-- 착지 전에 맵 중앙쪽으로 향하기, 매달린 유저가 맵 밖으로 떨어지는 것을 막기위한 장치  -->
+												<node name="skill" facePos="900, 1800, 8350" idx="4" />
+												<!-- 마무리 직전 대기  바닥 경고 이펙트 뜸-->
+												<node name="skill" facePos="900, 1800, 8350" idx="5" />
+												<!-- 쾅 공격후 마무리  -->
+											</node>
+										</condition>
+										<condition name="true">
+											<!--타겟팅 된 플레이어가 바닥에 있으면  -->
+											<node name="skill" isKeepBattle="true" idx="3">
+												<!-- 날면서 공격 4개 발사 -->
+												<node name="target" type="rand" from="1" to="1500" />
+												<!-- 타겟팅 다시 잡기  -->
+												<node name="skill" idx="3" />
+												<!-- 날면서 공격 4개 발사 -->
+												<node name="target" type="rand" from="1" to="1500" />
+												<!-- 타겟팅 다시 잡기  -->
+												<node name="skill" idx="3" />
+												<!-- 날면서 공격 4개 발사 -->
+												<node name="target" type="rand" from="1" to="1500" />
+												<!-- 타겟팅 다시 잡기  -->
+												<node name="skill" idx="3" />
+												<!-- 날면서 공격 4개 발사  -->
+												<node name="target" type="rand" from="1" to="1500" />
+												<!-- 타겟팅 다시 잡기  -->
+												<node name="skill" idx="3" />
+												<!-- 날면서 공격 4개 발사  -->
+												<node name="target" type="rand" from="1" to="1500" />
+												<!-- 타겟팅 다시 잡기  -->
+												<node name="skill" idx="3" />
+												<!-- 날면서 공격 4개 발사  -->
+												<node name="target" type="rand" from="1" to="1500" />
+												<!-- 타겟팅 다시 잡기  -->
+												<node name="skill" facePos="900, 1800, 8350" idx="6" />
+												<!-- 착지 전에 맵 중앙쪽으로 향하기, 매달린 유저가 맵 밖으로 떨어지는 것을 막기위한 장치  -->
+												<node name="skill" facePos="900, 1800, 8350" idx="4" />
+												<!-- 마무리 직전 대기  바닥 경고 이펙트 뜸-->
+												<node name="skill" facePos="900, 1800, 8350" idx="5" />
+												<!-- 쾅 공격후 마무리  -->
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="30">
+					<node name="select" prob="9999,9999,9999,0">
+						<!--5페이즈 땅에서 전투  -->
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="30000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="2500" skillIdx="17" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="skill" cooltime="38000" initialCooltime="13000" idx="8">
+							<!--2연속 바람 밀며 깃털 발사 -->
+							<node name="skill" faceTarget="0" idx="9">
+								<node name="target" type="near" from="200" to="1200">
+									<node name="skill" idx="8">
+										<node name="skill" faceTarget="0" idx="9">
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="35000" initialCooltime="28000" idx="11">
+							<!-- 2연속 돌진공격-->
+							<node name="target" type="near" from="300" to="1200">
+								<node name="skill" idx="12">
+									<!-- 돌진공격 2Lv 준비동작 속도 2배 빠름-->
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="13">
+								<node name="select" prob="65,25,10">
+									<!--종베기 사정권에 들어오면 -->
+									<node name="skill" idx="13">
+										<!--종베기 바닥 폭발 -->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="11">
+										<!-- 돌진공격-->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<node name="trace" limit="1333" skillIdx="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="state" targetState="holdme">
+										<!-- 타겟팅 된 대상이 매달려 있다면 돌진 할퀴기 공격을 하여 무조건 떨구게 함-->
+										<node name="skill" idx="11" />
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2000" skillIdx="13" />
+											<!--종베기 스킬  거리 좁히기-->
+											<node name="standby" limit="600" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="25">
+					<!--6페이즈 비행 패턴  -->
+					<node name="standby" limit="300" faceTarget="0">
+						<node name="skill" faceTarget="0" idx="2">
+							<!-- 공중패턴 시작, 트로피 체크 -->
+							<node name="target" type="near" from="1" to="5000">
+								<!-- 호루스한테 매달리지 못한 대상을 우선 타겟팅 잡기 위해 이렇게 설정함, 그러나 완벽하게 작동하지는 않음  -->
+								<node name="conditions">
+									<condition name="state" targetState="holdme">
+										<!--모든 플레이어가 몸에 매달려 있으면  -->
+										<node name="skill" isKeepBattle="true" idx="6">
+											<!--그냥 날기  -->
+											<node name="skill" idx="3" />
+											<!-- 날면서 공격 4개 발사 -->
+											<node name="skill" facePos="900, 1800, 8350" idx="6" />
+											<!-- 착지 전에 맵 중앙쪽으로 향하기, 매달린 유저가 맵 밖으로 떨어지는 것을 막기위한 장치  -->
+											<node name="skill" facePos="900, 1800, 8350" idx="4" />
+											<!-- 마무리 직전 대기  바닥 경고 이펙트 뜸-->
+											<node name="skill" facePos="900, 1800, 8350" idx="5" />
+											<!-- 쾅 공격후 마무리  -->
+										</node>
+									</condition>
+									<condition name="true">
+										<!--타겟팅 된 플레이어가 바닥에 있으면  -->
+										<node name="skill" isKeepBattle="true" idx="3">
+											<!-- 날면서 공격 4개 발사 -->
+											<node name="target" type="rand" from="1" to="1500" />
+											<!-- 타겟팅 다시 잡기  -->
+											<node name="skill" idx="3" />
+											<!-- 날면서 공격 4개 발사 -->
+											<node name="target" type="rand" from="1" to="1500" />
+											<!-- 타겟팅 다시 잡기  -->
+											<node name="skill" idx="3" />
+											<!-- 날면서 공격 4개 발사 -->
+											<node name="target" type="rand" from="1" to="1500" />
+											<!-- 타겟팅 다시 잡기  -->
+											<node name="skill" idx="3" />
+											<!-- 날면서 공격 4개 발사  -->
+											<node name="target" type="rand" from="1" to="1500" />
+											<!-- 타겟팅 다시 잡기  -->
+											<node name="skill" idx="3" />
+											<!-- 날면서 공격 4개 발사  -->
+											<node name="target" type="rand" from="1" to="1500" />
+											<!-- 타겟팅 다시 잡기  -->
+											<node name="skill" idx="3" />
+											<!-- 날면서 공격 4개 발사  -->
+											<node name="target" type="rand" from="1" to="1500" />
+											<!-- 타겟팅 다시 잡기  -->
+											<node name="skill" facePos="900, 1800, 8350" idx="6" />
+											<!-- 착지 전에 맵 중앙쪽으로 향하기, 매달린 유저가 맵 밖으로 떨어지는 것을 막기위한 장치  -->
+											<node name="skill" facePos="900, 1800, 8350" idx="4" />
+											<!-- 마무리 직전 대기  바닥 경고 이펙트 뜸-->
+											<node name="skill" facePos="900, 1800, 8350" idx="5" />
+											<!-- 쾅 공격후 마무리  -->
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="state" targetState="holdme">
+							<!-- 타겟팅 된 대상이 매달려 있다면 깃털 날리기 공격을 함-->
+							<node name="skill" idx="16" />
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,9999,60,24,14,1">
+								<node name="skill" cooltime="180000" initialCooltime="10000" idx="15">
+									<!--바닥 쾅!~ HP 강제로 많이 깎기  -->
+									<node name="skill" idx="7" />
+									<!--공격력 상승 버프  -->
+								</node>
+								<node name="skill" cooltime="23000" idx="16">
+									<!--깃털 30개 날리기  -->
+									<node name="standby" limit="3500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="13000" idx="13">
+									<!--종베기 2연속 바닥 폭발 -->
+									<node name="target" type="near" from="300" to="1000">
+										<node name="skill" idx="13">
+											<!--종베기 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="17000" idx="11">
+									<!-- 2연속 돌진공격-->
+									<node name="target" type="near" from="300" to="1200">
+										<node name="skill" idx="12">
+											<!-- 돌진공격 2Lv 준비동작 속도 2배 빠름-->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="27000" idx="8">
+									<!--2연속 바람 밀며 깃털 발사 -->
+									<node name="skill" faceTarget="0" idx="9">
+										<node name="target" type="near" from="200" to="1200">
+											<node name="skill" idx="8">
+												<node name="skill" faceTarget="0" idx="9">
+													<node name="standby" limit="3500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="13">
+									<!--종베기 바닥 폭발 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

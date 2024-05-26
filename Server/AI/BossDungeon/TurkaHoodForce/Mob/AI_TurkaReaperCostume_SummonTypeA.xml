@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--두번째 전투판에서 이루어지는 3페이지 전반부에 등장, AI_SignalSummon.xml 에서 호출함 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" key="BattleOn" value="1">
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="MonsterMany" value="1" isModify="1">
+					<!-- 소환해준 Master에게  MonsterMany + 1 신호 보냄 -->
+					<!-- 모든 몬스터가 똑같이 공격 행동 하는 것을 방지하기 위해 초반에 랜덤 standby 설정 넣기, 그리고 랜덤하게 공반 버프 생성되도록 하기 -->
+					<node name="buff" type="add" id="50003306" prob="60" />
+					<!-- 공격 반사 랜덤 설정, 확률 높게 설정 -->
+					<node name="standby" limit="2600" faceTarget="1" prob="10" />
+					<node name="standby" limit="1300" faceTarget="1" prob="10" />
+					<node name="standby" limit="4800" faceTarget="1" prob="10" />
+					<node name="standby" limit="3600" faceTarget="1" prob="10" />
+				</node>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="200" facePos="-300, -1350, 1050" animation="Attack_01_A" cooltime="3000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="DeathSummon" value="1">
+					<!-- AI_SignalSummon.xml 로 부터  DeathSummon = 1 신호 받으면 스스로 사라짐 -->
+					<node name="RemoveMe" />
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<!-- 공격 후 standby 상태, DeathSummon = 1 신호 들어오면 바로 Remove 해야 해서 공격 후 standby를 이렇게 설정함  -->
+					<node name="standby" limit="100" facePos="-300, -1350, 1050" animation="Attack_01_A">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="30,20,50">
+						<!-- 레벨1: 거리 280 이내에 플레이어가 있다면(같은 높이 대상만 체크), 근접 공격도 하고 버프 부여 행위도 함 -->
+						<node name="skill" faceTarget="1" cooltime="6000" idx="3">
+							<node name="select" prob="33,33,34">
+								<!-- 근접 공격 -->
+								<node name="SetValue" key="AttackDelay" value="5" />
+								<node name="SetValue" key="AttackDelay" value="15" />
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+						</node>
+						<node name="skill" facePos="-300, -1350, 1050" cooltime="15000" idx="1">
+							<node name="select" prob="33,33,34">
+								<!-- 본체에  투사체 버프 부여 -->
+								<node name="SetValue" key="AttackDelay" value="12" />
+								<node name="SetValue" key="AttackDelay" value="24" />
+								<node name="SetValue" key="AttackDelay" value="31" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="12" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="40,60">
+						<!-- 거리 800에 위아래 큐브 2칸 이상 높이까지 커버, 이 범위 안에 플레이어가 있으면 본체 투사체 버프 부여 행위 빈도 크게 낮아짐 -->
+						<node name="skill" facePos="-300, -1350, 1050" cooltime="33000" idx="1">
+							<node name="select" prob="33,33,34">
+								<!-- 본체에  투사체 버프 부여 -->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<node name="SetValue" key="AttackDelay" value="42" />
+								<node name="SetValue" key="AttackDelay" value="51" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="22" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<!-- 거대 투사체 사정거리에 있으면, 즉 한큐브 위 아래 까지 커버 , 거리 2500, 보스랑 싸우고 있으면 이 소환몹은 평소 이 부분 자주 실행할 것임-->
+					<node name="conditions">
+						<condition name="extraData" key="Frequency" value="1">
+							<node name="select" prob="70,30">
+								<!--   Frequency = 1 인 경우 즉  21502291 졸몹이 8마리 이상인 경우,  AI_SignalSummon.xml에게  Frequency = 1 신호를 받으면 더 자주 방업 버프 부여 행동 하도록 하기 -->
+								<node name="skill" facePos="-300, -1350, 1050" idx="1">
+									<node name="select" prob="20,20,20,20,20">
+										<!-- 본체에  투사체 버프 부여 -->
+										<node name="SetValue" key="AttackDelay" value="16" />
+										<node name="SetValue" key="AttackDelay" value="21" />
+										<node name="SetValue" key="AttackDelay" value="30" />
+										<node name="SetValue" key="AttackDelay" value="39" />
+										<node name="SetValue" key="AttackDelay" value="8" />
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="45000" initialCooltime="9000" idx="2">
+									<node name="select" prob="33,33,34">
+										<!-- 거대 투사체 플레이어 공격, 극 초반에는 버프 부여에 집중하기 위해 initialCooltime 설정 넣음  -->
+										<node name="SetValue" key="AttackDelay" value="16" />
+										<node name="SetValue" key="AttackDelay" value="27" />
+										<node name="SetValue" key="AttackDelay" value="38" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="30,30,40">
+								<!--   Frequency = 0 인경우 즉  즉  21502291 졸몹이 8마리 보다 적을 경우,   AI_SignalSummon.xml에게   Frequency = 0 신호를 받으면  방업 버프 부여 행동 빈도 낮게 설정하기 -->
+								<node name="skill" facePos="-300, -1350, 1050" cooltime="17000" idx="1">
+									<node name="select" prob="25,25,25,25">
+										<!-- 본체에  투사체 버프 부여, Frequency = 0 때는 이 행동 빈도 상대적으로 낮게-->
+										<node name="SetValue" key="AttackDelay" value="31" />
+										<node name="SetValue" key="AttackDelay" value="40" />
+										<node name="SetValue" key="AttackDelay" value="47" />
+										<node name="SetValue" key="AttackDelay" value="81" />
+										<!-- 가끔  standby 시간 길게 설정-->
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="45000" idx="2">
+									<node name="select" prob="33,33,34">
+										<!-- 거대 투사체 플레이어 공격 -->
+										<node name="SetValue" key="AttackDelay" value="16" />
+										<node name="SetValue" key="AttackDelay" value="27" />
+										<node name="SetValue" key="AttackDelay" value="38" />
+									</node>
+								</node>
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="skill" facePos="-300, -1350, 1050" idx="1">
+						<node name="select" prob="33,33,34">
+							<!-- 본체에  투사체 버프 부여 -->
+							<node name="SetValue" key="AttackDelay" value="22" />
+							<node name="SetValue" key="AttackDelay" value="33" />
+							<node name="SetValue" key="AttackDelay" value="47" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="MonsterMany" value="-1" isModify="1" />
+				<!-- 죽으면 소환해준 Master에게  MonsterMany - 1 신호 보냄 -->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="MinimumHp" hpPercent="1" />
+			<!--큰 대미지로 인한 자폭없는 사망을 막기 위해 체력하한(1%) 설정-->
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="20000">
+				<node name="target" type="far" from="10" to="3000" />
+			</node>
+			<node name="conditions">
+				<condition name="hpLess" value="2">
+					<!--체력 2% 이하로 떨어지면 체력하한 제거 및 자폭-->
+					<node name="skill" idx="2" level="1" />
+					<node name="MinimumHp" />
+					<node name="Suicide" />
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="200" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1" skillLev="1">
+								<node name="skill" idx="1" level="1">
+									<node name="standby" limit="400" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="400" faceTarget="1" />
+								<node name="trace" limit="3000" skillIdx="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

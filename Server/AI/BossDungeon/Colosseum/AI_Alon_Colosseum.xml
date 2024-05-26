@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<node name="buff" type="add" id="69000501" />
+			<node name="standby" limit="4500" faceTarget="0" />
+			<node name="buff" type="remove" id="69000501" level="1" />
+			<node name="standby" limit="1000" faceTarget="0" />
+			<node name="SetValue" key="phase" value="1" />
+			<node name="target" type="rand" />
+		</condition>
+		<condition name="hpLess" value="70">
+			<node name="SetValue" key="phase" value="2" />
+		</condition>
+	</reserved>
+	<aiPresets>
+		<aiPreset name="Atk_1">
+			<!-- 기본공격 1 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="skill" faceTarget="0" idx="1">
+						<node name="standby" limit="100" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Atk_2">
+			<!-- 기본공격 2 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<node name="skill" faceTarget="0" idx="2">
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="2" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Skill_1">
+			<!-- 스킬 검기 날리기 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="skill" faceTarget="0" idx="3">
+						<node name="standby" limit="300" faceTarget="1" />
+						<node name="target" type="rand" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="3" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!-- 스킬사용 한번 더 체크 -->
+							<node name="skill" faceTarget="0" idx="3">
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="500" skillIdx="3" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Skill_2">
+			<!-- 스킬 돌진 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<node name="skill" faceTarget="0" idx="4">
+						<node name="standby" limit="300" faceTarget="1" />
+						<node name="target" type="rand" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="4" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!-- 스킬사용 한번 더 체크 -->
+							<node name="skill" faceTarget="0" idx="4">
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="500" skillIdx="4" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Skill_3">
+			<!-- 스킬 함성 -->
+			<node name="skill" faceTarget="0" idx="5">
+				<node name="standby" limit="500" faceTarget="1" />
+			</node>
+		</aiPreset>
+	</aiPresets>
+	<!--전투-->
+	<battle>
+		<!--1페이즈 기본공격과 스킬을 사용 -->
+		<node name="conditions">
+			<condition name="extraData" key="phase" value="1">
+				<node name="select" prob="40,40,10,10">
+					<node name="standby" limit="10" faceTarget="1" cooltime="20000" initialCooltime="11000">
+						<aiPreset name="Skill_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="23000" initialCooltime="8000">
+						<aiPreset name="Skill_2" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<aiPreset name="Atk_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<aiPreset name="Atk_2" />
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="8,8,80,2,2">
+					<node name="standby" limit="10" faceTarget="1" cooltime="20000">
+						<aiPreset name="Skill_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="23000">
+						<aiPreset name="Skill_2" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="15000">
+						<aiPreset name="Skill_3" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<aiPreset name="Atk_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<aiPreset name="Atk_2" />
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

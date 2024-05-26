@@ -1,0 +1,843 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="120" faceTarget="1" isKeepBattle="true">
+				<node name="buff" type="add" id="50004413" level="1" />
+				<!--불타는 눈빛 이펙트 기본적으로 붙어있기-->
+				<node name="SetValue" key="Stage" value="1" />
+				<!-- 이 변수가 1일라는 것은  졸구간이라는 뜻으로, 이 변수가 1 이 아닌 다른 숫자가 되면, 본격 1페이지 시작되는 것임 -->
+				<node name="SetValue" key="Phase" value="1" />
+				<!-- 이 보스의 행동패턴을 정의하는 변수로 이 변수는 맵 트리거에서 신호받게 설정하였음, 즉 졸구간부터 시작하니 Stage = 1 Phase = 1 상태로 시작함 -->
+				<node name="SetValue" key="BossBattleOk" value="0" />
+				<!-- 트리스탄한테 신호 받이서 이 변수 1이 되면, 1페이즈 시작함, 최초에 꼭 0으로 셋팅해야 함 꼭! -->
+				<node name="SetValue" key="RandTargetOn" value="0" />
+				<!-- 파란색 크리스탈의 효용성을 높이기 위해 당분간, 랜덤 타겟팅 계속 하도록 하기 위해서 사용되는 변수  -->
+				<node name="SetValue" key="MovePositionCheck" value="0" />
+				<!-- 인페르녹이 왼쪽 오른족 혹은 위쪽 지점에 있는지를 알수 있게 이동할 때마다 이 변수에 숫자를 넣어 셋팅함 왼쪽 1, 오른쪽 2 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="90">
+			<node name="SetValue" isKeepBattle="true" key="BossBattleOk" value="1" isModify="1">
+				<!-- 혹시 플레이어에게 공격 당해 HP 10% 이상 줄어들면, 졸구간 끝내고 보스 전투 모드 실행함-->
+				<!--	ModifyExtra +1 로 하는 경우는 이 변수 최초에 0으로 시작되고 인페르녹 HP 90% 될 경우와 트리스탄의 졸구간 끝날때의 경우 이렇게 두번 신호를 보내기 때문에 ModifyExtra 방식으로 이 변수가 1이 되면 보스 전투로 전환되는 방식을 사용함, 
+					     보스 전투로 전환될때  BossBattleOk=-99 로 강제 셋팅 되기 때문에 ModifyExtra +1  로 해도 괜찮음  -->
+				<!-- 참고로 인페르녹 자신의 Stage 변수의 99 설정은 <if extraKey="BossBattleOk" greaterEqual="1">에서 이루어 지기 때문에 여기서 할 필요 없음 -->
+				<node name="SetValueRangeTarget" key="Stage" value="99" radius="18500" height="3500" />
+				<!-- 트리스탄에게 Stage = 99 신호를 보내서 바로 졸구간 소환 하지 말고 건너뛰고 바로 보스 전투 진행하도록 함-->
+				<node name="SetValueRangeTarget" key="SummonStageDeath" value="1" radius="15500" height="3500" />
+				<!--졸구간 몬스터 자살신호 보내기, 졸구간의 몬스터의 Master는 트리스탄이기 때문에 Distance 방식으로 신호보냄, 만약을 위한 장치임 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="70">
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="2">
+				<!--  2페이즈 체크하기 위한  변수  -->
+				<node name="SetValueRangeTarget" key="TristanJumpAway2Phase" value="2" radius="12500" height="3500" />
+				<!--이 변수 2 신호를 트리스탄에게 보내서 전투판 파괴할 테니 2페이즈 전투판으로 점프로 피해라는 신호를 보냄-->
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--  1페이즈 소환몹에게 자살신호 보내기 , 상황에 따라 소환몹이 이 신호를 못받아 안죽는 버그 상황이 나올 수있는데, 아래에 순간이동 후 다시 이 신호 보낼것임 -->
+				<node name="TriggerSetUserValue" triggerID="101" key="2PhaseStart" value="1" />
+				<!--   2PhaseStart = 1 신호에 의해서 이벤트 연출 트리거 작동	 즉 bossSpawn.xml 에서 받음      param1="101" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<!-- 트리거 신호 보낸 다음에 전투판 파괴 행동 해야함, 전투판 파괴되어 플레이어 추락 도중에 2PhaseWall이 생성되어야 하기 때문에 이 타이밍이 중요함 -->
+				<node name="TriggerSetUserValue" triggerID="103" key="BossOnePhaseEnd" value="1" />
+				<!--   BossOnePhaseEnd = 1 신호에 의해서 1페이지 전투판에 있는 순간이동 포탈 감추기	 즉 portal.xml 에서 받음      param1="103" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<node name="buff" type="remove" id="50004416" level="1" />
+				<!--  타겟팅 관련 애디셔널 제거하기 -->
+				<node name="buff" type="remove" id="50004414" level="2" />
+				<!--  타겟팅 관련 애디셔널 제거하기 -->
+				<node name="TargetEffect" effectName="" />
+				<!--  플레이어에게 달려있는 타겟팅 이펙트 제거하기 -->
+				<node name="target" type="rand" from="2" to="2400" />
+				<node name="skill" faceTarget="0" idx="4" />
+				<!--  전투판 파괴, 레벨4는 1페이지 전투판에서만 사용 -->
+				<node name="skill" faceTarget="0" idx="13" />
+				<!-- 레벨1: 출발, 순간이동시 몸에 불 붙는 이펙트  -->
+				<node name="teleport" pos="4125, 3970, 4410" />
+				<node name="skill" faceTarget="0" idx="14" />
+				<!-- 레벨2: 도착, 순간이동시 몸에 불 붙는 이펙트  -->
+				<node name="standby" limit="2100" faceTarget="1" />
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--  1페이즈 소환몹이 자살 신호를 못받는 경우가 종종 있어서, 안정성을 위해 여기서도 다시 신호 보냄  -->
+				<node name="target" type="near" from="2" to="1800" />
+				<node name="SetValue" key="BossBattleOk" value="-99" />
+				<!-- 중요!: 졸구간에서 보스 HP가 급 감소되어서 1페이지 혹은 2페이지까지 건너뛰기가 될 수 있기 때문에 보험 차원에서 각 페이저 전환 예약 단계마다  BossBattleOk = -99 셋팅-->
+				<node name="SetValue" key="Stage" value="99" />
+				<!-- 중요!: 졸구간에서 보스 HP가 급 감소되어서 졸구간 1페이지 혹은 2페이지까지 건너뛰기가 될 수 있기 때문에  자기 자신에서 Stage 변수 1이 아닌 다른 수로 설정해서, 졸구간 끝나고 보스 전투 구간에 들어섰음을 알림, 졸구간 보스 HP 극딜 당해서 페이지 건너뛰기 되면 상황이 꼬이기 때문에 이 경우를 대비한 설정함 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="40">
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="3">
+				<!--  3페이즈 체크하기 위한  변수  -->
+				<node name="SetValueRangeTarget" key="TristanJumpAway3Phase" value="3" radius="12500" height="3500" />
+				<!--이 변수 3 신호를 트리스탄에게 보내서 전투판 파괴할 테니 3페이즈 전투판으로 점프로 피해라는 신호를 보냄-->
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--  2페이즈 소환몹에게 자살신호 보내기, 상황에 따라 소환몹이 이 신호를 못받아 안죽는 버그 상황이 나올 수있는데, 아래에 순간이동 후 다시 이 신호 보낼것임 -->
+				<node name="TriggerSetUserValue" triggerID="101" key="3PhaseStart" value="1" />
+				<!--   2PhaseStart = 1 신호에 의해서 이벤트 연출 트리거 작동	 즉 bossSpawn.xml 에서 받음      param1="101" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<node name="buff" type="remove" id="50004416" level="1" />
+				<!--  타겟팅 관련 애디셔널 제거하기 -->
+				<node name="buff" type="remove" id="50004414" level="2" />
+				<!--  타겟팅 관련 애디셔널 제거하기 -->
+				<node name="TargetEffect" effectName="" />
+				<!--  플레이어에게 달려있는 타겟팅 이펙트 제거하기 -->
+				<node name="target" type="rand" from="2" to="2400" />
+				<!--	트리거 신호 보낸 다음에 전투판 파괴 행동 해야함, 전투판 파괴되어 플레이어 추락 도중에 3PhaseWall이 생성되어야 하기 때문에 이 타이밍이 중요함  -->
+				<node name="skill" faceTarget="0" idx="5" />
+				<!--  전투판 파괴, 레벨5는 2페이지 전투판에서만 사용 -->
+				<node name="skill" faceTarget="0" idx="13" />
+				<!-- 레벨1: 출발, 순간이동시 몸에 불 붙는 이펙트  -->
+				<node name="teleport" pos="4600, 4600, 2160" />
+				<node name="skill" faceTarget="0" idx="14" />
+				<!-- 레벨2: 도착, 순간이동시 몸에 불 붙는 이펙트  -->
+				<node name="standby" limit="2100" faceTarget="1" animation="Attack_Idle_B" />
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--  2페이즈 소환몹이 자살 신호를 못받는 경우가 종종 있어서, 안정성을 위해 여기서도 다시 신호 보냄  -->
+				<node name="target" type="near" from="2" to="1800" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="18">
+			<node name="SetValue" key="Phase" value="4">
+				<!--  4페이즈 체크하기 위한  변수  -->
+				<node name="skill" prob="25" facePos="3125, 5700, 2160" isKeepBattle="true" idx="6">
+					<node name="jump" pos="3125, 5700, 2160" speed="1200" heightMultiplier="0.9" />
+					<node name="skill" faceTarget="0" idx="7" />
+					<!--점프 착지 -->
+				</node>
+				<node name="skill" prob="25" facePos="2800, 4500, 2160" isKeepBattle="true" idx="6">
+					<node name="jump" pos="2800, 4500, 2160" speed="1200" heightMultiplier="0.9" />
+					<node name="skill" faceTarget="0" idx="7" />
+					<!--점프 착지 -->
+				</node>
+				<node name="skill" prob="25" facePos="4200, 2850, 2160" isKeepBattle="true" idx="6">
+					<node name="jump" pos="4200, 2850, 2160" speed="1200" heightMultiplier="0.9" />
+					<node name="skill" faceTarget="0" idx="7" />
+					<!--점프 착지 -->
+				</node>
+				<node name="skill" prob="25" facePos="5850, 3185, 2160" isKeepBattle="true" idx="6">
+					<node name="jump" pos="5850, 3185, 2160" speed="1200" heightMultiplier="0.9" />
+					<node name="skill" faceTarget="0" idx="7" />
+					<!--점프 착지 -->
+				</node>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="BossBattleOk" value="1" op="greaterEqual">
+				<!--졸구간 끝나서 트리스탄한테  BossBattleOk 의  ModifyExtra 1 신호 받은 경우 혹은 졸구간에서 HP 90%이하 상태가 된 경우임, 만약 졸구간에서 보스가 극딜되어 1 혹은 2페이지 건너뛰면 이 부분 실행 안함-->
+				<!--BossBattleOk 변수가 간혹 낮은 확률로 인페르녹 자신 AI와 트리스탄AI에서 동시에  ModifyExtra 1 하여 2가 되는 경우도 있어서 greaterEqual="1" 로 설정했음-->
+				<node name="standby" limit="500" faceTarget="1" animation="Attack_Idle_B" isKeepBattle="true">
+					<node name="SetValue" key="BossBattleOk" value="-99" />
+					<!-- 변수 99 셋팅해서 이 단계 빠져나오기 이후 ModifyExtra 1 신호를 받아도 절대  BossBattleOk 변수가 1이 될 일 없음 -->
+					<node name="SetValue" key="Stage" value="99" />
+					<!-- Stage 변수를 1 이 아닌 다른 수로 설정해, 졸구간 종료 1페이지 시작을 알림 -->
+					<node name="TriggerSetUserValue" triggerID="101" key="StairsOk" value="1" />
+					<!--   StairsOk = 1 신호에 의해서 이벤트 연출 트리거 작동시켜 보스 전투판으로 올라가는 계단 생성하기	 즉 bossSpawn.xml 에서 받음      param1="101" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+					<node name="standby" limit="1200" faceTarget="1" animation="Attack_Idle_B" />
+					<node name="skill" facePos="3700, 3850, 6370" idx="6" />
+					<!--전투판 중앙쪽으로 점프 뛰기, 왼쪽지점 좌표: 3700, 3850, 6370     오른쪽지점 좌표: 4200, 3540, 6370 -->
+					<node name="SetValue" key="MovePositionCheck" value="1" />
+					<!--왼쪽지점에 있으니 이 변수에 1 설정함,  왼쪽 1, 오른쪽 2-->
+					<node name="jump" pos="3700, 3850, 6370" speed="1800" heightMultiplier="1.3" />
+					<!--점프중, 최초에는 왼쪽 지점으로 이동하고 이후 타겟팅 기능에 의해서 바로 오른쪽으로 이동할 것임-->
+					<node name="skill" faceTarget="0" idx="7" />
+					<!--점프 착지 -->
+					<node name="SetValueRangeTarget" key="StairsTriggerEventOk" value="1" radius="12500" height="3500" />
+					<!--트리스탄한테 이 변수 신호 보내서 보스 전투판으로 가는 계단 트리거 작동 유무를 알려줌-->
+					<node name="standby" limit="4000" faceTarget="1" animation="Attack_Idle_B" />
+				</node>
+			</condition>
+			<condition name="additional" id="50004415">
+				<!--인페르녹이 파란 크리스탈에 맞에서 50004415 애디셔널에 걸린 상태라면-->
+				<node name="buff" type="add" id="50004416" level="1">
+					<!-- 제일 먼저 50004416 부여하여  50004415애디셔널 지우고 면역 설정을 함, 이거 안하면 이 부분 무한 루프에 빠짐 -->
+					<!-- 보스가  50004416 걸려있는 도중에 다른 플레이어에게 파란 크리스탈을 맞으면, 타겟팅 변경 없이 계속 한 대상만 타겟팅 하도록 함 -->
+					<node name="target" type="hasAdditional" additionalId="50004414" additionalLevel="1" target="hostile">
+						<!-- 플레이어가 파란 크리스탈 던지면 플레이어 자신이 50004414 애디셔널에 걸리는데, 이 애디셔널 걸린 플레이어를 타겟팅함 -->
+						<node name="SetValue" key="RandTargetOn" value="0">
+							<!-- 파란색 크리스탈 맞으면, 랜덤 타겟팅 작동하기 위한 변수 0 초기화 시키기 -->
+							<node name="TargetEffect" effectName="Etc/Eff_Battle_Target_Balrog_Red.xml">
+								<node name="select" prob="33,33,34">
+									<!-- 파란 크리스탈에 의한 타겟팅은 타겟팅된 플레이어 몸에 이 이펙트 나오게 하기-->
+									<node name="say" message="$BalrogMagicBurster_Kritias_TargetWarining01$" durationTick="6000" />
+									<node name="say" message="$BalrogMagicBurster_Kritias_TargetWarining02$" durationTick="6000" />
+									<node name="say" message="$BalrogMagicBurster_Kritias_TargetWarining03$" durationTick="6000" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Stage" value="1">
+				<node name="select" prob="99999,0">
+					<!--# 졸구간 -->
+					<node name="target" type="near" from="2" to="1800" cooltime="5500" />
+					<node name="conditions">
+						<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+							<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+								<node name="standby" limit="100" faceTarget="1" animation="Attack_Idle_B" />
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="50,50">
+								<node name="skill" faceTarget="1" idx="3">
+									<!--근접 할퀴기 공격 레벨31이 저주눈빛 버전의 크리티아스용-->
+									<node name="SetValue" key="AttackDelay" value="5" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								</node>
+								<node name="skill" faceTarget="1" cooltime="5500" idx="2">
+									<!--레벨32이 저주눈빛 버전의 크리티아스용으로 오직 졸구간에서만 사용함, 트리스탄은 맞추면 안되는데, 레벨 32는 히트박스 특정 수치 설정 되어있음, 그리고 제일 가까운 대상 공격함, 최대 사정거리 3000 정도 됨 -->
+									<node name="SetValue" key="AttackDelay" value="7" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="40,50,10">
+								<!--사정거리 3000 -->
+								<node name="skill" faceTarget="1" cooltime="4200" idx="9" />
+								<!--불타는 저주의 눈빛, 레벨2가 졸구간, 히트박스 범위 엄청 넓은 버전임 -->
+								<node name="skill" faceTarget="1" idx="2">
+									<!--레벨32이 저주눈빛 버전의 크리티아스용으로 오직 졸구간에서만 사용함, 트리스탄은 맞추면 안되는데, 레벨 32는 히트박스 특정 수치 설정 되어있음, 그리고 제일 가까운 대상 공격함, 최대 사정거리 3000 정도 됨 -->
+									<node name="SetValue" key="AttackDelay" value="20" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								</node>
+								<node name="standby" limit="500" faceTarget="1" animation="Attack_Idle_B" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,100">
+								<node name="skill" facePos="-7200, -7350, 5550" cooltime="3200" idx="9" />
+								<!--불타는 저주의 눈빛, 레벨2가 졸구간, 히트박스 범위 엄청 넓은 버전임 -->
+								<node name="standby" limit="800" facePos="-7200, -7350, 5550" animation="Attack_Idle_B">
+									<node name="target" type="near" from="2" to="1800" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="1">
+				<node name="select" prob="999999,9999,999,0">
+					<!--#1페이즈 -->
+					<!--#@$ 딱 한번 실행하는데, 트리스탄한테 이 변수 신호 보내서 1페이지 건너뛰기 했는지 안했는지를 알수있게 해줌(2페이즈에서도 동일하게 체크함)-->
+					<node name="SetValueRangeTarget" cooltime="9999999" key="PhaseCheck" value="1" radius="12500" height="3500" isModify="1" />
+					<node name="standby" limit="160" faceTarget="1" cooltime="3200">
+						<!--1페이지 전투판에서의 기본 타겟팅 작동 로직 & 주기적으로 왼쪽 오른쪽 이동 관련 로직이 있음-->
+						<aiPreset name="TargetCheck_1Phase" />
+					</node>
+					<node name="standby" limit="500" faceTarget="1" cooltime="15000">
+						<!-- 소환몹 호출 -->
+						<aiPreset name="SummonCall_1Phase" />
+					</node>
+					<aiPreset name="AttackMode_1Phase" />
+					<!-- 1페이지 에서의 평상시 공격 행동-->
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="2">
+				<node name="select" prob="999999,4999,999,0">
+					<!--#2페이즈, 던전 시간 라스트 3분이 되면 트리거에서 Phase = 2 신호를 보내서 2페이즈 진행하도록 유도함 -->
+					<!--#@$ 딱 한번 실행하는데, 트리스탄한테 이 변수 신호 보내서 2페이지 건너뛰기 했는지 안했는지를 알수있게 해줌(1페이즈에서 이미 체크했음)-->
+					<node name="SetValueRangeTarget" cooltime="9999999" key="PhaseCheck" value="1" radius="12500" height="3500" isModify="1" />
+					<node name="standby" limit="160" faceTarget="1" cooltime="3200">
+						<!--2페이지 전투판에서의 기본 타겟팅 작동 로직 & 2페이즈에서는 이동 안함-->
+						<aiPreset name="TargetCheck_2Phase" />
+					</node>
+					<node name="standby" limit="500" faceTarget="1" cooltime="15000">
+						<!-- 소환몹 호출 -->
+						<aiPreset name="SummonCall_2Phase" />
+					</node>
+					<aiPreset name="AttackMode_2Phase" />
+					<!-- 1페이지 에서의 평상시 공격 행동-->
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="3">
+				<node name="select" prob="999,0">
+					<!--#3페이즈, 던전 시간 라스트 3분이 되면 트리거에서 Phase = 3 신호를 보내서 2페이즈 진행하도록 유도함 -->
+					<node name="standby" limit="160" faceTarget="1" cooltime="3200">
+						<!--3페이지 전투판에서의 기본 타겟팅 작동 로직 & 주기적으로 왼쪽 오른쪽 이동 관련 로직이 있음-->
+						<aiPreset name="TargetCheck_3Phase" />
+					</node>
+					<aiPreset name="AttackMode_3Phase" />
+					<!-- 1페이지 에서의 평상시 공격 행동-->
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,0">
+					<!-- Phase=4 인 경우-->
+					<node name="standby" limit="160" faceTarget="1" cooltime="3200">
+						<!--3페이지 전투판에서의 기본 타겟팅 작동 로직 & 주기적으로 왼쪽 오른쪽 이동 관련 로직이 있음-->
+						<aiPreset name="TargetCheck_3Phase" />
+					</node>
+					<aiPreset name="AttackMode_3Phase" />
+					<!-- 1페이지 에서의 평상시 공격 행동-->
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="TriggerSetUserValue" triggerID="104" key="BossDead" value="1">
+			<!-- 보스가 죽으면  BossDead = 1 신호에 의해서 이벤트 연출 트리거 작동	 즉 bossSpawn.xml 에서 받음      param1="104" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+			<node name="SetValueRangeTarget" key="BossDeadToTristan" value="1" radius="12500" height="3500">
+				<!--보스가 죽으면  이 변수 1 신호를 트리스탄에게 보내서 전투 완료 되었음을 알림-->
+				<node name="TriggerSetUserValue" triggerID="103" key="BossDead" value="1">
+					<!-- 보스가 죽으면  BossDead = 1 신호에 의해서 이벤트 연출 트리거 작동	 즉 portal.xml 에서 받음      param1="103" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+					<node name="conditions">
+						<condition name="extraData" key="Phase" value="0">
+							<!-- 보스가 졸구간에서 죽을 경우 -->
+							<node name="TriggerSetUserValue" triggerID="103" key="PhasePortar" value="0" />
+							<!-- 보스가 죽으면  PhasePortar = 0 신호에 의해서 나가기 포탈 생성함	 즉 portal.xml 에서 받음      param1="103" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+						</condition>
+						<condition name="extraData" key="Phase" value="1">
+							<!-- 보스 1페이즈에서 죽을 경우 -->
+							<node name="TriggerSetUserValue" triggerID="103" key="PhasePortar" value="1" />
+							<!-- 보스가 죽으면  PhasePortar = 1 신호에 의해서 나가기 포탈 생성함	 즉 portal.xml 에서 받음      param1="103" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+						</condition>
+						<condition name="extraData" key="Phase" value="2">
+							<!-- 보스 2페이즈에서 죽을 경우 -->
+							<node name="TriggerSetUserValue" triggerID="103" key="PhasePortar" value="2" />
+							<!-- 보스가 죽으면  PhasePortar = 2 신호에 의해서 나가기 포탈 생성함	 즉 portal.xml 에서 받음      param1="103" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+						</condition>
+						<condition name="true">
+							<!-- 보스 3 4 페이즈 최종 마지막 전투판에서 죽을 경우 -->
+							<node name="TriggerSetUserValue" triggerID="103" key="PhasePortar" value="3" />
+							<!-- 보스가 죽으면  PhasePortar = 3 신호에 의해서 나가기 포탈 생성함	 즉 portal.xml 에서 받음      param1="103" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+						</condition>
+					</node>
+				</node>
+			</node>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="SummonCall_1Phase">
+			<node name="select" prob="99999,999,99,1">
+				<!--## 메인 전투판쪽 방향으로 원거리 공격하는 소환몹 호출 ##-->
+				<node name="standby" limit="100" faceTarget="1" cooltime="45000">
+					<node name="select" prob="70,30">
+						<!-- 발록졸병, 레이저로, 메인 전투판쪽 위주 공격 -->
+						<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+							<!-- 발록졸병, 예시 레이저 11~12시쪽에서 등장 -->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="131" summonPos="3825, 4725, 6460" summonRot="0,0,-45" />
+							<!--180 : 왼쪽방향 바라보기, 45 : 오른쪽방향 바라보기, -45 : 아래쪽방향 바라보기, 135 : 위쪽방향 바라보기-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="132" summonPos="3975, 4275, 6460" summonRot="0,0,-45" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="133" summonPos="4425, 4425, 6460" summonRot="0,0,-45" />
+							<!-- 발록졸병, 예시 레이저 4~5시쪽에서 등장 -->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="134" summonPos="4350, 2050, 6460" summonRot="0,0,180" />
+							<!--180 : 왼쪽방향 바라보기, 45 : 오른쪽방향 바라보기, -45 : 아래쪽방향 바라보기, 135 : 위쪽방향 바라보기-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="135" summonPos="3600, 1950, 6460" summonRot="0,0,180" />
+						</node>
+						<!-- 크림슨발록, 거대 투사체, 메인 전투판쪽 위주 공격 -->
+						<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+							<!-- 크림슨발록, 10시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="136" summonPos="2850, 4950, 6510" summonRot="0,0,45" />
+							<!-- 크림슨발록, 7시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="137" summonPos="2100, 3900, 6510" summonRot="0,0,45" />
+							<!-- 크림슨발록, 5시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="138" summonPos="3900, 1500, 6510" summonRot="0,0,180" />
+							<!-- 크림슨발록, 3시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="139" summonPos="4850, 2200, 6510" summonRot="0,0,180" />
+						</node>
+					</node>
+				</node>
+				<!--## 트리스탄 견제하는 크림슨발록 2마리 등장, 총 3개 형태가 있는데 3개 중 1개가 랜덤 선택됨 ##-->
+				<node name="standby" limit="100" faceTarget="1" cooltime="32000">
+					<node name="select" prob="33,33,34">
+						<!-- 크림슨발록, 서브 전투판에서 트리스탄& 플레이어 견제-->
+						<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+							<!-- 크림슨발록, 9시 방향에서 등장, 트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="113" summonPos="2250, 4550, 6510" summonRot="0,0,45" />
+							<!-- 크림슨발록, 2시 방향에서 등장, 트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="112" summonPos="5250, 3030, 6510" summonRot="0,0,-45" />
+						</node>
+						<!-- 크림슨발록, 서브 전투판에서 트리스탄& 플레이어 견제 -->
+						<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+							<!-- 크림슨발록, 11시 방향에서 등장, 트리스탄 & 2명 유도탄, 11시 방향과 12시 방향 같은 group="111" 사용하기, 11시 12시 같이 나오면 가까이 붙어있는 형태라서 유도탄 4발 발사 되는 꼴이기 때문에 이 두 몬스터 같이 있는 상황 없도록 해야 함 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="111" summonPos="4050, 5010, 6360" summonRot="0,0,-45" />
+							<!-- 크림슨발록, 2시 방향에서 등장, 트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="112" summonPos="5250, 3030, 6510" summonRot="0,0,-45" />
+						</node>
+						<!-- 크림슨발록, 서브 전투판에서 트리스탄& 플레이어 견제 -->
+						<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+							<!-- 크림슨발록, 12시 방향에서 등장, 트리스탄 & 2명 유도탄, 11시 방향과 12시 방향 같은 group="111" 사용하기, 11시 12시 같이 나오면 가까이 붙어있는 형태라서 유도탄 4발 발사 되는 꼴이기 때문에 이 두 몬스터 같이 있는 상황 없도록 해야 함 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="111" summonPos="4600, 4150, 6360" summonRot="0,0,-45" />
+							<!-- 크림슨발록, 9시 방향에서 등장, 트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="113" summonPos="2250, 4550, 6510" summonRot="0,0,45" />
+						</node>
+					</node>
+				</node>
+				<!-- ## 크림슨발록, 메인 전투판의 플레이어 견제, 둘 중 하나 랜덤 등장 ##-->
+				<node name="standby" limit="50" faceTarget="1" cooltime="38000">
+					<node name="select" prob="40,60">
+						<!-- 크림슨발록, 메인 전투판 왼쪽 지점에서 4명 유도탄, 어려운 난이도는 4명 유도탄 크림슨 발록이 등장함, 중요!: 같은 그룹으로 해서 메인 전투판에 두마리 같이 나오지 않게 하기, 두마리가 같이 나오면 플레이어 4명 모여도 기절 걸리는 상황이 생기기 때문에 -->
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="101" summonPos="2770, 3075, 6360" summonRot="0,0,135" isKeepBattle="true">
+							<!--180 : 왼쪽방향 바라보기, 45 : 오른쪽방향 바라보기, -45 : 아래쪽방향 바라보기, 135 : 위쪽방향 바라보기-->
+							<node name="skill" faceTarget="1" idx="8" />
+							<!-- 저주의 눈빛 공격 크림슨 발록에게 신호 보내서 2페이지 좌표 기준 공격 행위를 하도록 함, 크림슨 발록이 전투 상태로 전환된 상태에서 이 신호를 제대로 받을 수 있기 때문에 전투 상태가 되도록 충분히 시간 끌기 해야 함  -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="SetSlaveValue" key="CrimsonPhase" value="1" />
+						</node>
+						<!-- 크림슨발록, 메인 전투판 오른쪽 지점에서 3명 유도탄 어려운 난이도는 3명 유도탄 크림슨 발록이 등장함, 중요!: 같은 그룹으로 해서 메인 전투판에 두마리 같이 나오지 않게 하기, 두마리가 같이 나오면 플레이어 4명 모여도 기절 걸리는 상황이 생기기 때문에 -->
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="101" summonPos="3225, 2630, 6360" summonRot="0,0,135" isKeepBattle="true">
+							<node name="skill" faceTarget="1" idx="8" />
+							<!-- 저주의 눈빛 공격 크림슨 발록에게 신호 보내서 2페이지 좌표 기준 공격 행위를 하도록 함, 크림슨 발록이 전투 상태로 전환된 상태에서 이 신호를 제대로 받을 수 있기 때문에 전투 상태가 되도록 충분히 시간 끌기 해야 함  -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="SetSlaveValue" key="CrimsonPhase" value="1" />
+						</node>
+					</node>
+				</node>
+				<!--## 위 3개 경우가 다 쿨타임 걸려 있으면 아무것도 안함 ##-->
+				<node name="standby" limit="100" faceTarget="1" />
+			</node>
+		</aiPreset>
+		<aiPreset name="SummonCall_2Phase">
+			<node name="select" prob="30,40,29,1">
+				<!-- ## 크림슨발록, 거대 투사체, 메인 전투판쪽 위주 공격 2개 중 1개가 랜덤 선택됨## -->
+				<node name="standby" limit="100" faceTarget="1" cooltime="22000">
+					<node name="select" prob="50,50">
+						<node name="standby" limit="100" faceTarget="1" cooltime="38000" isKeepBattle="true">
+							<!-- 크림슨발록, 4시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="122" summonPos="4550, 2625, 4410" summonRot="0,0,180" />
+							<!-- 크림슨발록, 6시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="125" summonPos="3075, 2925, 4410" summonRot="0,0,180" />
+							<!-- 크림슨발록, 10시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="126" summonPos="4050, 4950, 4410" summonRot="0,0,-45" />
+							<!-- 크림슨발록, 12시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="127" summonPos="5030, 4865, 4410" summonRot="0,0,-45" />
+						</node>
+						<node name="standby" limit="100" faceTarget="1" cooltime="38000" isKeepBattle="true">
+							<!-- 크림슨발록, 3시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="121" summonPos="4720, 3680, 4410" summonRot="0,0,-45" />
+							<!-- 크림슨발록, 5시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="124" summonPos="3625, 2435, 4410" summonRot="0,0,180" />
+							<!-- 크림슨발록, 8시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="123" summonPos="2820, 4418, 4410" summonRot="0,0,45" />
+							<!-- 크림슨발록, 12시 방향에서 등장, 거대 투사체 -->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="127" summonPos="5030, 4865, 4410" summonRot="0,0,-45" />
+						</node>
+					</node>
+				</node>
+				<!--## 트리스탄 견제하는 크림슨발록 2마리 등장, 총 3개 형태가 있는데 3개 중 1개가 랜덤 선택됨 ##-->
+				<node name="standby" limit="100" faceTarget="1" cooltime="32000">
+					<node name="select" prob="33,33,34">
+						<!-- 크림슨발록, 서브 전투판에서 트리스탄& 플레이어 견제-->
+						<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+							<!-- 크림슨발록, 1시 방향에서 등장, 트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="111" summonPos="5100, 4220, 4410" summonRot="0,0,180" />
+							<!-- 크림슨발록, 5시 방향에서 등장,  트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="114" summonPos="4050, 2350, 4410" summonRot="0,0,180" />
+						</node>
+						<!-- 크림슨발록, 서브 전투판에서 트리스탄& 플레이어 견제-->
+						<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+							<!-- 크림슨발록, 11시 방향에서 등장,  트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="112" summonPos="4530, 4970, 4410" summonRot="0,0,-45" />
+							<!-- 크림슨발록, 3시 방향에서 등장, 트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="113" summonPos="4820, 3200, 4410" summonRot="0,0,-45" />
+						</node>
+						<!-- 크림슨발록, 서브 전투판에서 트리스탄& 플레이어 견제-->
+						<node name="standby" limit="50" faceTarget="1" isKeepBattle="true">
+							<!-- 크림슨발록, 11시 방향에서 등장,  트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="112" summonPos="4530, 4970, 4410" summonRot="0,0,-45" />
+							<!-- 크림슨발록, 5시 방향에서 등장,  트리스탄 & 2명 유도탄 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="114" summonPos="4050, 2350, 4410" summonRot="0,0,180" />
+						</node>
+					</node>
+				</node>
+				<!-- ## 크림슨발록, 메인 전투판의 플레이어 견제, 둘 중 하나 랜덤 등장 ## -->
+				<node name="standby" limit="50" faceTarget="1" cooltime="51000">
+					<node name="select" prob="40,60">
+						<!-- 다른 소환몹 등장 타입보다  이것의 우선순위가 제일 낮아야 하기 때문에 쿨타임 길게 설정하기 -->
+						<!-- 크림슨발록, 메인 전투판 9시에서 등장, 4명 유도탄, 어려운 난이도는 4명 유도탄 크림슨 발록이 등장함, 중요!: 같은 그룹으로 해서 메인 전투판에 두마리 같이 나오지 않게 하기, 두마리가 같이 나오면 플레이어 4명 모여도 기절 걸리는 상황이 생기기 때문에 -->
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="101" summonPos="3200, 4650, 4410" summonRot="0,0,-45" isKeepBattle="true">
+							<!--180 : 왼쪽방향 바라보기, 45 : 오른쪽방향 바라보기, -45 : 아래쪽방향 바라보기, 135 : 위쪽방향 바라보기-->
+							<node name="skill" faceTarget="1" idx="8" />
+							<!-- 저주의 눈빛 공격 크림슨 발록에게 신호 보내서 2페이지 좌표 기준 공격 행위를 하도록 함, 크림슨 발록이 전투 상태로 전환된 상태에서 이 신호를 제대로 받을 수 있기 때문에 전투 상태가 되도록 충분히 시간 끌기 해야 함  -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="SetSlaveValue" key="CrimsonPhase" value="2" />
+						</node>
+						<!-- 크림슨발록, 메인 전투판 7시에서 등장, 3명 유도탄, 어려운 난이도는 4명 유도탄 크림슨 발록이 등장함, 중요!: 같은 그룹으로 해서 메인 전투판에 두마리 같이 나오지 않게 하기, 두마리가 같이 나오면 플레이어 4명 모여도 기절 걸리는 상황이 생기기 때문에 -->
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="101" summonPos="2500, 3720, 4410" summonRot="0,0,135" isKeepBattle="true">
+							<node name="skill" faceTarget="1" idx="8" />
+							<!-- 저주의 눈빛 공격 크림슨 발록에게 신호 보내서 2페이지 좌표 기준 공격 행위를 하도록 함, 크림슨 발록이 전투 상태로 전환된 상태에서 이 신호를 제대로 받을 수 있기 때문에 전투 상태가 되도록 충분히 시간 끌기 해야 함  -->
+							<node name="standby" limit="500" faceTarget="1" />
+							<node name="SetSlaveValue" key="CrimsonPhase" value="2" />
+						</node>
+					</node>
+				</node>
+				<!--위 3개 경우가 다 쿨타임 걸려 있으면 아무것도 안함-->
+				<node name="standby" limit="100" faceTarget="1" />
+			</node>
+		</aiPreset>
+		<aiPreset name="TargetCheck_1Phase">
+			<node name="select" prob="50,0">
+				<!--1페이지 전투판에서의 기본 타겟팅 작동 로직 & 주기적으로 왼쪽 오른쪽 이동 관련 로직이 있음-->
+				<!-- 주기적으로 왼쪽 오른쪽 이동하기-->
+				<node name="standby" limit="500" faceTarget="1" animation="Attack_Idle_B" cooltime="47000">
+					<node name="conditions">
+						<condition name="extraData" key="MovePositionCheck" value="1">
+							<!--현재 왼쪽 지점에 있으면, 오른쪽으로 이동하기-->
+							<node name="move" destination="4200, 3540, 6370" limit="8000">
+								<node name="SetValue" key="MovePositionCheck" value="2">
+									<node name="conditions">
+										<condition name="additional" id="50004414" level="2">
+											<!--보스가  50004414(레벨2) 걸려있는 도중이라면, 아직 50004414(레벨1) 걸려있는 플레이어가 있다는 뜻이기 때문에  50004414(레벨1) 걸린 플레이어를 계속 타겟팅 하도록 함-->
+											<node name="target" type="hasAdditional" additionalId="50004414" additionalLevel="1" target="hostile" />
+											<!-- 플레이어가 파란 크리스탈 던지면 플레이어 자신이 50004414 애디셔널에 걸리는데, 이 애디셔널 걸린 플레이어를 타겟팅함 -->
+										</condition>
+										<condition name="true">
+											<!-- 평상시 상태라면 오른쪽 지점 타겟팅 하기-->
+											<node name="TargetEffect" effectName="">
+												<!-- 기본 타겟팅으로 타겟이 되면, 플레이어 몸의 타겟팅 이펙트 지우기-->
+												<node name="target" type="near" center="5050, 3000, 6600" />
+												<!--오른쪽 이동 후 1페이지 전투판 오른쪽지점 좌표 우선 타겟팅-->
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--MovePositionCheck =  2 즉 현재 오른쪽  지점에 있으면, 왼쪽으로 이동하기-->
+							<node name="move" destination="3700, 3850, 6370" limit="8000">
+								<node name="SetValue" key="MovePositionCheck" value="1">
+									<node name="conditions">
+										<condition name="additional" id="50004414" level="2">
+											<!--보스가  50004414(레벨2) 걸려있는 도중이라면, 아직 50004414(레벨1) 걸려있는 플레이어가 있다는 뜻이기 때문에  50004414(레벨1) 걸린 플레이어를 계속 타겟팅 하도록 함-->
+											<node name="target" type="hasAdditional" additionalId="50004414" additionalLevel="1" target="hostile" />
+											<!-- 플레이어가 파란 크리스탈 던지면 플레이어 자신이 50004414 애디셔널에 걸리는데, 이 애디셔널 걸린 플레이어를 타겟팅함 -->
+										</condition>
+										<condition name="true">
+											<!-- 평상시 상태라면 왼쪽 지점 타겟팅 하기-->
+											<node name="TargetEffect" effectName="">
+												<!-- 기본 타겟팅으로 타겟이 되면, 플레이어 몸의 타겟팅 이펙트 지우기-->
+												<node name="target" type="near" center="3600, 4800, 6600" />
+												<!-- 왼쪽 이동 후 1페이지 전투판 왼쪽지점 좌표 우선 타겟팅-->
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="additional" id="50004416">
+						<!--보스가  50004416 걸려있는 도중에 다른 플레이어에게 파란 크리스탈을 맞으면, 타겟팅 변경 없이 계속 한 대상만 타겟팅 하도록 함-->
+						<node name="SetValue" key="Temp" value="1" />
+						<!--	아무것도 안한다는 뜻 -->
+					</condition>
+					<condition name="additional" id="50004414" level="2">
+						<!--보스가  50004414(레벨2) 걸려있는 도중이라면, 아직 50004414(레벨1) 걸려있는 플레이어가 있다는 뜻이기 때문에  50004414(레벨1) 걸린 플레이어를 계속 타겟팅 하도록 함-->
+						<node name="target" type="hasAdditional" additionalId="50004414" additionalLevel="1" target="hostile" />
+						<!-- 플레이어가 파란 크리스탈 던지면 플레이어 자신이 50004414 애디셔널에 걸리는데, 이 애디셔널 걸린 플레이어를 타겟팅함 -->
+					</condition>
+					<condition name="extraData" key="RandTargetOn" value="1" op="greaterEqual">
+						<!-- 이 변수가 1보다 큰 상태면 계속 랜덤 타겟팅 서브 전투판 타겟팅 하기, 파란색 크리스탈의 효용성을 높이기 위해 당분간, 렌던 타겟팅 계속 하도록 하기 위해서 사용되는 변수  -->
+						<node name="SetValue" key="RandTargetOn" value="-1" isModify="1">
+							<node name="select" prob="34,33,33">
+								<node name="target" type="rand" from="2" to="2400" />
+								<node name="target" type="near" center="3600, 4800, 6600" />
+								<!-- 1페이지 전투판 왼쪽지점 좌표 우선 타겟팅-->
+								<node name="target" type="near" center="5050, 3000, 6600" />
+								<!-- 1페이지 전투판 오른쪽지점 좌표 우선 타겟팅-->
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- 평상시 상태라면 메인 전투판 위주로 타겟팅 하거나, 가끔 다른쪽 전투판쪽 타겟팅 하기도 함-->
+						<node name="TargetEffect" effectName="">
+							<node name="select" prob="16,16,16,16,16,20">
+								<!-- 기본 타겟팅으로 타겟이 되면, 플레이어 몸의 타겟팅 이펙트 지우기-->
+								<!-- 인페르녹 보스 전투 1페이지 전투판의 메인 전투판 좌표 기준으로 타겟팅 하나, 가끔 랜덤 타겟팅함-->
+								<node name="target" type="near" center="3210, 3650, 6450" />
+								<node name="target" type="near" center="2920, 3300, 6450" />
+								<node name="target" type="near" center="3380, 2772, 6450" />
+								<node name="target" type="near" center="3773, 3115, 6450" />
+								<node name="target" type="near" center="3375, 3225, 6450" />
+								<node name="target" type="rand" from="2" to="2400" cooltime="24000">
+									<node name="SetValue" key="RandTargetOn" value="12" />
+									<!-- 파란색 크리스탈의 효용성을 높이기 위해 당분간, 렌던 타겟팅 계속 하도록 하기 위해서 사용되는 변수  -->
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TargetCheck_2Phase">
+			<!--2페이지 전투판에서의 기본 타겟팅 작동 로직 & 2페이즈에서는 이동 안함-->
+			<node name="conditions">
+				<condition name="additional" id="50004416">
+					<!--보스가  50004416 걸려있는 도중에 다른 플레이어에게 파란 크리스탈을 맞으면, 타겟팅 변경 없이 계속 한 대상만 타겟팅 하도록 함-->
+					<node name="SetValue" key="Temp" value="1" />
+					<!--	아무것도 안한다는 뜻 -->
+				</condition>
+				<condition name="additional" id="50004414" level="2">
+					<!--보스가  50004414(레벨2) 걸려있는 도중이라면, 아직 50004414(레벨1) 걸려있는 플레이어가 있다는 뜻이기 때문에  50004414(레벨1) 걸린 플레이어를 계속 타겟팅 하도록 함-->
+					<node name="target" type="hasAdditional" additionalId="50004414" additionalLevel="1" target="hostile" />
+					<!-- 플레이어가 파란 크리스탈 던지면 플레이어 자신이 50004414 애디셔널에 걸리는데, 이 애디셔널 걸린 플레이어를 타겟팅함 -->
+				</condition>
+				<condition name="extraData" key="RandTargetOn" value="1" op="greaterEqual">
+					<!-- 이 변수가 1보다 큰 상태면 계속 랜덤 타겟팅 서브 전투판 타겟팅 하기, 파란색 크리스탈의 효용성을 높이기 위해 당분간, 렌던 타겟팅 계속 하도록 하기 위해서 사용되는 변수  -->
+					<node name="SetValue" key="RandTargetOn" value="-1" isModify="1">
+						<node name="select" prob="34,33,33">
+							<node name="target" type="rand" from="2" to="2400" />
+							<node name="target" type="near" center="4800, 4350, 4500" />
+							<!-- 2페이지 전투판 12시 지점 좌표 우선 타겟팅-->
+							<node name="target" type="near" center="4350, 3300, 4500" />
+							<!-- 2페이지 전투판 3시 지점 좌표 우선 타겟팅-->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 평상시 상태라면 메인 전투판 위주로 타겟팅 하거나, 가끔 다른쪽 전투판쪽 타겟팅 하기도 함-->
+					<node name="TargetEffect" effectName="">
+						<node name="select" prob="16,16,16,16,16,20">
+							<!-- 기본 타겟팅으로 타겟이 되면, 플레이어 몸의 타겟팅 이펙트 지우기-->
+							<!-- 인페르녹 보스 전투 2페이지 전투판의 메인 전투판 좌표 기준으로 타겟팅 하나, 가끔 랜덤 타겟팅함-->
+							<node name="target" type="near" center="3450, 4150, 4500" />
+							<node name="target" type="near" center="3450, 3750, 4500" />
+							<node name="target" type="near" center="3000, 3750, 4500" />
+							<node name="target" type="near" center="3000, 4150, 4500" />
+							<node name="target" type="near" center="3225, 3975, 4500" />
+							<node name="target" type="rand" from="2" to="2400" cooltime="24000">
+								<node name="SetValue" key="RandTargetOn" value="12" />
+								<!-- 파란색 크리스탈의 효용성을 높이기 위해 당분간, 렌던 타겟팅 계속 하도록 하기 위해서 사용되는 변수  -->
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="TargetCheck_3Phase">
+			<!--3페이지 전투판에서의 기본 타겟팅 작동 로직-->
+			<node name="conditions">
+				<condition name="additional" id="50004416">
+					<!--보스가  50004416 걸려있는 도중에 다른 플레이어에게 파란 크리스탈을 맞으면, 타겟팅 변경 없이 계속 한 대상만 타겟팅 하도록 함-->
+					<node name="SetValue" key="Temp" value="1" />
+					<!--	아무것도 안한다는 뜻 -->
+				</condition>
+				<condition name="additional" id="50004414" level="2">
+					<!--보스가  50004414(레벨2) 걸려있는 도중이라면, 아직 50004414(레벨1) 걸려있는 플레이어가 있다는 뜻이기 때문에  50004414(레벨1) 걸린 플레이어를 계속 타겟팅 하도록 함-->
+					<node name="target" type="hasAdditional" additionalId="50004414" additionalLevel="1" target="hostile" />
+					<!-- 플레이어가 파란 크리스탈 던지면 플레이어 자신이 50004414 애디셔널에 걸리는데, 이 애디셔널 걸린 플레이어를 타겟팅함 -->
+				</condition>
+				<condition name="true">
+					<!-- 평상시 상태라면 메인 전투판 위주로 타겟팅 하거나, 가끔 다른쪽 전투판쪽 타겟팅 하기도 함-->
+					<node name="TargetEffect" effectName="">
+						<!-- 기본 타겟팅으로 타겟이 되면, 플레이어 몸의 타겟팅 이펙트 지우기-->
+						<!-- 인페르녹 보스 전투 3페이지에서는 기본 랜덤 타겟팅 함-->
+						<node name="target" type="rand" from="2" to="1800" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="AttackMode_1Phase">
+			<node name="select" prob="9999,0">
+				<!--1페이지에서의 평상시 공격 행동-->
+				<node name="skill" faceTarget="1" cooltime="15000" idx="8">
+					<!--저주의 눈빛 공격-->
+					<node name="SetValue" key="AttackDelay" value="6" />
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+							<node name="standby" limit="100" faceTarget="1" animation="Attack_Idle_B" />
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="3">
+						<node name="select" prob="50,20,30">
+							<!--할퀴기 공겨 사정거리 이내, 거리 620 정도 -->
+							<node name="skill" idx="3">
+								<!--할퀴기 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="15" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" idx="1">
+								<!--발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="15" />
+							</node>
+							<node name="skill" idx="11">
+								<!--약 브레스 공격 -->
+								<node name="SetValue" key="AttackDelay" value="15" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="11">
+						<node name="select" prob="50,25,5,20">
+							<!--파이어브레스 발사 사정거리, 거리 1950 -->
+							<node name="skill" idx="11">
+								<!--약 브레스 공격 -->
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" cooltime="9000" idx="10">
+								<!-- 거대 투사체 -->
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+							<node name="skill" cooltime="65000" idx="12">
+								<!--초강력 브레스 공격 -->
+								<node name="SetValue" key="AttackDelay" value="22" />
+							</node>
+							<node name="skill" cooltime="9000" idx="1">
+								<!--발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="1">
+						<!--투사체 발닥 발사 공격 사정거리, 거리  2450-->
+						<node name="skill" idx="1">
+							<!--투사체 발닥 발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+							<node name="SetValue" key="AttackDelay" value="22" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="800" faceTarget="1" animation="Attack_Idle_B">
+							<node name="target" type="rand" from="2" to="1800" />
+							<!-- 파란 크리스탈의 효용성을 높이기 위해, 이런 상황에서는 랜덤 타겟팅 하기 -->
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="AttackMode_2Phase">
+			<node name="select" prob="9999,50,0">
+				<!--2페이지에서의 평상시 공격 행동, 초강력 브레스 사용-->
+				<node name="skill" faceTarget="1" cooltime="15000" idx="8">
+					<!--저주의 눈빛 공격-->
+					<node name="SetValue" key="AttackDelay" value="6" />
+				</node>
+				<node name="skill" cooltime="43000" idx="12">
+					<!--초강력 브레스 공격 -->
+					<node name="SetValue" key="AttackDelay" value="22" />
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+							<node name="standby" limit="100" faceTarget="1" animation="Attack_Idle_B" />
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="3">
+						<node name="select" prob="50,20,30">
+							<!--할퀴기 공겨 사정거리 이내, 거리 620 정도 -->
+							<node name="skill" idx="3">
+								<!--할퀴기 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="15" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" idx="1">
+								<!--발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="15" />
+							</node>
+							<node name="skill" idx="11">
+								<!--약 브레스 공격 -->
+								<node name="SetValue" key="AttackDelay" value="15" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="11">
+						<node name="select" prob="50,25,20">
+							<!--파이어브레스 발사 사정거리, 거리 1950 -->
+							<node name="skill" idx="11">
+								<!--약 브레스 공격 -->
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" cooltime="8000" idx="10">
+								<!-- 거대 투사체 -->
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+							<node name="skill" cooltime="8000" idx="1">
+								<!--발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="1">
+						<!--투사체 발닥 발사 공격 사정거리, 거리  2450-->
+						<node name="skill" idx="1">
+							<!--투사체 발닥 발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+							<node name="SetValue" key="AttackDelay" value="22" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="800" faceTarget="1" animation="Attack_Idle_B">
+							<node name="target" type="rand" from="2" to="1800" />
+							<!-- 파란 크리스탈의 효용성을 높이기 위해, 이런 상황에서는 랜덤 타겟팅 하기 -->
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="AttackMode_3Phase">
+			<node name="select" prob="99,70,0">
+				<!--3페이지에서의 평상시 공격 행동, 바닥 대미지 필드 생성 투척 공격 + 초강력 브레스 사용-->
+				<node name="skill" cooltime="15000" idx="15">
+					<!--바닥 대미지 필드 생성 4발 투척 공격(필살기) -->
+					<node name="SetValue" key="AttackDelay" value="18" />
+				</node>
+				<node name="skill" cooltime="42000" idx="12">
+					<!--초강력 브레스 공격 -->
+					<node name="SetValue" key="AttackDelay" value="24" />
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+							<node name="standby" limit="100" faceTarget="1" animation="Attack_Idle_B" />
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="3">
+						<node name="select" prob="50,20,30">
+							<!--할퀴기 공겨 사정거리 이내, 거리 620 정도 -->
+							<node name="skill" cooltime="12000" idx="3">
+								<!--할퀴기 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" cooltime="12000" idx="1">
+								<!--발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+							</node>
+							<node name="skill" idx="11">
+								<!--약 브레스 공격 -->
+								<node name="SetValue" key="AttackDelay" value="11" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="11">
+						<node name="select" prob="70,30">
+							<!--파이어브레스 발사 사정거리, 거리 1950 -->
+							<node name="skill" idx="11">
+								<!--약 브레스 공격 -->
+								<node name="SetValue" key="AttackDelay" value="11" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+							<node name="skill" cooltime="5000" idx="1">
+								<!--발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="1">
+						<!--투사체 발닥 발사 공격 사정거리, 거리  2450-->
+						<node name="skill" idx="1">
+							<!--투사체 발닥 발사 공격, 레벨31이 크리티아스용, 공격 시작때 눈빛 -->
+							<node name="SetValue" key="AttackDelay" value="9" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="720" faceTarget="1" animation="Attack_Idle_B">
+							<node name="target" type="rand" from="2" to="1800" />
+							<!-- 파란 크리스탈에 의해 타겟팅된 플레이어가 멀리 떨어져 있을 경우 그냥 랜덤 타겟팅 해버림, 어뷰징을 막기위한 장치 -->
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

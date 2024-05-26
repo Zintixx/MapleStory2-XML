@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 알파 터틀, 높은 레벨대-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+				<node name="target" type="rand" from="10" to="1200" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="83">
+					<node name="select" prob="9999,0">
+						<!--1페이즈  -->
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="35000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="4800" skillIdx="10" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="99999,10,45,45">
+									<node name="skill" faceTarget="0" cooltime="28000" initialCooltime="23000" idx="14">
+										<!--점프 뛰기-->
+										<node name="target" type="rand" from="150" to="1000">
+											<node name="standby" limit="300" faceTarget="1">
+												<node name="skill" faceTarget="0" idx="15">
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="skill" idx="14">
+										<!--점프 뛰기 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="1">
+										<!--오른쪽 치기 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="2">
+										<!--왼쪽 치기 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<node name="trace" limit="2400" skillIdx="1" />
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="80">
+					<node name="select" prob="100,1">
+						<!--2페이즈 - 회복 vs DPS -->
+						<node name="skill" idx="13">
+							<!--HP 회복 - 회복 vs DPS -->
+							<node name="standby" limit="7000" faceTarget="0" />
+						</node>
+						<node name="standby" limit="1000" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="hpOver" value="60">
+					<node name="select" prob="9999,99999,40,40,20">
+						<!--3페이즈 -->
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="35000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="4800" skillIdx="10" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="45000" idx="14">
+							<!--점프 뛰기-->
+							<node name="target" type="rand" from="150" to="1000">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="skill" faceTarget="0" idx="15">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="11">
+							<!--돌진-->
+							<node name="target" type="rand" from="250" to="1200">
+								<node name="skill" faceTarget="1" idx="16">
+									<!-- 토하기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="11">
+							<!--돌진-->
+							<node name="target" type="rand" from="250" to="1200">
+								<node name="skill" faceTarget="1" idx="12">
+									<node name="target" type="rand" from="250" to="1200">
+										<node name="skill" faceTarget="1" idx="16">
+											<!-- 토하기-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="11">
+							<!--돌진-->
+							<node name="target" type="rand" from="250" to="1200">
+								<node name="skill" faceTarget="1" idx="12">
+									<node name="target" type="rand" from="250" to="1200">
+										<node name="skill" faceTarget="1" idx="12">
+											<node name="target" type="rand" from="250" to="1200">
+												<node name="skill" faceTarget="1" idx="16">
+													<!-- 토하기-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="43">
+					<node name="select" prob="9999,0">
+						<!--4페이즈 -->
+						<node name="skill" cooltime="9999999" isKeepBattle="true" idx="3">
+							<!--패이즈 변할 때 총알 난사 함 -->
+							<!--가끔 사방 총알 난사 공격 -->
+							<node name="skill" idx="5" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="9" />
+							<!--총알난사 없이 그냥 회전  동작 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="skill" idx="6" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="8" />
+							<!--총알난사 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="9" />
+							<!--총알난사 없이 그냥 회전  동작 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="6" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="8" />
+							<!--총알난사 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="9" />
+							<!--총알난사 없이 그냥 회전  동작 -->
+							<node name="skill" idx="6" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="8" />
+							<!--총알난사 -->
+							<node name="skill" idx="4" />
+							<!--총알난사 마무리 -->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="9999,99999,99999,14,25,25,18,18">
+									<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+									<node name="standby" limit="10" faceTarget="1" cooltime="35000">
+										<node name="target" type="far" from="10" to="1000">
+											<node name="trace" limit="4800" skillIdx="10" />
+											<!--distance 200짜리 가짜 스킬 데이터-->
+										</node>
+									</node>
+									<node name="skill" faceTarget="0" cooltime="45000" idx="14">
+										<!--점프 뛰기-->
+										<node name="target" type="rand" from="150" to="1000">
+											<node name="standby" limit="300" faceTarget="1">
+												<node name="skill" faceTarget="0" idx="15">
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="skill" faceTarget="0" cooltime="23000" idx="14">
+										<!--점프뛰기 후 물감옥 가두기-->
+										<node name="target" type="far" from="150" to="950">
+											<node name="standby" limit="300" faceTarget="1">
+												<node name="skill" idx="17" />
+											</node>
+										</node>
+									</node>
+									<node name="skill" idx="14">
+										<!--점프 뛰기 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="1">
+										<!--오른쪽 치기 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="2">
+										<!--왼쪽 치기 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+									<node name="skill" idx="1">
+										<!--오른쪽 치기 -->
+										<node name="standby" limit="300" faceTarget="1">
+											<!--타겟팅 다시 잡기 -->
+											<node name="skill" faceTarget="0" idx="2">
+												<!--왼쪽 치기 -->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="skill" idx="2">
+										<!--왼쪽 치기 -->
+										<node name="standby" limit="300" faceTarget="1">
+											<!--타겟팅 다시 잡기 -->
+											<node name="skill" faceTarget="0" idx="1">
+												<!--오른쪽 치기 -->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99,1">
+									<node name="trace" limit="2500" skillIdx="1" />
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="40">
+					<node name="select" prob="100,1">
+						<!--5페이즈 - 회복 vs DPS -->
+						<node name="skill" idx="13">
+							<!--HP 회복 - 회복 vs DPS -->
+							<node name="standby" limit="7000" faceTarget="0" />
+						</node>
+						<node name="standby" limit="300" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="hpOver" value="20">
+					<node name="select" prob="9999,99999,40,40,20">
+						<!--6페이즈 -->
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="35000" initialCooltime="35000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="4800" skillIdx="10" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="32000" idx="18">
+							<!--플레이어 토하게 하기-->
+							<node name="target" type="far" from="250" to="950">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="skill" idx="18" />
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="11">
+							<!--돌진-->
+							<node name="target" type="rand" from="250" to="1200">
+								<node name="skill" faceTarget="1" idx="16">
+									<!-- 토하기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="11">
+							<!--돌진-->
+							<node name="target" type="rand" from="250" to="1200">
+								<node name="skill" faceTarget="1" idx="12">
+									<node name="target" type="rand" from="250" to="1200">
+										<node name="skill" faceTarget="1" idx="16">
+											<!-- 토하기-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="11">
+							<!--돌진-->
+							<node name="target" type="rand" from="250" to="1200">
+								<node name="skill" faceTarget="1" idx="12">
+									<node name="target" type="rand" from="250" to="1200">
+										<node name="skill" faceTarget="1" idx="12">
+											<node name="target" type="rand" from="250" to="1200">
+												<node name="skill" faceTarget="1" idx="16">
+													<!-- 토하기-->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,99999,99999,45,54,1">
+						<!--7페이즈  -->
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="3">
+							<!--페이즈 변할 때 총알 난사 함, 원래 쿨티임 60초 였으나 2분으로 늘렸음-->
+							<!--가끔 사방 총알 난사 공격 -->
+							<node name="skill" idx="5" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="9" />
+							<!--총알난사 없이 그냥 회전  동작 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="skill" idx="6" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="8" />
+							<!--총알난사 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="9" />
+							<!--총알난사 없이 그냥 회전  동작 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="6" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="8" />
+							<!--총알난사 -->
+							<node name="skill" idx="7" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="9" />
+							<!--총알난사 없이 그냥 회전  동작 -->
+							<node name="skill" idx="6" />
+							<!--총알난사 -->
+							<node name="target" type="rand" from="250" to="1800" />
+							<node name="skill" idx="8" />
+							<!--총알난사 -->
+							<node name="skill" idx="4" />
+							<!--총알난사 마무리 -->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="23000" idx="14">
+							<!--점프뛰기 후 물감옥 가두기-->
+							<node name="target" type="far" from="150" to="950">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="skill" idx="17" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="32000" idx="18">
+							<!--플레이어 토하게 하기-->
+							<node name="target" type="far" from="250" to="950">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="skill" idx="18" />
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" idx="14">
+							<!--고정 방향으로 점프 뛰기-->
+							<node name="skill" faceTarget="0" idx="15">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" idx="14">
+							<!--점프 뛰기-->
+							<node name="target" type="rand" from="150" to="1000">
+								<node name="standby" limit="300" faceTarget="1">
+									<node name="skill" faceTarget="0" idx="15">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="90">
+			<node name="standby" limit="500" faceTarget="1" cooltime="9999999" initialCooltime="15">
+				<node name="skill" prob="33" idx="21">
+					<node name="standby" limit="1000" faceTarget="1" prob="100" />
+				</node>
+			</node>
+		</condition>
+		<condition name="hpLess" value="70">
+			<node name="standby" limit="500" faceTarget="1" cooltime="9999999" initialCooltime="15">
+				<node name="skill" prob="33" idx="21">
+					<node name="standby" limit="1000" faceTarget="1" prob="100" />
+				</node>
+			</node>
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="standby" limit="500" faceTarget="1" cooltime="9999999" initialCooltime="15">
+				<node name="skill" prob="33" idx="21">
+					<node name="standby" limit="1000" faceTarget="1" prob="100" />
+				</node>
+			</node>
+		</condition>
+		<condition name="hpLess" value="25">
+			<!--#3페이즈 망치 점프꽝 바닥 대미지 필드  패턴   휠윈드 2~3회   65~40 -->
+			<node name="standby" limit="500" faceTarget="1" cooltime="9999999" initialCooltime="15">
+				<node name="skill" prob="33" idx="21">
+					<node name="standby" limit="1000" faceTarget="1" prob="100" />
+				</node>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--전투 최초 시작 때 제일 먼저 꼭 이루어 져야 하는 거 설정-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="999999" isKeepBattle="true">
+				<node name="SetValue" key="JumpAttackMode" value="0" />
+				<!--   점프 공격 모드로  전활 될때 이용되는 변수-->
+				<node name="SetValue" key="FlyAttackMode" value="0" />
+				<!--   공중 공격 상태로 전활 될때 이용되는 변수-->
+				<node name="SetValue" key="ModeContinue" value="0" />
+				<!--  얼만큼 계속 해당 공격 모드 상태로 있을지 결정하는데 이용되는 변수-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="RageBuff" value="1">
+					<!--동료 사자 몬스터가 죽으면 이 변수 1로 설정하는 신호를 받아서 최 우선적으로  광폭화 버프 부여 행동을 하도록 함 -->
+					<node name="skill" idx="19">
+						<!--광폭화 행위 자신에게 버프 부여-->
+						<node name="standby" limit="800" faceTarget="1">
+							<node name="SetValue" key="RageBuff" value="0" />
+							<!--광폭화 버프 행위 했으면, 이 변수 다시 1로 만들어 무한루프에 빠지는 것을 방지함-->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="RageBuff_3" value="1">
+					<!--트리거 제한 시간이 다 되었을 때 발동-->
+					<node name="skill" idx="20">
+						<!--광폭화 행위 자신에게 버프 부여-->
+						<node name="standby" limit="800" faceTarget="1">
+							<node name="SetValue" key="RageBuff_3" value="0" />
+							<!--광폭화 버프 행위 했으면, 이 변수 다시 1로 만들어 무한루프에 빠지는 것을 방지함-->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="JumpAttackMode" value="1">
+					<aiPreset name="JumpAttackPattern" />
+				</condition>
+				<condition name="extraData" key="FlyAttackMode" value="1">
+					<aiPreset name="FlyAttackPattern" />
+				</condition>
+				<condition name="hpOver" value="70">
+					<!--#1페이즈 -->
+					<aiPreset name="MainBattle" />
+				</condition>
+				<condition name="hpOver" value="35">
+					<node name="select" prob="9999,0">
+						<!--#2페이즈 -->
+						<!--점프 이동 패턴, 점프 이동 후 번개 공격 하기 -->
+						<node name="standby" limit="200" faceTarget="0" cooltime="75000">
+							<node name="select" prob="32,34,34,9999">
+								<node name="skill" facePos="-1125, 215, 4100" cooltime="200000" isKeepBattle="true" idx="17">
+									<!--레벨1: 점프 도약 -->
+									<node name="jump" pos="-1125, 215, 4100" speed="1500" heightMultiplier="0.4" />
+									<!--8시 방향 점프 뛰기-->
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--레벨2: 점프 착지 -->
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<!--뿔 번개 발사 레벨2: 사정거리 매우 긴거 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="-225, -675, 4100" cooltime="200000" isKeepBattle="true" idx="17">
+									<node name="jump" pos="-225, -675, 4100" speed="1500" heightMultiplier="0.4" />
+									<!--4시 방향 점프 뛰기-->
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--레벨2: 점프 착지 -->
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<!--뿔 번개 발사 레벨2: 사정거리 매우 긴거 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="225, 825, 4100" cooltime="200000" isKeepBattle="true" idx="17">
+									<node name="jump" pos="225, 825, 4100" speed="1500" heightMultiplier="0.4" />
+									<!--11시 방향 점프 뛰기-->
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--레벨2: 점프 착지 -->
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<!--뿔 번개 발사 레벨2: 사정거리 매우 긴거 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="60000" isKeepBattle="true">
+									<!--쫄 소환 -->
+									<node name="summon" npcId="1" npcCount="3" npcCountMax="3" group="101" summonRadius="400, 400, 0" summonPos="150, 600, 4150" lifeTime="180000" />
+									<node name="summon" npcId="1" npcCount="3" npcCountMax="3" group="101" summonRadius="400, 400, 0" summonPos="-600, -150, 4150" lifeTime="180000" />
+								</node>
+							</node>
+						</node>
+						<aiPreset name="MainBattle" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<!--#3페이즈 -->
+						<!--점프 이동 패턴, 점프 이동 후 번개 공격 하기 -->
+						<node name="standby" limit="200" faceTarget="0" cooltime="78000">
+							<node name="select" prob="32,34,34,9999">
+								<node name="skill" facePos="-750, 750, 4100" cooltime="200000" isKeepBattle="true" idx="17">
+									<!--레벨1: 점프 도약 -->
+									<node name="jump" pos="-750, 750, 4100" speed="1500" heightMultiplier="0.4" />
+									<!--9시 방향 점프 뛰기-->
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--레벨2: 점프 착지 -->
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<!--뿔 번개 발사 레벨2: 사정거리 매우 긴거 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="-750, -300, 4100" cooltime="200000" isKeepBattle="true" idx="17">
+									<node name="jump" pos="-750, -300, 4100" speed="1500" heightMultiplier="0.4" />
+									<!--6시 방향 점프 뛰기-->
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--레벨2: 점프 착지 -->
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<!--뿔 번개 발사 레벨2: 사정거리 매우 긴거 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="skill" facePos="300, -300, 4100" cooltime="200000" isKeepBattle="true" idx="17">
+									<node name="jump" pos="300, -300, 4100" speed="1500" heightMultiplier="0.4" />
+									<!--3시 방향 점프 뛰기-->
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--레벨2: 점프 착지 -->
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<!--뿔 번개 발사 레벨2: 사정거리 매우 긴거 -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="45000" isKeepBattle="true">
+									<!--쫄 소환 -->
+									<node name="summon" npcId="1" npcCount="3" npcCountMax="3" group="102" summonRadius="400, 400, 0" summonPos="150, 600, 4150" lifeTime="180000" />
+									<node name="summon" npcId="1" npcCount="3" npcCountMax="3" group="102" summonRadius="400, 400, 0" summonPos="-600, -150, 4150" lifeTime="180000" />
+								</node>
+							</node>
+						</node>
+						<aiPreset name="MainBattle" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetValueRangeTarget" key="RageBuff" value="1" radius="3000" height="1200" />
+		<!-- 자신이 죽으면, 동료 사자 몬스터에게 버프 행동 하라고 신호를 보냄-->
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="MainBattle">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<node name="select" prob="70,30">
+						<!--거리 500 이내-->
+						<node name="skill" idx="4">
+							<!--할퀴기 2연타-->
+							<node name="skill" faceTarget="0" idx="5">
+								<!--할퀴기 2연타-->
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="15000" idx="3">
+							<!--괴성 지르기-->
+							<node name="standby" limit="1000" faceTarget="1">
+								<node name="target" type="rand" from="10" to="1200" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="75,25">
+								<!--거리 1150 이내-->
+								<node name="skill" idx="1">
+									<!--뿔 번개 발사-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="move" destination="-225, 950, 4100" limit="2300">
+									<!--전투판 1시방향 쪽으로 이동함-->
+									<node name="target" type="rand" from="10" to="1200" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="700" faceTarget="1">
+									<node name="target" type="near" from="10" to="900" />
+								</node>
+								<node name="move" destination="-225, 950, 4100" limit="2500">
+									<node name="target" type="near" from="10" to="900" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="JumpAttackPattern">
+			<node name="conditions">
+				<condition name="extraData" key="ModeContinue" value="0">
+					<node name="skill" idx="6">
+						<!--점프 쾅 공격 시작 동작-->
+						<node name="SetValue" key="ModeContinue" value="6" />
+						<!--이 변수를 6으로 하면 점프 쾅 공격 5번 한다는 뜻임-->
+					</node>
+				</condition>
+				<condition name="extraData" key="ModeContinue" value="2" op="greaterEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="8">
+							<!--거리 400~500 이내에 있으면-->
+							<node name="skill" isKeepBattle="true" idx="8">
+								<!--근접 점프 쾅-->
+								<node name="standby" limit="1000" faceTarget="1" animation="Attack_02_D" />
+								<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+								<!--점프 쾅 공격 할 때마다 -1을 하여  횟수 차감함-->
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="10">
+							<!--거리 900~950 이내에 있으면-->
+							<node name="skill" isKeepBattle="true" idx="10">
+								<!--원거리 점프 쾅-->
+								<node name="skill" faceTarget="0" idx="7" />
+								<node name="standby" limit="1000" faceTarget="1" animation="Attack_02_D" />
+								<node name="target" type="near" from="10" to="900" />
+								<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+								<!--점프 쾅 공격 할 때마다 -1을 하여  횟수 차감함-->
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="7">
+							<!--거리 1600 이내에 있으면-->
+							<node name="trace" limit="5000" animation="Attack_02_D" isKeepBattle="true" skillIdx="10">
+								<!--거리900~950 이내에 추적 하여-->
+								<node name="skill" faceTarget="0" idx="7" />
+								<node name="standby" limit="1000" faceTarget="1" animation="Attack_02_D" />
+								<node name="target" type="near" from="10" to="900" />
+								<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+								<!--점프 쾅 공격 할 때마다 -1을 하여  횟수 차감함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1" animation="Attack_02_D" isKeepBattle="true">
+								<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+								<!--아무것도 안하고  그냥 -1을 하여  횟수 차감함-->
+								<node name="target" type="near" from="10" to="900" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="8">
+							<!--거리 400~500 이내에 있으면-->
+							<node name="skill" isKeepBattle="true" idx="9">
+								<!--근접 점프 쾅 끝-->
+								<node name="SetValue" key="ModeContinue" value="0" />
+								<!--횟수 차감용 이 변수를 0으로 초기화 하기-->
+								<node name="SetValue" key="JumpAttackMode" value="0" />
+								<!--이 변수를 0으로 설정해 점프 공격 패턴 로직 빠져나오도록 함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--그외 거리면 무조건 원거리 점프 쾅 끝-->
+							<node name="skill" isKeepBattle="true" idx="11">
+								<!--원거리  점프 쾅 끝-->
+								<node name="SetValue" key="ModeContinue" value="0" />
+								<!--횟수 차감용 이 변수를 0으로 초기화 하기-->
+								<node name="SetValue" key="JumpAttackMode" value="0" />
+								<!--이 변수를 0으로 설정해 점프 공격 패턴 로직 빠져나오도록 함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="FlyAttackPattern">
+			<node name="conditions">
+				<condition name="extraData" key="ModeContinue" value="0">
+					<node name="skill" idx="12">
+						<!--공중 공격 시작 동작-->
+						<node name="SetValue" key="ModeContinue" value="5" />
+						<!--이 변수를 5으로 하면 공중  공격 4번 한다는 뜻임-->
+					</node>
+				</condition>
+				<condition name="extraData" key="ModeContinue" value="2" op="greaterEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="13">
+							<!--거리 600 이내에 있으면-->
+							<node name="skill" isKeepBattle="true" idx="14">
+								<!--번개 공격-->
+								<node name="standby" limit="1000" faceTarget="1" animation="Attack_02_E" />
+								<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+								<!--공중  공격 할 때마다 -1을 하여  횟수 차감함-->
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="15">
+							<node name="select" prob="50,50">
+								<!--거리 1450 이내에 있으면-->
+								<node name="trace" limit="3200" animation="Attack_02_E" isKeepBattle="true" skillIdx="13">
+									<!--거리 6000 이내에 추적 한 다음 번개 공격-->
+									<node name="skill" faceTarget="0" idx="14" />
+									<!--번개 공격-->
+									<node name="standby" limit="1000" faceTarget="1" animation="Attack_02_E" />
+									<node name="target" type="near" from="10" to="900" />
+									<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+									<!--공중  공격 할 때마다 -1을 하여  횟수 차감함-->
+								</node>
+								<node name="skill" cooltime="8000" isKeepBattle="true" idx="14">
+									<!--번개 공격-->
+									<node name="standby" limit="1000" faceTarget="1" animation="Attack_02_E" />
+									<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+									<!--공중  공격 할 때마다 -1을 하여  횟수 차감함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,50">
+								<node name="standby" limit="800" faceTarget="1" animation="Attack_02_E" isKeepBattle="true">
+									<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+									<!--공중  공격 할 때마다 -1을 하여  횟수 차감함-->
+									<node name="target" type="near" from="10" to="900" />
+								</node>
+								<node name="trace" limit="2300" animation="Attack_02_E" isKeepBattle="true" skillIdx="13">
+									<!--거리 6000 이내에 추적 한 다음 번개 공격-->
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="standby" limit="1000" faceTarget="1" animation="Attack_02_E" />
+									<node name="target" type="near" from="10" to="900" />
+									<node name="SetValue" key="ModeContinue" value="-1" isModify="1" />
+									<!--공중  공격 할 때마다 -1을 하여  횟수 차감함-->
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="16">
+							<!--거리 400~500 이내에 있으면-->
+							<node name="skill" isKeepBattle="true" idx="16">
+								<!--근접 점프 쾅 끝-->
+								<node name="SetValue" key="ModeContinue" value="0" />
+								<!--횟수 차감용 이 변수를 0으로 초기화 하기-->
+								<node name="SetValue" key="FlyAttackMode" value="0" />
+								<!--이 변수를 0으로 설정해 공중 공격 패턴 로직 빠져나오도록 함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--그외 거리면 무조건 원거리 점프 쾅 끝-->
+							<node name="trace" limit="2700" animation="Attack_02_E" isKeepBattle="true" skillIdx="16">
+								<!--거리 400~500 이내로 추적 한 다음 점프 쾅 공격-->
+								<node name="skill" idx="16" />
+								<!--원거리  점프 쾅 끝-->
+								<node name="SetValue" key="ModeContinue" value="0" />
+								<!--횟수 차감용 이 변수를 0으로 초기화 하기-->
+								<node name="SetValue" key="FlyAttackMode" value="0" />
+								<!--이 변수를 0으로 설정해 공중 공격 패턴 로직 빠져나오도록 함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

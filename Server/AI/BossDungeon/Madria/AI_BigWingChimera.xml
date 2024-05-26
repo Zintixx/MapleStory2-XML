@@ -1,0 +1,799 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--루카락스 AI는 일반이나 카오스 동일함-->
+	<reserved>
+		<condition name="hpLess" value="60">
+			<node name="SetValue" key="Phase" value="2">
+				<node name="SetValueRangeTarget" key="Phase" value="2" radius="3500" height="3500" />
+				<!--마드리아한테 자신이 2페이즈인지 알람-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="27">
+			<node name="conditions">
+				<condition name="extraData" key="FlyContinue" value="1" op="greaterEqual">
+					<!-- 공중 날고 있는 상태에서 3페이지 넘어가게 되면 여가서 땅으로 내려오는 설정을 함, FlyContinue 이 변수가 1 이상이라는 것은 반드시 하늘을 날고 있다는 뜻임 -->
+					<node name="skill" facePos="1050, 300, 9200" isKeepBattle="true" idx="13">
+						<node name="jump" pos="1050, 300, 9200" speed="1000" heightMultiplier="1.0" />
+						<node name="skill" faceTarget="0" idx="18" />
+						<!--점프 착지-->
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="SetValue" key="FlyContinue" value="0" />
+						<!--날기 공격을 하기 위해 이용되는 변수 초기화 꼭하기-->
+						<node name="SetValue" key="FlyMadriaSOS" value="0" />
+						<!--날기 공격을 하기 위해 이용되는 변수 초기화 꼭하기-->
+						<node name="SetValue" key="FlyMode" value="0" />
+						<!--날기 공격 시작을 알리는 변수 초기화 하기-->
+						<node name="SetValue" key="Phase" value="3" />
+						<node name="SetValueRangeTarget" key="FlyMadriaSOS" value="1" radius="3500" height="3500" />
+						<!--위쪽 졸몹 자살처리 하기-->
+						<node name="SetValueRangeTarget" key="FlyAssistanceMode" value="0" radius="3500" height="3500" />
+						<!--마드리아한테 이 신호를 보내 자신이 날기공격 끝났음을 알림-->
+						<node name="SetValueRangeTarget" key="Phase" value="3" radius="3500" height="3500" />
+						<!--마드리아한테 자신이 3페이즈인지 알람-->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="SetValue" key="Phase" value="3">
+						<node name="SetValueRangeTarget" key="Phase" value="3" radius="3500" height="3500" />
+						<!--마드리아한테 자신이 3페이즈인지 알람-->
+					</node>
+				</condition>
+			</node>
+		</condition>
+		<condition name="hpLess" value="20">
+			<node name="SetValue" key="Phase" value="4">
+				<node name="SetValueRangeTarget" key="Phase" value="4" radius="3500" height="3500" />
+				<!--마드리아한테 자신이 4페이즈인지 알람-->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--전투 최초 시작 때 제일 먼저 꼭 이루어 져야 하는 거 설정-->
+			<node name="standby" limit="300" faceTarget="1" cooltime="19999999" isKeepBattle="true">
+				<node name="SetValue" key="Position" value="0" />
+				<!--  전투판 어느 구석에 있는지를 아는데 이용되는 변수   0: 구석이 아닌 일반 공격을 하고 있는 상태임, 2: 2시쪽, 4: 4시쪽, 8: 8시쪽, 10: 10시쪽,  99: 공중에 떠있는 상태임-->
+				<node name="SetValue" key="Phase" value="1" />
+				<!--  자신이 몇 페이즈인지 아는데 이용되는 변수, 변수 1을 최초에 선언하여 1페이즈임을 자신에게 알림-->
+				<node name="SetValue" key="JumpAttackOK" value="0" />
+				<!--2와 3페이즈에서 점프 쾅  공격 할지 일반 공격 하지를 결정하는 변수-->
+				<node name="SetValue" key="CornerAttackOK" value="0" />
+				<!--3페이즈에서 구석에서 브레스 공격 할지 말지를 결정하는 변수-->
+				<node name="SetValue" key="FlyMode" value="0" />
+				<!--날기  공격을 하기 위해 이용되는 변수-->
+				<node name="SetValue" key="FlyContinue" value="0" />
+				<!--날기 공격 때 계속 날기 공격 할지 말지를 경정하는  변수, 이 변수가 1이라는 것은 2페이즈에서 반드시 날고 있다는 뜻임 , 매우 중요한 변수-->
+				<node name="SetValue" key="FlyMadriaSOS" value="0" />
+				<!--날기 공격 때 마드리아가 극딜 당하면 이 변수를 1로 만들어 루카락스가 땅에 내려오도록 함-->
+				<node name="SetValue" key="RoarMode" value="0" />
+				<!--마지막 페이즈에서 마드리아한테 광폭화 공격 명령 받으면 이 변수가 1이 되어 폭주하는 상황-->
+				<node name="SetValue" key="RoarModeStop" value="0" />
+				<!--마드리아한테 광폭화 폭주 정지 명령 신호를 이 변수를 통해 받으면, 버프 지우는 행동을 하게끔 설정함 -->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="60">
+					<!--#1페이즈,  몸통돌진 -  구석에서 브레스 공격 조합           졸구간에서 최대 20~25% 정도 HP가 이미 깍인 상태일 수 있기 때문에 1페이즈 HP 영역을 넉넉하게 설정함   -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="12">
+							<!--##%%  일단 보스 전투판에 올라와야 전투  행동을 하도록 선언하기 -->
+							<node name="conditions">
+								<condition name="extraData" key="Position" value="0">
+									<node name="select" prob="999,49,50,1">
+										<!--평소에 몸통 돌진 하다가  전투판 구석 점프 이동 하는 부분-->
+										<node name="standby" limit="800" faceTarget="1" cooltime="75000" isKeepBattle="true">
+											<!--몸통 돌진 6회-->
+											<node name="SetValue" key="Position" value="0" />
+											<!--이 변수를 0으로 초기화 하여 구석 상태가 아님을 알림 -->
+											<node name="SetValueRangeTarget" key="Position" value="0" radius="3500" height="3500" />
+											<!--마드리아한테 이 신호를 보내 자신의 상태를 알림-->
+											<node name="skill" faceTarget="1" idx="1" />
+											<node name="skill" faceTarget="0" idx="2" />
+											<!--돌진-->
+											<node name="target" type="rand" from="10" to="1500" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<!--돌진-->
+											<node name="target" type="rand" from="600" to="1800" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="2" />
+											<!--돌진-->
+											<node name="target" type="rand" from="600" to="1800" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<!--돌진-->
+											<node name="target" type="far" from="10" to="1500" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<!--돌진-->
+											<node name="target" type="rand" from="600" to="1800" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="2" />
+											<!--돌진-->
+											<node name="skill" faceTarget="0" idx="4" />
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="standby" limit="800" faceTarget="1" cooltime="43000" isKeepBattle="true">
+											<!--몸통 돌진 5회-->
+											<node name="SetValue" key="Position" value="0" />
+											<!--이 변수를 0으로 초기화 하여 구석 상태가 아님을 알림 -->
+											<node name="SetValueRangeTarget" key="Position" value="0" radius="3500" height="3500" />
+											<!--마드리아한테 이 신호를 보내 자신의 상태를 알림-->
+											<node name="skill" faceTarget="1" idx="1" />
+											<node name="skill" faceTarget="0" idx="2" />
+											<!--돌진-->
+											<node name="target" type="rand" from="10" to="1500" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<!--돌진-->
+											<node name="target" type="far" from="600" to="1800" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="2" />
+											<!--돌진-->
+											<node name="target" type="far" from="600" to="1800" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<!--돌진-->
+											<node name="target" type="far" from="600" to="1800" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<!--돌진-->
+											<node name="skill" faceTarget="0" idx="4" />
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="standby" limit="800" faceTarget="1" cooltime="42000">
+											<node name="select" prob="25,25,25,25">
+												<!--보스 전투판 4개 구석 지점으로 점프 뛰기-->
+												<!--1~2시 방향 점프 뛰기-->
+												<node name="skill" facePos="2550, 1650, 9200" cooltime="180000" isKeepBattle="true" idx="19">
+													<!--레벨11: 마드리아 성우 음성 나오는  점프 도약 전용-->
+													<node name="jump" pos="2550, 1650, 9200" speed="1500" heightMultiplier="0.4" />
+													<node name="skill" faceTarget="0" idx="18" />
+													<node name="target" type="rand" from="100" to="1200" />
+													<node name="SetValue" key="Position" value="2" />
+													<!--이 변수에 2를 넣어  1~2시 방향  구석에 있음을 알림-->
+													<node name="SetValueRangeTarget" key="Position" value="2" radius="3500" height="3500" />
+													<!--마드리아한테 이 신호를 보내 자신의 상태를 알림-->
+													<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+												</node>
+												<!--4~5시 방향 점프 뛰기-->
+												<node name="skill" facePos="1050, 150, 9200" cooltime="180000" isKeepBattle="true" idx="19">
+													<!--레벨11: 마드리아 성우 음성 나오는  점프 도약 전용-->
+													<node name="jump" pos="1050, 150, 9200" speed="1500" heightMultiplier="0.4" />
+													<node name="skill" faceTarget="0" idx="18" />
+													<node name="target" type="rand" from="100" to="1200" />
+													<node name="SetValue" key="Position" value="4" />
+													<!--이 변수에 4를 넣어  4~5시 방향  구석에 있음을 알림-->
+													<node name="SetValueRangeTarget" key="Position" value="4" radius="3500" height="3500" />
+													<!--마드리아한테 이 신호를 보내 자신의 상태를 알림-->
+													<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+												</node>
+												<!--7~8시 방향 점프 뛰기-->
+												<node name="skill" facePos="-450, 1650, 9200" cooltime="180000" isKeepBattle="true" idx="19">
+													<!--레벨11: 마드리아 성우 음성 나오는  점프 도약 전용-->
+													<node name="jump" pos="-450, 1650, 9200" speed="1500" heightMultiplier="0.4" />
+													<node name="skill" faceTarget="0" idx="18" />
+													<node name="target" type="rand" from="100" to="1200" />
+													<node name="SetValue" key="Position" value="8" />
+													<!--이 변수에 8를 넣어  7~8시 방향  구석에 있음을 알림-->
+													<node name="SetValueRangeTarget" key="Position" value="8" radius="3500" height="3500" />
+													<!--마드리아한테 이 신호를 보내 자신의 상태를 알림-->
+													<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+												</node>
+												<!--10~11시 방향 점프 뛰기-->
+												<node name="skill" facePos="1050, 3150, 9200" isKeepBattle="true" idx="19">
+													<!--레벨11: 마드리아 성우 음성 나오는  점프 도약 전용-->
+													<node name="jump" pos="1050, 3150, 9200" speed="1500" heightMultiplier="0.4" />
+													<node name="skill" faceTarget="0" idx="18" />
+													<node name="target" type="rand" from="100" to="1200" />
+													<node name="SetValue" key="Position" value="10" />
+													<!--이 변수에 10를 넣어  10~11시 방향  구석에 있음을 알림-->
+													<node name="SetValueRangeTarget" key="Position" value="10" radius="3500" height="3500" />
+													<!--마드리아한테 이 신호를 보내 자신의 상태를 알림-->
+													<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="800" faceTarget="1" isKeepBattle="true">
+											<!--쿨타임 다 결렸을 경우를 대비, 3번 돌진-->
+											<node name="SetValue" key="Position" value="0" />
+											<!--이 변수를 0으로 초기화 하여 구석 상태가 아님을 알림 -->
+											<node name="SetValueRangeTarget" key="Position" value="0" radius="3500" height="3500" />
+											<!--마드리아한테 이 신호를 보내 자신의 상태를 알림-->
+											<node name="skill" faceTarget="1" idx="1" />
+											<node name="skill" faceTarget="0" idx="2" />
+											<!--돌진-->
+											<node name="target" type="rand" from="10" to="1500" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="3" />
+											<!--돌진-->
+											<node name="target" type="far" from="600" to="1800" />
+											<node name="standby" limit="1300" faceTarget="1" />
+											<node name="skill" faceTarget="0" idx="5" />
+											<node name="skill" faceTarget="0" idx="2" />
+											<!--돌진-->
+											<node name="skill" faceTarget="0" idx="4" />
+											<node name="standby" limit="1200" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="extraData" key="Position" value="2" op="greaterEqual">
+									<!--  점프 구석 이동한 다음 구석에서의 공격 패턴으로 넘어가기 위해 특정 설정을 하는 부분, 이 조건을 2 이상으라고 잡은 이유는 2시쪽 점프 뛸때 최소 2를 넣기 때문-->
+									<node name="standby" limit="200" faceTarget="1">
+										<node name="select" prob="33,33,34">
+											<node name="SetValue" key="Position" value="-4" />
+											<node name="SetValue" key="Position" value="-5" />
+											<node name="SetValue" key="Position" value="-6" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="38,42,20">
+										<node name="skill" facePos="1050, 1650, 9200" cooltime="13000" idx="8">
+											<!--날개짓 바람 밀치기, 항상 정 가운데를 기준으로 공격 하도록 함-->
+											<node name="target" type="rand" from="100" to="1300">
+												<node name="standby" limit="2500" facePos="1050, 1650, 9200" faceTarget="0">
+													<node name="SetValue" key="Position" value="1" isModify="1" />
+													<!--공격 행동 할 때마다 이 변수에 1을 넣어서 결국 0이 되면 다시 돌진 공격 행동 하도록 함-->
+												</node>
+											</node>
+										</node>
+										<node name="skill" facePos="1050, 1650, 9200" cooltime="13000" idx="7">
+											<!--브레스 왼쪽 오른쪽 번갈아 발사, 항상 정 가운데를 기준으로 공격 하도록 함-->
+											<!--보스 전투판 정 중앙 좌표: 1050, 1650, 9200 -->
+											<node name="target" type="rand" from="100" to="1300">
+												<node name="standby" limit="2500" facePos="1050, 1650, 9200" faceTarget="0">
+													<node name="SetValue" key="Position" value="1" isModify="1" />
+													<!--공격 행동 할 때마다 이 변수에 1을 넣어서 결국 0이 되면 다시 돌진 공격 행동 하도록 함-->
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="200" facePos="1050, 1650, 9200" faceTarget="0" isKeepBattle="true">
+											<node name="target" type="far" from="100" to="1200" />
+											<!--가까이 붙은 플레이어에게 타겟팅 갈 경우 뒤쪽 방향으로 공격하는 어색한 상황을 막기 위해 제일 먼 타겟팅 지정함-->
+											<node name="standby" limit="350" facePos="1050, 1650, 9200" faceTarget="0" />
+											<node name="skill" faceTarget="1" idx="6" />
+											<!--입에서 폭발 발사-->
+											<node name="target" type="rand" from="100" to="1300" />
+											<node name="standby" limit="2500" facePos="1050, 1650, 9200" faceTarget="0" />
+											<node name="SetValue" key="Position" value="1" isModify="1" />
+											<!--공격 행동 할 때마다 이 변수에 1을 넣어서 결국 0이 되면 다시 돌진 공격 행동 하도록 함-->
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--##%% 보스 전투판에 아무도 올라오지 않았으면 가만히 있기 -->
+							<node name="standby" limit="320" faceTarget="1">
+								<node name="target" type="near" from="10" to="2500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="27">
+					<node name="select" prob="99999,0">
+						<!--#2페이즈 - 공중 날기 패턴  60~27% 구간, 한번 공중에 올라가서 내려오면 두번째 이후는 다시 올라가지 않도록 함, 로직 꼬일 위험 있어서 딱 한번만 올라가도록 함  -->
+						<node name="SetValue" cooltime="9999999" key="FlyMode" value="4" />
+						<!--2페이즈 시작하면 바로 날기 공격 하도록 설정함, 이 변수가 3가 되어야 날기 공격 하도록 설정함-->
+						<node name="conditions">
+							<condition name="extraData" key="FlyMode" value="4">
+								<aiPreset name="FlyPattern" />
+							</condition>
+							<condition name="extraData" key="JumpAttackOK" value="1">
+								<node name="select" prob="99999,0">
+									<!--날기 패턴 때 날기 로직이 꼬여서 계속 하늘에서 돌진 공격하는 경우를 해결하기 위한 만약을 위한 설정임, 북쪽은 트리거 메쉬로 막혀 있어서 혹시 몰라 남쪽으로 점프 뛰도록 하였음-->
+									<node name="standby" limit="500" faceTarget="1" cooltime="92000">
+										<node name="select" prob="50,50">
+											<!--버벅이는 네트워크 환경에서 신호 설정이 잘 이루어지지 않아서 공중에서 돌진 공격 상태일 때 시간마다 꼭 바닥으로 점프 이동하는 로직을 넣어서 이 문제를 해결함-->
+											<!--4~5시 방향 점프 뛰기-->
+											<node name="skill" facePos="1050, 150, 9200" cooltime="175000" isKeepBattle="true" idx="17">
+												<node name="jump" pos="1050, 150, 9200" speed="1500" heightMultiplier="0.4" />
+												<node name="skill" faceTarget="0" idx="18" />
+												<node name="target" type="rand" from="100" to="1200" />
+												<node name="SetValue" key="JumpAttackOK" value="0" />
+												<!--점프 쾅 공격 그만 하기-->
+												<node name="target" type="far" from="100" to="1200" />
+												<!--가까이 붙은 플레이어에게 타겟팅 갈 경우 뒤쪽 방향으로 공격하는 어색한 상황을 막기 위해 제일 먼 타겟팅 지정함-->
+												<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+												<node name="skill" faceTarget="1" idx="6" />
+												<!--입에서 폭발 발사-->
+												<node name="target" type="far" from="100" to="1200" />
+												<!--가까이 붙은 플레이어에게 타겟팅 갈 경우 뒤쪽 방향으로 공격하는 어색한 상황을 막기 위해 제일 먼 타겟팅 지정함-->
+												<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+												<node name="skill" faceTarget="1" idx="6" />
+												<!--입에서 폭발 발사-->
+												<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+											</node>
+											<!--7~8시 방향 점프 뛰기-->
+											<node name="skill" facePos="-450, 1650, 9200" cooltime="175000" isKeepBattle="true" idx="17">
+												<node name="jump" pos="-450, 1650, 9200" speed="1500" heightMultiplier="0.4" />
+												<node name="skill" faceTarget="0" idx="18" />
+												<node name="target" type="rand" from="100" to="1200" />
+												<node name="SetValue" key="JumpAttackOK" value="0" />
+												<!--점프 쾅 공격 그만 하기-->
+												<node name="target" type="far" from="100" to="1200" />
+												<!--가까이 붙은 플레이어에게 타겟팅 갈 경우 뒤쪽 방향으로 공격하는 어색한 상황을 막기 위해 제일 먼 타겟팅 지정함-->
+												<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+												<node name="skill" facePos="1050, 1650, 9200" idx="7" />
+												<!--왼족 오른쪽 브레스 발사, 항상 정 가운데를 기준으로 공격 하도록 함-->
+												<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+												<node name="skill" facePos="1050, 1650, 9200" idx="7" />
+												<!--왼족 오른쪽 브레스 발사, 항상 정 가운데를 기준으로 공격 하도록 함-->
+												<node name="standby" limit="2000" facePos="1050, 1650, 9200" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="9">
+											<node name="skill" idx="9">
+												<node name="target" type="rand" from="10" to="15200">
+													<node name="standby" limit="2000" faceTarget="1">
+														<node name="select" prob="100,100">
+															<node name="standby" limit="300" faceTarget="1" />
+															<!--변수 초기화 안하기-->
+															<node name="SetValue" key="JumpAttackOK" value="0" />
+															<!--점프 쾅 공격 그만 하기위한 변수 초기화-->
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="skill" idx="10">
+												<node name="target" type="rand" from="10" to="1200">
+													<node name="standby" limit="2000" faceTarget="1">
+														<node name="select" prob="100,100">
+															<node name="standby" limit="300" faceTarget="1" />
+															<!--변수 초기화 안하기-->
+															<node name="SetValue" key="JumpAttackOK" value="0" />
+															<!--점프 쾅 공격 그만 하기위한 변수 초기화-->
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true">
+										<!--몸통 돌진 4회-->
+										<node name="skill" faceTarget="1" idx="1" />
+										<node name="skill" faceTarget="0" idx="2" />
+										<!--돌진-->
+										<node name="target" type="rand" from="10" to="1500" />
+										<node name="standby" limit="1300" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="5" />
+										<node name="skill" faceTarget="0" idx="3" />
+										<!--돌진-->
+										<node name="target" type="far" from="600" to="1800" />
+										<node name="standby" limit="1300" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="5" />
+										<node name="skill" faceTarget="0" idx="2" />
+										<!--돌진-->
+										<node name="target" type="far" from="600" to="1800" />
+										<node name="standby" limit="1300" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="5" />
+										<node name="skill" faceTarget="0" idx="3" />
+										<!--돌진-->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="SetValue" key="JumpAttackOK" value="1" />
+										<!--이 변수 1로 만들어 점프쾅 공격 모드로 전환하기-->
+									</node>
+									<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true">
+										<!--몸통 돌진 3회-->
+										<node name="skill" faceTarget="1" idx="1" />
+										<node name="skill" faceTarget="0" idx="2" />
+										<!--돌진-->
+										<node name="target" type="rand" from="10" to="1500" />
+										<node name="standby" limit="1300" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="5" />
+										<node name="skill" faceTarget="0" idx="3" />
+										<!--돌진-->
+										<node name="target" type="far" from="600" to="1800" />
+										<node name="standby" limit="1300" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="5" />
+										<node name="skill" faceTarget="0" idx="2" />
+										<!--돌진-->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="SetValue" key="JumpAttackOK" value="1" />
+										<!--이 변수 1로 만들어 점프쾅 공격 모드로 전환하기-->
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="20">
+					<!--#3페이즈 - 버퍼 구간 27~20% 구간, 다음 4페이지 신호 받으면 바로바로 행동할 수 있도록 고려해서 잘 설정해야 함-->
+					<aiPreset name="NormalBattlePattern" />
+					<!--3페이즈와 4페이즈 노말 전투 패턴 부분, 이 로직 안에 점프 이동 설정 들어가있음, 위 2페이즈 날기 꼬임 버그 여기서도 해결할 수 있음-->
+				</condition>
+				<condition name="true">
+					<!--#4페이즈  -  마드리아한테 버프 받아 광폭화 구간   20~0%  -->
+					<node name="conditions">
+						<condition name="extraData" key="RoarModeStop" value="1">
+							<!-- 마드리아에 의해 이 변수가 1이 되면 광폭화 버프 해제하기 -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<node name="buff" type="remove" id="50001048" level="1" />
+								<!--마드리아한테 받은 버프를 지우기-->
+								<node name="SetValue" key="RoarModeStop" value="0" />
+								<!--이 변수를 0으로 해서 이 단계 벗어나도록 함-->
+								<node name="SetValue" key="RoarMode" value="0" />
+								<!--이 변수를 0으로 해서 광폭화 풀림을 알림-->
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoarMode" value="1">
+							<!-- 마드리아한테 광폭화 버프를 받으면 이 변수가 1이 됨  -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<node name="SetValue" key="RoarMode" value="2" />
+								<!--괴성 지르는 동작 도중에 마드리아가 기준 HP 이하가되어 신호 받으면 도중에 꼬일 수 있어서, 이 단계 와야 바로 실행하도록 함-->
+								<node name="skill" faceTarget="0" idx="11" />
+								<!-- 괴성 지르기  -->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="extraData" key="RoarMode" value="2">
+							<node name="select" prob="99999,0">
+								<!-- 광폭화 행동 때 본격 공격 행동 하기,        북쪽 지점으로 종종 점프 이동 하는 움직임 부여, 플레이어가 마드리아를 쉽게 때릴 수 있게 하기 위해  -->
+								<node name="standby" limit="600" faceTarget="1" cooltime="21000">
+									<node name="select" prob="50,50">
+										<!--1~2시 방향 점프 뛰기-->
+										<node name="skill" facePos="2050, 1650, 9200" cooltime="36000" isKeepBattle="true" idx="17">
+											<node name="jump" pos="1950, 1650, 9200" speed="1300" heightMultiplier="1.5" />
+											<node name="skill" faceTarget="0" idx="18" />
+											<node name="target" type="rand" from="100" to="1200" />
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<!--10~11시 방향 점프 뛰기-->
+										<node name="skill" facePos="1050, 2650, 9200" cooltime="36000" isKeepBattle="true" idx="17">
+											<node name="jump" pos="1050, 2500, 9200" speed="1300" heightMultiplier="1.5" />
+											<node name="skill" faceTarget="0" idx="18" />
+											<node name="target" type="rand" from="100" to="1200" />
+											<node name="SetValue" key="Position" value="10" />
+											<!--이 변수에 10를 넣어  10~11시 방향  구석에 있음을 알림-->
+											<node name="SetValueRangeTarget" key="Position" value="10" radius="3500" height="3500" />
+											<!--마드리아한테 이 신호를 보내 자신의 상태를 알림-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="20">
+										<node name="skill" idx="20">
+											<node name="select" prob="75,25">
+												<!--근거리 대상 공격 점프 쾅-->
+												<node name="target" type="near" from="10" to="1200">
+													<node name="standby" limit="2300" faceTarget="1" />
+												</node>
+												<node name="target" type="rand" from="10" to="1200">
+													<node name="standby" limit="2300" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="skill" idx="21">
+											<node name="select" prob="75,25">
+												<!--원거리 대상 공격 점프 쾅-->
+												<node name="target" type="near" from="10" to="1200">
+													<node name="standby" limit="2300" faceTarget="1" />
+												</node>
+												<node name="target" type="rand" from="10" to="1200">
+													<node name="standby" limit="2300" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99999,0">
+								<!-- 즉 RoarModeStop= 0  과  RoarMode = 0 인 상황임-->
+								<node name="standby" limit="300" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+									<!--4페이즈로 넘어오면 제일 먼저  마드리아한테 광폭화 명령 받을 때까지 가만히 대기 상태로 있기-->
+									<node name="SetValueRangeTarget" key="RoarBuffMe" value="1" radius="3500" height="3500" />
+									<!--마드리아한테 광폭화 버프 보내 달라고 신호 보내기-->
+									<node name="standby" limit="5200" faceTarget="1" />
+									<!--마드리아한테 버프 받을 때까지 대기하기-->
+								</node>
+								<aiPreset name="NormalBattlePattern" />
+								<!--3페이즈와 4페이즈 노말 전투 패턴 부분-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="384" key="ExitPortal" value="1">
+			<!-- 최종 보스방으로 가기 위한 사다리 생성하기-->
+			<node name="SetValueRangeTarget" key="ChimeraDeath" value="1" radius="3500" height="3500" />
+			<!-- 루카락스가 죽으면 마드리아한테 신호 보내서 자신의 죽음을 알림-->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="FlyPattern">
+			<!--루카락스가 공중 날기고 있을때의 행동 패턴을 정의하는 부분-->
+			<node name="conditions">
+				<condition name="extraData" key="FlyMadriaSOS" value="1">
+					<!--마드리아가 극딜당해 SOS를 보내서 마드리아를 위해 내려오는 경우, 이 선언이 제일 높은 우선순위로 설정되어야 함-->
+					<node name="skill" facePos="600, 1200, 10700" isKeepBattle="true" idx="15">
+						<!--SOS로 내려오는 경우는 선회 큐브 블록 파괴한  다음 내려오도록 함-->
+						<!--		<skill id="50001157" level="3" facePos = "1050, 750, 9200" prob="100"/>	-->
+						<node name="jump" pos="1050, 750, 9200" speed="1800" heightMultiplier="1.0" />
+						<!--마드리아SOS 때는 점프 착지 지점이 약간 다름, 그리고 점프 이속도 더 빠름-->
+						<node name="skill" faceTarget="0" idx="18" />
+						<!--점프 착지-->
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="SetValue" key="FlyMode" value="0" />
+						<!--날기 공격을 하기 위해 이용되는 변수 초기화 꼭하기-->
+						<node name="SetValue" key="FlyContinue" value="0" />
+						<!--날기 공격을 하기 위해 이용되는 변수 초기화 꼭하기-->
+						<node name="SetValue" key="FlyMadriaSOS" value="0" />
+						<!--날기 공격을 하기 위해 이용되는 변수 초기화 꼭하기-->
+						<node name="SetValueRangeTarget" key="FlyAssistanceMode" value="0" radius="3500" height="3500" />
+						<!--마드리아한테 이 신호를 보내 자신이 날기공격 끝났음을 알림-->
+					</node>
+				</condition>
+				<condition name="extraData" key="FlyContinue" value="2" op="greaterEqual">
+					<!--날고 있는 상태에서 본격 전투 행위 하는 부분-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="16">
+							<node name="select" prob="65,35">
+								<!--타겟팅 대상이 공중 같은 높이에 있는 경우-->
+								<node name="skill" cooltime="7000" isKeepBattle="true" idx="16">
+									<node name="target" type="rand" from="50" to="2800" />
+									<node name="SetValue" key="FlyContinue" value="-1" isModify="1" />
+									<node name="standby" limit="2300" faceTarget="1" animation="Attack_03_G" />
+								</node>
+								<node name="standby" limit="2000" faceTarget="1" animation="Attack_03_G">
+									<node name="target" type="rand" from="50" to="2800" />
+								</node>
+							</node>
+						</condition>
+						<condition name="state" targetState="holdme">
+							<node name="select" prob="65,35">
+								<!--타겟팅 대상이 매달려 있는 경우-->
+								<node name="skill" cooltime="7000" isKeepBattle="true" idx="16">
+									<node name="target" type="rand" from="50" to="2800" />
+									<node name="SetValue" key="FlyContinue" value="-1" isModify="1" />
+									<node name="standby" limit="2300" faceTarget="1" animation="Attack_03_G" />
+								</node>
+								<node name="standby" limit="2000" faceTarget="1" animation="Attack_03_G">
+									<node name="target" type="rand" from="50" to="2800" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--타겟팅 대상이 아래에 있는 경우, 모든 플레이어가 매달리지 않고 아래쪽에 있을 경우 공격을 무지 자주 하도록 설정함-->
+							<node name="skill" idx="14">
+								<node name="target" type="rand" from="50" to="2800">
+									<node name="standby" limit="500" faceTarget="1" animation="Attack_03_G">
+										<node name="select" prob="45,55">
+											<node name="SetValue" key="FlyContinue" value="-1" isModify="1" />
+											<node name="standby" limit="200" faceTarget="1" animation="Attack_03_G" />
+											<!--공격했다고 FlyContinue 변수 무조건 -1 하는 것은 아님 -->
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="FlyContinue" value="1">
+					<!--날기 공격 너무 오래 해서 스스로 내려오는 경우-->
+					<node name="standby" limit="500" faceTarget="1" animation="Attack_03_G" isKeepBattle="true">
+						<node name="SetValueRangeTarget" key="FlyMadriaSOS" value="1" radius="3500" height="3500" />
+						<!--위쪽 졸몹 자살처리 하기-->
+						<node name="standby" limit="2000" faceTarget="1" animation="Attack_03_G" />
+						<!--졸몹 죽을때 까지 잠시 대기-->
+						<node name="skill" facePos="600, 1200, 10700" idx="15" />
+						<!--큐브 블록 파괴한  다음 바닥으로 내려오기-->
+						<node name="jump" pos="1050, 300, 9200" speed="1000" heightMultiplier="1.0" />
+						<node name="skill" faceTarget="0" idx="18" />
+						<!--점프 착지-->
+						<node name="standby" limit="1000" faceTarget="1" />
+						<node name="SetValue" key="FlyMode" value="0" />
+						<!--날기 공격을 하기 위해 이용되는 변수 초기화 꼭하기-->
+						<node name="SetValue" key="FlyContinue" value="0" />
+						<!--날기 공격을 하기 위해 이용되는 변수 초기화 꼭하기-->
+						<node name="SetValue" key="FlyMadriaSOS" value="0" />
+						<!--날기 공격을 하기 위해 이용되는 변수 초기화 꼭하기-->
+						<node name="SetValueRangeTarget" key="FlyAssistanceMode" value="0" radius="3500" height="3500" />
+						<!--마드리아한테 이 신호를 보내 자신이 날기공격 끝났음을 알림-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!--최초 날기 동작을 하는 부분-->
+					<node name="jump" pos="-150, 1650, 9200" speed="1500" heightMultiplier="0.4" isKeepBattle="true">
+						<!--우선 7~8시 방향 전투판으로 점프 뛰기-->
+						<node name="skill" faceTarget="0" idx="18" />
+						<!--착지-->
+						<node name="announce" message="$ChimeraGrab_Appearance$" durationTick="9000" />
+						<!-- 루카락스한테 매달려 하늘로 올라갈 수 있다는 내용을 알려줌 -->
+						<node name="skill" facePos="1110, 1710, 10700" idx="12" />
+						<!--날기 위해 5초 동안 날개짓, 이때 플레이어 매달려야 함-->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="311" summonPos="1010, 820, 10700" summonRot="0,0,180" />
+						<!--하늘 지형에 엘리트가고일 한마리 소환함-->
+						<node name="jump" pos="1110, 1710, 10700" speed="1000" heightMultiplier="1.0" />
+						<node name="SetValueRangeTarget" key="FlyAssistanceMode" value="1" radius="3500" height="3500" />
+						<!--마드리아한테 이 신호를 보내 자신이 날기공격 패턴을 하고있다는 것을 알림-->
+						<node name="target" type="rand" from="50" to="2500" />
+						<node name="skill" facePos="600, 1200, 10700" idx="13" />
+						<node name="SetValue" key="FlyContinue" value="26" />
+						<!--이 FlyContinue 변수 숫자 크기가 키메라가 얼마나 오랫동안 공중에 있게 할지 결정하는 변수임-->
+						<node name="SetValue" key="FlyMadriaSOS" value="0" />
+						<!--혹시 몰라 이 변수 여기서 꼭 초기화 하기-->
+						<!--	<move destination="1578, 2170, 10700" limit="3000" animation="Attack_03_G" prob="100"/>  -->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalBattlePattern">
+			<!--3페이즈와 4페이즈 노말 전투 패턴 부분-->
+			<node name="conditions">
+				<condition name="extraData" key="CornerAttackOK" value="1">
+					<!--전투판 구석으로 점프 뛰어  브레스 발사 공격 행동 하기  -->
+					<node name="standby" limit="1500" faceTarget="1">
+						<node name="select" prob="25,25,25,25">
+							<!--보스 전투판 4개 구석 지점으로 점프 뛰기-->
+							<!--1~2시 방향 점프 뛰기-->
+							<node name="skill" facePos="2550, 1650, 9200" cooltime="55000" isKeepBattle="true" idx="17">
+								<node name="jump" pos="2550, 1650, 9200" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="18" />
+								<node name="target" type="rand" from="100" to="1200" />
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="skill" facePos="1050, 1650, 9200" idx="7" />
+								<!--왼쪽 오른쪽 번갈아 브레스-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="skill" faceTarget="1" idx="6" />
+								<!--발사폭발-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="SetValue" key="CornerAttackOK" value="0" />
+								<!--이 변수 0으로 초기화 하여 다시 몸통돌진 하도록 함-->
+							</node>
+							<!--4~5시 방향 점프 뛰기-->
+							<node name="skill" facePos="1050, 150, 9200" cooltime="55000" isKeepBattle="true" idx="17">
+								<node name="jump" pos="1050, 150, 9200" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="18" />
+								<node name="target" type="rand" from="100" to="1200" />
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="skill" faceTarget="1" idx="6" />
+								<!--발사폭발-->
+								<node name="target" type="far" from="100" to="1200" />
+								<!--가까이 붙은 플레이어에게 타겟팅이 가면 뒤돌아 서는 어색한 상황 막기 위해 제일 먼 대상 타겟팅 함-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="skill" facePos="1050, 1650, 9200" idx="7" />
+								<!--왼쪽 오른쪽 번갈아 브레스-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="SetValue" key="CornerAttackOK" value="0" />
+								<!--이 변수 0으로 초기화 하여 다시 몸통돌진 하도록 함-->
+							</node>
+							<!--7~8시 방향 점프 뛰기-->
+							<node name="skill" facePos="-450, 1650, 9200" cooltime="55000" isKeepBattle="true" idx="17">
+								<node name="jump" pos="-450, 1650, 9200" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="18" />
+								<node name="target" type="rand" from="100" to="1200" />
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="skill" facePos="1050, 1650, 9200" idx="7" />
+								<!--왼쪽 오른쪽 번갈아 브레스-->
+								<node name="target" type="far" from="100" to="1200" />
+								<!--가까이 붙은 플레이어에게 타겟팅이 가면 뒤돌아 서는 어색한 상황 막기 위해 제일 먼 대상 타겟팅 함-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="skill" faceTarget="1" idx="6" />
+								<!--발사폭발-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="SetValue" key="CornerAttackOK" value="0" />
+								<!--이 변수 0으로 초기화 하여 다시 몸통돌진 하도록 함-->
+							</node>
+							<!--10~11시 방향 점프 뛰기-->
+							<node name="skill" facePos="1050, 3150, 9200" cooltime="55000" isKeepBattle="true" idx="17">
+								<node name="jump" pos="1050, 3150, 9200" speed="1500" heightMultiplier="0.4" />
+								<node name="skill" faceTarget="0" idx="18" />
+								<node name="target" type="far" from="100" to="1200" />
+								<!--가까이 붙은 플레이어에게 타겟팅이 가면 뒤돌아 서는 어색한 상황 막기 위해 제일 먼 대상 타겟팅 함-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="skill" faceTarget="1" idx="6" />
+								<!--발사폭발-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="skill" facePos="1050, 1650, 9200" idx="7" />
+								<!--왼쪽 오른쪽 번갈아 브레스-->
+								<node name="standby" limit="2300" facePos="1050, 1650, 9200" faceTarget="0" />
+								<node name="SetValue" key="CornerAttackOK" value="0" />
+								<!--이 변수 0으로 초기화 하여 다시 몸통돌진 하도록 함-->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="JumpAttackOK" value="1">
+					<!--연속 점프 공격 하기  -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="9">
+							<node name="skill" idx="9">
+								<node name="target" type="rand" from="10" to="1200">
+									<node name="standby" limit="2000" faceTarget="1">
+										<node name="SetValue" key="JumpAttackOK" value="0" />
+										<!--점프 쾅 공격 그만 하기-->
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" idx="10">
+								<node name="target" type="rand" from="10" to="1200">
+									<node name="standby" limit="2000" faceTarget="1">
+										<node name="SetValue" key="JumpAttackOK" value="0" />
+										<!--점프 쾅 공격 그만 하기-->
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="50,50">
+						<!--초반에는 무조건 몸통 돌진 한 다음에 5대5 확률로 점프 공격 하거나 코너 브레스 공격을 함  -->
+						<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true">
+							<!--몸통 돌진 4회-->
+							<node name="skill" faceTarget="1" idx="1" />
+							<node name="skill" faceTarget="0" idx="2" />
+							<!--돌진-->
+							<node name="target" type="rand" from="10" to="1500" />
+							<node name="standby" limit="1300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<!--돌진-->
+							<node name="target" type="far" from="600" to="1800" />
+							<node name="standby" limit="1300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<node name="skill" faceTarget="0" idx="2" />
+							<!--돌진-->
+							<node name="target" type="far" from="600" to="1800" />
+							<node name="standby" limit="1300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<!--돌진-->
+							<node name="standby" limit="2000" faceTarget="1" />
+							<node name="SetValue" key="JumpAttackOK" value="1" />
+							<!--이 변수 1로 만들어 점프쾅 공격 모드로 전환하기-->
+						</node>
+						<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true">
+							<!--몸통 돌진 3회-->
+							<node name="skill" faceTarget="1" idx="1" />
+							<node name="skill" faceTarget="0" idx="2" />
+							<!--돌진-->
+							<node name="target" type="rand" from="10" to="1500" />
+							<node name="standby" limit="1300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<node name="skill" faceTarget="0" idx="3" />
+							<!--돌진-->
+							<node name="target" type="far" from="600" to="1800" />
+							<node name="standby" limit="1300" faceTarget="1" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<node name="skill" faceTarget="0" idx="2" />
+							<!--돌진-->
+							<node name="standby" limit="2000" faceTarget="1" />
+							<node name="SetValue" key="CornerAttackOK" value="1" />
+							<!--이 변수 1로 만들어 점프쾅 공격 모드로 전환하기-->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

@@ -1,0 +1,1542 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="PhasePatternTrigger" value="1" />
+				<!-- 이 변수는 몬스터의 페이즈를 결정하는 것으로  PhasePatternTrigger.xml  트리거에 의해  이 숫자가 1씩 늘어나게 설정하였음 -->
+				<!-- 이 보스의 행동 패턴은 HP에 의해 작접적으로 결정 되는 것이 아니라 PhasePatternTrigger.xml  트리거에 의해 결정되는 구조임-->
+				<node name="SetValue" key="SummonTypeFirstPhase" value="0" />
+				<!-- 1셋트 전투판 1페이즈에서 12시  4시   8시 각 전투판에 몇명이 저주에 걸렸는지에 따라 소환몹 등장이 형태가 결정되도록 하기   -->
+				<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+				<!-- 1셋트 전투판 2페이즈에서 12시  4시   8시 각 전투판에 몇명이 저주에 걸렸는지에 따라 소환몹 등장이 형태가 결정되도록 하기   -->
+				<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="0" />
+				<!-- 1셋트 전투판 2페이즈에서 저주걸기-소환몹호출 시간차 설정을 위한 한번 공격행동을 하고자 할때 사용하는 변수   -->
+				<node name="SetValue" key="SkillBreak_StartOk" value="0" />
+				<!-- 이 변수를 1로 만들고 2로 만들어서 최종 스킬브레이크 사용하도록 함 -->
+				<node name="SetValue" key="SkillBreak_JustBefore" value="0" />
+				<!--스킬브레이크 발동 직전에, 각종 변수 초기화 소환몹 제거 저주 디버프 제거 하고 그 사이 공격 행동 딱 한번 하는 등 좀 복합적인 행위를 해야 하는데, 이것을 컨트롤 하는데 사용되는 변수임 -->
+				<node name="SetValue" key="SkillBreakEnd" value="0" />
+				<!-- 이 변수가 1 이되면 스킬 브레이크 끝나고 평소 공격 상태로 돌아가게 되었음을 알게 하는데 사용함 -->
+				<node name="SetValue" key="SkillBreakEnd_PartnerCheck" value="0" />
+				<!-- 유펠리아AI 렌듀비앙AI에서 +1 신호 받는 변수임, 즉 변수가 2 가되면 유펠리아 렌듀비앙이 스킬 브레이크 끝나고 평소 공격 상태로 돌아가게 되었음을 알게 하는데 사용함, 다른 곳에서 아직 스킬 브레이크 중인데 저주 폭발 소환몹 호출 공격을 사용하면 안되기 때문에 이런 설정을 위한 변수임 -->
+				<node name="SetValue" key="SkillBreakTeleport" value="0" />
+				<!-- 스킬 브레이크 기력 모을 때 순간이동 하는 행동 하는데 결정하는 변수임-->
+				<node name="SetValue" key="SkillBreakRangeOn" value="0" />
+				<!--  스킬 브레이크 공격 시작하기 전에 같은 전투판에 12초 넘도록 없으면 원거리 기절 스킬 사용하도록 하기 위해 사용하는 변수-->
+				<node name="SetValue" key="WhereBattleZone" value="1" />
+				<!--  현재 자신이 1셋트 전투판에 있는지 2셋트 전투판에 있는지 알게 하기 위한 변수, 1셋트 전투판에 시작하니 1로 초기값 설정-->
+				<node name="buff" type="add" id="50001090" />
+				<!--#3, 4페이즈 때 유페리아한테 힐 계속 받아도 HP 50%를 넘어가면 회복 되지 않도록 힐 면역 에디셔녈을 사전에 미리 부여함, 이 애디셔널은 HP 50% 이하로 내려가면 작동 안하도록 되어있음-->
+				<node name="buff" type="add" id="50001091" />
+				<!--#5페이즈 때 유페리아한테 힐 계속 받아도 HP 20%를 넘어가면 회복 되지 않도록 힐 면역 에디셔녈을 사전에 미리 부여함, 이 애디셔널은 HP 20% 이하로 내려가면 작동 안하도록 되어있음-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="80">
+			<node name="TriggerModifyUserValue" triggerID="993" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 993   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="75">
+			<!-- 75% 이하인 이유: 3마리 보스 전부 HP 80% 이하가 되면 스킬 브레이크 사용해야 하는데, 한마리만 유독 80% 이하가 안될 경우가 종종 있을 수 있어, 이때 한마리가 대신 5% 더 깎이면 바로 스킬브레이크 발동 되도록 하기 위해서, 75% 설정한 것임-->
+			<node name="TriggerModifyUserValue" triggerID="993" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 993   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="TriggerModifyUserValue" triggerID="993" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 993   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="45">
+			<!-- 45% 이하인 이유: 3마리 보스 전부 HP 50% 이하가 되면 스킬 브레이크 사용해야 하는데, 한마리만 유독 50% 이하가 안될 경우가 종종 있을 수 있어, 이때 한마리가 대신 5% 더 깎이면 바로 스킬브레이크 발동 되도록 하기 위해서, 45% 설정한 것임-->
+			<node name="TriggerModifyUserValue" triggerID="993" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 993   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="35">
+			<node name="TriggerModifyUserValue" triggerID="993" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 993   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="20">
+			<node name="TriggerModifyUserValue" triggerID="993" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 993   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+		<condition name="hpLess" value="15">
+			<node name="TriggerModifyUserValue" triggerID="993" key="PhaseSumTotal" value="1" />
+			<!-- MS2TriggerModel  ID : 993   PhaseSumTotal = PhaseSumTotal + 1 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 시기를 결정하게 함-->
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="SetValue" cooltime="9000" key="Temp01" value="0">
+				<!--동작이 없는 의미없는 설정임, 단순 구분을 위한 설정임, 스킬브레이크 행동 패턴 때 이 타겟팅 로직에 걸릴 경우 동작이 튀는 것을 막기 위해 이렇게 설정했음-->
+				<node name="conditions">
+					<condition name="extraData" key="PhasePatternTrigger" value="2" op="lessEqual">
+						<node name="select" prob="34,33,33">
+							<!--1~2페이즈에서는 1셋트 전투판 기준으로 타겟팅 함 -->
+							<node name="target" type="near" center="-2025, -1875, 3310" />
+							<!--정 가운데 -->
+							<node name="target" type="near" center="-2100, -1500, 3310" />
+							<!--왼쪽 지점 -->
+							<node name="target" type="near" center="-1875, -2250, 3310" />
+							<!--오른쪽 지점 -->
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="25,25,25,25">
+							<!--3~4페이즈에서는 2셋트 전투판 기준으로 타겟팅 함 -->
+							<node name="target" type="near" center="4200, 4200, 5860" />
+							<!--12시 부근 -->
+							<node name="target" type="near" center="4200, 3750, 5860" />
+							<!--3시 부근 -->
+							<node name="target" type="near" center="3750, 3750, 5860" />
+							<!--6시 부근 -->
+							<node name="target" type="near" center="3750, 4200, 5860" />
+							<!--9시 부근 -->
+						</node>
+					</condition>
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonTypeFirstPhase" value="1" op="greaterEqual">
+					<!-- 첫번째 전투판에서 1페이즈에서 폭발 저주 디버프 스킬 사용했으면 소환몹 소출하고  SummonTypeFirstPhase 변수 0 초기화 하기 -->
+					<aiPreset name="Summon_FirstPhase_Operation" />
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="1" op="greaterEqual">
+					<!-- 첫번째 전투판에서 2페이즈에서폭발 저주 디버프 스킬 사용했으면 소환몹과 추가 디버프 걸기 시간차 작동 로직 타고  SummonTypeSecondPhase 변수 0 초기화 하기 -->
+					<aiPreset name="Summon_SecondPhase_Operation" />
+				</condition>
+				<!-- #&# 2~3페이지에서  SkillBreak_StartOk = 1 가 되면, 이 단계로 넘어와 일반 공격 1회 하고 주변 소환몹 다 제거하고, 다른 두 보스에게 스킬브레이크 사용 OK 신호를 보냄 -->
+				<condition name="extraData" key="SkillBreak_StartOk" value="1">
+					<node name="conditions">
+						<condition name="extraData" key="SkillBreak_JustBefore" value="0">
+							<!-- 스킬브레이크 할 때 주변에 졸몹이 있으면, 전투가 상당히 난잡하기 때문에 스킬브레이크 직전에 졸몹 강제 제거 시키는 각종 설정 작업을 해야 함-->
+							<node name="RemoveSlaves" isKeepBattle="true">
+								<!-- 졸몹 모조리 강제 제거하기 -->
+								<!--1페이즈때 나왔던 소환몹 2페이즈로 넘어오면 전부 제거하기, 이거 사용 주의해야 하는데 
+							  소환몹 등장하고 죽을 때 트리거쪽에서 MonsterMany 변수 정밀하게 1 더하기 빼기를 하는데, 
+							  소환몹 강제 제거해버리면 이 MonsterMany 변수가 꼬여서 버그 생김, 그래서 이 명령어 사용한 다음 꼭 MonsterMany = 0 초기화 해야함 -->
+								<node name="standby" limit="300" faceTarget="1" />
+								<node name="TriggerSetUserValue" triggerID="992" key="FirstBattleEnd" value="99" />
+								<!--!중요 992 트리거 종료: 1페이즈 끝나고 2페이즈 시작할때 졸몹 제거하며서 플레이어한테 걸려있는 폭발 저주 디버프 제거해주기, SkillDebuff_1Phase.xml 트리거 마지막으로 사용하고 끝냄-->
+								<node name="TriggerSetUserValue" triggerID="994" key="MonsterMany" value="0" />
+								<!-- !중요 994 트리거 초기화: 여기서 부터 SkillDebuff_2Phase.xml 트리거 사용함-->
+								<!--1페이즈 등장했던 졸몹을 Remove 명령어로 제거하는데, 그러다 보니 트리거에서 사용하는 핵심 변수이 MonsterMany 가 꼬여서 영원이 0이 안되는 위험이 있음, 
+								 그래서 안정성 확보를 위해 2페이즈 최초로 넘어올때 핵심 변수 MonsterMany =0 초기화 셋팅함, 
+								 앞선 트리거 신호 FirstBattleEnd = 1 연달하 하면 꼬일 수 있어서 이거 실행후 잠깐 후 추가 실행 되는 것이 안정성 있어서 맨 나중에 하도록 하였음, 이 설정은 2페이즈에서의 스킬 브레이크 사용할 경우에만 의미있게 작동함, 3페이즈의 스킬브레이크인 경우는 해도 그만 안해도 그만임  -->
+								<node name="SetValue" key="SkillBreak_JustBefore" value="1" />
+								<!--이 변수 1로 만들어 다음 두번째 단계로 넘어가도록 함 -->
+								<node name="SetValueRangeTarget" key="SkillBreak_JustBefore_FromIshura" value="1" radius="6890" height="4500" />
+								<!--이 변수를 렌듀비앙 유페리아 AI에게 보내서 졸몹을 전부 제거했으니 다른 보스들도 스킬브레이크 사용하도록 신호 보냄-->
+								<!-- #$%## 이 변수 SkillBreak_JustBefore_FromIshura =  1 신호 보내기 이슈라가 죽을 때도 한번 더 보냄 -->
+							</node>
+						</condition>
+						<condition name="extraData" key="SkillBreak_JustBefore" value="1">
+							<node name="SetValue" key="SkillBreak_JustBefore" value="2">
+								<!--이 변수 2로 만들어 다음 마지막 단계로 넘어가도록 함 -->
+								<aiPreset name="JustBefore_AttackPattern" />
+								<!--스킬브레이크 발동 전에 딱 한번 행하는 공격 패턴, 이곳에 HP 50%이하가 되면 단상 위로 도망가는 설정이 있음-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--SkillBreak_JustBefore = 2 인 경우임-->
+							<node name="SetValue" isKeepBattle="true" key="SkillBreakEnd" value="0">
+								<!-- 이 변수 스킬브레이크 작동시키는데 중요하니 혹시 모르니 이 페이즈 시작할 때 항상 0 초기화 하자 -->
+								<node name="TriggerSetUserValue" triggerID="996" key="WarningMessage" value="1" />
+								<!-- 스킬브레이크 사용한다는 메시지를 출력함, 트리거 SkillBreakWarningMessage.xml 에게 신호보냄, MS2TriggerModel  ID : 996    -->
+								<node name="standby" limit="500" faceTarget="0" />
+								<node name="skill" facePos="-2025, -1875, 3310" idx="17" />
+								<!-- 중앙 점프 도약동작-->
+								<node name="jump" pos="-2025, -1875, 3310" speed="800" heightMultiplier="0.4" />
+								<!-- 점프중-->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!-- 점프착지-->
+								<node name="SetValue" key="SkillBreak_JustBefore" value="0" />
+								<!--다음 사용을 위해 이 변수 0 초기화 하기 -->
+								<node name="SetValue" key="SkillBreak_StartOk" value="2" />
+								<!-- 이 변수를 2로 만들어서 최종 스킬브레이크 사용하도록 함 -->
+								<node name="standby" limit="900" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- #&# 위의 <elseif extraKey="SkillBreak_StartOk" equal="1"> 단계에서  SkillBreak_StartOk = 2 가 되면, 이 단계로 넘어와서 드디어 스킬브레이크 패턴 본격 시작하도록 함 -->
+				<condition name="extraData" key="SkillBreak_StartOk" value="2">
+					<aiPreset name="SkillBreak_AttackPattern" />
+					<!--스킬 브레이크 패턴, 이슈라의 스킬 브레이크 막기 성공해서 대미지 동작이 나오면   변수 SkillBreak_StartOk = 0 셋팅하게 됨-->
+				</condition>
+				<condition name="extraData" key="PhasePatternTrigger" value="1">
+					<node name="select" prob="99999,0">
+						<!-- 1페이즈 때의 공격 형태, 이 변수 PhasePatternTrigger.xml  트리거에 의해 결정됨 -->
+						<node name="standby" limit="200" faceTarget="1" cooltime="27000" initialCooltime="18000">
+							<aiPreset name="CurseBombSpZero_Operation_1Phase" />
+							<!-- #$# 폭발저주 디버프 부여하기 -->
+						</node>
+						<aiPreset name="1Phase_AttackPattern" />
+						<!--1페이즈 전투 형태, 이곳에 HP 50%이하가 되면 단상 위로 도망가는 설정이 있음-->
+					</node>
+				</condition>
+				<condition name="extraData" key="PhasePatternTrigger" value="2">
+					<node name="select" prob="999999,0">
+						<!-- 2페이즈 때의 공격 형태 -->
+						<!-- #&# 2페이즈 넘어오면 스킬 브레이크 행동 패턴 하기위해, SkillBreak_StartOk = 1 변수 셋팅해서 위쪽 <elseif extraKey="SkillBreak_StartOk" equal="1">  단계로 넘어감 -->
+						<node name="SetValue" cooltime="9999999" key="SkillBreak_StartOk" value="1" />
+						<!-- 2페이즈 시작하자마자 제일 처음 스킬 브레이크 사용 준비가 다 되었음을 알림 -->
+						<node name="conditions">
+							<condition name="extraData" key="SkillBreakEnd_PartnerCheck" value="2">
+								<node name="select" prob="99999,0">
+									<!--렌듀비앙AI 유페리아AI  두곳에서도 스킬브레이크 패턴 끝났음의 신호를 받아 +1 +1 하여 결국 2가 되면 여기 실행, 3곳 모두 스킬브레이크가 끝나야 폭발저주 공격 행동을 하도록 하기 위한 설정임 -->
+									<node name="standby" limit="200" faceTarget="1" cooltime="59000">
+										<aiPreset name="CurseBombSpZero_Operation_2Phase" />
+										<!-- #$# 폭발저주 디버프 부여하기 -->
+									</node>
+									<aiPreset name="1Phase_AttackPattern" />
+									<!--1페이즈 전투 형태, 이곳에 HP 50%이하가 되면 단상 위로 도망가는 설정이 있음-->
+								</node>
+							</condition>
+							<condition name="extraData" key="SkillBreakEnd" value="1">
+								<!--이슈라 본인 자신만 스킬브레이크 패턴이 끝나면 이 단계로 넘어와 평상시 공격 상태가 되도록 하기-->
+								<aiPreset name="1Phase_AttackPattern" />
+								<!--1페이즈 전투 형태, 이곳에 HP 50%이하가 되면 단상 위로 도망가는 설정이 있음-->
+							</condition>
+							<condition name="true">
+								<!--이론적으로 이 단계 올일 없는데, 이 페이즈로 최초로 왔을 때 혹시 위 점프 이동이 바로 실행이 안되면 여기부터 실행될 것임-->
+								<node name="standby" limit="200" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="PhasePatternTrigger" value="3">
+					<node name="select" prob="999999,0">
+						<!-- 3페이즈 때의 공격 형태 -->
+						<!-- #&# 3페이즈 넘어오면 스킬 브레이크 행동 패턴 하기위해, SkillBreak_StartOk = 1 변수 셋팅해서 위쪽 <elseif extraKey="SkillBreak_StartOk" equal="1">  단계로 넘어감 -->
+						<node name="SetValue" cooltime="9999999" key="SkillBreak_StartOk" value="1" />
+						<!-- 3페이즈 시작하자마자 제일 처음 스킬 브레이크 사용 준비가 다 되었음을 알림 -->
+						<node name="conditions">
+							<condition name="extraData" key="SkillBreakEnd" value="1">
+								<node name="select" prob="99999,399,0">
+									<!--스킬 브레이크 끝났으면, 두번째 전투판으로 순간이동 하고, 두번째 전투판으로 갈 수 있는 다리 생성하기-->
+									<!--스킬브레이크 끝났으면, 두번째 전투판으로 이동하는 다리를 생성하는 트리거 신호 보내고, 도발 대사 동작을 취한 다음에 순간이동으로 두번째 전투판으로 이동함-->
+									<node name="standby" limit="200" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+										<node name="target" type="near" from="10" to="2800" />
+										<node name="TriggerModifyUserValue" triggerID="995" key="IshuraFirstSetEnd" value="1" />
+										<!-- 이슈라 전용 디버프 걸기 끄기, MS2TriggerModel  ID : 995   IshuraFirstSetEnd = 1 신호를   Debuff_IshuraRenduebianYuperia.xml 트리거에 보내서 전투판에 설치된 이슈라 전용 디버프 거는 스킬 Off 상태로 만들기-->
+										<node name="say" message="$IshuraRbladerDark_FinalChaos_EventLeave01$" durationTick="8000" />
+										<node name="skill" faceTarget="1" idx="31" />
+										<!-- 대사 연출 나오는 동작 -->
+										<node name="skill" faceTarget="0" idx="32" />
+										<!--  순간이동-->
+										<node name="teleport" pos="4575, 4575, 5860" />
+										<!--이슈라 랜듀비앙 유페리아 3명 두번째 전투판으로 이동하면 Bridge.xml 트리거에 BridgeAppear = +1 신호를 보내서 이 변수가 3이되면 다리 생성시키게 하기 -->
+										<node name="TriggerModifyUserValue" triggerID="991" key="BridgeAppear" value="1" />
+										<!-- MS2TriggerModel  ID : 991   BridgeAppear = +1 신호를   Bridge.xml 트리거에 보내서 두번째 전투판으로 이동하는 다리를 생성 준비 작업 하기-->
+										<node name="standby" limit="200" faceTarget="1" />
+										<node name="SetValue" key="WhereBattleZone" value="2" />
+										<!--  2셋트 전투판으로 이동했으니 이 변수 2 설정해서 자신이 2셋트 전투판에 있다는 것을 알게 함-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="200" faceTarget="1" cooltime="33000">
+										<aiPreset name="Summon_3rdPhase_Operation" />
+										<!--이슈라의 분신 쫄몹 소환, 2마리씩 호출-->
+									</node>
+									<aiPreset name="3Phase_AttackPattern" />
+									<!--3페이즈 전투 패턴, 즉 3페이지에서의 주력 행동임-->
+								</node>
+							</condition>
+							<condition name="true">
+								<!--이론적으로 이 단계 올일 없는데, 이 페이즈로 최초로 왔을 때 혹시 위 점프 이동이 바로 실행이 안되면 여기부터 실행될 것임-->
+								<node name="standby" limit="200" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="PhasePatternTrigger" value="4">
+					<node name="select" prob="99999,399,0">
+						<!-- 4페이즈 때의 공격 형태 -->
+						<node name="standby" limit="200" faceTarget="1" cooltime="9999999">
+							<node name="conditions">
+								<condition name="extraData" key="WhereBattleZone" value="2">
+									<!-- 이미 두번째 전투판으로 이동한 상태라서 특별한 행동 안함 -->
+									<node name="standby" limit="200" faceTarget="1" />
+								</condition>
+								<condition name="true">
+									<!-- WhereBattleZone = 1 인 경우로 두번쨰 전투판 이동 행동 하도록 함 -->
+									<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="near" from="10" to="2800" />
+										<node name="TriggerModifyUserValue" triggerID="995" key="IshuraFirstSetEnd" value="1" />
+										<!-- 이슈라 전용 디버프 걸기 끄기, MS2TriggerModel  ID : 995   IshuraFirstSetEnd = 1 신호를   Debuff_IshuraRenduebianYuperia.xml 트리거에 보내서 전투판에 설치된 이슈라 전용 디버프 거는 스킬 Off 상태로 만들기-->
+										<node name="say" message="$IshuraRbladerDark_FinalChaos_EventLeave01$" durationTick="8000" />
+										<node name="skill" faceTarget="1" idx="31" />
+										<!-- 대사 연출 나오는 동작 -->
+										<node name="skill" faceTarget="0" idx="32" />
+										<!--  순간이동-->
+										<node name="teleport" pos="4575, 4575, 5860" />
+										<!--이슈라 랜듀비앙 유페리아 3명 두번째 전투판으로 이동하면 Bridge.xml 트리거에 BridgeAppear = +1 신호를 보내서 이 변수가 3이되면 다리 생성시키게 하기 -->
+										<node name="TriggerModifyUserValue" triggerID="991" key="BridgeAppear" value="1" />
+										<!-- MS2TriggerModel  ID : 991   BridgeAppear = +1 신호를   Bridge.xml 트리거에 보내서 두번째 전투판으로 이동하는 다리를 생성 준비 작업 하기-->
+										<node name="standby" limit="200" faceTarget="1" />
+										<node name="SetValue" key="WhereBattleZone" value="2" />
+										<!--  2셋트 전투판으로 이동했으니 이 변수 2 설정해서 자신이 2셋트 전투판에 있다는 것을 알게 함-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="200" faceTarget="1" cooltime="33000">
+							<aiPreset name="Summon_4thPhase_Operation" />
+							<!--이슈라의 분신 쫄몹 소환, 3마리씩 호출-->
+						</node>
+						<aiPreset name="3Phase_AttackPattern" />
+						<!--3페이즈 전투 형태-->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- PhasePatternTrigger = 5, 즉 5페이즈 때의 공격 형태 -->
+						<node name="standby" limit="200" faceTarget="1" cooltime="9999999">
+							<node name="conditions">
+								<condition name="extraData" key="WhereBattleZone" value="2">
+									<!-- 이미 두번째 전투판으로 이동한 상태라서 특별한 행동 안함 -->
+									<node name="standby" limit="200" faceTarget="1" />
+								</condition>
+								<condition name="true">
+									<!-- WhereBattleZone = 1 인 경우로 두번쨰 전투판 이동 행동 하도록 함 -->
+									<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="near" from="10" to="2800" />
+										<node name="TriggerModifyUserValue" triggerID="995" key="IshuraFirstSetEnd" value="1" />
+										<!-- 이슈라 전용 디버프 걸기 끄기, MS2TriggerModel  ID : 995   IshuraFirstSetEnd = 1 신호를   Debuff_IshuraRenduebianYuperia.xml 트리거에 보내서 전투판에 설치된 이슈라 전용 디버프 거는 스킬 Off 상태로 만들기-->
+										<node name="say" message="$IshuraRbladerDark_FinalChaos_EventLeave01$" durationTick="8000" />
+										<node name="skill" faceTarget="1" idx="31" />
+										<!-- 대사 연출 나오는 동작 -->
+										<node name="skill" faceTarget="0" idx="32" />
+										<!--  순간이동-->
+										<node name="teleport" pos="4575, 4575, 5860" />
+										<!--이슈라 랜듀비앙 유페리아 3명 두번째 전투판으로 이동하면 Bridge.xml 트리거에 BridgeAppear = +1 신호를 보내서 이 변수가 3이되면 다리 생성시키게 하기 -->
+										<node name="TriggerModifyUserValue" triggerID="991" key="BridgeAppear" value="1" />
+										<!-- MS2TriggerModel  ID : 991   BridgeAppear = +1 신호를   Bridge.xml 트리거에 보내서 두번째 전투판으로 이동하는 다리를 생성 준비 작업 하기-->
+										<node name="standby" limit="200" faceTarget="1" />
+										<node name="SetValue" key="WhereBattleZone" value="2" />
+										<!--  2셋트 전투판으로 이동했으니 이 변수 2 설정해서 자신이 2셋트 전투판에 있다는 것을 알게 함-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+						<aiPreset name="FinalPhase_AttackPattern" />
+						<!--마지막 페이즈 전투 형태-->
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" isKeepBattle="true" triggerID="994" key="FirstBattleEnd" value="1">
+			<!--첫번째 전투판에서 부여하는 폭발 저주 디버프 제거해주기, 3명 보스 중 한마리라도 죽으면 거의 1 2 페이즈의 전투 끝나 바로 스킬브레이크 진행 끝나기 때문에 폭발 저주 디버프 제거하는 처리를 해야함 994 : SkillDebuff_2Phase.xml 이거 사용함 -->
+			<node name="TriggerModifyUserValue" triggerID="993" key="PhaseSumTotal" value="3" />
+			<!-- 죽으면 MS2TriggerModel  ID : 993   PhaseSumTotal = PhaseSumTotal + 3 신호를   PhasePatternTrigger.xml 트리거에 보내서 각 3마리 보스의 패턴전환 우뮤를 경정하게 함, 즉 죽어서 +3 해서 다른 보스들이 빨리 패턴 변화이 되도록 함-->
+			<node name="SetValueRangeTarget" key="SkillBreak_JustBefore_FromIshura" value="1" radius="6890" height="4500" />
+			<!-- #$%## 이슈라가 혹시 3페이지 이전에 빨리 죽으면 SkillBreak_JustBefore_FromIshura = 1 신호를 렌듀비앙 유페리아 AI에게 보내지 못해 스킬브레이크 자체가 나오지 않을 수 있는 대박 버그가 나올 수 있어서 안전 장치로 죽으면서 이 신호 보내는 작업을 함-->
+			<node name="TriggerModifyUserValue" triggerID="995" key="IshuraFirstSetEnd" value="1" />
+			<!-- 이슈라가 혹시 3페이지 이전에 죽을 수 있어서 이 설정 한번 더 넣음, 이슈라 전용 디버프 걸기 끄기, MS2TriggerModel  ID : 995   IshuraFirstSetEnd = 1 신호를   Debuff_IshuraRenduebianYuperia.xml 트리거에 보내서 전투판에 설치된 이슈라 전용 디버프 거는 스킬 Off 상태로 만들기-->
+			<node name="TriggerModifyUserValue" triggerID="991" key="BridgeAppear" value="1" />
+			<!-- 이슈라가 혹시 3페이지 이전에 빨리 죽으면, 두번째 전투판으로 이동하는 다리 생성 +1 신호를 못보내어 대박 버그 생길수 있기 때문에 죽을 때 의무적으로 이 신호 보냄    MS2TriggerModel  ID : 991   BridgeAppear = +1 신호를   Bridge.xml 트리거에 보내서 두번째 전투판으로 이동하는 다리를 생성 준비 작업 하기-->
+			<node name="TriggerSetUserValue" triggerID="996" key="DeathIshuraRbladerDark" value="1" />
+			<!-- 이슈라가 죽었으면 트리거를 통해서 죽었음을 알리는 메시지를 보여주기    -->
+			<node name="SetValueRangeTarget" key="DeathIshuraToRenduebian" value="1" radius="6890" height="4500" />
+			<!-- 이슈라가 죽으면 이 신호를 랜듀비앙에게 보내서, 렌듀비앙이 대신 이슈라의 분신 소환 하도록 설정함-->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="CurseBombSpZero_Operation_1Phase">
+			<!--1페이즈 저주 부여 패턴때 1페이즈용 트리거 신호 보내기-->
+			<node name="TriggerSetUserValue" triggerID="992" key="SkillDebuffCheck_1Phase" value="1">
+				<!-- 992  폭발 저주 디버프 스킬 사용하면서 SkillDebuff_1Phase.xml 트리거에게  SkillDebuffCheck_1Phase = 1 신호를 보내서, 소환몹 다 잡으면 이 저주 디버프 제거할 수 있도록 하는 단계가 되도록 하기 -->
+				<node name="skill" faceTarget="0" idx="24">
+					<!--레벨1: 1페이지 전용 12시 전투판 1명 부여, 4시 전투판 1명 부여, 8시 전투판 1명 부여-->
+					<node name="SetValue" key="SummonTypeFirstPhase" value="1" />
+					<!--  SummonTypeFirstPhase = 1 변수 할당해서, 최상위 단계인  <if extraKey="SummonTypeFirstPhase" greaterEqual="1"> 이부분 실행하도록 함  -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="CurseBombSpZero_Operation_2Phase">
+			<!--2페이즈 저주 부여 패턴때 2페이즈용 트리거 신호 보내기-->
+			<node name="TriggerSetUserValue" triggerID="994" key="SkillDebuffCheck_2Phase" value="1">
+				<!-- 994  폭발 저주 디버프 스킬 사용하면서 SkillDebuff_2Phase.xml트리거에게  SkillDebuffCheck_2Phase = 1 신호를 보내서, 소환몹 다 잡으면 이 저주 디버프 제거할 수 있도록 하는 단계가 되도록 하기 -->
+				<node name="skill" faceTarget="0" idx="24">
+					<node name="select" prob="100,100,100,100">
+						<!-- 일단 12시-4시-8시 : 1-1-1 걸고 시작하기-->
+						<!--  SummonTypeSecondPhase 에 변수 할당해서, 최상위 단계인  <elseif extraKey="SummonTypeSecondPhase" greaterEqual="1"> 이부분 실행하도록 함  -->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="12" />
+						<!-- 12시-4시-8시 : 2-1-1 진행 혹은 : 3-1-1 진행-->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="4" />
+						<!-- 12시-4시-8시 : 1-2-1 진행-->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="8" />
+						<!-- 12시-4시-8시 : 1-1-2 진행-->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="1248" />
+						<!-- 12시-4시-8시 : 2-2-2 진행-->
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Test">
+			<!--테스트용 예비-->
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<!--3시 물큐브쪽에서 등장-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="300" summonPos="-1725, -3225, 3010" summonRot="0,0,-45" />
+				<!-- 이슈라의 분신 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="301" summonPos="-1800, -3000, 3010" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="302" summonPos="-1500, -3150, 3010" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="303" summonPos="-1650, -3450, 3010" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="304" summonPos="-1950, -3300, 3010" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<!--9시 물큐브쪽에서 등장-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="310" summonPos="-3375, -1575, 3010" summonRot="0,0,-45" />
+				<!-- 이슈라의 분신 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="311" summonPos="-3150, -1500, 3010" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="312" summonPos="-3300, -1800, 3010" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="313" summonPos="-3600, -1650, 3010" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="314" summonPos="-3450, -1350, 3010" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<!--6시 스타팅포인트 근처서 등장-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="320" summonPos="-4350, -4200, 3160" summonRot="0,0,-45" />
+				<!-- 이슈라의 분신 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="321" summonPos="-4650, -3900, 3160" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="322" summonPos="-4350, -3900, 3160" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="323" summonPos="-4050, -4200, 3160" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="324" summonPos="-4050, -4500, 3160" summonRot="0,0,-45" />
+				<!-- 룬블 부하 -->
+				<!--12시 전투판 베놈 스피릿 등장-->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="-1500, -2550, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 3시 -->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="-2024, -2739, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 5시-->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="-2889, -1872, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 7시-->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="-2700, -1350, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 9시-->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="105" summonPos="-2625, -2475, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 6시(나중에 추가 했음)-->
+				<!--8시 전투판 베놈 스피릿 등장-->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="-3750, -1950, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 12시 -->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="-3401, -2616, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 1시-->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="113" summonPos="-4275, -3487, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 5시-->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="114" summonPos="-4800, -3300, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 6시-->
+				<!--4시 전투판 베놈 스피릿 등장-->
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="121" summonPos="-2100, -3600, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 12시 -->
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="122" summonPos="-2776, -3253, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 11시-->
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="123" summonPos="-3639, -4107, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 7시-->
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="124" summonPos="-3500, -4700, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 6시-->
+				<!--8시  4시  전투판 가운데 지점-->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="131" summonPos="-3300, -3150, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 8시 전투판 공격 -->
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="132" summonPos="-3675, -3525, 3220" summonRot="0,0,-45" />
+				<!-- 베놈 스피릿 4시 전투판 공격-->
+			</node>
+		</aiPreset>
+		<aiPreset name="Summon_FirstPhase_Operation">
+			<node name="select" prob="33,33,33">
+				<!--1페이즈에서의 소환몹 등장 패턴, 아래 3개중에 1개 선택해서 소환몹 무리 호출함 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="56000" isKeepBattle="true">
+					<!--12시 전투판 베놈 스피릿 등장-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="-2024, -2739, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 5시-->
+					<!--4시 전투판 베놈 스피릿 등장-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="122" summonPos="-2776, -3253, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 11시-->
+					<!--8시 전투판 베놈 스피릿 등장-->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="-3750, -1950, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 12시 -->
+					<node name="SetValue" key="SummonTypeFirstPhase" value="0" />
+					<!-- 변수 0 초기화 -->
+				</node>
+				<node name="standby" limit="100" faceTarget="0" cooltime="56000" isKeepBattle="true">
+					<!--12시 전투판 베놈 스피릿 등장-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="-2889, -1872, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 7시-->
+					<!--4시 전투판 베놈 스피릿 등장-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="121" summonPos="-2100, -3600, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 12시 -->
+					<!--8시 전투판 베놈 스피릿 등장-->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="-3401, -2616, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 1시-->
+					<node name="SetValue" key="SummonTypeFirstPhase" value="0" />
+					<!-- 변수 0 초기화 -->
+				</node>
+				<node name="standby" limit="100" faceTarget="0" cooltime="56000" isKeepBattle="true">
+					<!--12시 전투판 베놈 스피릿 등장-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="105" summonPos="-2625, -2475, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 6시(나중에 추가 했음)-->
+					<!--4시  8시  전투판 가운데 지점-->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="131" summonPos="-3300, -3150, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 8시 전투판 공격 -->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="132" summonPos="-3675, -3525, 3220" summonRot="0,0,-45" />
+					<!-- 베놈 스피릿 4시 전투판 공격-->
+					<node name="SetValue" key="SummonTypeFirstPhase" value="0" />
+					<!-- 변수 0 초기화 -->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Summon_SecondPhase_Operation">
+			<!---2페이즈에서의 소환몹 "시간차" 등장 패턴: 폭발저주 디버프 부여를 어떻게 했는지에 따라 소환몹 등장 형태가 결정됨-->
+			<node name="conditions">
+				<condition name="extraData" key="SummonTypeSecondPhase_OnceAttack" value="1" op="greaterEqual">
+					<node name="select" prob="99999,1">
+						<!---시간차 추가 저주부여 소환몹 호출을 위해 중간에 딱 한번 공격행동 하는 부분-->
+						<!---시간차를 위해 딱 한번 공격행동하고 이후 쿨타임에 막혀서 다음 추가 저주 부여 추가 소환몹 호출 로직을 타도록 설정함 -->
+						<node name="standby" limit="100" faceTarget="1" cooltime="15000">
+							<node name="target" type="near" center="-2025, -1875, 3310">
+								<!--정 가운데 -->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="33">
+										<node name="select" prob="33,33,34">
+											<node name="skill" idx="33">
+												<!--1회 베기 공격 -->
+												<node name="standby" limit="2200" faceTarget="1" />
+											</node>
+											<node name="skill" idx="34">
+												<!--2연속 베기 공격 -->
+												<node name="skill" idx="35">
+													<node name="standby" limit="2200" faceTarget="1" />
+												</node>
+											</node>
+											<node name="skill" idx="7">
+												<!--마법 채찍공격  정면-->
+												<node name="standby" limit="2300" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="skillRange" skillIdx="9">
+										<node name="select" prob="50,50">
+											<!-- 레벨5: 10인 최종 던전 1셋트 전투판 크기에 맞는 정밀한 거리체크 용도 -->
+											<node name="skill" idx="9">
+												<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+												<node name="standby" limit="2100" faceTarget="1" />
+											</node>
+											<node name="skill" idx="7">
+												<!--마법 채찍공격  정면-->
+												<node name="standby" limit="2300" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="hpOver" value="49">
+												<!--49% 이상일 때 평범한  행동 하기-->
+												<node name="standby" limit="5300" faceTarget="1" />
+												<!--같은 전투판에 없으면 5초 동안 standby 상태로 있다가 폭발 저주 시간차 두번째 로직 작동시키기-->
+											</condition>
+											<condition name="true">
+												<!--49% 이하면 몬스터 공격 못하게, 컬리전 박스 Off 상태로 하기-->
+												<node name="standby" limit="5300" faceTarget="1" animation="Attack_Idle_None" />
+												<!--같은 전투판에 없으면 5초 동안 standby 상태로 있다가 폭발 저주 시간차 두번째 로직 작동시키기-->
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="100" faceTarget="1">
+							<!-- 저주 부여하고 SummonTypeSecondPhase_OnceAttack 변수 0 초기화 하기-->
+							<node name="conditions">
+								<condition name="extraData" key="SummonTypeSecondPhase_OnceAttack" value="12">
+									<node name="select" prob="50,50">
+										<!-- 12시 전투판 1~2명 추가 저주 부여-->
+										<node name="skill" idx="25">
+											<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="0" />
+											<!-- 초기화 하여 이 최상위 if 단계 벗어나기 -->
+										</node>
+										<node name="skill" idx="26">
+											<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="0" />
+											<!-- 초기화 하여 이 최상위 if 단계 벗어나기 -->
+										</node>
+									</node>
+								</condition>
+								<condition name="extraData" key="SummonTypeSecondPhase_OnceAttack" value="4">
+									<!-- 4시 전투판 1명 추가 저주 부여-->
+									<node name="skill" idx="27">
+										<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="0" />
+										<!-- 초기화 하여 이 최상위 if 단계 벗어나기 -->
+									</node>
+								</condition>
+								<condition name="extraData" key="SummonTypeSecondPhase_OnceAttack" value="8">
+									<!-- 8시 전투판 1명 추가 저주 부여-->
+									<node name="skill" idx="28">
+										<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="0" />
+										<!-- 초기화 하여 이 최상위 if 단계 벗어나기 -->
+									</node>
+								</condition>
+								<condition name="extraData" key="SummonTypeSecondPhase_OnceAttack" value="1248">
+									<!-- 12시4시8시 전투판 1명씩 추가 저주 부여-->
+									<node name="skill" idx="29">
+										<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="0" />
+										<!-- 초기화 하여 이 최상위 if 단계 벗어나기 -->
+									</node>
+								</condition>
+								<condition name="true">
+									<!-- 이론적으로 이 단계 올일 없음-->
+									<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="0" />
+									<!-- 초기화 하여 이 최상위 if 단계 벗어나기 -->
+								</condition>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<!-- ##12시중심##: 12시-4시-8시 : 2-1-1 진행 혹은 : 3-1-1 진행   즉 12시 전투판 2명 부여, 4시 전투판 1명 부여, 8시 전투판 1명 부여  인 경우 ## -->
+				<condition name="extraData" key="SummonTypeSecondPhase" value="12">
+					<node name="select" prob="50,50">
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<!--12시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="-1500, -2550, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 3시 -->
+							<!--9시 물큐브쪽에서 등장-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="310" summonPos="-3375, -1575, 3010" summonRot="0,0,-45" />
+							<!-- 이슈라의 분신 -->
+							<!--3시 물큐브쪽에서 등장-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="300" summonPos="-1725, -3225, 3010" summonRot="0,0,-45" />
+							<!-- 이슈라의 분신 -->
+							<node name="SetValue" key="SummonTypeSecondPhase" value="1201" />
+							<!--12시 지점 2명 저주 부여 Type1, 다음 elseif 단계로 넘어가기위한 변수 설정-->
+							<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="12" />
+							<!-- 이 프리셋에서의 최상위 단계 딱 한번 공격 행동 후 어느 전투판에 추가 저주 부여할지 결정하는데 사용됨 -->
+						</node>
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<!--12시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="-2889, -1872, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 7시-->
+							<!--9시 물큐브쪽에서 등장-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="311" summonPos="-3150, -1500, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="312" summonPos="-3300, -1800, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="313" summonPos="-3600, -1650, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="314" summonPos="-3450, -1350, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<!--3시 스타팅포인트 근처서 등장-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="301" summonPos="-1800, -3000, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="302" summonPos="-1500, -3150, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="303" summonPos="-1650, -3450, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="304" summonPos="-1950, -3300, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="SetValue" key="SummonTypeSecondPhase" value="1202" />
+							<!--12시 지점 2~3명 저주 부여 Type2, 다음 elseif 단계로 넘어가기위한 변수 설정-->
+							<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="12" />
+							<!-- 이 프리셋에서의 최상위 단계 딱 한번 공격 행동 후 어느 전투판에 추가 저주 부여할지 결정하는데 사용됨 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="1201">
+					<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+						<!--12시 쪽의 플레이어 1~2명 추가해서 저주 부여했으니, 12시 전투판 베놈 스피릿 등장_시간차 추가 -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="-2024, -2739, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 5시-->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="-2700, -1350, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 9시-->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+						<!-- 변수 0 초기화 하여  <aiPreset name="Summon_SecondPhase_Operation"> 프리셋 단계 완전 벗어나기-->
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="1202">
+					<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+						<!--12시 쪽의 플레이어 1~2명 추가해서 저주 부여했으니, 12시 전투판 베놈 스피릿 등장_시간차 추가 -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="-1500, -2550, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 3시 -->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="-2024, -2739, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 5시-->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+						<!-- 변수 0 초기화 하여  <aiPreset name="Summon_SecondPhase_Operation"> 프리셋 단계 완전 벗어나기-->
+					</node>
+				</condition>
+				<!-- ##12시중심##: 12시-4시-8시 : 2-1-1 진행 혹은 : 3-1-1 진행   즉 12시 전투판 2명 부여, 4시 전투판 1명 부여, 8시 전투판 1명 부여  인 경우 ## -->
+				<!-- ##4시중심##: 12시-4시-8시 : 1-2-1 진행 	  즉 12시 전투판 1명 부여, 4시 전투판 2명 부여, 8시 전투판 1명 부여-->
+				<condition name="extraData" key="SummonTypeSecondPhase" value="4">
+					<node name="select" prob="50,50">
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<!--4시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="123" summonPos="-3639, -4107, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 7시-->
+							<!--8시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="-3401, -2616, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 1시-->
+							<!--3시 물큐브쪽에서 등장 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="301" summonPos="-1800, -3000, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="302" summonPos="-1500, -3150, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="303" summonPos="-1650, -3450, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="304" summonPos="-1950, -3300, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="SetValue" key="SummonTypeSecondPhase" value="401" />
+							<!--4시 지점 2명 저주 부여 Type1, 다음 elseif 단계로 넘어가기위한 변수 설정-->
+							<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="4" />
+							<!-- 이 프리셋에서의 최상위 단계 딱 한번 공격 행동 후 어느 전투판에 추가 저주 부여할지 결정하는데 사용됨 -->
+						</node>
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<!--4시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="121" summonPos="-2100, -3600, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 12시 -->
+							<!--8시  4시  전투판 가운데 지점-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="131" summonPos="-3300, -3150, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 8시 전투판 공격 -->
+							<!--9시 물큐브쪽에서 등장-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="311" summonPos="-3150, -1500, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="312" summonPos="-3300, -1800, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="313" summonPos="-3600, -1650, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="314" summonPos="-3450, -1350, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="SetValue" key="SummonTypeSecondPhase" value="402" />
+							<!--4시 지점 2명 저주 부여 Type2, 다음 elseif 단계로 넘어가기위한 변수 설정-->
+							<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="4" />
+							<!-- 이 프리셋에서의 최상위 단계 딱 한번 공격 행동 후 어느 전투판에 추가 저주 부여할지 결정하는데 사용됨 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="401">
+					<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+						<!--4시 쪽의 플레이어 1명 추가해서 저주 부여했으니,  4시 전투판 베놈 스피릿 등장_시간차 추가 -->
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="122" summonPos="-2776, -3253, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 11시-->
+						<!--3시 물큐브쪽에서 등장_시간차 추가 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="300" summonPos="-1725, -3225, 3010" summonRot="0,0,-45" />
+						<!-- 이슈라의 분신 -->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+						<!-- 변수 0 초기화 하여  <aiPreset name="Summon_SecondPhase_Operation"> 프리셋 단계 완전 벗어나기-->
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="402">
+					<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+						<!--4시 쪽의 플레이어 1명 추가해서 저주 부여했으니,  4시 전투판 베놈 스피릿 등장_시간차 추가 -->
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="124" summonPos="-3500, -4700, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 6시-->
+						<!--8시  4시  전투판 가운데 지점_시간차 추가 -->
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="132" summonPos="-3675, -3525, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 4시 전투판 공격-->
+						<!--9시 물큐브쪽에서 등장_시간차 추가 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="310" summonPos="-3375, -1575, 3010" summonRot="0,0,-45" />
+						<!-- 이슈라의 분신 -->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+						<!-- 변수 0 초기화 하여  <aiPreset name="Summon_SecondPhase_Operation"> 프리셋 단계 완전 벗어나기-->
+					</node>
+				</condition>
+				<!-- ##4시중심##: 12시-4시-8시 : 1-2-1 진행 	  즉 12시 전투판 1명 부여, 4시 전투판 2명 부여, 8시 전투판 1명 부여-->
+				<!-- ##8시중심##: 12시-4시-8시 : 1-1-2 진행	즉 12시 전투판 1명 부여, 4시 전투판 1명 부여, 8시 전투판 2명 부여  인 경우-->
+				<condition name="extraData" key="SummonTypeSecondPhase" value="8">
+					<node name="select" prob="50,50">
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<!--4시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="122" summonPos="-2776, -3253, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 11시-->
+							<!--8시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="113" summonPos="-4275, -3487, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 5시-->
+							<!--9시 물큐브쪽에서 등장-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="311" summonPos="-3150, -1500, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="312" summonPos="-3300, -1800, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="313" summonPos="-3600, -1650, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="314" summonPos="-3450, -1350, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="SetValue" key="SummonTypeSecondPhase" value="801" />
+							<!--8시 지점 2명 저주 부여 Type1, 다음 elseif 단계로 넘어가기위한 변수 설정-->
+							<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="8" />
+							<!-- 이 프리셋에서의 최상위 단계 딱 한번 공격 행동 후 어느 전투판에 추가 저주 부여할지 결정하는데 사용됨 -->
+						</node>
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<!--8시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="111" summonPos="-3750, -1950, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 12시 -->
+							<!--8시  4시  전투판 가운데 지점-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="132" summonPos="-3675, -3525, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 4시 전투판 공격-->
+							<!--3시 물큐브쪽에서 등장-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="301" summonPos="-1800, -3000, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="302" summonPos="-1500, -3150, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="303" summonPos="-1650, -3450, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="304" summonPos="-1950, -3300, 3010" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="SetValue" key="SummonTypeSecondPhase" value="802" />
+							<!--8시 지점 2명 저주 부여 Type2, 다음 elseif 단계로 넘어가기위한 변수 설정-->
+							<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="8" />
+							<!-- 이 프리셋에서의 최상위 단계 딱 한번 공격 행동 후 어느 전투판에 추가 저주 부여할지 결정하는데 사용됨 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="801">
+					<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+						<!---8시 쪽의 플레이어 1명 추가해서 저주 부여했으니, 8시 전투판 베놈 스피릿 등장_시간차 추가 -->
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="-3401, -2616, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 1시-->
+						<!--9시 물큐브쪽에서 등장_시간차 추가 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="310" summonPos="-3375, -1575, 3010" summonRot="0,0,-45" />
+						<!-- 이슈라의 분신 -->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+						<!-- 변수 0 초기화 하여  <aiPreset name="Summon_SecondPhase_Operation"> 프리셋 단계 완전 벗어나기-->
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="802">
+					<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+						<!---8시 쪽의 플레이어 1명 추가해서 저주 부여했으니, 8시 전투판 베놈 스피릿 등장_시간차 추가 -->
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="114" summonPos="-4800, -3300, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 6시-->
+						<!--8시  4시  전투판 가운데 지점_시간차 추가 -->
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="131" summonPos="-3300, -3150, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 8시 전투판 공격 -->
+						<!--3시 물큐브쪽에서 등장_시간차 추가 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="300" summonPos="-1725, -3225, 3010" summonRot="0,0,-45" />
+						<!-- 이슈라의 분신 -->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+						<!-- 변수 0 초기화 하여  <aiPreset name="Summon_SecondPhase_Operation"> 프리셋 단계 완전 벗어나기-->
+					</node>
+				</condition>
+				<!-- ##8시중심##: 12시-4시-8시 : 1-1-2 진행	즉 12시 전투판 1명 부여, 4시 전투판 1명 부여, 8시 전투판 2명 부여  인 경우-->
+				<!-- ##ALL## 12시-4시-8시 : 2-2-2 진행  	즉 12시 전투판 2명 부여, 4시 전투판 2명 부여, 8시 전투판 2명 부여 인 경우-->
+				<condition name="extraData" key="SummonTypeSecondPhase" value="1248">
+					<node name="select" prob="50,50">
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<!--3시 물큐브쪽에서 등장-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="300" summonPos="-1725, -3225, 3010" summonRot="0,0,-45" />
+							<!-- 이슈라의 분신 -->
+							<!--4시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="122" summonPos="-2776, -3253, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 11시-->
+							<!--8시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="-3401, -2616, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 1시-->
+							<!--6시 스타팅포인트 근처서 등장-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="321" summonPos="-4650, -3900, 3160" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="322" summonPos="-4350, -3900, 3160" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="323" summonPos="-4050, -4200, 3160" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="324" summonPos="-4050, -4500, 3160" summonRot="0,0,-45" />
+							<!-- 룬블 부하 -->
+							<node name="SetValue" key="SummonTypeSecondPhase" value="124801" />
+							<!--12시4시8시  지점 2명 저주 부여 Type1, 다음 elseif 단계로 넘어가기위한 변수 설정-->
+							<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="1248" />
+							<!-- 이 프리셋에서의 최상위 단계 딱 한번 공격 행동 후 어느 전투판에 추가 저주 부여할지 결정하는데 사용됨 -->
+						</node>
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<!--12시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="-2024, -2739, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 5시-->
+							<!--8시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="112" summonPos="-3401, -2616, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 1시-->
+							<!--4시 전투판 베놈 스피릿 등장-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="122" summonPos="-2776, -3253, 3220" summonRot="0,0,-45" />
+							<!-- 베놈 스피릿 11시-->
+							<node name="SetValue" key="SummonTypeSecondPhase" value="124802" />
+							<!--12시4시8시  지점 2명 저주 부여 Type2, 다음 elseif 단계로 넘어가기위한 변수 설정-->
+							<node name="SetValue" key="SummonTypeSecondPhase_OnceAttack" value="1248" />
+							<!-- 이 프리셋에서의 최상위 단계 딱 한번 공격 행동 후 어느 전투판에 추가 저주 부여할지 결정하는데 사용됨 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="124801">
+					<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+						<!-- 12시4시8시 전투판 각각 1명 추가 저주 부여했으니, 모든 지점에서 소환몹 추가 등장시킴-->
+						<!--6시 스타팅포인트 근처서 등장_시간차 추가 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="320" summonPos="-4350, -4200, 3160" summonRot="0,0,-45" />
+						<!-- 이슈라의 분신 -->
+						<!--3시 물큐브쪽에서 등장_시간차 추가 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="301" summonPos="-1800, -3000, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="302" summonPos="-1500, -3150, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="303" summonPos="-1650, -3450, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="304" summonPos="-1950, -3300, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<!--9시 물큐브쪽에서 등장_시간차 추가 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="311" summonPos="-3150, -1500, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="312" summonPos="-3300, -1800, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="313" summonPos="-3600, -1650, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="314" summonPos="-3450, -1350, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+						<!-- 변수 0 초기화 하여  <aiPreset name="Summon_SecondPhase_Operation"> 프리셋 단계 완전 벗어나기-->
+					</node>
+				</condition>
+				<condition name="extraData" key="SummonTypeSecondPhase" value="124802">
+					<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+						<!-- 12시4시8시 전투판 각각 1명 추가 저주 부여했으니, 모든 지점에서 소환몹 추가 등장시킴-->
+						<!--12시 전투판 베놈 스피릿 등장_시간차 추가-->
+						<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="-2889, -1872, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 7시-->
+						<!--8시 전투판 베놈 스피릿 등장_시간차 추가-->
+						<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="113" summonPos="-4275, -3487, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 5시-->
+						<!--4시 전투판 베놈 스피릿 등장_시간차 추가-->
+						<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="123" summonPos="-3639, -4107, 3220" summonRot="0,0,-45" />
+						<!-- 베놈 스피릿 7시-->
+						<!--9시 물큐브쪽에서 등장_시간차 추가-->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="311" summonPos="-3150, -1500, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="312" summonPos="-3300, -1800, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="313" summonPos="-3600, -1650, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="314" summonPos="-3450, -1350, 3010" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<!--6시 스타팅포인트 근처서 등장_시간차 추가-->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="321" summonPos="-4650, -3900, 3160" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="322" summonPos="-4350, -3900, 3160" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="323" summonPos="-4050, -4200, 3160" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="324" summonPos="-4050, -4500, 3160" summonRot="0,0,-45" />
+						<!-- 룬블 부하 -->
+						<node name="SetValue" key="SummonTypeSecondPhase" value="0" />
+						<!-- 변수 0 초기화 하여  <aiPreset name="Summon_SecondPhase_Operation"> 프리셋 단계 완전 벗어나기-->
+					</node>
+				</condition>
+				<!-- ##ALL## 12시-4시-8시 : 2-2-2 진행  	즉 12시 전투판 2명 부여, 4시 전투판 2명 부여, 8시 전투판 2명 부여 인 경우-->
+				<condition name="true">
+					<!--SummonTypeSecondPhase =  0 인 경우, 즉 저주 폭발 부여 하지 않은 경우임 이론적으로 여기 올일 없음  -->
+					<node name="standby" limit="100" faceTarget="0" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Summon_3rdPhase_Operation">
+			<node name="select" prob="25,25,25,25">
+				<!--3페이즈에서의 소환몹 등장 패턴, 아래 2개중에 1개 선택해서 소환몹 무리 호출함 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="128000" isKeepBattle="true">
+					<!--분신 2마리가 눈에 잘 띄기 위해 나란히 배치되어 등장하도록 설정함, group 번호 설정 중요 -->
+					<!--10~11시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="701" summonPos="3975, 5100, 5770" summonRot="0,0,-45" />
+					<!--12시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="703" summonPos="4875, 4875, 5770" summonRot="0,0,-45" />
+				</node>
+				<node name="standby" limit="100" faceTarget="0" cooltime="128000" isKeepBattle="true">
+					<!--분신 2마리가 눈에 잘 띄기 위해 나란히 배치되어 등장하도록 설정함, group 번호 설정 중요 -->
+					<!--1~2시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="701" summonPos="5100, 3975, 5770" summonRot="0,0,-45" />
+					<!--12시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="703" summonPos="4875, 4875, 5770" summonRot="0,0,-45" />
+				</node>
+				<node name="standby" limit="100" faceTarget="0" cooltime="128000" isKeepBattle="true">
+					<!--분신 2마리가 눈에 잘 띄기 위해 나란히 배치되어 등장하도록 설정함, group 번호 설정 중요 -->
+					<!--4~5시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="702" summonPos="3975, 2775, 5770" summonRot="0,0,-45" />
+					<!--6시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="703" summonPos="3075, 3075, 5770" summonRot="0,0,-45" />
+				</node>
+				<node name="standby" limit="100" faceTarget="0" cooltime="128000" isKeepBattle="true">
+					<!--분신 2마리가 눈에 잘 띄기 위해 나란히 배치되어 등장하도록 설정함, group 번호 설정 중요 -->
+					<!--7~8시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="702" summonPos="2850, 3975, 5770" summonRot="0,0,-45" />
+					<!--6시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="703" summonPos="3075, 3075, 5770" summonRot="0,0,-45" />
+				</node>
+			</node>
+		</aiPreset>
+		<!--그룹번호,   group="701"  10~11  1~2       group="702" 4~5  7~8       group="703"  3 6 9 12 -->
+		<aiPreset name="Summon_4thPhase_Operation">
+			<node name="select" prob="50,50">
+				<!--4 페이즈에서의 소환몹 등장 패턴, 아래 2개중에 1개 선택해서 소환몹 무리 호출함 -->
+				<node name="standby" limit="100" faceTarget="0" cooltime="47000" isKeepBattle="true">
+					<!--왼쪽정령배치, group 번호 설정 중요 -->
+					<!--10~11시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="701" summonPos="3975, 5100, 5770" summonRot="0,0,-45" />
+					<!--7~8시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="702" summonPos="2850, 3975, 5770" summonRot="0,0,-45" />
+					<!--9시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="703" summonPos="3075, 4875, 5770" summonRot="0,0,-45" />
+				</node>
+				<node name="standby" limit="100" faceTarget="0" cooltime="47000" isKeepBattle="true">
+					<!--오른쪽정령배치, group 번호 설정 중요 -->
+					<!--1~2시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="701" summonPos="5100, 3975, 5770" summonRot="0,0,-45" />
+					<!--4~5시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="702" summonPos="3975, 2775, 5770" summonRot="0,0,-45" />
+					<!--3시에 이슈라 분신 등장-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="703" summonPos="4875, 3075, 5770" summonRot="0,0,-45" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="1Phase_AttackPattern">
+			<!--1페이즈 전투 형태, 첫번째 전투판에서 행하는 행동-->
+			<node name="conditions">
+				<condition name="hpOver" value="49">
+					<!--49% 이상일 때 평범한 공격 행동 하기-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="33">
+							<node name="select" prob="18,17,24,18">
+								<node name="skill" cooltime="7000" idx="33">
+									<node name="select" prob="70,30">
+										<!--한번 베기 공격 -->
+										<node name="standby" limit="1100" faceTarget="1" cooltime="21000">
+											<node name="select" prob="33,33,33">
+												<node name="move" destination="-1650, -1500, 3310" limit="1500" />
+												<node name="move" destination="-2175, -1425, 3310" limit="2300" />
+												<node name="move" destination="-1660, -1850, 3310" limit="1800" />
+											</node>
+										</node>
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" idx="34">
+									<!--2연혹 베기 공격 -->
+									<node name="skill" idx="35">
+										<node name="standby" limit="2300" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" cooltime="12000" idx="7">
+									<!--마법 채찍공격  정면-->
+									<node name="skill" idx="8">
+										<!--마법 채찍공격  측면-->
+										<node name="standby" limit="2600" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" idx="9">
+									<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="9">
+							<node name="select" prob="30,35,35">
+								<!-- 레벨5: 10인 최종 던전 1셋트 전투판 크기에 맞는 정밀한 거리체크 용도 -->
+								<node name="trace" limit="1500" skillIdx="33" />
+								<node name="skill" idx="9">
+									<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="skill" idx="7">
+									<!--마법 채찍공격  정면-->
+									<node name="standby" limit="2700" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99999,799,0">
+								<node name="standby" limit="1200" faceTarget="1" cooltime="4000">
+									<node name="target" type="near" from="10" to="2300" />
+								</node>
+								<node name="move" destination="-2025, -1875, 3310" limit="9000" cooltime="6000">
+									<!--맵 정 중앙으로 이동함  -->
+									<node name="standby" limit="1800" faceTarget="1">
+										<node name="target" type="near" from="10" to="2300" />
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="30">
+										<node name="select" prob="99,1">
+											<!--3개 전 전투판 거리체크 용도, 스타팅 포인트에 있는 플레이어는 포함 시키지 않음  -->
+											<!--  initialCooltime을 안넣으면 전투 시작하자마자 의도치 않게 이 공격 당해버리는 상황이 생길거 같아서 안전하에 initialCooltime 넣음-->
+											<node name="skill" initialCooltime="21000" idx="30">
+												<!--같은 전투판에 단 한명의 플레이어도 없으면 초강력 스킬로 건너편 플레이어 무리 초강력 스턴 원거리 스킬로 공격함  -->
+												<node name="standby" limit="3100" faceTarget="1">
+													<node name="target" type="near" from="10" to="2300" />
+												</node>
+											</node>
+											<node name="standby" limit="800" faceTarget="1">
+												<node name="target" type="near" from="10" to="2300" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="standby" limit="1200" faceTarget="1">
+											<node name="target" type="near" from="10" to="2300" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<!--49% 이하면 구석으로 도망가 있기, 파티원이 특정 하나의 보스에게 몰려서 몰빵 공격 하는 어뷰징 상황을 막기위한 설정임-->
+						<node name="skill" facePos="-2025, -975, 3610" cooltime="9999999" isKeepBattle="true" idx="17">
+							<!-- 플레이어가 공격하지 못하는 장소로 점프 도망가기-->
+							<node name="jump" pos="-2025, -975, 3610" speed="800" heightMultiplier="0.4" />
+							<!-- 점프중-->
+							<node name="skill" faceTarget="0" idx="18" />
+							<!-- 점프착지-->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<node name="select" prob="40,60">
+									<!-- 단상 위로 도망갈 때 가끔 공격 행위 하도록-->
+									<node name="skill" cooltime="12000" idx="10" />
+									<!-- 레벨6은 컬리전 박스 올린 버전임-->
+									<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_None">
+										<!--중요: 이때 플레이어가 몬스터를 절대 때리지 못하도록 해야 함 그래서 animation="Attack_Idle_None"  설정 중요  구석으로 도망가 있는 상태에서는 플레이어가 때리지 못하는  standby 상태가 되돌고 함 -->
+										<node name="target" type="near" from="10" to="2300" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_None">
+									<!--중요: 이때 플레이어가 몬스터를 절대 때리지 못하도록 해야 함 그래서 animation="Attack_Idle_None"  설정 중요  구석으로 도망가 있는 상태에서는 플레이어가 때리지 못하는  standby 상태가 되돌고 함 -->
+									<node name="target" type="near" from="10" to="2300" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="JustBefore_AttackPattern">
+			<!--스킬브레이크 발동 전에 딱 한번 행하는 공격 패턴-->
+			<node name="conditions">
+				<condition name="hpOver" value="49">
+					<!--49% 이상일 때 평범한 공격 행동 하기-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="33">
+							<node name="select" prob="33,33,34">
+								<node name="skill" idx="33">
+									<!--한번 베기 공격 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="34">
+									<!--2연혹 베기 공격 -->
+									<node name="skill" idx="35">
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" idx="7">
+									<!--마법 채찍공격  정면-->
+									<node name="standby" limit="2100" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="9">
+							<node name="select" prob="50,50">
+								<!-- 레벨5: 10인 최종 던전 1셋트 전투판 크기에 맞는 정밀한 거리체크 용도 -->
+								<node name="skill" idx="9">
+									<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="7">
+									<!--마법 채찍공격  정면-->
+									<node name="standby" limit="1700" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="2800" faceTarget="1">
+								<node name="target" type="near" from="10" to="2300" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_None" />
+					<!--중요: 이때 플레이어가 몬스터를 절대 때리지 못하도록 해야 함 그래서 animation="Attack_Idle_None"  설정 중요  구석으로 도망가 있는 상태에서는 플레이어가 때리지 못하는  standby 상태가 되돌고 함 -->
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="SkillBreak_AttackPattern">
+			<node name="select" prob="99999,0">
+				<!--스킬 브레이크 패턴-->
+				<node name="SetValue" cooltime="9999999" key="BreakPattern" value="0">
+					<!--전투 상태가 되자마자 바로 변수 셋팅-->
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="BreakPattern" value="0">
+						<!-- BreakPattern 변수가 0일 때, -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="20">
+								<!--레벨2: 최종 10인 던전용 같은 전투판 거리체크 데이터, 수치 데이터 정밀 체크임-->
+								<node name="buff" type="add" id="50004546" level="2" isKeepBattle="true">
+									<!-- 레벨2가 10인 던전용: 특정 라텐타 스킬로만 공격 해야만 공격이 먹히도록 하기 위한 이슈라용 애디셔널 부여하기 -->
+									<node name="skill" facePos="-3519, -3360, 3220" idx="19" />
+									<!--기력 모으기 시작 동작-->
+									<node name="skill" faceTarget="0" idx="20" />
+									<node name="SetValue" key="BreakPattern" value="1" />
+									<!--  변수 1로 셋팅해여 다음 단계로 넘어가도록 하기 -->
+									<node name="SetValue" key="SkillBreakRangeOn" value="0" />
+									<!-- 이 변수도 초기화 하기: 스킬 브레이크 공격 시작하기 전에 같은 전투판에 12초 넘도록 없으면 원거리 기절 스킬 사용하도록 하기 위해 사용하는 변수-->
+									<node name="SetValue" key="SkillBreakTeleport" value="0" />
+									<!-- 이 변수가 6 이상 되면 순간이동 하도록 하기위해 사용하는 변수 0으로 꼭 초기화 하기-->
+								</node>
+							</condition>
+							<condition name="true">
+								<!--같은 전투판에 플레이어가 한명도 없으면 standby  12초 정도 있다가, 그래도 계속 전투판에 플레이어가 없으면 원거리 기절 스킬 사용하기-->
+								<node name="conditions">
+									<condition name="extraData" key="SkillBreakRangeOn" value="12" op="lessEqual">
+										<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_None">
+											<!--스킬브레이크 때 standby 동작에서 플레이어가 때리지 못하도록 함  -->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="SetValue" key="SkillBreakRangeOn" value="1" isModify="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="skill" isKeepBattle="true" idx="30">
+											<!--같은 전투판에 단 한명의 플레이어도 없으면 초강력 스킬로 건너편 플레이어 무리 초강력 스턴 원거리 스킬로 공격함  -->
+											<node name="standby" limit="2300" faceTarget="1" animation="Attack_Idle_None" />
+											<!--스킬브레이크 때 standby 동작에서 플레이어가 때리지 못하도록 함  -->
+											<node name="target" type="near" from="10" to="2300" />
+											<node name="SetValue" key="SkillBreakRangeOn" value="5" />
+											<!-- 적당히 5로 셋팅해서 7초 standby 지나면 원거리 기절 공격 하도록 하기-->
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--  BreakPattern 변수가  0이 아닌 경우 이 부분 실행, 즉 이 몬스터가 쉴드 애디셔널이 붙고 난 다음에 이 쉴드 애디셔널이 사라질 때까지 계속 이부분 반복 실행함 -->
+						<node name="conditions">
+							<condition name="extraData" key="brokenShieldFail" value="1">
+								<!-- brokenShieldFail = 1  이라는 것은, 쉴드 애디셔널 파괴 실패했다는 뜻임  (1이면 true, 0이면 false임)  -->
+								<!-- 몬스터의 쉴드 애디셔널 유지 시간이 다 되었는데, 쉴드 애디셔널 HP를 전부 깎는데 실패하면, 이 부분 실행하여 플레이어에게 극 광역스킬 난사함 -->
+								<node name="teleport" pos="-2025, -1875, 3310" isKeepBattle="true">
+									<!-- 내려찍기 공격 직전 중앙으로 순간이동으로 이동하기 -->
+									<node name="skill" facePos="-3519, -3360, 3220" idx="22" />
+									<!-- 레벨6: 같은 전투판 대상 플레이어 죽이는 공격 하기 (최종 10인 던전 전용 스킬임)-->
+									<node name="standby" limit="3000" faceTarget="1" animation="Attack_Idle_None" />
+									<!--스킬브레이크 때 standby 동작에서 플레이어가 때리지 못하도록 함  -->
+									<node name="SetValue" key="BreakPattern" value="0" />
+									<!-- 다음에 다시 사용을 위해 변수 초기화 -->
+								</node>
+							</condition>
+							<condition name="extraData" key="remainShieldHP" value="1" op="greaterEqual">
+								<!--쉴드 애디셔널의 HP가 1 이상인 경우:  remainShieldHP 는 쉴드 애디셔널의 HP 수치로 이 수치가 0이 되면 해당 애디셔널 제거되는데, 즉 이 쉴드 애디셔널이 남아있는지를 조건  체크 하는 것임  -->
+								<!--쉴드 애디셔널이 이 몬스터 몸에 존재하는 동안 이 부분을 계속 반복 실행함 -->
+								<node name="conditions">
+									<condition name="extraData" key="SkillBreakTeleport" value="4" op="lessEqual">
+										<node name="SetValue" key="SkillBreakTeleport" value="1" isModify="1">
+											<node name="select" prob="35,65">
+												<!--이 변수 0으로 시작해서 1씩 더해서 5 이상 되면 순간이동 하도록 하기 -->
+												<node name="skill" faceTarget="0" idx="20" />
+												<!--기력 모으기 동작 진행 -->
+												<node name="skill" faceTarget="0" cooltime="3200" idx="23">
+													<!--기력 모으기 바닥 스킬 -->
+													<node name="target" type="near" from="10" to="2300" />
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<!--SkillBreakTeleport 변수가 5 이상이 되면 딱 한번 순간이동하도록 하기 -->
+										<node name="SetValue" key="SkillBreakTeleport" value="-99">
+											<!--순간이동 단계로 넘어오면 이 변수 -99로 만들어, 이 모드 도중에 다시는 5이상이 절대 되지 못하도로 하기 -->
+											<node name="skill" faceTarget="0" idx="20">
+												<node name="select" prob="25,25,25,25">
+													<!--기력 모으기 동작 중 순간이동 하기 -->
+													<node name="teleport" pos="-2034, -1273, 3310" cooltime="22000">
+														<!--11시 쪽  -->
+														<node name="skill" faceTarget="0" idx="20" />
+														<!--순간이동 끝나고 기력 모으기 동작 꼭 넣기, 순간이동에 의해 순간 어긋나는 상황이 가끔 발생해서 버그 예방 차원으로 -->
+													</node>
+													<node name="teleport" pos="-1435, -1888, 3310" cooltime="22000">
+														<!--1시 쪽  -->
+														<node name="skill" faceTarget="0" idx="20" />
+														<!--순간이동 끝나고 기력 모으기 동작 꼭 넣기, 순간이동에 의해 순간 어긋나는 상황이 가끔 발생해서 버그 예방 차원으로 -->
+													</node>
+													<node name="teleport" pos="-2030, -2482, 3310" cooltime="22000">
+														<!--5시 쪽  -->
+														<node name="skill" faceTarget="0" idx="20" />
+														<!--순간이동 끝나고 기력 모으기 동작 꼭 넣기, 순간이동에 의해 순간 어긋나는 상황이 가끔 발생해서 버그 예방 차원으로 -->
+													</node>
+													<node name="teleport" pos="-2640, -1888, 3310" cooltime="22000">
+														<!--7시 쪽  -->
+														<node name="skill" faceTarget="0" idx="20" />
+														<!--순간이동 끝나고 기력 모으기 동작 꼭 넣기, 순간이동에 의해 순간 어긋나는 상황이 가끔 발생해서 버그 예방 차원으로 -->
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="extraData" key="brokenShieldSuccess" value="1">
+								<!-- brokenShieldSuccess = 1  이라는 것은, 쉴드 애디셔널 파괴 성공했다는 뜻임  (1이면 true, 0이면 false임)  -->
+								<!-- 몬스터의 쉴드 애디셔널의 HP를 전부 깎아서 이 쉴드 애디셔널 강제 제거를 성공하면, 이 부분 실행함 -->
+								<node name="buff" type="add" id="70002171">
+									<!-- 스킬브레이크 정해진 시간 내에 잘 막았는지 트리거에서 체크하기 위한 버프 부여하기 , DungeonMissionCheckSkillBreakTime.xml 트리거에서 체크해 던전 미션 클리어 처리 하기- -->
+									<node name="skill" faceTarget="0" isKeepBattle="true" idx="21">
+										<node name="SetValue" key="BreakPattern" value="0" />
+										<!-- 다음에 다시 사용을 위해 변수 초기화 -->
+										<node name="SetValue" key="SkillBreak_StartOk" value="0" />
+										<!-- 중요: 이슈라가 스킬 블레이크 스킬 사용하게 하는 결정적인 이 변수 꼭 0 초기화 하기 그래야 스킬브레이크 막기 성공하면 이후 평상시 공격행동 상태로 넘어가게 됨  -->
+										<node name="SetValue" key="SkillBreakEnd" value="1" />
+										<!-- 이 변수가 1로 만들어 플레이어가 스킬 브레이크 공격을 막기 성공했으니, 평상시 공격 상태가 되도록 하기 -->
+										<node name="standby" limit="700" faceTarget="0" />
+										<!-- 기절 동작 후 standby 0.7초 정도-->
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!-- 이론적으로 여기 부분 올일 없음 -->
+								<node name="standby" limit="230" faceTarget="0">
+									<node name="SetValue" key="BreakPattern" value="0" />
+									<!-- 다음에 다시 사용을 위해 변수 초기화 -->
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="3Phase_AttackPattern">
+			<!--3페이즈 전투 형태-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="33">
+					<node name="select" prob="18,17,35,18">
+						<node name="skill" cooltime="7000" idx="33">
+							<!--한번 베기 공격 -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="skill" idx="34">
+							<!--2연혹 베기 공격 -->
+							<node name="skill" idx="35">
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="7">
+							<node name="select" prob="65,35">
+								<!--마법 채찍공격  정면 공격 후 순간이동 2연타 공격-->
+								<node name="skill" idx="16">
+									<node name="select" prob="25,25,25,25">
+										<!--순간이동 동작-->
+										<node name="teleport" pos="4200, 4200, 5860" cooltime="31000">
+											<!--12시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="7">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="2400" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="4350, 3600, 5860" cooltime="31000">
+											<!--3시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="7">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="2400" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="3600, 4350, 5860" cooltime="31000">
+											<!--6시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="7">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="2400" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="3600, 3600, 5860" cooltime="31000">
+											<!--9시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="7">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="2400" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="2400" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="9">
+							<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="9">
+					<node name="select" prob="30,35,35">
+						<!-- 레벨5: 10인 최종 던전 1셋트 전투판 크기에 맞는 정밀한 거리체크 용도 -->
+						<node name="trace" limit="1500" skillIdx="33" />
+						<node name="skill" idx="9">
+							<node name="select" prob="50,50">
+								<!--유도탄 바닥, 레벨5: 10인 최종 던전 1셋트 전투판에 맞는 정밀한 거리체크 용도  -->
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="trace" limit="2200" skillIdx="33" />
+							</node>
+						</node>
+						<node name="skill" cooltime="12000" idx="7">
+							<node name="select" prob="60,40">
+								<!--마법 채찍공격  정면-->
+								<node name="skill" idx="16">
+									<node name="select" prob="50,50">
+										<!--순간이동 동작-->
+										<node name="teleport" pos="4425, 3975, 5860" cooltime="25000">
+											<!--2~3시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="7">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="2400" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="teleport" pos="3525, 3975, 5860" cooltime="25000">
+											<!--7~8시쪽-->
+											<node name="target" type="near" from="10" to="2300">
+												<node name="skill" idx="7">
+													<!--마법 채찍공격  정면-->
+													<node name="standby" limit="2400" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="8">
+									<!--마법 채찍공격  측면-->
+									<node name="standby" limit="2100" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="14">
+					<node name="select" prob="90,10">
+						<!-- 거리 2320, 플레이어가 2셋트 같은 전투판인지 판단하는 정밀 거리체크 용도 -->
+						<node name="move" destination="3975, 3975, 5860" limit="2200" cooltime="9500">
+							<!--맵 정 중앙으로 이동함  -->
+							<node name="standby" limit="1200" faceTarget="1">
+								<node name="target" type="near" from="10" to="2300" />
+							</node>
+						</node>
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="near" from="10" to="2300" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1200" faceTarget="1">
+						<node name="target" type="near" from="10" to="2300" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="FinalPhase_AttackPattern">
+			<node name="conditions">
+				<condition name="extraData" key="ShotPattern" value="1">
+					<node name="skill" faceTarget="1" isKeepBattle="true" idx="11">
+						<node name="skill" faceTarget="1" idx="12" />
+						<!-- 대기 -->
+						<node name="skill" faceTarget="1" idx="13" />
+						<!-- 발사 -->
+						<node name="target" type="rand" from="10" to="2100" />
+						<node name="skill" faceTarget="1" idx="12" />
+						<node name="skill" faceTarget="1" idx="12" />
+						<node name="skill" faceTarget="1" idx="13" />
+						<!-- 발사 -->
+						<node name="target" type="rand" from="10" to="2100" />
+						<node name="skill" faceTarget="1" idx="12" />
+						<node name="skill" pfaceTarget="1" rob="100" idx="13" />
+						<!-- 발사 -->
+						<node name="target" type="rand" from="10" to="2100" />
+						<node name="skill" faceTarget="1" idx="12" />
+						<node name="skill" faceTarget="0" idx="14" />
+						<!-- 거대발사 -->
+						<node name="SetValue" key="ShotPattern" value="0" />
+						<node name="standby" limit="1300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="11">
+					<node name="select" prob="99999,999,299,0">
+						<!-- 거리 1200 -->
+						<node name="skill" faceTarget="1" cooltime="54000" idx="15">
+							<node name="standby" limit="800" faceTarget="1" />
+						</node>
+						<!-- 투척 연속 패턴, 넓은 대미지 필드설치 -->
+						<node name="skill" cooltime="75000" idx="16">
+							<!-- 순간이동 -->
+							<node name="SetValue" key="ShotPattern" value="1">
+								<node name="select" prob="33,34,33">
+									<node name="teleport" pos="4650, 4650, 5860" cooltime="151000" />
+									<!-- 12시 -->
+									<node name="teleport" pos="4650, 3300, 5860" cooltime="151000" />
+									<!-- 3시 -->
+									<node name="teleport" pos="3300, 4650, 5860" cooltime="151000" />
+									<!-- 9시 -->
+								</node>
+							</node>
+						</node>
+						<!-- 돌진 연속 패턴, 자주 사용하면 근거리 클래스가 넘 불편하니 가끔 사용하도록 -->
+						<node name="skill" faceTarget="1" cooltime="42000" isKeepBattle="true" idx="2">
+							<node name="skill" faceTarget="1" idx="3" />
+							<node name="skill" faceTarget="1" idx="6" />
+							<!--돌진 전 투척 바닥 공격 -->
+							<node name="target" type="rand" from="10" to="2100" />
+							<node name="skill" faceTarget="1" idx="3" />
+							<node name="skill" faceTarget="1" idx="3" />
+							<node name="skill" faceTarget="0" idx="4" />
+							<!--돌진 공격 발동 -->
+							<node name="skill" faceTarget="1" idx="3" />
+							<node name="target" type="rand" from="10" to="2100" />
+							<node name="skill" faceTarget="1" idx="6" />
+							<!--돌진 전 투척 바닥 공격 -->
+							<node name="skill" faceTarget="1" idx="3" />
+							<node name="skill" faceTarget="1" idx="3" />
+							<node name="skill" faceTarget="0" idx="4" />
+							<!--돌진 공격 발동 -->
+							<node name="skill" faceTarget="0" idx="5" />
+							<node name="standby" limit="1300" faceTarget="1" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="33">
+								<node name="select" prob="99,33,33,33">
+									<node name="skill" cooltime="21000" idx="1">
+										<!--사방 유도탄 HP 강제 절반 깎기 -->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="7000" idx="33">
+										<!--한번 베기 공격 -->
+										<node name="standby" limit="1100" faceTarget="1" />
+									</node>
+									<node name="skill" idx="34">
+										<!--2연혹 베기 공격 -->
+										<node name="skill" idx="35">
+											<node name="standby" limit="1300" faceTarget="1" />
+										</node>
+									</node>
+									<node name="skill" cooltime="9700" idx="7">
+										<!--마법 채찍공격  정면-->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="trace" limit="2500" skillIdx="2" />
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1100" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

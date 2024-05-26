@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--2페이즈 전투판 2시 방향에 등장하는 마력 구슬 오브젝트, 2시 방향만은 최대 3개 까지 마력 구슬 등장할 수 있음-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" isKeepBattle="true" key="BattleOn" value="1">
+				<!-- 이 몬스터가 등장해 AI로직을 타서 공격 상태가 되었음을 알림, 참고로 이거 무척 중요한 내용인데 monsterMob.xlsx 의  propertyTags 항목에 "battle_on_spawn,keep_battle"를 꼭 설정해야 전투가 절대 풀리지 않으면서 2PhaseTubeAttackCheck.xml 트리거에 설정된 MarbleTurkaSupportMany 변수가 꼬이지 않게 됨 -->
+				<!-- 구슬 근처의 분신 투르카에게만 Number = 0 신호 보내야 하기 때문에 적절한 거리 설정 중요-->
+				<node name="TriggerModifyUserValue" triggerID="104" key="MarbleTurkaSupportMany" value="1" />
+				<!--이 몬스터 등장해 공격 상태가 되면 2PhaseTubeAttackCheck.xml 트리거에 설정된 MarbleTurkaSupportMany 변수 1 더하기  -->
+				<node name="SetMasterValue" key="MarblePosition02" value="1" isModify="1" />
+				<!--가짜 몬스터(AI_SignalElementMarble.xml)에게 이 변수 +1 하여 2시 방향 마력의 구슬 등장했을음 알림-->
+				<node name="SetValueRangeTarget" key="MarblePosition02" value="1" radius="7000" height="3000" isModify="1" />
+				<!-- 2페이즈 투르카 보스(AI_TurkaHoodForce_Phase02.xml)에게 이 변수 +1 하여 2시 방향 마력의 구슬 등장했을음 알림, 이 마력의 구슬은 가짜 몬스터가가 소환한 것이기 때문에 신호 보낼 때 Distance 방식으로 해야 함-->
+				<node name="SetValueRangeTarget" key="Number" value="0" radius="1500" height="200" />
+				<!--  분신 투르카에게 Number = 0 신호를 보내서, 공격 횟수 후 퇴장 할때 사용하는 변수 0 초기화 시키기, 투르카 분신이 방치될 경우 구슬이 등장할 때 투르카는 사라지는 어긋나는 상황이 생길 수 있어서 구슬 등장 때 무조건 분신 투르카의 Number 변수 0 초기하 함  -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="DeathMarbleTurkaSupport" value="1">
+				<node name="skill" idx="1">
+					<!-- 폭발 공격 후 자살 스킬 사용하기-->
+					<node name="RemoveMe" />
+					<!-- 낮은 확률로 자살 스킬 사용하고도 죽음 처리 안되는 경우 있어서, 이를 대비해 자살 스킬 사용후 스스로 사라지는 부분 넣음-->
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="standby" limit="100" faceTarget="1" animation="Attack_Idle_B" />
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="TriggerModifyUserValue" triggerID="104" key="MarbleTurkaSupportMany" value="-1">
+					<!--이 몬스터가 죽으면 2PhaseTubeAttackCheck.xml 트리거에 설정된 MarbleTurkaSupportMany 변수 1 빼기 -->
+					<node name="SetMasterValue" key="MarblePosition02" value="-1" isModify="1">
+						<!-- 가짜 몬스터(AI_SignalElementMarble.xml)에게 이 변수 -1 하여 2시 방향 마력의 구슬 파괴되었음을 알림-->
+						<node name="SetValueRangeTarget" key="MarblePosition02" value="-1" radius="7000" height="3000" isModify="1" />
+						<!-- 2페이즈 투르카 보스(AI_TurkaHoodForce_Phase02.xml)에게 이 변수 -1 하여 2시 방향 마력의 구슬 파괴되었음을 알림, 이 마력의 구슬은 가짜 몬스터가가 소환한 것이기 때문에 신호 보낼 때 Distance 방식으로 해야 함-->
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

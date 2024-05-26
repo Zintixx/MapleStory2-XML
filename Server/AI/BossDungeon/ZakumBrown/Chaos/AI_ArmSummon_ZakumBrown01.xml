@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="ArmSummonMany" value="1" isModify="1" />
+				<!--전투 상태가 되면 자쿰AI에게 팔소환몹 마리수 체크 +1 신호 보냄-->
+				<node name="buff" type="add" id="50001059" />
+				<!-- 부기의 회복 애디셔널 받지 않도록 예외 처리 넣음 -->
+				<node name="TriggerModifyUserValue" triggerID="999991" key="SummonZakumArmMany" value="1" />
+				<!-- 자쿰 몸통과 싸울 때 등장하는 자쿰팔 소환몹 등장할 때 999991_ZakumArmSudden.xml 트리거쪽에 이 변수에 +1 하기 -->
+				<node name="standby" limit="500" faceTarget="0" />
+				<!-- standby 순서 중요한데, 2번팔이 충분이 공격 상태가 되었을 때까지 0.5초 정도 기다린 다음에 아래 변수 신호를 보냄 -->
+				<node name="SetValueRangeTarget" key="ArmSummon01Check" value="1" radius="2500" height="4000" />
+				<!-- 2번 자쿰팔에게 이 변수 1 신호를 보내서 속성 보호 버프 사용하도록 설정함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 왼쪽 3층 지형 -->
+			<node name="target" type="near" center="600, -1675, 2900" cooltime="5000" />
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeathArm" value="1">
+					<!--  자살 명령 내리면-->
+					<node name="skill" idx="5" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+						<node name="standby" limit="100" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!--팔 평상시 공격 행동 정의-->
+					<aiPreset name="MainBattle" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<node name="SetValueRangeTarget" key="ArmSummon01Check" value="-1" radius="2500" height="4000">
+			<!--죽으면서 2번 자쿰팔에게 이 변수 -1 신호를 보내서 속성 보호 버프 제거하도록 설정함 -->
+			<node name="conditions">
+				<condition name="extraData" key="BattleOn" value="1">
+					<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+					<node name="SetMasterValue" key="ArmSummonMany" value="-1" isModify="1">
+						<!--죽으면 자쿰AI에게 팔소환몹 마리수 체크 -1 신호 보냄-->
+						<node name="TriggerModifyUserValue" triggerID="999991" key="SummonZakumArmMany" value="-1" />
+						<!-- 자쿰 몸통과 싸울 때 등장하는 자쿰팔 소환몹 죽을 때 999991_ZakumArmSudden.xml 트리거쪽에 이 변수에 +1 하기 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+					<node name="SetValue" key="Temp" value="0" />
+					<!--아무것도 안한다는 뜻임 -->
+				</condition>
+			</node>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="MainBattle">
+			<!--팔 평상시 공격 행동 정의-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="50,49,1">
+						<!--3층 왼쪽 전투판에 있으면-->
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="9000" idx="3">
+							<node name="select" prob="50,50">
+								<!--레벨1은 왼쪽 2층 3층만 커버-->
+								<node name="SetValue" key="AttackDelay" value="30" />
+								<node name="SetValue" key="AttackDelay" value="38" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" cooltime="9000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="28" />
+								<node name="SetValue" key="AttackDelay" value="38" />
+							</node>
+						</node>
+						<node name="standby" limit="1450" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="4">
+					<node name="select" prob="65,9,25,1">
+						<!--왼쪽  전투판 어디든지 있으면, standby 시간 짧게 설정-->
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="9000" idx="4">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="3" />
+								<node name="SetValue" key="AttackDelay" value="4" />
+							</node>
+						</node>
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="9000" idx="4">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="2" />
+								<node name="SetValue" key="AttackDelay" value="6" />
+							</node>
+						</node>
+						<!--파멸의 폭탄-->
+						<node name="skill" cooltime="18000" initialCooltime="18000" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트, initialCooltime을 어느정도 넉넉히 부여하여 초반 약 20초 동안 자쿰팔 방치해도 봐주기 -->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<node name="SetValue" key="AttackDelay" value="37" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="5" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="98,1,1">
+						<!--왼쪽이 아닌 오른쪽  자쿰팔 공격 가능 지역에 있으면, standby 시간 짧게 설정-->
+						<!--파멸의 폭탄, 즉 플레이어가 왼쪽 전투판에 없으면 이 스킬 자주 사용하게 하여 오른쪽 플레이어 무리 상당히 짜증나게 함-->
+						<node name="skill" cooltime="18000" initialCooltime="18000" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트, initialCooltime을 어느정도 넉넉히 부여하여 초반 약 20초 동안 자쿰팔 방치해도 봐주기 -->
+								<node name="SetValue" key="AttackDelay" value="4" />
+								<node name="SetValue" key="AttackDelay" value="6" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="2" />
+								<node name="SetValue" key="AttackDelay" value="4" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="5" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="SetValue" key="AttackDelay" value="5" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

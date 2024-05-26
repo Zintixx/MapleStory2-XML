@@ -1,0 +1,1966 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--1페이즈 졸몹호출 후 의자서 내려오기-->
+			<!--전투 활성화 되면 최초 딱 한번만 실행함-->
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="JumpPosition" value="0" />
+				<!-- 이 변수를 통해 핑크빈이 1층 전투판 점프 이동패턴때 몇시 방향에 있는지 알 수 있게 함 -->
+				<node name="SetValue" key="PositionNow" value="0" />
+				<!-- 이 변수를 통해 핑크빈이 현재 어느 전투판에 있는지를 알 수 있게 함, 지붕 전투판 패턴때 사용하는 변수임, 아리엘 여신 석상의 독필드 설치 행동과 기본 공격 행동에 사용되는 변수임 -->
+				<node name="SetValue" key="BiggerPhaseStart" value="1" />
+				<!--이 변수를 통해 덩치커짐 페이즈가 시작되었음을 알 수 있게 하는 변수임, 초기값 1로 설정함-->
+				<node name="SetValue" key="BiggerReady" value="0" />
+				<!-- 이 변수를 통해 핑크빈이 덩치커짐 버프 받을 준비가 되었음을 알림 -->
+				<node name="SetValue" key="BiggerCheck" value="0" />
+				<!-- 이 변수를 통해 동물석상에게 버프 투사체를 맞은 상태인지를 알 수 있게 함 -->
+				<node name="SetValue" key="BiggerOffCheck" value="0" />
+				<!-- 이 변수는 동물석상이 제거되면 1씩 더해지는데 결국 2가 되면 덩치커짐이 풀리게 하는데 사용되는 변수임-->
+				<node name="SetValue" key="BiggerPogoStickMode" value="0" />
+				<!-- 이 변수를 통해 거대 상태에서 스카이콩콩 공격 상황 인지 아닌지 알수 있도록 함 -->
+				<node name="SetValue" key="PogoStickMode" value="0" />
+				<!-- 이 변수를 통해 스카이콩콩 기절 패턴 모드 횟수 체크 하도록 함 -->
+				<node name="SetValue" key="PogoStickStunMode" value="0" />
+				<!-- 이 변수를 통해 스카이콩콩 기절 후 특정 공격 행동하도록 하기 위한 체크 용도 -->
+				<node name="SetValue" key="PogoStickStunAttack" value="0" />
+				<!-- 이 변수를 통해 스카이콩콩 기절 후 몇번 공격 행동을 하게 할지 위한 체크 용도 -->
+				<node name="SetValue" key="ReflectionMode" value="0" />
+				<!-- 이 변수를 통해 마지막 페이즈에서 공격 반사 페턴을 상황을 체크하기 위한 용도 -->
+				<node name="skill" facePos="1600, 1300, 1725" idx="30" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="buff" type="add" id="50001551" level="1" />
+				<!-- 의자에 올라가기전 몸 크기 -35% 줄이기-->
+				<node name="jump" pos="1600, 1300, 1725" speed="1500" heightMultiplier="0.6" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="31" />
+				<!--레벨2: 점프 착지 -->
+				<node name="SetValue" key="ChairUp" value="1" />
+				<!-- 이 변수에 1을 넣어 핑크빈이 의자 위로 올라간 상태임을 알림, 1: 의자 위에 있다는 뜻, -1: 방금 소환몹 2셋트까지 다 끝나서 곧 의자 아래로 내려와야 한다는 뜻임, 0: 메인 전투판에서 전투를 진행하고 있다는 뜻임 -->
+				<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_B" />
+				<!--Attack_Idle_B 동작때는 컬리전 박스 위로 올려서 플레이어가 공격하지 못하게 함-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="85">
+			<!--2페이즈 스카이콩콩+덩치커짐-->
+			<node name="conditions">
+				<condition name="extraData" key="ChairUp" value="1">
+					<!--1페이즈 의자 위에 있는 상태에서 HP가 깍여 의자 위에 있는 상태로 2페이즈 넘어오는 경우가 가끔 있을 수 있어서, 이 경우를 처리하기 위해 정의하는 부분임-->
+					<!--의자에서 내려와 전투판으로 오기-->
+					<node name="standby" limit="250" faceTarget="0" animation="Attack_Idle_B" isKeepBattle="true">
+						<node name="buff" type="add" id="50001552" level="1" />
+						<!-- 의자에 내려가기 전 몸크기 원상태로 돌려놓기-->
+						<node name="skill" facePos="750, 450, 1400" idx="30" />
+						<!--레벨1 일반 점프 도약 -->
+						<node name="jump" pos="750, 450, 1400" speed="1500" heightMultiplier="0.6" />
+						<!--2셋트 전투판 중앙으로 오기-->
+						<node name="skill" faceTarget="0" idx="31" />
+						<!--레벨2: 점프 착지 -->
+						<node name="SetValue" key="ChairUp" value="0" />
+						<!--이 변수를 0으로 만들어 의자 아래로 내려온 상태임을 알림 -->
+						<node name="standby" limit="2000" faceTarget="1" />
+						<!--의자에 내려온 이후 기타치기 공격때 어차피 다시 의자위로 점프 뛰어 올라가겠지만 의자 위에서 제자리 점프 동작 나오면 어색하니, 차라리 전투판에 내려와서 잠시있다 다시 올라가는 형태가 더 괜찮음 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<!--그냥 평범한 상태로  2페이즈 넘어오는 경우로 별 특별한 처리 없이 그냥 넘어감-->
+					<node name="target" type="rand" from="10" to="1500" />
+				</condition>
+			</node>
+		</condition>
+		<condition name="hpLess" value="65">
+			<!--3페이즈 지붕 점프이동-->
+			<node name="buff" type="add" id="50001067">
+				<!--덩치커짐 애디셔널 제거용도 & 스카이콩콩 상태 유뮤 확인 애디셔널도 제거함,  3페이즈 건너띄고 한번에 2페이즈에서 4페이즈로 넘어가는 경우를 대비해서 이 예약 시스템 쪽에서 아래 내용을 처리함-->
+				<node name="SetValueRangeTarget" key="ActiveStatueAnimal01" value="4" radius="3800" height="4500">
+					<!--동물석상 비활성화 상태로 만들기-->
+					<node name="SetValueRangeTarget" key="ActiveStatueAnimal02" value="4" radius="3800" height="4500">
+						<!--동물석상 비활성화 상태로 만들기-->
+						<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+						<!--미니빈에게 자살 명령을 내림 : 해당 페이즈에서 졸몹 있으면 좀 짜증나서 깔끔하게 제거해줌-->
+					</node>
+				</node>
+			</node>
+		</condition>
+		<condition name="hpLess" value="40">
+			<!--4페이즈 스카이콩콩+덩치커짐-->
+			<!--엄청중요!!: 앞선 2페이즈 스카이콩콩과 덩치커짐 관련 변수 사용했기 때문에 변수 상태가 초기화가 아니여서 로직이 꼬일 확률 대단히 높음 4페이즈 시작하자 마자 스카이콩콩과 덩치커짐 관련 변수 모조리 초기화 하는 것이 안전함-->
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="BiggerPhaseStart" value="1" />
+				<!-- 앞선 2페이즈에서 이 변수를 이미 사용했기 때문에 이미 변수가 1 이 아닌 -1 상태일 것이기 때문에 4페이즈 들어서면 무조건 이 변수 1로 초기화 시키기 시작함-->
+				<node name="SetValue" key="BiggerReady" value="0" />
+				<node name="SetValue" key="BiggerCheck" value="0" />
+				<node name="SetValue" key="BiggerOffCheck" value="0" />
+				<node name="SetValue" key="BiggerPogoStickMode" value="0" />
+				<!-- 앞선 2페이즈에서 덩치 커짐 스카이콩콩 상태에서 3페이즈 넘어왔을 경우 로직이 꼬일 수 있어서 여기서 4페이즈 때 이 변수 다시 사용하기 때문에 0으로 초기화 꼭 해야함-->
+				<node name="SetValue" key="PogoStickMode" value="0" />
+				<!-- 이 변수를 통해 스카이콩콩 기절 패턴 모드 횟수 체크 하도록 함 -->
+				<node name="SetValue" key="PogoStickStunMode" value="0" />
+				<!-- 이 변수를 통해 스카이콩콩 기절 후 특정 공격 행동하도록 하기 위한 체크 용도 -->
+				<node name="SetValue" key="PogoStickStunAttack" value="0" />
+				<!-- 이 변수를 통해 스카이콩콩 기절 후 몇번 공격 행동을 하게 할지 위한 체크 용도 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="15">
+			<!--5페이즈 공격 반사+마지막 최후의 발악-->
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<!-- 의자 위로 점프 올라가는 부분-->
+				<node name="skill" facePos="1600, 1300, 1725" idx="34" />
+				<!--레벨13  점프 도약, 덩치커짐 버프 제거하는 애디셔널이 설정되어 있음, 5페이즈 넘어오면 무조건 덩치커짐 버프 제거하는 부분 필요 , 안하면 대박 버그 생김, 스카이콩콩 상태 표시 애디셔널도 여기서 제거함 -->
+				<node name="buff" type="add" id="50001551" level="1" />
+				<!-- 의자에 올라가기전 몸 크기 -35% 줄이기-->
+				<node name="jump" pos="1600, 1300, 1725" speed="1500" heightMultiplier="0.6" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="31" />
+				<!--레벨2: 점프 착지 -->
+				<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_B" />
+				<!--Attack_Idle_B 동작때는 컬리전 박스 위로 올려서 플레이어가 공격하지 못하게 함-->
+				<!--의자 위에서 석상 활성화 하고 공격 반사 버프 사용하는 부분,                 param2="2"  마지막 페이즈에 활성화 시키기   즉  죽을 수 있는 석상 호출, 앞 페이지에서 이미 석상이 활성화 된 상태라도 param2="2" 신호를 받으면 파괴가능 석상으로 호출하고 자신은 Remove 됨-->
+				<node name="SetValueRangeTarget" key="ActiveStatueHuman01" value="2" radius="3800" height="4500" />
+				<node name="SetValueRangeTarget" key="ActiveStatueHuman02" value="2" radius="3800" height="4500" />
+				<node name="SetValueRangeTarget" key="ActiveStatueAnimal01" value="2" radius="3800" height="4500" />
+				<node name="SetValueRangeTarget" key="ActiveStatueAnimal02" value="2" radius="3800" height="4500" />
+				<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="2" radius="3800" height="4500" />
+				<node name="skill" facePos="750, 450, 1725" idx="28" />
+				<!--레벨1: 공격 반사 버프 사용해서 자신 몸에 걸기-->
+				<node name="standby" limit="2230" faceTarget="1" />
+				<!--석상이 공격 상태로 전환되어 ReflectionMode + 1 신호 받을 때까지 약간의 시간이 걸리가 때문에 2초 정도 standby 상태가 되도록 함-->
+				<!-- 의자 아래로 점프 내려오는 부분-->
+				<node name="buff" type="add" id="50001552" level="1" />
+				<!-- 의자에 내려가기 전 몸크기 원상태로 돌려놓기-->
+				<node name="skill" facePos="750, 450, 1400" idx="30" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="750, 450, 1400" speed="1500" heightMultiplier="0.6" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="31" />
+				<!--레벨2: 점프 착지 -->
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="announce" message="$Pinkbean_Reflection$" durationTick="13000" />
+				<!-- 메시지 알림, 모든 석상을 파괴해야 공격반사 버프가 사라진다는 것을 시스템 메시지로 알려줌-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="hpOver" value="85">
+				<!--1페이즈: 점프 이동 공격 패턴   100~85% -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="30">
+						<node name="select" prob="99999,0">
+							<!--같은 높이 전투판에 있고 사정거리 1600~1800 이내로 들어오면-->
+							<!--## 1페이지를 일정 시간 넘기지 못하면 다시 소환몹 패턴 처음부타 다시 시작하는 형태가 됨 ##, 그냥 시간 무한 넣어 시간 상관 없이 미니빈 다 잡으면 넘어가게 하기-->
+							<node name="standby" limit="300" faceTarget="1" cooltime="9999000">
+								<node name="conditions">
+									<condition name="extraData" key="ChairUp" value="1">
+										<!--핑크빈이 의자위에 있는 상태에서 1페이지 시간 제한이 된 상황이라면 의자위로 점프 뛰는 행동 없이 핵심 변수 0으로 초기화 하고 소환몹 다시 호출해 빈칸 채워 넣기-->
+										<node name="SetValue" key="CheckSummonMany" value="0">
+											<!-- 이 변수를 통해 소환몹이 얼만큼 남아있는지 알 수 있게 함, 쿨타임이 돌아오면 이 변수 다시 사용을 위해 초기화 하는 설정임 -->
+											<node name="SetValue" key="CheckSummonSecondRound" value="0">
+												<!-- 최초 페이지 소환몹 전투 1셋트 끝나고 2셋트 들어설때를 알리는데 사용되는 변수, 쿨타임이 돌아오면 이 변수 다시 사용을 위해 초기화 하는 설정임 -->
+												<aiPreset name="SummonCall" />
+												<!--1페이즈에서 소환몹 호출 형태 정의하는 부분 -->
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<!--핑크빈이 의자에서 내려온 상태에서 1페이지 시간 제한이 된 상황이라면 의자위로 점프 뛰는 행동 하고 핵심 변수 0으로 초기화 하고 소환몹 다시 호출해 빈칸 채워 넣기-->
+										<node name="skill" facePos="1600, 1300, 1725" idx="30">
+											<!--레벨1 일반 점프 도약 -->
+											<node name="buff" type="add" id="50001551" level="1">
+												<!-- 의자에 올라가기전 몸 크기 -35% 줄이기-->
+												<node name="jump" pos="1600, 1300, 1725" speed="1500" heightMultiplier="0.6">
+													<!--2셋트 전투판 중앙으로 오기-->
+													<node name="skill" faceTarget="0" idx="31">
+														<!--레벨2: 점프 착지 -->
+														<node name="SetValue" key="ChairUp" value="1">
+															<!-- 이 변수에 1을 넣어 핑크빈이 의자 위로 올라간 상태임을 알림 -->
+															<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_B">
+																<!--Attack_Idle_B 동작때는 컬리전 박스 위로 올려서 플레이어가 공격하지 못하게 함-->
+																<node name="SetValue" key="CheckSummonMany" value="0">
+																	<!-- 이 변수를 통해 소환몹이 얼만큼 남아있는지 알 수 있게 함, 쿨타임이 돌아오면 이 변수 다시 사용을 위해 초기화 하는 설정임 -->
+																	<node name="SetValue" key="CheckSummonSecondRound" value="0">
+																		<!-- 최초 페이지 소환몹 전투 1셋트 끝나고 2셋트 들어설때를 알리는데 사용되는 변수, 쿨타임이 돌아오면 이 변수 다시 사용을 위해 초기화 하는 설정임 -->
+																		<aiPreset name="SummonCall" />
+																		<!--1페이즈에서 소환몹 호출 형태 정의하는 부분 -->
+																	</node>
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+							<node name="conditions">
+								<condition name="extraData" key="ChairUp" value="1">
+									<!--ChairUp = 1 즉  핑크빈이 의자 위에 있는 상태라면-->
+									<node name="conditions">
+										<condition name="extraData" key="CheckSummonSecondRound" value="2">
+											<!--이 변수가 2라는 것은 소환몹 전투 2셋트까지 전부 끝났음을 알리는 것임-->
+											<node name="SetValue" key="ChairUp" value="-1" />
+											<!--이 변수를 -1로 만들어 다음 턴때 핑크빈을 전투판으로 뛰어 내려오게 하여 본격 1페이즈 전투를 하도록 함-->
+										</condition>
+										<condition name="extraData" key="CheckSummonMany" value="0" op="lessEqual">
+											<!--소환 몸 1셋트 무리를 어느 정도 처리해으면 2셋트 무리 호출하기-->
+											<node name="conditions">
+												<condition name="extraData" key="CheckSummonSecondRound" value="1">
+													<!--이 변수가 1이라는 것은 이미 2셋트 소환몹을 호출했다는 뜻이므로 여기서는, 이 변수 1을 더해서 의자에서 내려오도록 설정함 -->
+													<node name="SetValue" key="CheckSummonSecondRound" value="1" isModify="1" />
+												</condition>
+												<condition name="true">
+													<!--이 변수가 0이라는 것은 아직 1셋트만 끝났다는 뜻이기 때문에, 이 변수 1을 더하고 2셋트용 소환몹을 호출하도록 함  -->
+													<node name="SetValue" key="CheckSummonSecondRound" value="1" isModify="1">
+														<aiPreset name="SummonCall" />
+														<!--1페이즈에서 소환몹 호출 형태 정의하는 부분 , 즉 2셋트용 소환몹 호출하는 부분임-->
+													</node>
+												</condition>
+											</node>
+										</condition>
+										<condition name="true">
+											<!--플레이어가 소환몹과 전투할 때 핑크빈이 의자 위에서의 행동 정의하는 부분, 즉 CheckSummonMany 이 변수가 1 이상 소환몹이 어느정도 많이 남아있고, CheckSummonSecondRound 이 변수 1 이하 즉 소환몹 전투 2라운드가 종료 시점이 아닌 경우임 -->
+											<aiPreset name="ChairProvoke" />
+											<!-- 의자 위에서 도발 행동 패턴을 정의하는 부분-->
+										</condition>
+									</node>
+								</condition>
+								<condition name="extraData" key="ChairUp" value="-1">
+									<!--ChairUp = -1 즉 핑크빈이 의자 위에 있는 상태라면-->
+									<!--의자에서 내려와 메인 전투판으로 오기-->
+									<node name="standby" limit="300" faceTarget="0" animation="Attack_Idle_B" isKeepBattle="true">
+										<node name="buff" type="add" id="50001552" level="1" />
+										<!-- 의자에 내려가기 전 몸크기 원상태로 돌려놓기-->
+										<node name="skill" facePos="750, 450, 1400" idx="30" />
+										<!--레벨1 일반 점프 도약 -->
+										<node name="jump" pos="750, 450, 1400" speed="1500" heightMultiplier="0.6" />
+										<!--2셋트 전투판 중앙으로 오기-->
+										<node name="skill" faceTarget="0" idx="31" />
+										<!--레벨2: 점프 착지 -->
+										<node name="SetValue" key="ChairUp" value="0" />
+										<!--이 변수를 0으로  만들어 다음 턴때 메인 전투판에서 1페이즈 전투 진행하도록 함-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="399,18,18,18,18,28">
+										<!--ChairUp = 0 즉 핑크빈이 의자에서 메인 전투판으로 점프 뛰어 내린 다음에 이후 본격 전투 행동을 하는 부분임-->
+										<!-- ## 의자에 내려오면 본격 1페이즈 전투를 시작함 -->
+										<!--방향키 반대 순간이동 공격-->
+										<node name="say" message="$Pinkbean_Controller$" durationTick="7000" cooltime="46000">
+											<node name="skill" idx="23">
+												<node name="select" prob="28,28,22,22">
+													<node name="teleport" pos="-150, 1050, 1400" cooltime="158000">
+														<!--9시 방향-->
+														<node name="skill" idx="24">
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+													<node name="teleport" pos="1500, -500, 1400" cooltime="158000">
+														<!--2시 방향-->
+														<node name="skill" idx="24">
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+													<node name="teleport" pos="1300, 1000, 1400" cooltime="158000">
+														<!--12시 방향-->
+														<node name="skill" idx="24">
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+													<node name="teleport" pos="-150, -450, 1400">
+														<!--6시 방향-->
+														<node name="skill" idx="24">
+															<node name="standby" limit="1000" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="skill" facePos="1350, 300, 1360" cooltime="9000" isKeepBattle="true" idx="30">
+											<!--2시 지점으로 점프 -->
+											<node name="jump" pos="1350, 300, 1360" speed="1300" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="31" />
+											<!--점프 착지 -->
+											<node name="SetValue" key="JumpPosition" value="2" />
+											<!--1층 전투판 2시 지점에 있음을 알림 -->
+											<node name="target" type="near" from="5" to="1300" />
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+										<node name="skill" facePos="600, -450, 1360" cooltime="9000" isKeepBattle="true" idx="30">
+											<!--4시 지점으로 점프 -->
+											<node name="jump" pos="600, -450, 1360" speed="1300" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="31" />
+											<!--점프 착지 -->
+											<node name="SetValue" key="JumpPosition" value="4" />
+											<!--1층 전투판 4시 지점에 있음을 알림 -->
+											<node name="target" type="near" from="5" to="1300" />
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+										<node name="skill" facePos="-150, 300, 1360" cooltime="9000" isKeepBattle="true" idx="30">
+											<!--8시 지점으로 점프 -->
+											<node name="jump" pos="-150, 300, 1360" speed="1300" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="31" />
+											<!--점프 착지 -->
+											<node name="SetValue" key="JumpPosition" value="8" />
+											<!--1층 전투판 8시 지점에 있음을 알림 -->
+											<node name="target" type="near" from="5" to="1300" />
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+										<node name="skill" facePos="600, 1050, 1360" cooltime="9000" isKeepBattle="true" idx="30">
+											<!--10시 지점으로 점프 -->
+											<node name="jump" pos="600, 1050, 1360" speed="1300" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="31" />
+											<!--점프 착지 -->
+											<node name="SetValue" key="JumpPosition" value="10" />
+											<!--1층 전투판 10시 지점에 있음을 알림 -->
+											<node name="target" type="near" from="5" to="1300" />
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+										<!--통상 공격 행동 -->
+										<node name="standby" limit="100" faceTarget="1">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="16">
+													<node name="select" prob="23,45,30,1">
+														<!--사정거리 1070 이내에 있으면-->
+														<node name="standby" limit="500" faceTarget="1" cooltime="25000">
+															<!--롤링어택-->
+															<aiPreset name="RolingAttack_Main" />
+														</node>
+														<node name="say" message="$Pinkbean_Yoyo01$" durationTick="5000" cooltime="26000">
+															<node name="skill" facePos="600, 300, 1350" idx="12">
+																<!--요요 공격 한 다음에 다른족 지점으로 순간이동 도망가기-->
+																<node name="say" message="$Pinkbean_Yoyo02$" durationTick="5000">
+																	<node name="conditions">
+																		<condition name="extraData" key="JumpPosition" value="2">
+																			<node name="select" prob="0,0">
+																				<!--1층 전투판 2시 방향에 있는 상태라면 -->
+																				<aiPreset name="TeleportYoyo6" />
+																				<aiPreset name="TeleportYoyo9" />
+																			</node>
+																		</condition>
+																		<condition name="extraData" key="JumpPosition" value="4">
+																			<node name="select" prob="0,0">
+																				<!--1층 전투판 4시 방향에 있는 상태라면 -->
+																				<aiPreset name="TeleportYoyo9" />
+																				<aiPreset name="TeleportYoyo12" />
+																			</node>
+																		</condition>
+																		<condition name="extraData" key="JumpPosition" value="8">
+																			<node name="select" prob="0,0">
+																				<!--1층 전투판 8시 방향에 있는 상태라면 -->
+																				<aiPreset name="TeleportYoyo3" />
+																				<aiPreset name="TeleportYoyo12" />
+																			</node>
+																		</condition>
+																		<condition name="true">
+																			<node name="select" prob="0,0">
+																				<!--1층 전투판 10시 방향에 있는 상태라면 -->
+																				<aiPreset name="TeleportYoyo3" />
+																				<aiPreset name="TeleportYoyo6" />
+																			</node>
+																		</condition>
+																	</node>
+																</node>
+															</node>
+														</node>
+														<node name="skill" faceTarget="1" cooltime="8000" idx="16">
+															<!--스피커-->
+															<node name="standby" limit="1500" faceTarget="1">
+																<node name="target" type="rand" from="10" to="1300" />
+															</node>
+														</node>
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</condition>
+												<condition name="skillRange" skillIdx="12">
+													<!--같은 1층 전투판에 있으면-->
+													<node name="trace" limit="3000" cooltime="15000" skillIdx="16" />
+													<!--거리 1070까지 다가가기-->
+												</condition>
+												<condition name="true">
+													<node name="standby" limit="500" faceTarget="1">
+														<node name="target" type="near" from="10" to="1300" />
+													</node>
+												</condition>
+											</node>
+										</node>
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="1000" faceTarget="0">
+							<node name="target" type="near" from="10" to="2500" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="hpOver" value="65">
+				<node name="select" prob="99999,0">
+					<!--2페이즈: 스카이 콩콩 패턴 + 석상 덩치커짐 패턴 + HP 1 공격 패턴  85~65% -->
+					<!--2페이즈 시작되면 의자 위로 올라가 기타치기 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+						<aiPreset name="ChairGuitar_TwoSpeakers" />
+						<!--2페이즈 전용 기타치기 스피커 2개 설치 -->
+					</node>
+					<node name="conditions">
+						<condition name="additional" id="50004510">
+							<!--핑크빈이 스피커를 밟으면 무조건 50004510 애디셔널이 걸리는데, 스카이 콩콩 패턴 상태에서 밟으면 기절하면서  PogoStick 변수 -1씩 하도록 함-->
+							<!--이전 페이지에지 스피커 한개를 건너 띄어서 스카이콩콩이 아닌 상황에서도 스피커를 밟아서 여기 단계에 올 수도 있는데, 그때를 대비한 처리도 이루어 지도록 하였음-->
+							<node name="conditions">
+								<condition name="extraData" key="PogoStickMode" value="1" op="greaterEqual">
+									<!--정상적으로 스카이콩콩 패턴 상태에서 스피커를 밟았을 경우 처리하는 부분-->
+									<node name="say" message="$Pinkbean_PogoStickStun$" durationTick="5000" isKeepBattle="true">
+										<node name="SetValue" key="PogoStickMode" value="-1" isModify="1" />
+										<!-- 이 변수 -1씩 하여 최종 0 이 되면 스카이콩콩 공격 그만 하도록 함 -->
+										<node name="buff" type="remove" id="50004510" />
+										<!--스피커 밟았는지 유무 체크하기 위한 애디셔널 제거하기-->
+										<node name="SetValue" key="PogoStickStunMode" value="1" />
+										<!-- 이 변수를 1로 만들어 기절후 일반 공격 모드가 되도록 함-->
+										<node name="SetValue" key="PogoStickStunAttack" value="3" />
+										<!-- 이 변수를 3으로 만들어 기절이 끝나면 이후 한두번의 공격 행위를 한 다음에 다시 스카이 콩콩으로 오도록 함-->
+										<node name="standby" limit="1200" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--이전 페이지에지 스피커 한개를 건너 띄어서 거대 스카이콩콩 상태에서 스피커를 밟아 폭발 시킬 경우 아무런 일도 일어나지 않게끔 함-->
+									<!--혹은 스카이콩콩 끝나고 거대화 패턴도 끝난 일반 상태에서도 스피커를 밟아 이 단게에 올수도 있는데, 이때도 아무런 일도 일어나지 않게끔 함-->
+									<node name="buff" type="remove" id="50004510" />
+									<!--스피커 밟을 때 몸에 붙는 애디서널 제거하여 바로 이 단계에서 빠져 나오도록 함-->
+								</condition>
+							</node>
+						</condition>
+						<condition name="extraData" key="PogoStickStunMode" value="1">
+							<!--스카이 콩콩 기절 이후 몇번 공격 행위 한 다음 다시 스카이 콩콩 타기-->
+							<aiPreset name="CheckLogic_PogoStickStun" />
+							<!--이 로직 처리 부분에서  PogoStickMode 이 변수가 0 이하면 PogoStickStunMode   PogoStickStunAttack  변수 초기화 하고 바로 빠져나오도록 설정하였음-->
+						</condition>
+						<condition name="extraData" key="PogoStickMode" value="1" op="greaterEqual">
+							<!--스카이 콩콩 공격 패턴-->
+							<aiPreset name="Pattern_PogoStickAttack" />
+						</condition>
+						<condition name="true">
+							<!--스카이 콩콩 패턴 끝나고 이후 거대화 공격 패턴 행위를 하도록 함-->
+							<aiPreset name="Pattern_BiggerCheck" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="40">
+				<node name="select" prob="9999,0">
+					<!--3페이즈: 2층 지붕 패턴  65~40%-->
+					<!--최초 이 페이즈에 들어서면 2층 지붕 전투판 11시 지점으로 이동하기-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="41000">
+						<aiPreset name="Pattern_RoofJumpMove" />
+						<!--전투판 천장 점프이동 패턴 행동 정의하는 부분-->
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="16">
+							<node name="select" prob="32,32,18,18">
+								<!--2층 지붕 같은 전투판 그리고 한칸 아래까지 커버 -->
+								<node name="skill" faceTarget="1" cooltime="8000" idx="16">
+									<!--스피커-->
+									<node name="standby" limit="1500" faceTarget="1">
+										<node name="target" type="rand" from="10" to="1800" />
+									</node>
+								</node>
+								<node name="standby" limit="500" faceTarget="1" cooltime="26000">
+									<!--롤링어택-->
+									<aiPreset name="RolingAttack_Upper" />
+								</node>
+								<node name="say" message="$Pinkbean_Dance01$" durationTick="5000" cooltime="12000">
+									<node name="skill" faceTarget="1" idx="15">
+										<!--빛기둥 공격-->
+										<node name="standby" limit="1500" faceTarget="1">
+											<node name="target" type="rand" from="10" to="1800" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="1">
+									<!--롤링어택 짧게 공격-->
+									<node name="target" type="rand" from="10" to="1800" />
+									<node name="skill" faceTarget="1" idx="2" />
+									<node name="skill" faceTarget="0" idx="3" />
+									<!--근거리-->
+									<node name="target" type="near" from="10" to="1800" />
+									<node name="skill" faceTarget="0" idx="3" />
+									<!--근거리-->
+									<node name="skill" faceTarget="0" idx="6" />
+									<!--마무리-->
+									<node name="target" type="rand" from="10" to="1800" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="15">
+							<node name="select" prob="70,30">
+								<!--2층 지붕 같은 전투판 그리고 큐브 두칸 아래까지 커버, 즉 모든 파티원이 핑크빈을 무시하고 2층 지붕 지형 난간으로 내려와  석상을 공격할 경우 핑크빈이 상당히 적극적으로 방해하는 공격 행위-->
+								<node name="say" message="$Pinkbean_Dance02$" durationTick="5000">
+									<node name="skill" faceTarget="1" idx="15">
+										<!--빛기둥 공격-->
+										<node name="target" type="near" from="10" to="2100">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="1500" faceTarget="1">
+									<node name="target" type="near" from="10" to="2100" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--공격 대상이 저 멀리 있으면 가만히 서있기 -->
+							<node name="standby" limit="800" faceTarget="1">
+								<node name="target" type="near" from="10" to="2100" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="15">
+				<node name="select" prob="99999,0">
+					<!--4페이즈: 스카이 콩콩 패턴 + 석상 덩치커짐 패턴 + HP 1 공격 패턴 40~15%-->
+					<!--4페이즈 시작되면 의자 위로 올라가 기타치기 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+						<aiPreset name="ChairGuitar_ThreeSpeakers" />
+						<!--4페이즈 전용 기타치기 스피커 3개 설치 -->
+					</node>
+					<node name="conditions">
+						<condition name="additional" id="50004510">
+							<!--핑크빈이 스피커를 밟으면 무조건 50004510 애디셔널이 걸리는데, 스카이 콩콩 패턴 상태에서 밟으면 기절하면서  PogoStick 변수 -1씩 하도록 함-->
+							<!--이전 페이지에지 스피커 한개를 건너 띄어서 스카이콩콩이 아닌 상황에서도 스피커를 밟아서 여기 단계에 올 수도 있는데, 그때를 대비한 처리도 이루어 지도록 하였음-->
+							<node name="conditions">
+								<condition name="extraData" key="PogoStickMode" value="1" op="greaterEqual">
+									<!--정상적으로 스카이콩콩 패턴 상태에서 스피커를 밟았을 경우 처리하는 부분-->
+									<node name="say" message="$Pinkbean_PogoStickStun$" durationTick="5000" isKeepBattle="true">
+										<node name="SetValue" key="PogoStickMode" value="-1" isModify="1" />
+										<!-- 이 변수 -1씩 하여 최종 0 이 되면 스카이콩콩 공격 그만 하도록 함 -->
+										<node name="buff" type="remove" id="50004510" />
+										<!--스피커 밟았는지 유무 체크하기 위한 애디셔널 제거하기-->
+										<node name="SetValue" key="PogoStickStunMode" value="1" />
+										<!-- 이 변수를 1로 만들어 기절후 일반 공격 모드가 되도록 함-->
+										<node name="SetValue" key="PogoStickStunAttack" value="3" />
+										<!-- 이 변수를 3으로 만들어 기절이 끝나면 이후 한두번의 공격 행위를 한 다음에 다시 스카이 콩콩으로 오도록 함-->
+										<node name="standby" limit="1200" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--이전 페이지에지 스피커 한개를 건너 띄어서 거대 스카이콩콩 상태에서 스피커를 밟아 폭발 시킬 경우 아무런 일도 일어나지 않게끔 함-->
+									<!--혹은 스카이콩콩 끝나고 거대화 패턴도 끝난 일반 상태에서도 스피커를 밟아 이 단게에 올수도 있는데, 이때도 아무런 일도 일어나지 않게끔 함-->
+									<node name="buff" type="remove" id="50004510" />
+									<!--스피커 밟을 때 몸에 붙는 애디서널 제거하여 바로 이 단계에서 빠져 나오도록 함-->
+								</condition>
+							</node>
+						</condition>
+						<condition name="extraData" key="PogoStickStunMode" value="1">
+							<!--스카이 콩콩 기절 이후 몇번 공격 행위 한 다음 다시 스카이 콩콩 타기-->
+							<aiPreset name="CheckLogic_PogoStickStun" />
+							<!--이 로직 처리 부분에서  PogoStickMode 이 변수가 0 이하면 PogoStickStunMode   PogoStickStunAttack  변수 초기화 하고 바로 빠져나오도록 설정하였음-->
+						</condition>
+						<condition name="extraData" key="PogoStickMode" value="1" op="greaterEqual">
+							<!--스카이 콩콩 공격 패턴-->
+							<aiPreset name="Pattern_PogoStickAttack" />
+						</condition>
+						<condition name="true">
+							<!--스카이 콩콩 패턴 끝나고 이후 다른 공격 패턴 행위를 하도록 함-->
+							<aiPreset name="Pattern_BiggerCheck" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<!--5페이즈: 최후의 발악 패턴,  석상 5개 전부 출동 + 마법 반사  15~0%-->
+				<node name="conditions">
+					<condition name="extraData" key="ReflectionMode" value="1" op="greaterEqual">
+						<node name="select" prob="99999,0">
+							<!--공격 반사 버프 상태이면 핑크빈이 석상 주변을 점프 이동하는 행동을 하도록 함-->
+							<!--플레이어가 석상 공격 못하도록 방해하기 위해 주기적으로 점프 이동하는 부분 -->
+							<node name="standby" limit="300" faceTarget="1" cooltime="25000">
+								<node name="select" prob="20,20,20,20,20">
+									<node name="skill" facePos="525, 1500, 1550" cooltime="88000" isKeepBattle="true" idx="30">
+										<!--왼쪽 노인 석상쪽 -->
+										<node name="jump" pos="525, 1500, 1550" speed="1500" heightMultiplier="0.3" />
+										<node name="skill" faceTarget="0" idx="31" />
+										<!--레벨2: 점프 착지 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="say" message="$Pinkbean_Provoke01$" durationTick="9000" />
+										<!--자신을 때리라고 도발하는 듯한 대사-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" facePos="1900, 1600, 2500" cooltime="88000" isKeepBattle="true" idx="30">
+										<!--가운데 위쪽 여신 석상쪽 -->
+										<node name="jump" pos="1900, 1600, 2500" speed="1500" heightMultiplier="0.3" />
+										<node name="skill" faceTarget="0" idx="31" />
+										<!--레벨2: 점프 착지 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="say" message="$Pinkbean_Provoke02$" durationTick="9000" />
+										<!--자신을 때리라고 도발하는 듯한 대사-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" facePos="1800, 225, 1550" cooltime="88000" isKeepBattle="true" idx="30">
+										<!--오른쪽 노인 석상쪽 -->
+										<node name="jump" pos="1800, 225, 1550" speed="1500" heightMultiplier="0.3" />
+										<node name="skill" faceTarget="0" idx="31" />
+										<!--레벨2: 점프 착지 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="say" message="$Pinkbean_Provoke01$" durationTick="9000" />
+										<!--자신을 때리라고 도발하는 듯한 대사-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" facePos="800, 1700, 1550" cooltime="88000" isKeepBattle="true" idx="30">
+										<!--왼쪽 동물 석상쪽 -->
+										<node name="jump" pos="800, 1700, 1550" speed="1500" heightMultiplier="0.3" />
+										<node name="skill" faceTarget="0" idx="31" />
+										<!--레벨2: 점프 착지 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="say" message="$Pinkbean_Provoke02$" durationTick="9000" />
+										<!--자신을 때리라고 도발하는 듯한 대사-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+									<node name="skill" facePos="2000, 500, 1550" cooltime="88000" isKeepBattle="true" idx="30">
+										<!--오른쪽 동물 석상쪽 -->
+										<node name="jump" pos="2000, 500, 1550" speed="1500" heightMultiplier="0.3" />
+										<node name="skill" faceTarget="0" idx="31" />
+										<!--레벨2: 점프 착지 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+										<node name="say" message="$Pinkbean_Provoke01$" durationTick="9000" />
+										<!--자신을 때리라고 도발하는 듯한 대사-->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="40">
+									<node name="select" prob="22,24,18,18,18">
+										<!--플레이어가 같은 높이 대상 아래 큐브 한칸 지형 까지 있는 경우에는 도발 행동 위주로 함 -->
+										<node name="skill" facePos="-3550, -3850, 1550" idx="40">
+											<!--레벨2: 헤드셋 착용, 컬리전박스 타격 가능 -->
+											<node name="standby" limit="4200" faceTarget="1">
+												<node name="target" type="mid" from="10" to="1300" />
+											</node>
+										</node>
+										<node name="skill" facePos="-3550, -3850, 1550" cooltime="24000" idx="26">
+											<!--플레이어 공격!!: 음악폭탁 유도탄 투척 -->
+											<node name="standby" limit="3600" faceTarget="1">
+												<node name="target" type="mid" from="10" to="1300" />
+											</node>
+										</node>
+										<node name="skill" facePos="-3550, -3850, 1550" cooltime="25000" idx="36">
+											<!--레벨2: 동그리, 컬리전박스 타격 가능 -->
+											<node name="standby" limit="4600" faceTarget="1">
+												<node name="target" type="mid" from="10" to="1300" />
+											</node>
+										</node>
+										<node name="skill" facePos="-3550, -3850, 1550" cooltime="25000" idx="38">
+											<!--레벨2: 스카이콩콩, 컬리전박스 타격 가능 -->
+											<node name="standby" limit="4800" faceTarget="1">
+												<node name="target" type="mid" from="10" to="1300" />
+											</node>
+										</node>
+										<node name="skill" facePos="-3550, -3850, 1550" cooltime="25000" idx="52">
+											<!--레벨6: 제자리 빙빙 돌기 -->
+											<node name="standby" limit="4100" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="skillRange" skillIdx="15">
+									<node name="select" prob="60,40">
+										<!--핑크빈이 2층 천장 가운데 지형에 있고, 플레이어는 여신 석상을 공격하고 있는 상황에 빛기둥 공격을 가함 -->
+										<node name="skill" facePos="-3550, -3850, 1550" cooltime="24000" idx="15">
+											<!--레벨1:  빛기둥 공격 -->
+											<node name="standby" limit="2000" faceTarget="1">
+												<node name="target" type="near" from="10" to="2100" />
+											</node>
+										</node>
+										<node name="skill" facePos="-3550, -3850, 1550" idx="52">
+											<!--레벨6: 제자리 빙빙 돌기 -->
+											<node name="standby" limit="3300" faceTarget="1">
+												<node name="target" type="near" from="10" to="2100" />
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="2300" faceTarget="1">
+										<node name="target" type="near" from="10" to="2100" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="99999,299,0">
+							<!--석상 5개가 다 죽어서  ReflectionMode=0 이 되면 공격 반사 버프 풀고 마지막 페이즈 공격 행동을 함-->
+							<node name="skill" faceTarget="1" cooltime="9999999" isKeepBattle="true" idx="29">
+								<!--레벨2: 공격반사 버프 제거-->
+								<!--2층 지붕 가운데 전투판으로 이동함 -->
+								<node name="skill" facePos="2311, 1994, 2450" idx="30" />
+								<!--레벨1 일반 점프 도약 -->
+								<node name="jump" pos="2311, 1994, 2450" speed="1500" heightMultiplier="0.6" />
+								<!--2셋트 전투판 중앙으로 오기-->
+								<node name="teleport" pos="2311, 1994, 2450" />
+								<!--혹시 점프 이동중 지형에 걸려서 2층 지형으로 이동하지 못하는 경우를 대비하여 순간이동 기능을 넣음 -->
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--레벨2: 점프 착지 -->
+								<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+								<!--미니빈에게 자살 명령을 내림 -->
+								<node name="standby" limit="500" faceTarget="1" />
+								<!--standby 짧게 하여 신속하게 다음 동작으로 이어지도록-->
+								<node name="target" type="near" from="10" to="2500" />
+							</node>
+							<node name="standby" limit="1200" faceTarget="0" animation="Attack_01_E_Loop" cooltime="43000">
+								<!--Attack_01_E_Loop 애니 길이가 1.2초임 -->
+								<node name="say" message="$Pinkbean_FinalPhase01$" durationTick="3000">
+									<node name="select" prob="50,50">
+										<node name="skill" faceTarget="0" cooltime="90000" idx="50" />
+										<!--레벨4: 지풍지형 바닥 음표 큐브 패턴1 -->
+										<node name="skill" faceTarget="0" cooltime="90000" idx="51" />
+										<!--레벨5: 지풍지형 바닥 음표 큐브 패턴2-->
+									</node>
+								</node>
+							</node>
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="49">
+									<node name="select" prob="52,11,12,11,11,3">
+										<!-- 레벨3: 공격 대상이 2층 지붕 위로 올라와 있으면, 지붕 기준 큐브 2칸 아래까지 커버함-->
+										<node name="say" message="$Pinkbean_FinalPhase05$" durationTick="3000" cooltime="24000">
+											<node name="skill" faceTarget="0" idx="49">
+												<!--레벨3: 음악폭발 투척 -->
+												<node name="skill" faceTarget="0" idx="52">
+													<!--레벨6: 대기 동작 -->
+													<node name="target" type="near" from="10" to="2500" />
+												</node>
+											</node>
+										</node>
+										<node name="skill" faceTarget="0" cooltime="8000" isKeepBattle="true" idx="47">
+											<!--레벨1: 빛기둥 2개 -->
+											<node name="say" message="$Pinkbean_FinalPhase02$" durationTick="3000" />
+											<node name="skill" faceTarget="0" idx="52" />
+											<!--레벨6: 대기 동작 -->
+											<node name="target" type="near" from="10" to="2500" />
+										</node>
+										<node name="skill" faceTarget="0" cooltime="8000" isKeepBattle="true" idx="48">
+											<!--레벨2: 빛기둥 3개 -->
+											<node name="skill" faceTarget="0" idx="47" />
+											<!--레벨1: 빛기둥 2개 -->
+											<node name="skill" faceTarget="0" idx="52" />
+											<!--레벨6: 대기 동작 -->
+											<node name="target" type="near" from="10" to="2500" />
+										</node>
+										<node name="skill" faceTarget="0" cooltime="8000" isKeepBattle="true" idx="47">
+											<!--레벨1: 빛기둥 2개 -->
+											<node name="say" message="$Pinkbean_FinalPhase03$" durationTick="3000" />
+											<node name="skill" faceTarget="0" idx="48" />
+											<!--레벨1: 빛기둥 3개 -->
+											<node name="skill" faceTarget="0" idx="47" />
+											<!--레벨2: 빛기둥 2개 -->
+											<node name="skill" faceTarget="0" idx="52" />
+											<!--레벨6: 대기 동작 -->
+											<node name="target" type="near" from="10" to="2500" />
+										</node>
+										<node name="standby" limit="1200" faceTarget="0" animation="Attack_01_E_Loop" cooltime="9000" isKeepBattle="true">
+											<node name="target" type="rand" from="10" to="1200" />
+											<node name="say" message="$Pinkbean_FinalPhase04$" durationTick="3000" />
+											<node name="skill" faceTarget="0" idx="18" />
+											<!--레벨3:  확성기 광폭패턴 전용-->
+										</node>
+										<node name="standby" limit="1200" faceTarget="0" animation="Attack_01_E_Loop">
+											<node name="target" type="near" from="10" to="2500" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="1200" faceTarget="0" animation="Attack_01_E_Loop">
+										<node name="target" type="near" from="10" to="2500" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--혹시 핑크빈이 죽었는데, 남아있는 석상이 있는 경우 이 석상을 비활성화 시키기 위해 아래 설정을 넣음-->
+		<node name="SetValueRangeTarget" key="ActiveStatueHuman01" value="4" radius="3800" height="4500">
+			<node name="SetValueRangeTarget" key="ActiveStatueHuman02" value="4" radius="3800" height="4500">
+				<node name="SetValueRangeTarget" key="ActiveStatueAnimal01" value="4" radius="3800" height="4500">
+					<node name="SetValueRangeTarget" key="ActiveStatueAnimal02" value="4" radius="3800" height="4500">
+						<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="4" radius="3800" height="4500"></node>
+					</node>
+				</node>
+			</node>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<!-- 1페이즈에서 미니빈 소환몹 생성과 석상 2개 활성화 시키면서 호루라가 부는 동작을 정의하는 부분 -->
+		<aiPreset name="SummonCall">
+			<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_B" isKeepBattle="true">
+				<node name="SetValue" key="CheckSummonMany" value="23" />
+				<!--소환몸 25% 정도 남으면 다음 라운드 행동을 하도록 해야해서 이 변수를 소환몹 수의 80%정도 수량으로 입력함-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" delayTick="1500" summonPos="1200, 1050, 1350" summonRot="0,0,-50" />
+				<!--12시쪽 중앙-->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" delayTick="1500" summonPos="900, 1050, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" delayTick="1500" summonPos="600, 1050, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="104" delayTick="1500" summonPos="300, 1050, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" delayTick="1500" summonPos="0, 1050, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="106" delayTick="1500" summonPos="-150, 900, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="107" delayTick="1500" summonPos="-300, 750, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="108" delayTick="1500" summonPos="-300, 450,1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="109" delayTick="1500" summonPos="-300, 150,1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="110" delayTick="1500" summonPos="-300, -150,1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="111" delayTick="1500" summonPos="-150, -300,1350" summonRot="0,0,-50" />
+				<!--6시쪽 중앙-->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="112" delayTick="1500" summonPos="0, -450,1350" summonRot="0,0,-50" />
+				<!--6시쪽 중앙-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="113" delayTick="1500" summonPos="1350, 900, 1350" summonRot="0,0,-50" />
+				<!--12시쪽 중앙-->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="114" delayTick="1500" summonPos="1350, 600, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="115" delayTick="1500" summonPos="1350, 300, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="116" delayTick="1500" summonPos="1350, 0, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="117" delayTick="1500" summonPos="1350, -300, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="118" delayTick="1500" summonPos="1200, -450, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="119" delayTick="1500" summonPos="1050, -600, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="120" delayTick="1500" summonPos="750, -600, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="121" delayTick="1500" summonPos="450, -600, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="122" delayTick="1500" summonPos="150, -600, 1350" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="123" delayTick="1500" summonPos="1050, 750, 1350" summonRot="0,0,-50" />
+				<!-- 석상 활성화 상태로 만들기 -->
+				<node name="SetValueRangeTarget" key="ActiveStatueHuman01" value="1" radius="3800" height="4500" />
+				<node name="SetValueRangeTarget" key="ActiveStatueHuman02" value="1" radius="3800" height="4500" />
+				<node name="say" message="$Pinkbean_Summon01$" durationTick="7000" />
+				<node name="skill" facePos="750, 450, 1400" idx="19" />
+				<!--레벨1: 호루라기 불기 행동, 컬리전 박스 위로 올려 때리지 못함 -->
+			</node>
+		</aiPreset>
+		<!--의자 위에서 도발 행동 하기-->
+		<aiPreset name="ChairProvoke">
+			<node name="select" prob="22,24,24,24,18,10">
+				<node name="standby" limit="2300" faceTarget="1" animation="Attack_Idle_B">
+					<node name="target" type="near" center="825, 525, 1355" />
+					<!--1층 메인 전투판 정 중앙을 제일 우선 타겟팅 함 -->
+				</node>
+				<!--아래  도발  행동을 랜덤 선택함-->
+				<node name="say" message="$Pinkbean_Bore01$" durationTick="5000" cooltime="12000">
+					<node name="skill" facePos="750, 450, 1400" idx="39">
+						<!--의자 위에서 도발: 헤드셋 -->
+						<node name="standby" limit="3000" faceTarget="1" animation="Attack_Idle_B">
+							<node name="target" type="near" center="825, 525, 1355" />
+							<!--1층 메인 전투판 정 중앙을 제일 우선 타겟팅 함 -->
+						</node>
+					</node>
+				</node>
+				<node name="say" message="$Pinkbean_Bore03$" durationTick="5000" cooltime="21000">
+					<node name="skill" facePos="750, 450, 1400" idx="37">
+						<!--의자 위에서 도발: 스카이콩콩 -->
+						<node name="standby" limit="5700" faceTarget="1" animation="Attack_Idle_B">
+							<node name="target" type="near" center="825, 525, 1355" />
+							<!--1층 메인 전투판 정 중앙을 제일 우선 타겟팅 함 -->
+						</node>
+					</node>
+				</node>
+				<node name="say" message="$Pinkbean_Bore02$" durationTick="5000" cooltime="21000">
+					<node name="skill" facePos="750, 450, 1400" idx="35">
+						<!--의자 위에서 도발: 동그리 -->
+						<node name="standby" limit="5000" faceTarget="1" animation="Attack_Idle_B">
+							<node name="target" type="near" center="825, 525, 1355" />
+							<!--1층 메인 전투판 정 중앙을 제일 우선 타겟팅 함 -->
+						</node>
+					</node>
+				</node>
+				<node name="say" message="$Pinkbean_BoreAttack02$" durationTick="5000" cooltime="62000" initialCooltime="21000">
+					<node name="skill" facePos="750, 450, 1400" idx="27">
+						<!--레벨2: 의자 단상 위에서 춤추며 음악폭탄 투척 공격 -->
+						<node name="standby" limit="3000" faceTarget="1" animation="Attack_Idle_B">
+							<node name="target" type="near" center="825, 525, 1355" />
+							<!--1층 메인 전투판 정 중앙을 제일 우선 타겟팅 함 -->
+						</node>
+					</node>
+				</node>
+				<node name="say" message="$Pinkbean_BoreAttack01$" durationTick="5000" cooltime="93000" initialCooltime="56000">
+					<node name="skill" facePos="750, 450, 1400" idx="25">
+						<!--레벨3: 의자 단상 위에서 방향키 반대 공격 -->
+						<node name="standby" limit="4000" faceTarget="1" animation="Attack_Idle_B">
+							<node name="target" type="near" center="825, 525, 1355" />
+							<!--1층 메인 전투판 정 중앙을 제일 우선 타겟팅 함 -->
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<!--의자 위로 점프 이동해서 기타치는 행동 패턴 정의, 2페이즈 전용, 스피터 2개 설치-->
+		<aiPreset name="ChairGuitar_TwoSpeakers">
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<node name="skill" facePos="1560, 1260, 1725" idx="30" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="buff" type="add" id="50001551" level="1" />
+				<!-- 의자에 올라가기전 몸 크기 -35% 줄이기-->
+				<node name="jump" pos="1560, 1260, 1725" speed="1500" heightMultiplier="0.3" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="31" />
+				<!--레벨2: 점프 착지 -->
+				<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+				<!--미니빈에게 자살 명령을 내림 : 졸몹이 스피커 밟으면 로직 꼬일 수 있어서 기타치기 전에 졸몹 자살 명령 보냄 미니빈 컬리전 박스를 70정도 올려도 스피커센서에 반응하기 때문에 어절 수 없이 자살 명령 내려야 함-->
+				<!-- 기타치기 이전 부터 명령을 내림 혹시 미니빈이 자신호는 늦게 받아 스피거 지뢰를 밟아 버리는 상황이 생길 수 있음 -->
+				<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_B" />
+				<node name="say" message="$Pinkbean_Guitar$" durationTick="5000" />
+				<node name="skill" facePos="750, 450, 1400" idx="21" />
+				<!--꼭 중요!! 레벨1: 기타치기 스피커 2개 설치 2페이즈 전용-->
+				<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+				<!--단상위에 는 아리엘 여신 활성화 시킴 -->
+				<node name="standby" limit="1500" faceTarget="1" animation="Attack_Idle_B" />
+				<node name="buff" type="add" id="50001552" level="1" />
+				<!-- 의자에 내려가기 전 몸크기 원상태로 돌려놓기-->
+				<node name="skill" facePos="750, 450, 1400" idx="30" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="750, 450, 1400" speed="1500" heightMultiplier="0.3" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="31" />
+				<!--레벨2: 점프 착지 -->
+				<node name="SetValueRangeTarget" key="PositionNow" value="-1" radius="3800" height="4500" />
+				<!--$# 특수상황:  이 변수 보냄은 핑크빈 스카이콩콩 행동때 아리엘 여신이 석상 있는 곳에서 독필드 설치하게 하기 위해서 -1을 보내는 것임, 독필드 설치 없으면 스카이콩콩 때 어뷰징 상황 생길 수 있어서 예방 차원에서 넣은  것임, 여신석상 호출 후 바로 신호 보내지 말고 어느정도 시간 지난 다음에 신호 보내는 것이 버그를 예방할 수 있음-->
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="SetValue" key="PogoStickMode" value="2" />
+				<!-- 꼭 중요!! 스피커 2개 설치라서 변수 2 넣음, 즉 스카이콩콩 기절 패턴 모드 유무를 체크: 변수 2을 넣는것은  기절 2번하면 스카이 콩콩 모드 풀리도록 하기 위해서 -->
+				<node name="say" message="$Pinkbean_PogoStickStart$" durationTick="5000" />
+				<node name="skill" faceTarget="0" idx="7" />
+				<!--스카이콩콩 시작 -->
+				<node name="announce" message="$Pinkbean_PogoStick$" durationTick="9000" />
+				<!-- 메시지 알림, 스카이콩콩을 탑승한 핑크빈을 스피커 쪽으로 오도록 유인하라는 문구-->
+			</node>
+		</aiPreset>
+		<!--의자 위로 점프 이동해서 기타치는 행동 패턴 정의, 4페이즈 전용, 스피터 3개 설치-->
+		<aiPreset name="ChairGuitar_ThreeSpeakers">
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<!-- 4페이즈 시작하면 인간 석상 비활성화 상태 만들기, ...... 일단 임시적으로 빼자-->
+				<!-- 	<event eventName="SetExtra" target="Distance" param1="ActiveStatueHuman01" param2="4"  param3="3800" param4="4500" prob="100"/> 
+					<event eventName="SetExtra" target="Distance" param1="ActiveStatueHuman02" param2="4"  param3="3800" param4="4500" prob="100"/> 	-->
+				<node name="skill" facePos="1560, 1260, 1725" idx="30" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="buff" type="add" id="50001551" level="1" />
+				<!-- 의자에 올라가기전 몸 크기 -35% 줄이기-->
+				<node name="jump" pos="1560, 1260, 1725" speed="1500" heightMultiplier="0.3" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="31" />
+				<!--레벨2: 점프 착지 -->
+				<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+				<!--미니빈에게 자살 명령을 내림 : 졸몹이 스피커 밟으면 로직 꼬일 수 있어서 기타치기 전에 졸몹 자살 명령 보냄 미니빈 컬리전 박스를 70정도 올려도 스피커센서에 반응하기 때문에 어절 수 없이 자살 명령 내려야 함-->
+				<!-- 기타치기 이전 부터 명령을 내림 혹시 미니빈이 자신호는 늦게 받아 스피거 지뢰를 밟아 버리는 상황이 생길 수 있음 -->
+				<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_B" />
+				<node name="say" message="$Pinkbean_Guitar$" durationTick="5000" />
+				<node name="skill" facePos="750, 450, 1400" idx="22" />
+				<!--꼭 중요!! 레벨11: 기타치기 스피커 2개 설치, 원래 스피커 3개 설치했는데, 핑크빈이 3번이나 기절하니깐 오히려 너무 쉬워서 두번으로 하기로 하였음-->
+				<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+				<!--단상위에 는 아리엘 여신 활성화 시킴, 이전 3페이지에서 이미 여신석상이 활성화 된 상태라면 이 신호 무시히게 됨, 이 신호는 오직 비활성화 여신석상이 받는 용도임 -->
+				<node name="standby" limit="1500" faceTarget="1" animation="Attack_Idle_B" />
+				<node name="buff" type="add" id="50001552" level="1" />
+				<!-- 의자에 내려가기 전 몸크기 원상태로 돌려놓기-->
+				<node name="skill" facePos="750, 450, 1400" idx="30" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="750, 450, 1400" speed="1500" heightMultiplier="0.3" />
+				<!--2셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="31" />
+				<!--레벨2: 점프 착지 -->
+				<node name="SetValueRangeTarget" key="PositionNow" value="-1" radius="3800" height="4500" />
+				<!--$# 특수상황:  이 변수 보냄은 핑크빈 스카이콩콩 행동때 아리엘 여신이 석상 있는 곳에서 독필드 설치하게 하기 위해서 -1을 보내는 것임, 독필드 설치 없으면 스카이콩콩 때 어뷰징 상황 생길 수 있어서 예방 차원에서 넣은  것임, 여신석상 호출 후 바로 신호 보내지 말고 어느정도 시간 지난 다음에 신호 보내는 것이 버그를 예방할 수 있음-->
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="SetValue" key="PogoStickMode" value="2" />
+				<!-- 꼭 중요!! 스피커 2개 설치라서 변수 2 넣음, 즉 스카이콩콩 기절 패턴 모드 유무를 체크: 변수 2을 넣는것은  기절 2번하면 스카이 콩콩 모드 풀리도록 하기 위해서 -->
+				<node name="say" message="$Pinkbean_PogoStickStart$" durationTick="5000" />
+				<node name="skill" faceTarget="0" idx="7" />
+				<!--스카이콩콩 시작 -->
+				<node name="announce" message="$Pinkbean_PogoStick$" durationTick="9000" />
+				<!-- 메시지 알림, 스카이콩콩을 탑승한 핑크빈을 스피커 쪽으로 오도록 유인하라는 문구-->
+			</node>
+		</aiPreset>
+		<!--스카이 콩콩 탑승 때 스피커 지뢰를 밟아 기절 후 몇 번의 일반 공격 후 다시 스카이콩콩을 탑승하는데, 이 몇 번의 일반 공격 행동 패턴을 정의하는 부분-->
+		<aiPreset name="CheckLogic_PogoStickStun">
+			<node name="conditions">
+				<condition name="extraData" key="PogoStickMode" value="0" op="lessEqual">
+					<!--이 변수가 0 이하라는 것은 스피커 파괴 2번 혹은 3번 다 해서 더이상 스카이콩콩 탈 필요가 없다는 뜻이므로 스카이콩콩 기절패턴 관련 변수 2개를 전부 0으로 만들어 이 단계를 빠져나오게 함 -->
+					<!--스피커 패턴 한번 건너 띄어서 이 변수가 -1 이하 값도 가질 수 있기 때문에 꼭  lowerEqual="0" 이렇게 설정해야 함, 즉 스카이콩콩이 아닌 상황에서도 스피커를 밟아서 여기 단계에 올 수도 있는데, 그때를 대비한 처리도 이루어 지도록 한것임-->
+					<node name="SetValue" key="PogoStickStunMode" value="0">
+						<!-- 이 변수를 0로 만들어 다시 평상시 상태로 오도록 함-->
+						<node name="SetValue" key="PogoStickStunAttack" value="0" />
+						<!-- 이 변수를 0으로 초기화 시키기-->
+					</node>
+				</condition>
+				<condition name="extraData" key="PogoStickStunAttack" value="1" op="greaterEqual">
+					<node name="select" prob="35,32,33">
+						<node name="skill" faceTarget="1" cooltime="12000" idx="15">
+							<!--빛기둥 마법 공격-->
+							<node name="standby" limit="1500" faceTarget="1">
+								<node name="select" prob="50,50">
+									<node name="SetValue" key="PogoStickStunAttack" value="-2" isModify="1" />
+									<node name="SetValue" key="PogoStickStunAttack" value="-1" isModify="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="16">
+							<!--스피커-->
+							<node name="standby" limit="1500" faceTarget="1">
+								<node name="select" prob="50,50">
+									<node name="SetValue" key="PogoStickStunAttack" value="-2" isModify="1" />
+									<node name="SetValue" key="PogoStickStunAttack" value="-1" isModify="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" facePos="1050, 750, 1400" cooltime="24000" isKeepBattle="true" idx="30">
+							<!--12시 지점으로 점프이동 하기 -->
+							<node name="jump" pos="1050, 750, 1400" speed="1200" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="31" />
+							<!--점프 착지 -->
+							<node name="SetValue" key="PogoStickStunAttack" value="-3" isModify="1" />
+							<!--점프 이동하면 무조건 -3 하여 바로 스카이콩콩 모드가 되도록 함 -->
+							<node name="target" type="near" from="5" to="1300" />
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="say" message="$Pinkbean_PogoStickReStart$" durationTick="5000">
+						<node name="skill" faceTarget="0" isKeepBattle="true" idx="7">
+							<!--스카이콩콩 다시 타기 시작 -->
+							<node name="SetValue" key="PogoStickStunMode" value="0" />
+							<!-- 이 변수를 0로 만들어 다시 평상시 상태로 오도록 함-->
+							<node name="SetValue" key="PogoStickStunAttack" value="0" />
+							<!-- 이 변수를 0으로 초기화 시키기-->
+							<node name="announce" message="$Pinkbean_PogoStick$" durationTick="9000" />
+							<!-- 메시지 알림, 스카이콩콩을 탑승한 핑크빈을 스피커 쪽으로 오도록 유인하라는 문구-->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--스카이콩콩 탑승 상태일때의 행동 패턴 정의-->
+		<aiPreset name="Pattern_PogoStickAttack">
+			<node name="select" prob="299,0">
+				<!--$$ 스카이콩콩 제자리 대기 하면서 유도 투척 공격, 이 스킬 확률이 높으면 너무 뻔하게 사용해서 적당히 낮은 확률 설정함 $$-->
+				<node name="standby" limit="1600" faceTarget="1" animation="Attack_02_B" cooltime="23000" initialCooltime="1">
+					<node name="buff" type="add" id="50001064" level="1">
+						<!--무적 버프 걸기-->
+						<node name="say" message="$Pinkbean_PogoStickStay$" durationTick="5000">
+							<node name="select" prob="99,1">
+								<node name="skill" faceTarget="0" initialCooltime="300000" idx="8">
+									<!--레벨2: 음악폭탄, 이 스카이콩콩 페턴은 2페이즈 4페이즈 때 나오는데, initialCooltime을 넣은 이유는 2페이즈때 안나오고 4페이즈 때만 나왔으면 해서 확률과 initialCooltime을 이렇게 설정하였음-->
+									<node name="target" type="rand" from="10" to="2500">
+										<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+										<node name="standby" limit="1600" faceTarget="1" animation="Attack_02_B" />
+									</node>
+								</node>
+								<node name="standby" limit="1600" faceTarget="1" animation="Attack_02_B">
+									<!-- 이 스카이콩콩 페턴은 2페이즈 4페이즈 때 나오는데, 2페이즈 때만 나오고 4페이즈는 거의 안나오게 하기위해 이렇게 설정하였음 -->
+									<node name="skill" faceTarget="0" idx="10">
+										<!--레벨22: 키반대, 2페이즈 때의 스카이콩콩 페턴은 낮은 확률로 나왔으면 해서 이렇게 설정하였음 -->
+										<node name="target" type="rand" from="10" to="2500">
+											<node name="standby" limit="1600" faceTarget="1" animation="Attack_02_B" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="9">
+						<node name="select" prob="60,40">
+							<!--근거리 약 300-->
+							<node name="skill" faceTarget="0" idx="9">
+								<!--스카이콩콩 점프 쾅 공격-->
+								<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B">
+									<node name="target" type="rand" from="10" to="2500" />
+								</node>
+							</node>
+							<node name="buff" type="add" id="50001064" level="1">
+								<!--무적 버프 걸기-->
+								<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B" />
+								<!--스카이콩콩 대기 동작-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="11">
+						<node name="select" prob="60,40">
+							<!--원거리 약 750-->
+							<node name="skill" faceTarget="0" idx="11">
+								<!--스카이콩콩 점프 쾅 공격-->
+								<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B">
+									<node name="target" type="rand" from="10" to="2500" />
+								</node>
+							</node>
+							<node name="buff" type="add" id="50001064" level="1">
+								<node name="select" prob="60,40">
+									<!--무적 버프 걸기-->
+									<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B">
+										<!--스카이콩콩 제자리 서있기-->
+										<node name="target" type="near" from="10" to="2500" />
+									</node>
+									<node name="trace" animation="Attack_02_B" limit="2000" cooltime="18000" skillIdx="9" />
+									<!--스카이콩콩 추적하기, 대상이 멀리 있으면 상대적으로 잘 쫓아가기 않도록 함-->
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--타겟팅 대상이 멀리 있으면 잘 가까이 다가가지 않도록 설정함, 스피커 쪽으로 유도하는 것을 좀 까다롭게 하기 위해서-->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="7">
+								<node name="select" prob="70,30">
+									<!--반경 1800 이내에 있고 같은 높이에 있으면-->
+									<node name="buff" type="add" id="50001064" level="1">
+										<node name="select" prob="65,35">
+											<!--무적 버프 걸기-->
+											<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B">
+												<!--스카이콩콩 제자리 서있기-->
+												<node name="target" type="near" from="10" to="2500" />
+											</node>
+											<node name="trace" animation="Attack_02_B" limit="2000" cooltime="23000" skillIdx="11" />
+											<!--스카이콩콩 추적하기, 대상이 멀리 있으면 상대적으로 잘 쫓아가기 않도록 함-->
+										</node>
+									</node>
+									<node name="skill" faceTarget="0" cooltime="28000" idx="11">
+										<!--스카이콩콩 점프 쾅 공격-->
+										<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B">
+											<node name="target" type="rand" from="10" to="2500" />
+										</node>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--스카이콩콩 상태에서 플레이어가 반경 1800 밖이나 혹은 한 큐브 높은 곳에 위치해 있으면-->
+								<node name="buff" type="add" id="50001064" level="1">
+									<node name="select" prob="50,50">
+										<!--무적 버프 걸기-->
+										<node name="move" destination="900, 600, 1360" limit="2400" animation="Attack_02_B" speed="200" cooltime="11000">
+											<!--스카이콩콩 타고 중앙으로 이동-->
+											<node name="target" type="near" from="10" to="2500" />
+										</node>
+										<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B">
+											<!--스카이콩콩 제자리 서있기-->
+											<node name="target" type="near" from="10" to="2500" />
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<!--동물석상에게 덩치커진 신호를 받았을 때 하는 별도 행동 패턴 진행하기-->
+		<aiPreset name="Pattern_BiggerCheck">
+			<node name="conditions">
+				<condition name="extraData" key="BiggerOffCheck" value="2">
+					<!--덩치커짐 상태에서 동물 석상 2개가 다 제거되면 이 변수가 결국 2가 될 것임 -->
+					<!--아래 변수를 0으로 초기화 하여 평상시 공격 상태로 돌아오게 하고 , 덩치커짐과 방어력 상승 버프 제거 스킬 사용함-->
+					<node name="SetValue" key="BiggerCheck" value="0">
+						<node name="SetValue" key="BiggerOffCheck" value="0">
+							<!--이 변수 여기서 꼭 0으로 초기화 함, 안하면 이 단계에서 계속 무한 루프 함-->
+							<node name="say" message="$Pinkbean_BiggerOff$" durationTick="3000">
+								<node name="conditions">
+									<condition name="extraData" key="BiggerPogoStickMode" value="1">
+										<!--덩치커짐 상태에서 스카이 콩콩 중 덩치커짐 버프가 풀려야 하는 상황인 경우-->
+										<node name="skill" faceTarget="0" idx="45">
+											<!--스카이콩콩 내려가기 동작 나오며 덩치커짐 공방업 버프 제거-->
+											<node name="standby" limit="800" faceTarget="1">
+												<node name="SetValue" key="BiggerPogoStickMode" value="0" />
+												<!--덩치커짐이 풀리면서 스카이 콩콩에 내렸기 때문에 이 변수를 다음 사용을 위해 0으로 초기화 함-->
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<!--스카이 콩콩이 아닌 평상시 상태에서 덩치커짐 버프가 풀려야 하는 상황인 경우-->
+										<node name="skill" faceTarget="1" idx="46">
+											<!--그냥 서있는 상태로 덩치커짐 공방업 버프 제거-->
+											<node name="standby" limit="600" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="additional" id="50001062">
+					<!--석상한테 덩치커짐 신호 버프를 받아서 50001062 애디셔널이 몸에 붙어있는 상태라면-->
+					<node name="buff" type="add" id="50001066" level="1" isKeepBattle="true">
+						<!--덩치커짐과 방어력 상승 버프 부여하기, 이미 덩치커짐 상태라면 제한시간 수치 다시 Max로 셋팅하는 개념임-->
+						<node name="buff" type="remove" id="50001062" level="1" />
+						<!--50001062 애디셔널 꼭 제거하여 이 단계 빠져 나가도록 함, 안하면 이 단계에서 계속 무한 루프 함-->
+						<node name="SetValue" key="BiggerReady" value="0" />
+						<!--##%## 이 변수를 0으로 초기화 하여, 혹시 모를 버그 상황을 예방함  -->
+						<node name="SetValue" key="BiggerCheck" value="1" />
+						<node name="say" message="$Pinkbean_Bigger$" durationTick="5000" />
+						<node name="standby" limit="1800" faceTarget="1" />
+						<!--덩치 커지자 마자 바로 공격 행동 하는 것이 어색해 보여 잠시 서있는 동작 넣음  -->
+						<node name="announce" message="$Pinkbean_BiggerNotice$" durationTick="9000" />
+						<!-- 메시지 알림, 가운데 두개의 동물 석상을 제거해야 덩치 커짐이 사라진다는 안내 문구를 넣음-->
+					</node>
+				</condition>
+				<condition name="extraData" key="BiggerCheck" value="1">
+					<!--덩치커짐 상태에서 공격하는 행동패턴-->
+					<node name="conditions">
+						<condition name="extraData" key="BiggerPogoStickMode" value="1">
+							<!--덩치커짐 상태에서 스카이 콩콩  공격 상황인 경우-->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="42">
+									<node name="select" prob="65,35">
+										<!--근거리 약 300, 같은 큐브 높이에 있으면-->
+										<node name="skill" faceTarget="0" idx="42">
+											<!--스카이콩콩 점프 쾅 공격-->
+											<node name="target" type="near" center="450, 150, 1360">
+												<!-- 1층 메인 전투판 중앙의 대상을 최우선 타겟팅 함-->
+												<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" />
+											</node>
+										</node>
+										<node name="standby" limit="1800" faceTarget="1" animation="Attack_02_B" />
+										<!--스카이콩콩 대기 동작-->
+									</node>
+								</condition>
+								<condition name="skillRange" skillIdx="44">
+									<node name="select" prob="60,20,20">
+										<!--원거리 약 750, 같은 큐브 높이에 있으면-->
+										<node name="skill" faceTarget="0" idx="44">
+											<!-- 스카이콩콩 점프 쾅 공격-->
+											<node name="target" type="near" center="450, 150, 1360">
+												<!-- 1층 메인 전투판 중앙의 대상을 최우선 타겟팅 함-->
+												<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" />
+											</node>
+										</node>
+										<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B" />
+										<!--스카이콩콩 대기 동작-->
+										<node name="trace" animation="Attack_02_B" limit="2000" skillIdx="42" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="41">
+											<node name="select" prob="20,32,40,8">
+												<!--스카이콩콩 상태에서 플레이어가 반경 1800 이내에 있고 같은 큐브 높이에 있으면-->
+												<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B" />
+												<!--스카이콩콩 대기 동작-->
+												<node name="trace" animation="Attack_02_B" limit="3000" skillIdx="42" />
+												<node name="skill" faceTarget="0" idx="44">
+													<!--스카이콩콩 점프 쾅 공격-->
+													<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B">
+														<node name="target" type="near" center="450, 150, 1360" />
+														<!-- 1층 메인 전투판 중앙의 대상을 최우선 타겟팅 함-->
+													</node>
+												</node>
+												<node name="skill" faceTarget="0" isKeepBattle="true" idx="43">
+													<!-- 낮은 확률로 스카이 콩콩 내려오기-->
+													<node name="SetValue" key="BiggerPogoStickMode" value="0" />
+													<!--덩치커짐 스카이콩콩에서 내려오기 동작 출력 후 이 변수를 0으로 설정해서 자신이 스카이콩콩에서 내려왔음을 알림-->
+													<!-- 스카이 콩콩 내려오자 마자 바로 다시 스카이 콩콩 탑승하는 경우가 있어서 여기서 무조건 확성기 공격 하도록 함-->
+													<node name="standby" limit="1100" faceTarget="1" />
+													<node name="skill" faceTarget="1" idx="17" />
+													<node name="standby" limit="2900" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="45,55">
+												<!--스카이콩콩 상태에서 플레이어가 반경 1800 밖이나 혹은 한 큐브 높은 곳에 위치해 있으면-->
+												<node name="standby" limit="2000" faceTarget="1" animation="Attack_02_B">
+													<!--스카이콩콩 대기 동작-->
+													<node name="target" type="near" center="450, 150, 1360" />
+													<!-- 1층 메인 전투판 중앙의 대상을 최우선 타겟팅 함-->
+												</node>
+												<node name="skill" faceTarget="0" idx="43">
+													<!-- 높은 확률로 스카이 콩콩 내려오기-->
+													<node name="standby" limit="1800" faceTarget="1">
+														<node name="SetValue" key="BiggerPogoStickMode" value="0" />
+														<!--덩치커짐 스카이콩콩에서 내려오기 동작 출력 후 이 변수를 0으로 설정해서 자신이 스카이콩콩에서 내려왔음을 알림-->
+													</node>
+												</node>
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="37,38,25">
+								<!--덩치커짐 상태에서 스카이 콩콩  공격 상황이 아닌 경우-->
+								<node name="skill" isKeepBattle="true" idx="17">
+									<!--확성기 공격, 레벨2가 거대버전용 스킬 -->
+									<node name="target" type="near" center="450, 150, 1360" />
+									<!-- 1층 메인 전투판 중앙의 대상을 최우선 타겟팅 함-->
+									<node name="standby" limit="2100" faceTarget="1" />
+								</node>
+								<node name="say" message="$Pinkbean_BiggerDance$" durationTick="5000" cooltime="9000">
+									<node name="skill" isKeepBattle="true" idx="15">
+										<!--빛기둥  공격 -->
+										<node name="target" type="near" center="450, 150, 1360" />
+										<!-- 1층 메인 전투판 중앙의 대상을 최우선 타겟팅 함-->
+										<node name="standby" limit="3300" faceTarget="1" />
+									</node>
+								</node>
+								<node name="say" message="$Pinkbean_BiggerPogoStickStart$" durationTick="5000" cooltime="12000">
+									<node name="skill" faceTarget="0" idx="41">
+										<!--스카이 콩콩 탑승 시작-->
+										<node name="target" type="near" center="450, 150, 1360">
+											<!-- 1층 메인 전투판 중앙의 대상을 최우선 타겟팅 함-->
+											<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B">
+												<node name="SetValue" key="BiggerPogoStickMode" value="1" />
+												<!--덩치커짐 스카이 콩콩 탑승 시작 모드임을 이 변수를 1로 만들어 알림-->
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="BiggerReady" value="1" op="greaterEqual">
+					<!--##%## 핑크빈이 석성을 소환하면 덩치커짐 신호 받을 때까지 이 곳에서 단순한 공격 행위를 하도록 함, 절대 점프 이동하면 안됨, 버프 부여 투사체 히트박스 높이가 낮기 때문에 핑크빈이 점프 상태일 때 안 맞아 상황이 꼬일 수 있음-->
+					<node name="skill" faceTarget="1" idx="16">
+						<!--확성기 -->
+						<node name="standby" limit="1200" faceTarget="1">
+							<node name="target" type="rand" from="10" to="1800">
+								<node name="SetValue" key="BiggerReady" value="-1" isModify="1" />
+								<!--낮은 확률로 만약 핑크빈이 버프 투사체 받기에 실패했을 때, 확성기 공격 2번만 하고 평상시 상태로 돌아오게 함  -->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--보통 몸 크기 상태 때의 행동패턴-->
+					<!--석상 소환, 덩치 커짐 버프 받기 준비 동작 단계-->
+					<node name="conditions">
+						<condition name="extraData" key="BiggerPhaseStart" value="1">
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<!--이 단계 오면 무조건 석상호출 덩치커짐 실행하도록 확률 높게 설정함-->
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman01" value="1" radius="3800" height="4500" />
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman02" value="1" radius="3800" height="4500" />
+								<node name="SetValueRangeTarget" key="ActiveStatueAnimal01" value="1" radius="3800" height="4500" />
+								<node name="SetValueRangeTarget" key="ActiveStatueAnimal02" value="1" radius="3800" height="4500" />
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="4" radius="3800" height="4500" />
+								<!--아리엘 석상만 비 활성화 상태로 만들기-->
+								<node name="SetValue" key="BiggerReady" value="2" />
+								<!--##%## 이 변수를 1 이상으로 만들어  핑크빈이 덩치커짐 버프 받을 준비가 되었음을 알림 -->
+								<!--@@ 즉 이  param2 숫자 크기에 따라 덩치커짐 풀린 이후 다시 덩치커짐 호출을 얼만큼 다시 이루어 지게 할지를 정하는 것임, 이 변수는 4페이즈 때 다시 사용하기 때문에 4페이즈 시작 예약시스템으로 통해서 무조건 0 초기화 설정 해야암-->
+								<!--전투판 중앙으로 점프로 내려오도록 설정함, 이때 단상위에 있으면 상황이 좀 깔끔하지 못해서 이 설정 넣음 -->
+								<node name="skill" faceTarget="0" idx="20" />
+								<!--레벨2: 호루라기 불기 행동 , 컬리전박스 때릴 수 있고, 공격 기능 있음-->
+								<node name="skill" facePos="750, 450, 1400" idx="30" />
+								<!--레벨1 일반 점프 도약 -->
+								<node name="jump" pos="750, 450, 1400" speed="1500" heightMultiplier="0.6" />
+								<!--2셋트 전투판 중앙으로 오기-->
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--레벨2: 점프 착지 -->
+								<node name="target" type="near" center="450, 150, 1360" />
+								<!-- 1층 메인 전투판 중앙의 대상을 최우선 타겟팅 함-->
+								<node name="standby" limit="2500" faceTarget="1" />
+								<node name="SetValue" key="BiggerPhaseStart" value="-1" />
+								<!-- 이 변수에 1 이 아닌 다른 수를 넣어서 덩치커짐이 풀린 다음에 이 단계에 오면 이 BiggerPhaseStart = 1 단계 다시 오지 않도록 함, 그리고 다음 페이즈에서 이 변수 또 사용하는데 이때는 해당 페이즈 시작 예약 시스템을 통해서 변수를 초기화 시켜야 함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="999,30,30,30,4,4,2">
+								<!-- HP 1 상태이상 디버프  부여하기 + 졸몹 소환-->
+								<node name="standby" limit="300" faceTarget="1" cooltime="28000" isKeepBattle="true">
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="201" delayTick="1500" summonPos="-300, 600, 1360" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="202" delayTick="1500" summonPos="150, 900, 1360" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="203" delayTick="1500" summonPos="600, 900,1360" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="204" delayTick="1500" summonPos="900, -600, 1360" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="205" delayTick="1500" summonPos="1200, -150, 1360" summonRot="0,0,-50" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="206" delayTick="1500" summonPos="1200, 300, 1360" summonRot="0,0,-50" />
+									<node name="say" message="$Pinkbean_HPOneAttack$" durationTick="5000" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<!-- HP 1 상태이상 디버프  부여하기-->
+									<node name="target" type="rand" from="10" to="1800" />
+									<node name="standby" limit="900" faceTarget="1" />
+								</node>
+								<!--롤링어택 단타 공격-->
+								<node name="skill" faceTarget="1" cooltime="15000" isKeepBattle="true" idx="1">
+									<node name="say" message="$Pinkbean_Rolling03$" durationTick="5000" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<node name="skill" faceTarget="0" idx="3" />
+									<!--근거리-->
+									<node name="skill" faceTarget="1" idx="4" />
+									<!--중거리-->
+									<node name="skill" faceTarget="1" idx="5" />
+									<!--원거리-->
+									<node name="skill" faceTarget="0" idx="6" />
+									<!--마무리-->
+									<node name="target" type="rand" from="10" to="1800" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<!--점프 이동 후 빛기둥  혹은 확성기 공격 패턴 -->
+								<node name="standby" limit="300" faceTarget="1" cooltime="15000">
+									<node name="select" prob="30,30,30,10">
+										<node name="skill" facePos="-375, 675, 1360" cooltime="45000" idx="30">
+											<!--8시 지점으로 점프 -->
+											<node name="jump" pos="-375, 675, 1360" speed="1300" heightMultiplier="0.3">
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="31">
+													<!--점프 착지 -->
+													<node name="standby" limit="1800" faceTarget="1">
+														<node name="select" prob="50,50">
+															<node name="skill" faceTarget="0" idx="15">
+																<!--빛기둥 -->
+																<node name="standby" limit="1800" faceTarget="1" />
+															</node>
+															<node name="say" message="$Pinkbean_Loudspeaker01$" durationTick="4000">
+																<!--확성기 -->
+																<node name="skill" faceTarget="0" idx="16">
+																	<node name="standby" limit="1800" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="skill" facePos="150, -450, 1360" cooltime="45000" idx="30">
+											<!--5시 지점으로 점프 -->
+											<node name="jump" pos="150, -450, 1360" speed="1300" heightMultiplier="0.3">
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="31">
+													<!--점프 착지 -->
+													<node name="standby" limit="1800" faceTarget="1">
+														<node name="select" prob="50,50">
+															<node name="skill" faceTarget="0" idx="15">
+																<!--빛기둥 -->
+																<node name="standby" limit="1800" faceTarget="1" />
+															</node>
+															<node name="say" message="$Pinkbean_Loudspeaker02$" durationTick="4000">
+																<!--확성기 -->
+																<node name="skill" faceTarget="0" idx="16">
+																	<node name="standby" limit="1800" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="skill" facePos="1050, -450, 1360" cooltime="45000" idx="30">
+											<!--4시 지점으로 점프 -->
+											<node name="jump" pos="1050, -450, 1360" speed="1300" heightMultiplier="0.3">
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="31">
+													<!--점프 착지 -->
+													<node name="standby" limit="1800" faceTarget="1">
+														<node name="select" prob="50,50">
+															<node name="skill" faceTarget="0" idx="15">
+																<!--빛기둥 -->
+																<node name="standby" limit="1800" faceTarget="1" />
+															</node>
+															<node name="say" message="$Pinkbean_Loudspeaker02$" durationTick="4000">
+																<!--확성기 -->
+																<node name="skill" faceTarget="0" idx="16">
+																	<node name="standby" limit="1800" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+										<node name="skill" facePos="750, 750, 1360" cooltime="45000" idx="30">
+											<!--11시 지점으로 점프 -->
+											<node name="jump" pos="750, 750, 1360" speed="1300" heightMultiplier="0.3">
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="31">
+													<!--점프 착지 -->
+													<node name="standby" limit="1800" faceTarget="1">
+														<node name="select" prob="50,50">
+															<node name="skill" faceTarget="0" idx="15">
+																<!--빛기둥 -->
+																<node name="standby" limit="1800" faceTarget="1" />
+															</node>
+															<node name="say" message="$Pinkbean_Loudspeaker01$" durationTick="4000">
+																<!--확성기 -->
+																<node name="skill" faceTarget="0" idx="16">
+																	<node name="standby" limit="1800" faceTarget="1" />
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<!--롤링어택 공격 + 요요-->
+								<node name="skill" faceTarget="1" cooltime="45000" isKeepBattle="true" idx="1">
+									<node name="say" message="$Pinkbean_Rolling03$" durationTick="5000" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<node name="skill" faceTarget="0" idx="3" />
+									<!--근거리-->
+									<node name="skill" faceTarget="1" idx="3" />
+									<!--근거리, 요요 조합은 꼭 근+근 해야지 롤링어택이 끝났을 때 핑크빈이 구석에 있을 확률이 높아 요요 공격 최적의 포지션이 나오게 됨-->
+									<node name="skill" faceTarget="1" idx="5" />
+									<!--원거리-->
+									<node name="skill" faceTarget="0" idx="6" />
+									<!--마무리-->
+									<node name="standby" limit="800" faceTarget="1" />
+									<node name="say" message="$Pinkbean_Yoyo01$" durationTick="5000" />
+									<node name="skill" facePos="600, 300, 1350" idx="12" />
+									<!--요요 공격 한 다음에 다른족 지점으로 순간이동 도망가기-->
+									<node name="teleport" pos="600, 300, 1360" />
+									<!--맵 중앙으로 순간이동-->
+									<node name="say" message="$Pinkbean_Yoyo02$" durationTick="5000" />
+									<node name="skill" idx="13" />
+									<node name="target" type="rand" from="10" to="1800" />
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="1" cooltime="8000" idx="15">
+									<!--빛기둥 -->
+									<node name="target" type="rand" from="10" to="1800">
+										<node name="standby" limit="1800" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="8000" idx="16">
+									<!--확성기 -->
+									<node name="target" type="rand" from="10" to="1800">
+										<node name="standby" limit="1800" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="1300" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--전투판 천장 점프이동 패턴 행동 정의하는 부분-->
+		<aiPreset name="Pattern_RoofJumpMove">
+			<node name="conditions">
+				<condition name="extraData" key="PositionNow" value="11">
+					<!--2층 전투판 11시 지점에 있을 경우-->
+					<node name="standby" limit="1000" faceTarget="1">
+						<node name="select" prob="50,50">
+							<!--1시 방향으로 점프 뛰기 -->
+							<node name="skill" facePos="2850, 0, 2410" isKeepBattle="true" idx="32">
+								<!--레벨11 음악폭탄 투척 점프 도약 -->
+								<node name="jump" pos="2850, 0, 2410" speed="1500" heightMultiplier="0.3" />
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--레벨2: 점프 착지 -->
+								<!--핑크빈이 점프 이동하면서 석상 활성화 신호 보내는데, 이미 석상이 활성화 된 상태라면 이 신호를 받고 HP 90% 회복 하도록 함 -->
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman02" value="1" radius="3800" height="4500" />
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+								<!--아리엘 여신 석상 활성화 사키기, 핑크빈이 점프 이동하면 무조건 활성화 시킴, 1층 바닥 독필드 깔아야 해서-->
+								<node name="standby" limit="3000" faceTarget="1" />
+								<!--3초 이상 시간을 충분히 끌어 석상이 활성화 되어 공격 상태가 된 다음에 아래 신호를 보냄 -->
+								<node name="SetValue" key="PositionNow" value="1" />
+								<!-- 전투판 2층 지붕 1시 전투판으로 이동했음을 알림 -->
+								<node name="SetValueRangeTarget" key="PositionNow" value="1" radius="3800" height="4500" />
+								<!-- 아리엘 여신 석상에게 자신이 1시 전투판에 있음을 알림 -->
+							</node>
+							<!--12시 방향으로 점프 뛰기 -->
+							<node name="skill" facePos="2285, 1985, 2410" isKeepBattle="true" idx="33">
+								<!--레벨12 방향키 반대 추척하면서  점프 도약 -->
+								<node name="jump" pos="2285, 1985, 2410" speed="1500" heightMultiplier="0.3" />
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--레벨2: 점프 착지 -->
+								<!--핑크빈이 점프 이동하면서 석상 활성화 신호 보내는데, 이미 석상이 활성화 된 상태라면 이 신호를 받고 HP 90% 회복 하도록 함 -->
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+								<!--아리엘 여신 석상 활성화 사키기, 핑크빈이 점프 이동하면 무조건 활성화 시킴, 1층 바닥 독필드 깔아야 해서-->
+								<node name="standby" limit="3000" faceTarget="1" />
+								<!--3초 이상 시간을 충분히 끌어 석상이 활성화 되어 공격 상태가 된 다음에 아래 신호를 보냄 -->
+								<node name="SetValue" key="PositionNow" value="12" />
+								<!-- 전투판 2층 지붕 12시 전투판으로 이동했음을 알림 -->
+								<node name="SetValueRangeTarget" key="PositionNow" value="12" radius="3800" height="4500" />
+								<!-- 아리엘 여신 석상에게 자신이 12시 전투판에 있음을 알림 -->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="PositionNow" value="12">
+					<!--2층 전투판 12시 지점에 있을 경우-->
+					<node name="standby" limit="1000" faceTarget="1">
+						<node name="select" prob="50,50">
+							<!--11시 방향으로 점프 뛰기 -->
+							<node name="skill" facePos="300, 2550, 2410" isKeepBattle="true" idx="33">
+								<!--레벨12 방향키 반대 추척하면서  점프 도약 -->
+								<node name="jump" pos="300, 2550, 2410" speed="1500" heightMultiplier="0.3" />
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--레벨2: 점프 착지 -->
+								<!--핑크빈이 점프 이동하면서 석상 활성화 신호 보내는데, 이미 석상이 활성화 된 상태라면 이 신호를 받고 HP 90% 회복 하도록 함 -->
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman01" value="1" radius="3800" height="4500" />
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+								<!--아리엘 여신 석상 활성화 사키기, 핑크빈이 점프 이동하면 무조건 활성화 시킴, 1층 바닥 독필드 깔아야 해서-->
+								<node name="standby" limit="3000" faceTarget="1" />
+								<!--3초 이상 시간을 충분히 끌어 석상이 활성화 되어 공격 상태가 된 다음에 아래 신호를 보냄 -->
+								<node name="SetValue" key="PositionNow" value="11" />
+								<!-- 전투판 2층 지붕 11시 전투판으로 이동했음을 알림 -->
+								<node name="SetValueRangeTarget" key="PositionNow" value="11" radius="3800" height="4500" />
+								<!-- 아리엘 여신 석상에게 자신이 11시 전투판에 있음을 알림 -->
+							</node>
+							<!--1시 방향으로 점프 뛰기 -->
+							<node name="skill" facePos="2850, 0, 2410" isKeepBattle="true" idx="33">
+								<!--레벨12 방향키 반대 추척하면서  점프 도약 -->
+								<node name="jump" pos="2850, 0, 2410" speed="1500" heightMultiplier="0.3" />
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--레벨2: 점프 착지 -->
+								<!--핑크빈이 점프 이동하면서 석상 활성화 신호 보내는데, 이미 석상이 활성화 된 상태라면 이 신호를 받고 HP 90% 회복 하도록 함 -->
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman02" value="1" radius="3800" height="4500" />
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+								<!--아리엘 여신 석상 활성화 사키기, 핑크빈이 점프 이동하면 무조건 활성화 시킴, 1층 바닥 독필드 깔아야 해서-->
+								<node name="standby" limit="3000" faceTarget="1" />
+								<!--3초 이상 시간을 충분히 끌어 석상이 활성화 되어 공격 상태가 된 다음에 아래 신호를 보냄 -->
+								<node name="SetValue" key="PositionNow" value="1" />
+								<!-- 전투판 2층 지붕 1시 전투판으로 이동했음을 알림 -->
+								<node name="SetValueRangeTarget" key="PositionNow" value="1" radius="3800" height="4500" />
+								<!-- 아리엘 여신 석상에게 자신이 1시 전투판에 있음을 알림 -->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="PositionNow" value="1">
+					<!--2층 전투판 1시 지점에 있을 경우-->
+					<node name="standby" limit="1000" faceTarget="1">
+						<node name="select" prob="50,50">
+							<!--11시 방향으로 점프 뛰기 -->
+							<node name="skill" facePos="300, 2550, 2410" isKeepBattle="true" idx="32">
+								<!--레벨11 음악폭탄 투척 점프 도약 -->
+								<node name="jump" pos="300, 2550, 2410" speed="1500" heightMultiplier="0.3" />
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--레벨2: 점프 착지 -->
+								<!--핑크빈이 점프 이동하면서 석상 활성화 신호 보내는데, 이미 석상이 활성화 된 상태라면 이 신호를 받고 HP 90% 회복 하도록 함 -->
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman01" value="1" radius="3800" height="4500" />
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+								<!--아리엘 여신 석상 활성화 사키기, 핑크빈이 점프 이동하면 무조건 활성화 시킴, 1층 바닥 독필드 깔아야 해서-->
+								<node name="standby" limit="3000" faceTarget="1" />
+								<!--3초 이상 시간을 충분히 끌어 석상이 활성화 되어 공격 상태가 된 다음에 아래 신호를 보냄 -->
+								<node name="SetValue" key="PositionNow" value="11" />
+								<!-- 전투판 2층 지붕 11시 전투판으로 이동했음을 알림 -->
+								<node name="SetValueRangeTarget" key="PositionNow" value="11" radius="3800" height="4500" />
+								<!-- 아리엘 여신 석상에게 자신이 11시 전투판에 있음을 알림 -->
+							</node>
+							<!--12시 방향으로 점프 뛰기 -->
+							<node name="skill" facePos="2285, 1985, 2410" isKeepBattle="true" idx="32">
+								<!--레벨11 음악폭탄 투척 점프 도약 -->
+								<node name="jump" pos="2285, 1985, 2410" speed="1500" heightMultiplier="0.3" />
+								<node name="skill" faceTarget="0" idx="31" />
+								<!--레벨2: 점프 착지 -->
+								<!--핑크빈이 점프 이동하면서 석상 활성화 신호 보내는데, 이미 석상이 활성화 된 상태라면 이 신호를 받고 HP 90% 회복 하도록 함 -->
+								<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+								<node name="standby" limit="3000" faceTarget="1" />
+								<!--3초 이상 시간을 충분히 끌어 석상이 활성화 되어 공격 상태가 된 다음에 아래 신호를 보냄 -->
+								<node name="SetValue" key="PositionNow" value="12" />
+								<!-- 전투판 2층 지붕 12시 전투판으로 이동했음을 알림 -->
+								<node name="SetValueRangeTarget" key="PositionNow" value="12" radius="3800" height="4500" />
+								<!-- 아리엘 여신 석상에게 자신이 12시 전투판에 있음을 알림 -->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--이 페이즈 최초 들어서면 이 부분 실행, 처음으로 지붕으로 올라가기-->
+					<node name="skill" facePos="1160, 1422, 1510" isKeepBattle="true" idx="32">
+						<!--레벨11 음악폭탄 투척 공격하면서  점프 도약, 여기에 덩치커짐 버프 제거하는 요소도 있음 이전 페이지 덩치커짐 상태에서 바로 넘어오는 경우가 있기 때문에,  스카이콩콩 상태 표시 애디셔널도 여기서 제거함-->
+						<!--여기서 레벨 12 키방향 반대 사용하면 사다리에 올라가지 못하기 때문에 꼭 레벨11 음악 폭탄을 사용하도록 함 -->
+						<!--2층 지역으로 점프 이동 전에 동물석상 비활성화 상태로 만들고 미니빈 자살 설정은 위 3페이지 시작 예약 쪽에서 진행함 -->
+						<node name="jump" pos="1160, 1422, 1510" speed="1500" heightMultiplier="0.3" />
+						<node name="skill" faceTarget="0" idx="31" />
+						<!--레벨2: 점프 착지 -->
+						<node name="skill" facePos="300, 2550, 2410" idx="30" />
+						<!--레벨1 일반 점프 도약 -->
+						<node name="jump" pos="300, 2550, 2410" speed="1500" heightMultiplier="0.3" />
+						<!--전투판 2층 지붕 11시 전투판으로 이동-->
+						<node name="teleport" pos="300, 2550, 2410" />
+						<!--혹시 점프 이동중 지형에 걸려서 2층 지형으로 이동하지 못하는 경우를 대비하여 순간이동 기능을 넣음 -->
+						<node name="skill" faceTarget="0" idx="31" />
+						<!--레벨2: 점프 착지 -->
+						<!--핑크빈이 점프 이동하면서 석상 활성화 신호 보내는데, 이미 석상이 활성화 된 상태라면 이 신호를 받고 HP 90% 회복 하도록 함 -->
+						<node name="SetValueRangeTarget" key="ActiveStatueHuman01" value="1" radius="3800" height="4500" />
+						<!-- 점프 이동 후 인간석상 활성화 시키기-->
+						<node name="SetValueRangeTarget" key="ActiveStatueHuman03" value="1" radius="3800" height="4500" />
+						<!--아리엘 여신 석상 활성화 시키기, 핑크빈이 점프 이동하면 무조건 활성화 시킴, 1층 바닥 독필드 깔아야 해서-->
+						<node name="standby" limit="3000" faceTarget="1" />
+						<!--3초 이상 시간을 충분히 끌어 석상이 활성화 되어 공격 상태가 된 다음에 아래 신호를 보냄 -->
+						<node name="SetValue" key="PositionNow" value="11" />
+						<!-- 전투판 2층 지붕 11시 전투판으로 이동했음을 알림 -->
+						<node name="SetValueRangeTarget" key="PositionNow" value="11" radius="3800" height="4500" />
+						<!-- 아리엘 여신 석상에게 자신이 11시 전투판에 있음을 알림 -->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--요요 공격 후 다른쪽 지점으로 순간이동 도망가는 행동 정의하는 부분-->
+		<aiPreset name="TeleportYoyo12">
+			<node name="teleport" pos="900, 600, 1360">
+				<!--12시 방향으로 순간이동 회피-->
+				<node name="skill" idx="13">
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TeleportYoyo3">
+			<node name="teleport" pos="900, 0, 1360">
+				<!--3시 방향으로 순간이동 회피-->
+				<node name="skill" idx="13">
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TeleportYoyo6">
+			<node name="teleport" pos="300, 0, 1360">
+				<!--6시 방향으로 순간이동 회피-->
+				<node name="skill" idx="13">
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TeleportYoyo9">
+			<node name="teleport" pos="300, 600, 1360">
+				<!--9시 방향으로 순간이동 회피-->
+				<node name="skill" idx="13">
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<!--요요 공격 후 다른쪽 지점으로 순간이동 도망가는 행동 정의하는 부분-->
+		<!--1층 넓은 전투판에서 실행하는 롤링어택 공격 패턴-->
+		<aiPreset name="RolingAttack_Main">
+			<node name="skill" idx="1">
+				<node name="say" message="$Pinkbean_Rolling01$" durationTick="9000">
+					<node name="skill" faceTarget="1" idx="2">
+						<node name="select" prob="33,33,34">
+							<!--패턴1-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="4">
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="far" from="10" to="1000" />
+								<node name="skill" faceTarget="1" idx="5" />
+								<!--장거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+							<!--패턴2-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="3">
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="far" from="10" to="1000" />
+								<node name="skill" faceTarget="1" idx="5" />
+								<!--장거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+							<!--패턴3-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="4">
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="far" from="10" to="1000" />
+								<node name="skill" faceTarget="1" idx="5" />
+								<!--장거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<!--2층 좁은 지붕 전투판에서 실행하는 롤링어택 공격 패턴-->
+		<aiPreset name="RolingAttack_Upper">
+			<node name="skill" idx="1">
+				<node name="say" message="$Pinkbean_Rolling02$" durationTick="9000">
+					<node name="skill" faceTarget="1" idx="2">
+						<node name="select" prob="33,33,34">
+							<!--패턴1-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="4">
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+							<!--패턴2-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="3">
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+							<!--패턴3-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="4">
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

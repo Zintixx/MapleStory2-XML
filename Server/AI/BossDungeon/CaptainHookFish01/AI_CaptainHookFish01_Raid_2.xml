@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1300" />
+				<!--<target type="mid" prob="100" from="10" to="1300" /> -->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<!--#1-2페이즈 - 대포 맞고 아래로 떨어짐                97~75 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<!--같은 높이의 전투판에 있으면, 통상적인 공격 행동을 함 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="59,40,1">
+										<node name="skill" idx="1">
+											<!-- 휘두르기-->
+											<node name="standby" limit="1000" faceTarget="0" />
+										</node>
+										<node name="skill" cooltime="7000" idx="5">
+											<!-- 대쉬 휘두르기-->
+											<node name="standby" limit="2500" faceTarget="0" />
+										</node>
+										<node name="standby" limit="500" faceTarget="0" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="4">
+											<node name="select" prob="50,25,25">
+												<node name="trace" limit="2500" skillIdx="1" />
+												<node name="skill" idx="4">
+													<!-- 점프 쾅!~-->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" idx="3">
+													<!-- 돌진 공격-->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="99,1">
+												<node name="trace" limit="2500" skillIdx="1" />
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="700" faceTarget="1">
+								<!--전투판 아래로 내려가 있으면, 타겟팅 다시 잡는 행위를 함-->
+								<node name="target" type="rand" from="10" to="2000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="60">
+					<!--#1-4페이즈 - 대포 맞고 아래로 떨어짐                72~50 -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="40,30,30,1">
+								<node name="skill" idx="1">
+									<!-- 휘두르기-->
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+								<node name="skill" cooltime="9000" idx="3">
+									<!-- 돌진 공격-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="skill" idx="5">
+									<!-- 대쉬 휘두르기-->
+									<node name="standby" limit="3000" faceTarget="0" />
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="50,25,25">
+										<node name="trace" limit="2500" skillIdx="1" />
+										<node name="skill" idx="4">
+											<!-- 점프 쾅!~-->
+											<node name="standby" limit="4000" faceTarget="1" />
+										</node>
+										<node name="skill" idx="3">
+											<!-- 돌진 공격-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99,1">
+										<node name="trace" limit="2500" skillIdx="1" />
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="hpOver" value="45">
+					<node name="select" prob="50,0">
+						<!--#2페이즈 (한방 킬 공격 이벤트 발동)                  50~25   (HP 100~50%를 그냥 훅 넘길경우를 대비한 점프이동관련 로직이 들어가 있음)-->
+						<node name="skill" cooltime="22000" idx="3">
+							<!--돌진 공격 후 왼손 대포 바닥 폭발-->
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="skill" idx="2">
+									<!-- 왼손 대포 발사-->
+									<node name="standby" limit="4500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="33,33,33,1">
+									<node name="skill" cooltime="8000" idx="1">
+										<!-- 휘두르기-->
+										<node name="standby" limit="1000" faceTarget="10" />
+									</node>
+									<node name="skill" cooltime="9000" idx="5">
+										<!-- 대쉬 휘두르기-->
+										<node name="standby" limit="2000" faceTarget="10" />
+									</node>
+									<node name="skill" cooltime="8000" idx="3">
+										<!-- 돌진 공격-->
+										<node name="standby" limit="3500" faceTarget="0" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="4">
+										<node name="select" prob="26,37,37">
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="skill" idx="4">
+												<!-- 점프 쾅!~-->
+												<node name="standby" limit="4000" faceTarget="1" />
+											</node>
+											<node name="skill" idx="3">
+												<!-- 돌진 공격-->
+												<node name="standby" limit="3000" faceTarget="0" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="25">
+					<!--#3-1 페이즈  바닥 독깔기         25~14  (HP 100~50%를 그냥 훅 넘길경우를 대비한 점프이동관련 로직이 들어가 있음)-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="35,64,1">
+								<node name="skill" idx="1">
+									<!-- 휘두르기-->
+									<node name="target" type="near" from="10" to="1000">
+										<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" cooltime="8000" idx="5">
+									<!-- 대쉬 휘두르기-->
+									<node name="target" type="near" from="10" to="1000">
+										<!-- 들기 오브젝트에 갇혀 버벅대는 상황을 최소화 하기 위해 제알 가까운 대상 타겟팅 잡도록 함-->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<node name="select" prob="60,20,20">
+										<node name="trace" limit="2500" skillIdx="1" />
+										<node name="skill" idx="4">
+											<!-- 점프 쾅!~-->
+											<node name="standby" limit="3000" faceTarget="0" />
+										</node>
+										<node name="skill" idx="3">
+											<!-- 돌진 공격-->
+											<node name="standby" limit="2000" faceTarget="0" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99,1">
+										<node name="trace" limit="2500" skillIdx="1" />
+										<node name="standby" limit="500" faceTarget="0" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="50,1,1,33,1">
+						<!--#3-2 페이즈 죽기 직전  기절 공격 패턴 사용함    14~0  (HP 100~50%를 그냥 훅 넘길경우를 대비한 점프이동관련 로직이 들어가 있음)-->
+						<node name="skill" cooltime="22000" idx="3">
+							<!--돌진 공격 후 왼손 대포 바닥 폭발-->
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="skill" idx="2">
+									<!-- 왼손 대포 발사-->
+									<node name="standby" limit="4500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="7000" idx="4">
+							<!-- 점프 쾅!~-->
+							<node name="standby" limit="3000" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="7000" idx="3">
+							<!-- 돌진 공격-->
+							<node name="standby" limit="2000" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="8000" idx="1">
+							<!-- 휘두르기-->
+							<node name="standby" limit="1000" faceTarget="10" />
+						</node>
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

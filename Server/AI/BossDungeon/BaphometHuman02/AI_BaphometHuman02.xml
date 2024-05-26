@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+				<node name="select" prob="10,90">
+					<node name="target" type="rand" from="10" to="1200" />
+					<node name="move" destination="900, -2100, 2000" limit="10000" cooltime="23000" initialCooltime="10000">
+						<!-- 자주 전투판 중앙으로 이동하도록 함, 구석으로 가면 상황이 꼬일 수 있어 자주 중앙으로 가도록 함-->
+						<node name="target" type="near" from="10" to="1200">
+							<node name="standby" limit="800" faceTarget="1" />
+						</node>
+					</node>
+				</node>
+			</node>
+			<!--#1페이즈 -->
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<node name="select" prob="9999,99,0">
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="20000" initialCooltime="20000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="3000" skillIdx="1" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="skill" cooltime="50000" initialCooltime="27000" idx="8">
+							<!--왼쪽 오른쪽 번갈아 돌진 베기-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<node name="target" type="far" from="10" to="1700" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<node name="skill" idx="11" />
+							<node name="skill" faceTarget="0" idx="12" />
+							<node name="target" type="far" from="10" to="1700" />
+							<node name="skill" idx="8" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<node name="target" type="far" from="10" to="1700" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<node name="skill" idx="11" />
+							<node name="skill" faceTarget="0" idx="12" />
+							<node name="target" type="far" from="10" to="1700" />
+							<node name="skill" idx="8" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<node name="target" type="far" from="10" to="1700" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<node name="skill" idx="11" />
+							<node name="skill" faceTarget="0" idx="12" />
+							<node name="skill" faceTarget="0" idx="13" />
+							<!--3연속 사용후 지처서 헉헉-->
+						</node>
+						<!--*****************HP 80% 이상 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="54,45,1">
+									<!--횡베기 사정권에 들어오면 -->
+									<node name="skill" idx="2">
+										<!--횡베기 -->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="skill" idx="4">
+										<!--종베기 -->
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="15">
+										<node name="select" prob="55,45">
+											<!--점프 내려찍기에 들어오면 -->
+											<node name="skill" idx="15">
+												<!--점프 내려찍기 공격 -->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" skillIdx="2" />
+											<!--횡베기 사정권으로 추적하기 -->
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,50">
+											<node name="trace" limit="2500" skillIdx="2" />
+											<!--횡베기 사정권으로 추적하기 -->
+											<node name="trace" limit="2500" skillIdx="15" />
+											<!--점프 내려찍기 사정권으로 추적하기 -->
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+						<!--*****************HP 80% 이상 -->
+					</node>
+				</condition>
+				<condition name="hpOver" value="25">
+					<node name="select" prob="99999,0">
+						<!--2페이즈 악령 깃들기  -->
+						<node name="setData" key="aiBattleTime" value="0" cooltime="999999" />
+						<!--2페이즈 시작시 battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="90000" battleTimeLoop="150000">
+								<node name="select" prob="99999,999,0">
+									<!--악령 깃들기  구간-->
+									<node name="move" destination="900, -2100, 2000" limit="9000" cooltime="130000">
+										<node name="skill" idx="16">
+											<!-- 악령 깃들기 광폭화 동작,  레벨 2 혼돈 악령-->
+											<node name="target" type="rand" from="10" to="2400">
+												<node name="skill" facePos="-11, -3025, 2150" idx="19">
+													<!--끌어오기 후 강력 횡베기 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+									<node name="standby" limit="10" faceTarget="1" cooltime="20000">
+										<node name="target" type="far" from="10" to="1000">
+											<node name="trace" limit="3000" skillIdx="1" />
+											<!--distance 200짜리 가짜 스킬 데이터-->
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="3">
+											<node name="select" prob="9999,23,27,27,22,1">
+												<!--횡베기 사정권에 들어오면 , 레벨3 혼돈의 악령-->
+												<node name="skill" cooltime="170000" initialCooltime="0" idx="3">
+													<!--횡베기 후 영혼의 흡수 범위 공격, 이 페이즈때 딱 한번만 사용하도록 하기 위해 -->
+													<node name="standby" limit="500" faceTarget="1">
+														<node name="target" type="rand" from="10" to="800">
+															<node name="skill" idx="17" />
+															<!-- 영혼의 흡수 범위 공격, 레벨2 혼돈 악령 풀기-->
+														</node>
+													</node>
+												</node>
+												<node name="skill" idx="2">
+													<!--횡베기 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" cooltime="10000" idx="6">
+													<!--종베기 그 다음 왼쪽공격 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" cooltime="10000" idx="7">
+													<!--종베기 그 다음 오른쪽공격 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" cooltime="10000" idx="5">
+													<!--종베기 그 다음 뒤쪽치기 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="trace" limit="2500" skillIdx="3" />
+											<!--횡베기 사정권으로 추적하기 -->
+										</condition>
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="9999,9999,0">
+									<node name="buff" type="remove" id="50000900" cooltime="75000" initialCooltime="1" />
+									<!--혼돈의 악력 이펙트 표시용 버프 제거하기 -->
+									<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+									<node name="standby" limit="10" faceTarget="1" cooltime="30000" initialCooltime="30000">
+										<node name="target" type="far" from="10" to="1000">
+											<node name="trace" limit="3000" skillIdx="1" />
+											<!--distance 200짜리 가짜 스킬 데이터-->
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="4">
+											<node name="select" prob="29,20,50,1">
+												<!--종베기 사정권에 들어오면 -->
+												<node name="skill" cooltime="5000" idx="4">
+													<!--횡베기 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" idx="15">
+													<!--점프 내려찍기 공격 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" cooltime="12000" initialCooltime="1" idx="14">
+													<!--검 회전시키면사 사방에 6개 투사체 발사 -->
+													<node name="standby" limit="250" faceTarget="1">
+														<node name="select" prob="50,50">
+															<!-- AttackIdle로 돌아오는 부분 꼭 있어야함 -->
+															<node name="skill" idx="14">
+																<!--검 회전시키면사 사방에 6개 투사체 발사 -->
+																<node name="standby" limit="3000" faceTarget="1" />
+																<!-- AttackIdle로 돌아오는 부분 꼭 있어야함 -->
+															</node>
+															<node name="standby" limit="250" faceTarget="0" />
+															<!-- AttackIdle로 돌아오는 부분 꼭 있어야함 -->
+														</node>
+													</node>
+												</node>
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="trace" limit="2500" skillIdx="4" />
+											<!--종베기 사정권으로 추적하기 -->
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,9999,99999,999,0">
+						<node name="buff" type="remove" id="50000900" cooltime="9999999" initialCooltime="1" />
+						<!--분노의 악력 이펙트 표시용 버프 제거하기 -->
+						<node name="buff" type="remove" id="50000308" cooltime="9999999" initialCooltime="1" />
+						<!--영혼흡수 버프 제거하기 -->
+						<node name="skill" cooltime="9999999" initialCooltime="0" idx="15">
+							<!-- 점프 내려찍기 후 공격력 업 버프-->
+							<node name="standby" limit="2000" faceTarget="1">
+								<node name="move" destination="900, -2100, 2000">
+									<node name="standby" limit="1000" faceTarget="1">
+										<node name="skill" idx="18" />
+										<!-- 공격력 업 버프-->
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="20000">
+							<node name="target" type="far" from="10" to="1000">
+								<node name="trace" limit="3000" skillIdx="1" />
+								<!--distance 200짜리 가짜 스킬 데이터-->
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="33,32,34,1">
+									<!--횡베기 사정권에 들어오면 -->
+									<node name="skill" cooltime="4000" idx="4">
+										<!--종베기 -->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="4000" idx="2">
+										<!--횡베기 -->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="7000" initialCooltime="1" idx="14">
+										<node name="select" prob="50,50">
+											<!--검 회전시키면사 사방에 6개 투사체 발사 -->
+											<node name="standby" limit="350" faceTarget="1">
+												<!-- AttackIdle로 돌아오는 부분 꼭 있어야함 -->
+												<node name="skill" idx="14">
+													<!--검 회전시키면사 사방에 6개 투사체 발사 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+													<!-- AttackIdle로 돌아오는 부분 꼭 있어야함 -->
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+											<!-- AttackIdle로 돌아오는 부분 꼭 있어야함 -->
+										</node>
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="15">
+										<node name="select" prob="45,55">
+											<!--점프 내려찍기에 들어오면 -->
+											<node name="skill" idx="15">
+												<!--점프 내려찍기 공격 -->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="trace" limit="2500" skillIdx="2" />
+											<!--횡베기 사정권으로 추적하기 -->
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="50,50">
+											<node name="trace" limit="2500" skillIdx="2" />
+											<!--횡베기 사정권으로 추적하기 -->
+											<node name="trace" limit="2500" skillIdx="15" />
+											<!--점프 내려찍기 사정권으로 추적하기 -->
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

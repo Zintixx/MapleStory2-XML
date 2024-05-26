@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,99999,0">
+			<node name="standby" limit="2000" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<!--최초 등장때 2초 정도 정지 상태로 있음-->
+				<node name="SetValue" key="DeathSummon" value="0" />
+				<!--소환몹 자살 명령 받는  변수, 이 변수는 마스터인 칸두라 보스한테 신호 받는 변수임 -->
+				<node name="SetValue" key="MasterCome" value="0" />
+				<!--  칸두라 보스가 직접 해당 방으로 왔을 때 이것을 알리는데 사용하는 변수, 이 변수는 마스터인 칸두라 보스한테 신호 받는 변수임 -->
+				<node name="SetValue" key="SoulSendReady" value="0" />
+				<!-- 암흑정령이 몇초 뒤에 소울을 흡수 당해 죽게 할지를 결정하는 변수-->
+				<node name="SetValue" key="TeleportOn" value="0" />
+				<!-- 텔레포트를 최초로 했는지 안 했는지 알려주는 변수-->
+				<aiPreset name="SuddenSoulSend" />
+				<!-- 낮은 확률로  SoulSendReady 숫자를 크게 올리게 하여  등장하자마자 바로 다크소울 방출 행위를 하게 함, 고수들이 소환된 다크정령을 순산하여 보스가 다크소울을 너무 흡수 못하는 상황을 막기 위한 예비 장치임-->
+			</node>
+			<node name="standby" limit="100" faceTarget="1" cooltime="3000">
+				<node name="SetValue" key="SoulSendReady" value="1" isModify="1" />
+				<!--언제 소울 흡수 동작을 취할지 카운드다운을 세는 부분-->
+				<node name="target" type="near" from="10" to="1300" />
+				<!--항상 제일 가까운 대상 타겟팅 하도록 함-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SoulSendReady" value="6" op="greaterEqual">
+					<!-- 시간이 다 되어서 다크소울을 몸에서 방출하고 죽음, 암흑정령이 등장해서 몇초뒤에 소울을 방출할지  결정하는 숫자, 이걸로 조절하자-->
+					<!-- 빨리 죽는 암흑정령은 이 숫자가 상대적으로 낮게 설정함-->
+					<node name="conditions">
+						<condition name="extraData" key="TeleportOn" value="0">
+							<!--2층에서 있는 상태기 때문에 1층으로 순간이동 시킨 후에 다크소울을 흡수 당하게 함-->
+							<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true">
+								<node name="skill" idx="5" />
+								<node name="skill" idx="6" />
+								<node name="teleport" pos="450, -900, 3750" />
+								<node name="skill" idx="7" />
+								<node name="skill" idx="8" />
+								<node name="SetMasterValue" key="DarkSoulAbsorb" value="1" isModify="1" />
+								<!-- 다크소울 흡수 당한 후 보스의 DarkSoulAbsorb 변수에 1을 더함-->
+								<node name="announce" message="$KanduraBigBurster_DarkSoulAbsorb$" durationTick="6000" />
+								<!-- 자살 스킬 사용 직전에 시스템 메시지 설정을 해야 메시지가 정상적으로 잘 출력됨,자살 스킬 이후에 설정하면 메지시 안나옴-->
+								<node name="skill" faceTarget="0" idx="9" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!--이미 순간이동 하여 2층에서 내려온 상태임-->
+							<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true">
+								<node name="skill" idx="8" />
+								<node name="SetMasterValue" key="DarkSoulAbsorb" value="1" isModify="1" />
+								<!-- 다크소울 흡수 당한 후 보스의 DarkSoulAbsorb 변수에 1을 더함-->
+								<node name="announce" message="$KanduraBigBurster_DarkSoulAbsorb$" durationTick="6000" />
+								<!-- 자살 스킬 사용 직전에 시스템 메시지 설정을 해야 메시지가 정상적으로 잘 출력됨,자살 스킬 이후에 설정하면 메지시 안나옴-->
+								<node name="skill" faceTarget="0" idx="9" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="DeathSummon" value="1">
+					<!-- 칸두라한테 자살하라는 명령을 받았으면 -->
+					<node name="skill" faceTarget="0" idx="9" />
+					<!-- 자살 스킬 사용하기 -->
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- 통상적인 공격 행동 - 이곳에 "순간이동",  "돌진",  "땅속이동", "걸어서 이동"  같은  베리에이션별 특징 스킬을 정의함  -->
+						<!--순간이동 로직 -->
+						<node name="skill" faceTarget="0" cooltime="13000" initialCooltime="13000" idx="5">
+							<!--순간이동 동작 시작 시간 더 짧음 -  땅속으로 들어가기 -->
+							<node name="SetValue" key="TeleportOn" value="1">
+								<!-- 이 변수에 1을 넣어 이미 순간이동 해서 2층에서 1층으로 내려왔음을 알림  -->
+								<aiPreset name="TeleportPosition" />
+								<!-- 어느 지점으로 순간이동 시킬지 결정함  -->
+							</node>
+						</node>
+						<aiPreset name="MainBattle" />
+						<!-- 기본 주 공격 행위  -->
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<!-- 기본 주 공격 행위  정의-->
+		<aiPreset name="MainBattle">
+			<node name="select" prob="99999,0">
+				<node name="skill" faceTarget="0" cooltime="3800" idx="4">
+					<node name="select" prob="50,50">
+						<!--몸에 기력 발산, 칸두라 저주 걸린 플레이어 접근 금지 시키기위한 용도 -->
+						<node name="standby" limit="1200" faceTarget="1" />
+						<node name="standby" limit="800" faceTarget="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="35,65">
+							<!--거리 250 이내 -->
+							<node name="skill" idx="1">
+								<!--근접 손치기 공격 -->
+								<node name="standby" limit="800" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="4000" idx="2">
+								<!--회전 돌진 공격 -->
+								<node name="standby" limit="800" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="3">
+								<node name="select" prob="30,30,40">
+									<!--거리 9900 이내 -->
+									<node name="skill" idx="3">
+										<!--직사 관통 공격 -->
+										<node name="skill" faceTarget="0" idx="4">
+											<!--몸에 기력 발산 -->
+											<node name="standby" limit="3100" faceTarget="1" />
+										</node>
+									</node>
+									<node name="standby" limit="2100" faceTarget="1">
+										<node name="skill" idx="3">
+											<!--직사 관통 공격 -->
+											<node name="skill" faceTarget="0" idx="4">
+												<!--몸에 기력 발산 -->
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="700" faceTarget="1" />
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<!-- 어느 지점으로 순간이동를 정의함  -->
+		<aiPreset name="TeleportPosition">
+			<node name="skill" idx="6">
+				<node name="select" prob="1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1">
+					<!--땅속에서 잠시 대기 -->
+					<node name="teleport" pos="-1800, -300, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-1200, 0, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-1350, -450, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-2100, -450, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-1350, -150, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-1050, 300, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-1350, -750, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-900, 150, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-1050, -300, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-750, 450, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-600, 750, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-150, 600, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-600, 300, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-150, 300, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-150, 900, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-600, 1200, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="150, 450, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-1050, -600, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-300, -1800, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="150, -1200, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-1050, -1050, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="300, -1050, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-450, -1200, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-600, -1800, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="0, -1050, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-750, -1350, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-450, -2100, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="1050, -600, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="600, 0, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="450, -750, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="1050, -150, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="300, -300, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="300, 300, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="750, -300, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="300, -600, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+					<node name="teleport" pos="-150, -1350, 3750">
+						<node name="skill" idx="7" />
+						<!--땅속에서 나오기 -->
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="SuddenSoulSend">
+			<node name="standby" limit="10" faceTarget="1">
+				<node name="select" prob="99999,1">
+					<node name="standby" limit="10" faceTarget="1" />
+					<node name="SetValue" key="SoulSendReady" value="6" />
+					<!-- 낮은 확률로  SoulSendReady 숫자를 크게 올리게 하여  등장하자마자 바로 다크소울 방출 행위를 하게 함, 고수들이 소환된 다크정령을 순산하여 보스가 다크소울을 너무 흡수 못하는 상황을 막기 위한 예비 장치임-->
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

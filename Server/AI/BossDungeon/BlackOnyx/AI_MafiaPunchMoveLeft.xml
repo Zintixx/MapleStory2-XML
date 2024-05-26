@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="300" faceTarget="0">
+				<!--main.xml 트리거에 설정된 MonsterMany 변수 1 더하기-->
+				<node name="TriggerModifyUserValue" triggerID="1001" key="MonsterMany" value="1">
+					<!--전투 상태가 되면 트리거가 졸몹 마리수 체크할 때 +1 하기,   TriggerModelID =  1001 -->
+					<node name="SetValue" key="BattleOn" value="1">
+						<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+						<node name="SetValue" key="CloseCheck" value="0">
+							<!-- 이 변수 최초에는 0 설정 -->
+							<!-- 등장하자마자 지정된 장소로 이동하기 -->
+							<node name="move" destination="3000, 1350, 3310" limit="6200" prob="100" />
+						</node>
+					</node>
+				</node>
+			</node>
+		</condition>
+		<condition name="hpLess" value="80">
+			<node name="SetValue" key="CloseCheck" value="1" />
+			<!-- 이 몬스터가 공격당해 HP 어느정도 깎이면, 이 후 적극적으로 가까이 다가가 공격함 -->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<!-- 최초 시작하마자마 무조건  trace 하기-->
+			<node name="standby" limit="200" faceTarget="1" cooltime="7000">
+				<node name="select" prob="10,10,20,20,20,20,20">
+					<node name="trace" till="180" limit="9970" />
+					<node name="trace" till="290" limit="9970" />
+					<node name="trace" till="330" limit="8970" />
+					<node name="trace" till="410" limit="8970" />
+					<node name="trace" till="520" limit="8970" />
+					<node name="trace" till="580" limit="8970" />
+					<node name="trace" till="620" limit="8970" />
+				</node>
+			</node>
+			<node name="SetValue" cooltime="12000" initialCooltime="12000" key="CloseCheck" value="1" />
+			<!--시간이 지나면 자동으로 가까이 다가가도록 함-->
+			<node name="conditions">
+				<condition name="extraData" key="CloseCheck" value="0">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!-- 거리 500~600 정도 이내에 있으면, 공격 행동 함 -->
+							<aiPreset name="NormalAttack" />
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="near" from="2" to="1800" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- CloseCheck = 1 인 경우, 거리 상관없이 무조건 가까이 다가가 공격하기 -->
+					<aiPreset name="NormalAttack" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   <battleEnd onlyDead="true"> 이렇게 넣으면 오직 죽었을 때만 처리하게 됨,    즉 전투 풀렸을 때도 처리하고 싶으면  <battleEnd> 이렇게 하기-->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="TriggerModifyUserValue" triggerID="1001" key="MonsterMany" value="-1" />
+				<!--이 몬스터가 죽으면 -main.xml  트리거에 설정된 MonsterMany 변수 1 빼기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="NormalAttack">
+			<node name="select" useNpcProb="1">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="60,25,15">
+							<node name="skill" idx="1">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="runaway" skillIdx="1" limit="1000">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="standby" limit="870" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="100,100">
+							<node name="trace" skillIdx="1" limit="3000">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="10" faceTarget="1">
+										<node name="target" type="nearAssociated" from="10" to="1200" />
+									</node>
+									<node name="standby" limit="300" faceTarget="1" />
+								</node>
+							</node>
+							<node name="trace" skillIdx="1" limit="3000" />
+						</node>
+					</condition>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="60,30,10">
+							<node name="skill" idx="2">
+								<node name="standby" limit="800" faceTarget="1" />
+							</node>
+							<node name="runaway" skillIdx="2" limit="1000">
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+							<node name="standby" limit="900" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" skillIdx="2" limit="3000">
+							<node name="select" prob="100,100">
+								<node name="standby" limit="10" faceTarget="1">
+									<node name="target" type="nearAssociated" from="10" to="1200" />
+								</node>
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

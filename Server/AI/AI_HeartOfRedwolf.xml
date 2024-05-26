@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅 갱신 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<!-- HP 80% 이상 -->
+			<node name="conditions">
+				<condition name="hpOver" value="80">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="55,45,1">
+								<!-- 근거리 스킬 사거리 체크 -->
+								<node name="skill" idx="2">
+									<!--내려찍기 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="2">
+									<!--내려찍기 1타 -->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<!--1타 공격 후 공격 대상이 가까이 있으면 근거리 범위 내려찍기 -->
+											<node name="skill" idx="2">
+												<node name="select" prob="30,30,100">
+													<!--근거리 스킬2 -->
+													<node name="trace" limit="2500" skillIdx="3" />
+													<node name="trace" limit="2500" skillIdx="3" />
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<!--1타 공격 후 공격 대상이 멀리 있으면 원거리  범위 내려찍기 -->
+											<node name="skill" idx="3">
+												<!--근접 이동 스킬 -->
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="3">
+									<node name="select" prob="60,30,10">
+										<!--원거리 내려찍기 범위 안에 있으면-->
+										<node name="skill" idx="3">
+											<!--원거리 내려찍기 범위-->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="2500" skillIdx="2" />
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="3500" skillIdx="2" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- HP 40% 이상 -->
+				<condition name="true">
+					<node name="conditions">
+						<condition name="hpOver" value="40">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="5">
+									<node name="select" prob="55,45,1">
+										<!-- 원거리 스킬 사거리 체크 -->
+										<node name="skill" idx="5">
+											<!--독극물 던지기 -->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="5">
+													<!--독극물 공격 후 공격 대상이 가까이 있으면 근거리 범위 내려찍기 -->
+													<node name="skill" idx="5">
+														<!--근거리 스킬2 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</condition>
+												<condition name="true">
+													<!--1타 공격 후 공격 대상이 멀리 있으면 원거리  범위 내려찍기 -->
+													<node name="skill" idx="3">
+														<node name="select" prob="30,100">
+															<!--근접 이동 스킬 -->
+															<node name="trace" limit="2500" skillIdx="3" />
+															<node name="standby" limit="2000" faceTarget="1" />
+														</node>
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="skill" idx="2">
+											<!--내려찍기 1타 -->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="2">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 근거리 범위 내려찍기 -->
+													<node name="skill" idx="2">
+														<!--근거리 스킬2 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</condition>
+												<condition name="true">
+													<!--1타 공격 후 공격 대상이 멀리 있으면 원거리  범위 내려찍기 -->
+													<node name="skill" idx="3">
+														<!--근접 이동 스킬 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="select" prob="33,33,33,1">
+												<!-- 근거리 스킬 사거리 체크 -->
+												<node name="skill" idx="2">
+													<!--올려치기 제자리 -->
+													<node name="trace" limit="2500" skillIdx="2" />
+												</node>
+												<node name="skill" idx="5">
+													<!--내려찍기 원거리  3Lv -->
+													<node name="skill" idx="5">
+														<!--회전 공격 2Lv  -->
+														<node name="skill" idx="5">
+															<!--회전 공격_마무리 포함  3Lv  -->
+															<node name="standby" limit="2000" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+												<node name="trace" limit="2500" skillIdx="3" />
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="skill" idx="5">
+												<!--폭탄투척_원거리 -->
+												<node name="trace" limit="2500" skillIdx="1" />
+												<!--점프 내려찍기_원거리 범위 까지 추척-->
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<!-- HP 40% 이하 -->
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="6">
+									<node name="select" prob="55,45,1">
+										<!-- 원거리 스킬 사거리 체크 -->
+										<node name="skill" idx="6">
+											<!--독극물 던지기 -->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="5">
+													<!--독극물 공격 후 공격 대상이 가까이 있으면 근거리 범위 내려찍기 -->
+													<node name="skill" idx="5">
+														<!--근거리 스킬2 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</condition>
+												<condition name="true">
+													<!--1타 공격 후 공격 대상이 멀리 있으면 원거리  범위 내려찍기 -->
+													<node name="skill" idx="3">
+														<node name="select" prob="30,100">
+															<!--근접 이동 스킬 -->
+															<node name="trace" limit="2500" skillIdx="3" />
+															<node name="standby" limit="2000" faceTarget="1" />
+														</node>
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="skill" idx="2">
+											<!--내려찍기 1타 -->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="2">
+													<!--1타 공격 후 공격 대상이 가까이 있으면 근거리 범위 내려찍기 -->
+													<node name="skill" idx="2">
+														<!--근거리 스킬2 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</condition>
+												<condition name="true">
+													<!--1타 공격 후 공격 대상이 멀리 있으면 원거리  범위 내려찍기 -->
+													<node name="skill" idx="5">
+														<!--근접 이동 스킬 -->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="5">
+											<node name="select" prob="33,33,33,1">
+												<!-- 근거리 스킬 사거리 체크 -->
+												<node name="skill" idx="5">
+													<!--올려치기 제자리 -->
+													<node name="trace" limit="2500" skillIdx="5" />
+												</node>
+												<node name="skill" idx="3">
+													<!--내려찍기 원거리  3Lv -->
+													<node name="skill" idx="3">
+														<node name="skill" idx="3">
+															<node name="select" prob="100,100">
+																<node name="trace" limit="2500" skillIdx="2" />
+																<node name="skill" idx="2">
+																	<!--회전 공격 2Lv  -->
+																	<node name="skill" idx="2">
+																		<!--회전 공격_마무리 포함  3Lv  -->
+																		<node name="standby" limit="1500" faceTarget="1" />
+																	</node>
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+												<node name="trace" limit="2500" skillIdx="6" />
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="skill" idx="3">
+												<!--폭탄투척_원거리 -->
+												<node name="trace" limit="2500" skillIdx="4" />
+												<!--점프 내려찍기_원거리 범위 까지 추척-->
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

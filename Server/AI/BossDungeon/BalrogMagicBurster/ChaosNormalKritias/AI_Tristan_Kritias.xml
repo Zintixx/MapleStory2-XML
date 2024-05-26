@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="120" faceTarget="1" isKeepBattle="true">
+				<node name="say" message="$Tristan_BalrogMagicBurster_Start$" durationTick="8000" />
+				<node name="SetValue" key="Phase" value="0" />
+				<!-- 페이즈별 행동패턴 정의할 때 사용하는 변수: phase = 0 졸구간 부터 시작함, 이 변수는 인페르녹 AI에서 사용하는 phase 변수 현재 숫자 크기가 동일할 것임 -->
+				<node name="SetValue" key="Stage" value="1" />
+				<!-- 졸구간의 스테이지별 설정, 1스테이지 부터 시작함-->
+				<node name="SetValue" key="StageSummonMany" value="0" />
+				<!-- 졸구간 해당 스테이지에서의 졸 몬스터 마리수 체크, 이 변수는  졸 몬스터 AI를 통해서만 늘어나거나 줄어드는 구조임-->
+				<node name="SetValue" key="FinalStunAttack" value="0" />
+				<!--인페르녹이 전투판 다 파괴 후 최종 마지막 페이즈에서 트리스탄이 살아있다면, 최종 스턴 공격 행동 하도록 하는 변수-->
+				<node name="SetValue" key="ProtectActionCheck" value="0" />
+				<!-- 보스 전투에서 플레이어 저주 해제하는 투사체 공격 행동을 하도록 하는 변수 설정-->
+				<node name="SetValue" key="TristanJumpAway2Phase" value="0" />
+				<!--인페르녹이 전투판 파괴할 때 이 변수 2 신호를 트리스탄한테 보내는데, 이 신호를 받아서 2페이즈 보스 전투판 아래로 점프 이동하도록 함 -->
+				<node name="SetValue" key="TristanJumpAway3Phase" value="0" />
+				<!--인페르녹이 전투판 파괴할 때 이 변수 3 신호를 트리스탄한테 보내는데, 이 신호를 받아서 3페이즈 보스 전투판 아래로 점프 이동하도록 함 -->
+				<node name="SetValue" key="StairsTriggerEventOk" value="0" />
+				<!--원칙대로 1페이지 건너띄기 안하고 계단 생성 트리거가 정상적으로 작동되었는지 아닌지를 트리스탄이 알수있게 해주는 변수, 즉 이 변수 신호를 인페르녹AI에게 받아서 트리스탄이 1페이즈 건너띄기 했는지 안했는지를 알 수 있게 함-->
+				<node name="SetValue" key="PhaseCheck" value="0" />
+				<!--#@$ 원칙대로 1페이지 2페이지 건너띄기 안하고 정상 진행 되었는지 아닌지를 알수있게 하는 변수로, 즉 이 변수 신호를 인페르녹AI에게 받아서 2가 되면 건너띄기 없이 정상적으로 잘 진행되었다는 뜻이고  0이면 졸구간에서 바로 3페이지로 진입했다는 뜻임-->
+				<node name="SetValue" key="BossDeadToTristan" value="0" />
+				<!--인페르녹이 죽었으면, 발록한테서 이 변수 1 신호를 받게 됨-->
+				<node name="standby" limit="2000" faceTarget="1" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="BossDeadToTristan" value="1">
+				<node name="select" prob="9999,99,1">
+					<!--인페르녹이 죽으면 이 변수 1 신호를 받아서 던전 완료 관련 행동을 하도록 함-->
+					<node name="skill" faceTarget="1" cooltime="99999999" idx="5">
+						<!--인페르녹 죽으면, 저주 걸린 모든 플레이어 해제해주기 딱 한번 사용하고 안함 -->
+						<node name="SetSlaveValue" key="SummonStageDeath" value="1" />
+						<!-- 만약을 위한 장치로 졸구간에서 인페르녹 HP 극딜되어 죽을 경우 페이지 건너뛰기가 될 수 있어서 이 상황에서 졸구간 졸몹 다 제거하기 -->
+					</node>
+					<node name="standby" limit="5200" faceTarget="0" cooltime="18000" isKeepBattle="true">
+						<!--  이 standby 시간 인페르녹 죽음 동작하고 어느 정도 일치하게 하였음 -->
+						<node name="SetSlaveValue" key="SummonStageDeath" value="1" />
+						<!-- 만약을 위한 장치로 졸구간에서 인페르녹 HP 극딜되어 죽을 경우 페이지 건너뛰기가 될 수 있어서 이 상황에서 졸구간 졸몹 다 제거하기 -->
+						<node name="standby" limit="1800" facePos="-8050, -8250, 5400" />
+						<!--카메라 정면 방향으로 자세 변경하기-->
+						<node name="say" message="$Tristan_BalrogMagicBurster_BattleEnd$" durationTick="8000" />
+						<node name="skill" facePos="-8050, -8250, 5400" idx="10" />
+						<!--승리포즈 자세 취하기 Bore 자세-->
+					</node>
+					<node name="standby" limit="2200" facePos="-8050, -8250, 5400" />
+				</node>
+			</condition>
+			<condition name="extraData" key="TristanJumpAway2Phase" value="2">
+				<!--이 변수가 2이면 인페르녹이 전투판을 파괴하니 2페이즈 전투판으로 점프 이동해야 함-->
+				<node name="conditions">
+					<condition name="extraData" key="StairsTriggerEventOk" value="1">
+						<!-- 원칙대로 1페이지 건너띄기 안하고 계단 생성 트리거가 정상적으로 작동될 경우에 해당될때, 트리스탄의 2페이지 보스 전투판 이동 방식 설정함 -->
+						<node name="say" message="$Tristan_BalrogMagicBurster_2PhaseStartMove$" durationTick="8000" isKeepBattle="true">
+							<node name="SetValue" key="TristanJumpAway2Phase" value="0" />
+							<!-- 이 변수 0 초기화 안하면 이 구간에서 무한루프에 빠짐 -->
+							<node name="move" destination="3150, 3000, 6455" limit="6000" />
+							<node name="skill" facePos="2967, 2819, 4510" idx="8" />
+							<!--점프 뛰기 -->
+							<node name="jump" pos="2967, 2819, 4510" speed="900" heightMultiplier="0.5" />
+							<!--점프중-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--점프 착지 -->
+							<node name="teleport" pos="2967, 2819, 4510" />
+							<!--혹시 상황이 꼬여 트리스탄이 화이트박스에 막혀 원하는 장소로 점프 이동이 안될 수 있으니 안전장치로 최종적으로 순간이동 도착 하도록 함 -->
+							<node name="move" destination="2850, 3600, 4500" limit="5000" />
+							<node name="move" destination="3300, 3900, 4500" limit="5000" />
+							<node name="SetSlaveValue" key="SummonStageDeath" value="1" />
+							<!-- 만약을 위한 장치로 졸구간에서 인페르녹 HP 극딜될 경우 페이지 건너뛰기가 될 수 있어서 이 상황에서 졸구간 졸몹 다 제거하기 -->
+							<node name="buff" type="remove" id="50004561" level="1" />
+							<!--혹시 모르니 크림슨발록 스턴 공격 말풍선 대화 관련 애디셔널 지우기-->
+							<!-- #$#-->
+							<node name="SetValue" key="Phase" value="2" />
+							<!-- #$# 2페이즈 시작-->
+						</node>
+					</condition>
+					<condition name="true">
+						<!--졸구간에서 보스 HP극딜되어 1페이지 건너띄기되어 계단 생성 트리거가 작동 안될 경우에 해당될때, 트리스탄의 2페이지 보스 전투판 이동 방식 설정함 -->
+						<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+							<node name="SetValue" key="TristanJumpAway2Phase" value="0" />
+							<!-- 이 변수 0 초기화 안하면 이 구간에서 무한루프에 빠짐 -->
+							<node name="SetSlaveValue" key="SummonStageDeath" value="1" />
+							<!-- 만약을 위한 장치로 졸구간에서 인페르녹 HP 극딜될 경우 페이지 건너뛰기가 될 수 있어서 이 상황에서 졸구간 졸몹 다 제거하기 -->
+							<node name="move" destination="600, 450, 5260" limit="29000" />
+							<!--졸구간 끝부분으로 걸어오기, 시작지점에서 함참 걸어올수도 있기 때문에 시간 충분히 설정함 -->
+							<node name="skill" facePos="2967, 2819, 4510" idx="8" />
+							<!--점프 뛰기 -->
+							<node name="jump" pos="2967, 2819, 4510" speed="900" heightMultiplier="0.2" />
+							<!--점프중-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--점프 착지 -->
+							<node name="teleport" pos="2967, 2819, 4510" />
+							<!--혹시 상황이 꼬여 트리스탄이 화이트박스에 막혀 원하는 장소로 점프 이동이 안될 수 있으니 안전장치로 최종적으로 순간이동 도착 하도록 함 -->
+							<node name="move" destination="2850, 3600, 4500" limit="5000" />
+							<node name="move" destination="3300, 3900, 4500" limit="5000" />
+							<node name="SetSlaveValue" key="SummonStageDeath" value="1" />
+							<!-- 만약을 위한 장치로 졸구간에서 인페르녹 HP 극딜될 경우 페이지 건너뛰기가 될 수 있어서 이 상황에서 졸구간 졸몹 다 제거하기 -->
+							<!-- #$#-->
+							<node name="SetValue" key="Phase" value="2" />
+							<!-- #$# 2페이즈 시작-->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="TristanJumpAway3Phase" value="3">
+				<!--이 변수가 3이면 인페르녹이 전투판을 파괴하니 3페이즈 전투판으로 점프 이동해야 함-->
+				<node name="conditions">
+					<condition name="extraData" key="PhaseCheck" value="1" op="greaterEqual">
+						<!--#@$ 원칙대로 1페이지 2페이지 전부 건너뛰기 안하거나 혹은 1페이지만 혹은 2페이지만 건너띄기를 할 경우에 해당됨, 그럴때 트리스탄의 3페이지 보스 전투판 이동 방식 설정함 -->
+						<node name="say" message="$Tristan_BalrogMagicBurster_3PhaseStartMove$" durationTick="8000" isKeepBattle="true">
+							<node name="SetValue" key="TristanJumpAway3Phase" value="0" />
+							<!-- 이 변수 0 초기화 안하면 이 구간에서 무한루프에 빠짐 -->
+							<node name="move" destination="3450, 4500, 4510" limit="6000" />
+							<node name="skill" facePos="3450, 4500, 2260" idx="8" />
+							<!--점프 뛰기 -->
+							<node name="jump" pos="3450, 4500, 2260" speed="900" heightMultiplier="0.5" />
+							<!--점프중-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--점프 착지 -->
+							<node name="teleport" pos="3450, 4500, 2260" />
+							<!--혹시 상황이 꼬여 트리스탄이 화이트박스에 막혀 원하는 장소로 점프 이동이 안될 수 있으니 안전장치로 최종적으로 순간이동 도착 하도록 함 -->
+							<node name="move" destination="3900, 4500, 2260" limit="8000" />
+							<node name="buff" type="remove" id="50004561" level="1" />
+							<!--혹시 모르니 크림슨발록 스턴 공격 말풍선 대화 관련 애디셔널 지우기-->
+							<!-- #$#-->
+							<node name="SetValue" key="Phase" value="3" />
+							<!-- #$# 3페이즈 시작-->
+						</node>
+					</condition>
+					<condition name="true">
+						<!--#@$ PhaseCheck = 0 인 경우로, 졸구간에서 보스 HP극딜되어 1페이지 2페이지까지 건너뛰기가 될때, 트리스탄의 3페이지 보스 전투판 이동 방식 설정함 -->
+						<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+							<node name="SetValue" key="TristanJumpAway3Phase" value="0" />
+							<!-- 이 변수 0 초기화 안하면 이 구간에서 무한루프에 빠짐 -->
+							<node name="teleport" pos="3450, 4500, 2260" />
+							<!--바로 순간이동으로 3페이지 전투판으로 오기, 위 <elseif extraKey="TristanJumpAway2Phase" equal="2"> 부분 실행 다 하고 이후 순간이동으로 3페이즈 전투판으로 오는 형태가 되는것임  -->
+							<node name="move" destination="3900, 4500, 2260" limit="8000" />
+							<node name="buff" type="remove" id="50004561" level="1" />
+							<!--혹시 모르니 크림슨발록 스턴 공격 말풍선 대화 관련 애디셔널 지우기-->
+							<!-- #$#-->
+							<node name="SetValue" key="Phase" value="3" />
+							<!-- #$# 3페이즈 시작-->
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="additional" id="50004561">
+				<node name="select" prob="50,50">
+					<!--스턴 공격 당할 때 50004561이 애디셔널도 같이 걸림-->
+					<!-- 크림슨발록에 의해 스턴 당한 후 Idle로 돌아온 후 말풍선으로 예기 함-->
+					<node name="say" message="$Tristan_BalrogMagicBurster_StunWarning01$" durationTick="8000">
+						<node name="standby" limit="1100" faceTarget="1">
+							<node name="buff" type="remove" id="50004561" level="1" />
+							<!--이거 제거 안하면 무한 루프에 빠짐-->
+						</node>
+					</node>
+					<node name="say" message="$Tristan_BalrogMagicBurster_StunWarning02$" durationTick="8000">
+						<node name="standby" limit="800" faceTarget="1">
+							<node name="buff" type="remove" id="50004561" level="1" />
+							<!--이거 제거 안하면 무한 루프에 빠짐-->
+						</node>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="0">
+				<!--졸구간 -->
+				<node name="conditions">
+					<condition name="extraData" key="Stage" value="1">
+						<node name="select" prob="999999,0">
+							<!--졸구간 1스테이지에서의 행동 로직 정의-->
+							<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+								<!--1스테이지 졸몹 소환, 트리스탄이 최종 목적지에 어느 정도 도착 직전에 소환몹이 등장해야 하기 때문에 delayTick 으로 타이밍 조절함-->
+								<!--솔저레토  오른쪽 지점-->
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" delayTick="3500" summonPos="-3900, -5100, 5410" summonRot="0,0,180" />
+								<!--180 : 왼쪽방향 바라보기, 45 : 오른쪽방향 바라보기, -45 : 아래쪽방향 바라보기, 135 : 위쪽방향 바라보기-->
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" delayTick="3500" summonPos="-4050, -5475, 5410" summonRot="0,0,180" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" delayTick="4000" summonPos="-4500, -5700, 5410" summonRot="0,0,180" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" delayTick="5000" summonPos="-4875, -6150, 5410" summonRot="0,0,180" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" delayTick="6000" summonPos="-5400, -6300, 5410" summonRot="0,0,180" />
+								<!--솔저레토  왼쪽 지점-->
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="106" delayTick="6000" summonPos="-6150, -5550, 5410" summonRot="0,0,45" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="107" delayTick="5000" summonPos="-6000, -5025, 5410" summonRot="0,0,45" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="108" delayTick="4000" summonPos="-5550, -4650, 5410" summonRot="0,0,45" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="109" delayTick="3000" summonPos="-5325, -4200, 5410" summonRot="0,0,45" />
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="110" delayTick="3000" summonPos="-5025, -4050, 5410" summonRot="0,0,45" />
+								<!--나이트레토  12쪽, 제일 빨리 등장-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="121" delayTick="2000" summonPos="-4575, -4200, 5410" summonRot="0,0,-45" />
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="122" delayTick="2000" summonPos="-4050, -4725, 5410" summonRot="0,0,-45" />
+								<!--나이트레토 6시쪽 더 늦게 나중에 생성되기-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="123" delayTick="7000" summonPos="-5775, -6300, 5410" summonRot="0,0,135" />
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="124" delayTick="7000" summonPos="-6150, -5925, 5410" summonRot="0,0,135" />
+								<node name="move" destination="-5700, -5850, 5410" limit="9000" />
+								<node name="say" message="$Tristan_BalrogMagicBurster_Warning$" durationTick="8000" />
+								<node name="move" destination="-5100, -5250, 5410" limit="9000" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="skill" idx="2" />
+								<node name="say" message="$Tristan_BalrogMagicBurster_ProtectCircle$" durationTick="8000" />
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+							<node name="conditions">
+								<condition name="extraData" key="StageSummonMany" value="0" op="lessEqual">
+									<!--1스테이지의 모든 졸몹 다 죽으면 2스테이지 전환 셋팅-->
+									<node name="SetValue" key="Stage" value="1" isModify="1" />
+									<!-- #Stage =2#      Stage 이 변수에 +1을 하여 Stage =2 가 되도록 함, 졸구간에서 건너띄가가 될 수 있어서 ModifyExtra 방식으로 숫자 조절하도록 함 -->
+								</condition>
+								<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+									<!--공격 행동 후  AttackDelay 변수 늘어나는 숫자에 의해서 standby 상태로 있기, 페이즈 전환되면 바로바로 움직여야 하기 때문에 이 단계에서 설정함 -->
+									<node name="standby" limit="100" faceTarget="1">
+										<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--1스테이지의 모든 졸몹이 한마리라도 남았으면 평상시 공격 행동을 함-->
+									<aiPreset name="NormalAttack" />
+									<!-- 졸구간에서의 공격 행동 정의 -->
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="Stage" value="2">
+						<node name="select" prob="999999,0">
+							<!--졸구간 2스테이지에서의 행동 로직 정의-->
+							<node name="standby" limit="100" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+								<node name="say" message="$Tristan_BalrogMagicBurster_Go2Stage$" durationTick="8000" />
+								<!--솔저레토-->
+								<!--1시-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="201" delayTick="4000" summonPos="-2100, -2625, 5260" summonRot="0,0,-45" />
+								<!--180 : 왼쪽방향 바라보기, 45 : 오른쪽방향 바라보기, -45 : 아래쪽방향 바라보기, 135 : 위쪽방향 바라보기-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="202" delayTick="4000" summonPos="-2100, -3075, 5260" summonRot="0,0,-45" />
+								<!--크림슨발록-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="203" delayTick="4000" summonPos="-1875, -2775, 5260" summonRot="0,0,-45" />
+								<!--나이트레토-->
+								<!--3시-->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="211" delayTick="5000" summonPos="-2400, -3750, 5260" summonRot="0,0,180" />
+								<!--솔저레토-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="212" delayTick="5000" summonPos="-2700, -4050, 5260" summonRot="0,0,180" />
+								<!--나이트레토-->
+								<!--5시-->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="206" delayTick="7000" summonPos="-3375, -4425, 5260" summonRot="0,0,135" />
+								<!--솔저레토-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="207" delayTick="7000" summonPos="-3825, -4425, 5260" summonRot="0,0,135" />
+								<!--솔저레토-->
+								<!--7시-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="208" delayTick="7000" summonPos="-4275, -3975, 5260" summonRot="0,0,135" />
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="209" delayTick="7000" summonPos="-4275, -3525, 5260" summonRot="0,0,135" />
+								<!--크림슨발록-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="210" delayTick="7000" summonPos="-4500, -3750, 5260" summonRot="0,0,135" />
+								<!--나이트레토-->
+								<!--9시-->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="213" delayTick="5000" summonPos="-3600, -2550, 5260" summonRot="0,0,45" />
+								<!--솔저레토-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="214" delayTick="5000" summonPos="-3900, -2850, 5260" summonRot="0,0,45" />
+								<!--솔저레토-->
+								<!--11시-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="204" delayTick="4000" summonPos="-2925, -2250, 5260" summonRot="0,0,-45" />
+								<!--나이트레토-->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="205" delayTick="4000" summonPos="-2475, -2250, 5260" summonRot="0,0,-45" />
+								<node name="move" destination="-3225, -3375, 5250" limit="9000" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="say" message="$Tristan_BalrogMagicBurster_ProtectCircle$" durationTick="8000" />
+								<node name="skill" idx="2" />
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+							<node name="conditions">
+								<condition name="extraData" key="StageSummonMany" value="0" op="lessEqual">
+									<!--2스테이지의 모든 졸몹 다 죽으면 2스테이지 전환 셋팅-->
+									<node name="SetValue" key="Stage" value="1" isModify="1" />
+									<!-- #Stage =3#      Stage 이 변수에 +1을 하여 Stage =3 가 되도록 함, 졸구간에서 건너띄가가 될 수 있어서 ModifyExtra 방식으로 숫자 조절하도록 함 -->
+								</condition>
+								<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+									<!--공격 행동 후  AttackDelay 변수 늘어나는 숫자에 의해서 standby 상태로 있기, 페이즈 전환되면 바로바로 움직여야 하기 때문에 이 단계에서 설정함 -->
+									<node name="standby" limit="100" faceTarget="1">
+										<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--2스테이지의 모든 졸몹이 한마리라도 남았으면 평상시 공격 행동을 함-->
+									<aiPreset name="NormalAttack" />
+									<!-- 졸구간에서의 공격 행동 정의 -->
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="Stage" value="3">
+						<node name="select" prob="999999,0">
+							<!--졸구간 3스테이지에서의 행동 로직 정의-->
+							<node name="standby" limit="200" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+								<node name="say" message="$Tristan_BalrogMagicBurster_Go3Stage$" durationTick="8000" />
+								<!--솔저레토-->
+								<!--1시-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="301" delayTick="2000" summonPos="0, -675, 5100" summonRot="0,0,-45" />
+								<!--180 : 왼쪽방향 바라보기, 45 : 오른쪽방향 바라보기, -45 : 아래쪽방향 바라보기, 135 : 위쪽방향 바라보기-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="302" delayTick="2000" summonPos="0, -1125, 5100" summonRot="0,0,-45" />
+								<!--졸병발록-->
+								<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="303" delayTick="2000" summonPos="225, -900, 5100" summonRot="0,0,-45" />
+								<!--솔저레토-->
+								<!--5시-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="304" delayTick="8000" summonPos="-1275, -2325, 5100" summonRot="0,0,135" />
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="305" delayTick="8000" summonPos="-1725, -2325, 5100" summonRot="0,0,135" />
+								<!--졸병발록-->
+								<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="306" delayTick="8000" summonPos="-1500, -2550, 5100" summonRot="0,0,135" />
+								<!--솔저레토-->
+								<!--7시-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="307" delayTick="8000" summonPos="-2175, -1875, 5100" summonRot="0,0,135" />
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="308" delayTick="8000" summonPos="-2175, -1425, 5100" summonRot="0,0,135" />
+								<!--졸병발록-->
+								<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="309" delayTick="8000" summonPos="-2400, -1650, 5100" summonRot="0,0,135" />
+								<!--솔저레토-->
+								<!--11시-->
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="310" delayTick="3000" summonPos="-975, -150, 5100" summonRot="0,0,-45" />
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="311" delayTick="3000" summonPos="-525, -150, 5100" summonRot="0,0,-45" />
+								<!--졸병발록-->
+								<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="312" delayTick="3000" summonPos="-750, 75, 5100" summonRot="0,0,-45" />
+								<!--크림슨발록-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="313" delayTick="4000" summonPos="-2025, -825, 5280" summonRot="0,0,45" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="314" delayTick="4000" summonPos="-75, -1575, 5280" summonRot="0,0,-45" />
+								<node name="move" destination="-1125, -1275, 5100" limit="9000" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="say" message="$Tristan_BalrogMagicBurster_ProtectCircle$" durationTick="8000" />
+								<node name="skill" idx="2" />
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+							<node name="conditions">
+								<condition name="extraData" key="StageSummonMany" value="0" op="lessEqual">
+									<!--3스테이지의 모든 졸몹 다 죽으면 2스테이지 전환 셋팅-->
+									<node name="SetValue" key="Stage" value="99" />
+								</condition>
+								<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+									<!--공격 행동 후  AttackDelay 변수 늘어나는 숫자에 의해서 standby 상태로 있기, 페이즈 전환되면 바로바로 움직여야 하기 때문에 이 단계에서 설정함 -->
+									<node name="standby" limit="100" faceTarget="1">
+										<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--3스테이지의 모든 졸몹이 한마리라도 남았으면 평상시 공격 행동을 함-->
+									<aiPreset name="NormalAttack" />
+									<!-- 졸구간에서의 공격 행동 정의 -->
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- Stage = 99 인 경우로 졸구간 스테이지 최종 완료 처리하고 1페이즈 시작관련 처리를 함-->
+						<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+							<node name="SetValueRangeTarget" key="BossBattleOk" value="1" radius="12500" height="3500" isModify="1" />
+							<!--이 변수 1 신호를 인페르녹한테 보내서 인페르녹이 1페이지 전투판으로 점프 이동 하고 각종 트리거 신호 보내도록 설정함-->
+							<!--	ModifyExtra +1 로 하는 경우는 인페르녹AI에서 이 변수 최초에 0으로 시작되고 인페르녹 HP 90% 될 경우와 트리스탄의 졸구간 끝날때의 경우 이렇게 두번 신호를 보내기 때문에 ModifyExtra 방식으로 이 변수가 1이 되면 보스 전투로 전환되는 방식을 사용함, 
+					     보스 전투로 전환될때  BossBattleOk=-99 로 강제 셋팅 되기 때문에 ModifyExtra +1  로 해도 괜찮음  -->
+							<node name="standby" limit="1200" faceTarget="1" />
+							<node name="SetSlaveValue" key="SummonStageDeath" value="1" />
+							<!-- 만약을 위해 한번더 하는 장치로 졸구간에서 인페르녹 HP 극딜될 경우 페이지 건너띄기가 될 수 있어서 이 상황에서 졸구간 졸몹 다 제거하기 -->
+							<node name="move" destination="-150, -300, 5260" limit="29000" />
+							<!-- 졸구간 도중 인페르녹 HP가 많이 깎여서 1스테이지에서 지점에서 바로 마지막 지점으로 올 수도 있기 때문에 시간 충분히 길게 설정함-->
+							<node name="say" message="$Tristan_BalrogMagicBurster_1PhaseStartMove$" durationTick="8000" />
+							<node name="move" destination="900, 750, 5260" limit="9000" />
+							<node name="skill" facePos="1480, 1225, 5560" idx="8" />
+							<!--점프 뛰기 -->
+							<node name="jump" pos="1480, 1225, 5560" speed="900" heightMultiplier="0.5" />
+							<!--점프중-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--점프 착지 -->
+							<node name="move" destination="1700, 1650, 5710" limit="15000" />
+							<node name="skill" facePos="2385, 2090, 6010" idx="8" />
+							<!--점프 뛰기 -->
+							<node name="jump" pos="2380, 2090, 6010" speed="900" heightMultiplier="0.5" />
+							<!--점프중-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--점프 착지 -->
+							<node name="SetSlaveValue" key="SummonStageDeath" value="1" />
+							<!-- 만약을 위해 한번더 하는 장치로 졸구간에서 인페르녹 HP 극딜될 경우 페이지 건너띄기가 될 수 있어서 이 상황에서 졸구간 졸몹 다 제거하기 -->
+							<node name="move" destination="2520, 2386, 6010" limit="15000" />
+							<node name="skill" facePos="3375, 3225, 6460" idx="8" />
+							<!--보스전투판으로 점프 뛰기 -->
+							<node name="jump" pos="3375, 3225, 6460" speed="900" heightMultiplier="0.5" />
+							<!--점프중    -1350, -1500, 2450-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--보스전투판으로 점프 착지 -->
+							<!-- #$#-->
+							<node name="SetValue" key="Phase" value="1" />
+							<!-- #$# 1페이즈 시작-->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<!--#!# 여기서 부터 보스하고 본격 전투 하는 부분 #!#-->
+			<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+				<!--공격 행동 후  AttackDelay 변수 늘어나는 숫자에 의해서 standby 상태로 있기, 페이즈 전환되면 바로바로 움직여야 하기 때문에 이 단계에서 설정함 -->
+				<node name="standby" limit="100" faceTarget="1">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="1">
+				<!--#1페이즈 , 인페르녹이 전투판 파괴때 트리스탄은 점프 이동하는데, 이 점프이동 때 Phase 변수 셋팅함-->
+				<aiPreset name="BossBattleAttack" />
+				<!-- 보스 전투 도중의 공격 패턴 정의 -->
+			</condition>
+			<condition name="extraData" key="Phase" value="2">
+				<!--#2페이즈 , 인페르녹이 전투판 파괴때 트리스탄은 점프 이동하는데, 이 점프이동 때 Phase 변수 셋팅함-->
+				<aiPreset name="BossBattleAttack" />
+				<!-- 보스 전투 도중의 공격 패턴 정의 -->
+			</condition>
+			<condition name="extraData" key="Phase" value="3" op="greaterEqual">
+				<!--#3  페이즈 , 인페르녹이 전투판 파괴때 트리스탄은 점프 이동하는데, 이 점프이동 때 Phase 변수 셋팅함-->
+				<aiPreset name="BossBattleAttack_LastPhase" />
+				<!-- 보스 전투 도중의 공격 패턴 정의 -->
+			</condition>
+			<condition name="true">
+				<!-- 이론적으로 여기 올일 없음 -->
+				<node name="standby" limit="120" faceTarget="1" />
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="NormalAttack">
+			<node name="select" prob="999,0">
+				<!-- 졸구간에서의 공격 행동 정의 -->
+				<node name="target" type="near" from="10" to="2200" cooltime="9000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="70,30">
+							<!-- 근거리 공격 사정거리에 있으면 -->
+							<node name="skill" idx="1">
+								<node name="select" prob="33,34,33">
+									<!--2연타 휘두르기 -->
+									<node name="SetValue" key="AttackDelay" value="4" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									<node name="SetValue" key="AttackDelay" value="7" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									<node name="SetValue" key="AttackDelay" value="11" />
+									<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								</node>
+							</node>
+							<node name="skill" cooltime="8000" idx="6">
+								<!--원거리  약공격 -->
+								<node name="SetValue" key="AttackDelay" value="34" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="6">
+						<node name="select" prob="80,20">
+							<!-- 원거리 공격 사정거리 -->
+							<node name="skill" idx="6">
+								<!--원거리  약공격 -->
+								<node name="SetValue" key="AttackDelay" value="32" />
+							</node>
+							<node name="skill" cooltime="18000" idx="7">
+								<!--원거리  강공격 -->
+								<node name="SetValue" key="AttackDelay" value="36" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="25" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BossBattleAttack">
+			<node name="select" prob="999,0">
+				<!-- 보스 전투의 공격 패턴 정의 -->
+				<node name="target" type="near" from="10" to="2200" cooltime="4000" />
+				<node name="conditions">
+					<condition name="extraData" key="ProtectActionCheck" value="4" op="greaterEqual">
+						<node name="select" prob="50,50">
+							<!-- 쉬운 난이도는 이 부분이 다르게 설정되었음 -->
+							<node name="say" message="$Tristan_BalrogMagicBurster_ProtectThrow0301$" durationTick="8000" isKeepBattle="true">
+								<node name="skill" idx="4" />
+								<!-- 플레이어에게 걸린 저주 해제하는 투사체 3발 발사, 레벨2가 3발 발사함 -->
+								<node name="SetValue" key="AttackDelay" value="13" />
+								<node name="SetValue" key="ProtectActionCheck" value="0" />
+								<!--0 초기화-->
+							</node>
+							<node name="say" message="$Tristan_BalrogMagicBurster_ProtectThrow0302$" durationTick="8000" isKeepBattle="true">
+								<node name="skill" idx="4" />
+								<!-- 플레이어에게 걸린 저주 해제하는 투사체 3발 발사, 레벨2가 3발 발사함 -->
+								<node name="SetValue" key="AttackDelay" value="14" />
+								<node name="SetValue" key="ProtectActionCheck" value="0" />
+								<!--0 초기화-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="6">
+						<node name="select" prob="80,20">
+							<!-- 원거리 공격 사정거리 -->
+							<node name="skill" idx="6">
+								<node name="select" prob="50,50">
+									<!--원거리  약공격 -->
+									<node name="SetValue" key="AttackDelay" value="9">
+										<node name="SetValue" key="ProtectActionCheck" value="1" isModify="1" />
+										<!--이 변수가 일정 이상 되면 플레이어 저주 해제 스킬 사용하도록 함-->
+									</node>
+									<node name="SetValue" key="AttackDelay" value="15">
+										<node name="SetValue" key="ProtectActionCheck" value="2" isModify="1" />
+										<!--이 변수가 일정 이상 되면 플레이어 저주 해제 스킬 사용하도록 함-->
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="18000" idx="7">
+								<!--원거리  강공격 -->
+								<node name="SetValue" key="AttackDelay" value="11">
+									<node name="SetValue" key="ProtectActionCheck" value="2" isModify="1" />
+									<!--이 변수가 일정 이상 되면 플레이어 저주 해제 스킬 사용하도록 함-->
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="SetValue" key="AttackDelay" value="9" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BossBattleAttack_LastPhase">
+			<node name="select" prob="999,0">
+				<!-- 마지막 전투판의 보스 전투의 공격 패턴 정의 -->
+				<node name="target" type="near" from="10" to="2200" cooltime="4000" />
+				<node name="conditions">
+					<condition name="extraData" key="ProtectActionCheck" value="3" op="greaterEqual">
+						<node name="select" prob="50,50">
+							<!-- 마지막 전투판에서는 이 변수 1이 더 낮아짐 -->
+							<node name="say" message="$Tristan_BalrogMagicBurster_ProtectThrow0401$" durationTick="8000" isKeepBattle="true">
+								<node name="skill" idx="3" />
+								<!-- 플레이어에게 걸린 저주 해제하는 투사체 4발 발사, 레벨1이 4발 발사함 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<node name="SetValue" key="ProtectActionCheck" value="0" />
+								<!--0 초기화-->
+							</node>
+							<node name="say" message="$Tristan_BalrogMagicBurster_ProtectThrow0402$" durationTick="8000" isKeepBattle="true">
+								<node name="skill" idx="3" />
+								<!-- 플레이어에게 걸린 저주 해제하는 투사체 4발 발사, 레벨1이 4발 발사함 -->
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<node name="SetValue" key="ProtectActionCheck" value="0" />
+								<!--0 초기화-->
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="8">
+						<node name="select" prob="80,20">
+							<!-- 거리체크 800 이내 -->
+							<node name="skill" idx="6">
+								<node name="select" prob="50,50">
+									<!--원거리  약공격 -->
+									<node name="SetValue" key="AttackDelay" value="6">
+										<node name="SetValue" key="ProtectActionCheck" value="1" isModify="1" />
+										<!--이 변수가 일정 이상 되면 플레이어 저주 해제 스킬 사용하도록 함-->
+									</node>
+									<node name="SetValue" key="AttackDelay" value="7">
+										<node name="SetValue" key="ProtectActionCheck" value="2" isModify="1" />
+										<!--이 변수가 일정 이상 되면 플레이어 저주 해제 스킬 사용하도록 함-->
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="18000" idx="7">
+								<!--원거리  강공격 -->
+								<node name="SetValue" key="AttackDelay" value="8">
+									<node name="SetValue" key="ProtectActionCheck" value="2" isModify="1" />
+									<!--이 변수가 일정 이상 되면 플레이어 저주 해제 스킬 사용하도록 함-->
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="5000" skillIdx="8" />
+						<!-- 거리체크 800 이내로 추적하기 -->
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

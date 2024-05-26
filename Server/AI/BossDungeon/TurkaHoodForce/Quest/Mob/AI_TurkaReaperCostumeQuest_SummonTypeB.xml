@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 3페이지 맵 트리거에서 소환하는 몬스터, 트리거 영역에 플레이어가 벗어나면 트리거에 의해 이 몬스터 사라짐 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="select" prob="31,23,23,23">
+				<!-- 모든 몬스터가 똑같이 공격 행동 하는 것을 방지하기 위해 초반에 랜덤 standby 설정 넣기, 그리고 랜덤하게 공반 버프 생성되도록 하기 -->
+				<node name="buff" type="add" id="50003306" />
+				<!-- 공격 반사 랜덤 설정 -->
+				<node name="standby" limit="200" faceTarget="1" />
+				<node name="standby" limit="800" faceTarget="1" />
+				<node name="standby" limit="1100" faceTarget="1" />
+			</node>			
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,99999,0">
+			<node name="standby" limit="300" faceTarget="0" animation="Attack_01_A" cooltime="5000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<!-- 이 졸몹은 맵 트리거에 의해서 플레이어가 특정 트리거박스에 들어서면 15초 마다 3~5마리씩 무한 등장하기 때문에, AI에서 적당히 스스로 제거되도록 해야 함 -->
+			<node name="standby" limit="300" faceTarget="0" animation="Attack_01_A" cooltime="5000" initialCooltime="18000">
+				<node name="select" prob="25,25,25,25">
+					<!--다수 몬스터가 같은 타이밍에 죽으면 좀 어색해서, 적당히 확률 부여-->
+					<node name="RemoveMe" />
+					<node name="standby" limit="900" faceTarget="1" animation="Attack_01_A" cooltime="99000" />
+					<node name="standby" limit="900" faceTarget="1" animation="Attack_01_A" cooltime="99000" />
+					<node name="standby" limit="900" faceTarget="1" animation="Attack_01_A" cooltime="99000" />
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<!-- 레벨1: 거리 280 이내에 플레이어가 있다면, TypeB는 근접 이내 플레이어가 있으면 버프 부여 안하고 공격 행위만 함 -->
+					<node name="skill" faceTarget="1" idx="3">
+						<node name="select" prob="100,100,100">
+							<!-- 근접 공격 , 레벨4: 상태이상 없는 버전, 퀘스트 던전은 난이도 쉬워야 해서 레벨4 사용함-->
+							<node name="standby" limit="500" faceTarget="1" animation="Attack_01_A" />
+							<node name="standby" limit="1800" faceTarget="1" animation="Attack_01_A" />
+							<node name="standby" limit="2500" faceTarget="1" animation="Attack_01_A" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="25,25,20,20,10">
+						<!-- 거리 700에 위아래 큐브 2칸 이상 높이까지 커버 , 레벨2는 퀘스트용 던전 쉬운버전-->
+						<!-- 추적 거리가 똑같으면 다수 몬스터가 겹쳐 서있는 경우가 있어서 다양한 경우의 추척 거리 설정하였음 -->
+						<node name="trace" limit="1200" skillIdx="2" />
+						<!-- 거리 280 까지 추적 -->
+						<node name="trace" till="250" limit="1200" />
+						<!-- 거리 250 까지 추적 -->
+						<node name="trace" till="230" limit="1200" />
+						<!-- 거리 230 까지 추적 -->
+						<node name="trace" till="210" limit="1200" />
+						<!-- 거리 210 까지 추적 -->
+						<node name="trace" till="180" limit="1200" />
+						<!-- 거리 180 까지 추적 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="skill" facePos="-300, -1350, 1050" idx="1">
+						<node name="select" prob="100,100,100">
+							<!-- 본체에  투사체 버프 부여, 레벨2는 퀘스트용 던전 쉬운버전-->
+							<node name="standby" limit="2200" facePos="-300, -1350, 1050" animation="Attack_01_A" />
+							<node name="standby" limit="3300" facePos="-300, -1350, 1050" animation="Attack_01_A" />
+							<node name="standby" limit="4200" facePos="-300, -1350, 1050" animation="Attack_01_A" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

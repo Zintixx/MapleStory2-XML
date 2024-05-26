@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				<node name="SetValue" key="CannonShotPattern" value="1" />
+				<!--	1번: 가운데 -> 2번: 왼쪽 -> 3번: 오른쪽 대포 발사  -> 4번: 가운데 강제 죽이기 패턴 행위를 결정할때 사용하는 변수	-->
+				<node name="SetValue" key="CriticalBallAttackMode" value="0" />
+				<!--	크림슨 발록이 가슴 부위 초강력 공격을 할때 사용되는 변수, 이 공격 사용할때 주변 다른 크림슨 발록도 사용해야 해서 신호 보내는 용도로 사용함	-->
+				<node name="SetValue" key="BalrogCrimsonPhase" value="1" />
+				<!--	 BalrogCrimsonPhase = 1   1페이즈	,   BalrogCrimsonPhase = 2   2페이즈	, 침고로 Phase 라는 변수는 맵트리거에서 인페르녹한테 신호 보내는 변수명이라서, 혹시 모를 설정 오류를 막기 위해 변수명이르 다르게 설정함-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="60">
+			<node name="skill" facePos="750, -300, 2260" isKeepBattle="true" idx="5">
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="750, -300, 2260" speed="1100" heightMultiplier="0.2" />
+				<!--2셋트 전투판 중앙으로 오기,   750, -300, 2260-->
+				<node name="skill" faceTarget="0" idx="6" />
+				<!--레벨2 점프 착지  -->
+				<node name="standby" limit="2000" faceTarget="1" />
+				<node name="SetValue" key="BalrogCrimsonPhase" value="2" />
+				<!--	 BalrogCrimsonPhase = 2   2페이즈, 점프 내려오면서 2페이즈 시작을 알림	-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투 -->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--이 몬스터는 타겟팅이 near   mid   2개 랜덤선택임 -->
+			<node name="standby" limit="200" faceTarget="0" cooltime="4000">
+				<node name="SetValue" key="AttackDelay" value="0">
+					<!-- 타겟팅 리뉴어 될때  AttackDelay = 0 초기화 시킴, 대포 대상 바로 견제 하도록 하기 위해 -->
+					<aiPreset name="TargetLogic" />
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<node name="skill" idx="8" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<!-- 이 몬스터는 공중 고립된 지형에서 스폰되기 때문에, 대기 상태일 때 가만히 있는 것이 좋음 -->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,0">
+						<!-- 가슴 강력 에너지볼 투척 스킬  자신과 다른 크림슨발록도 이 변수를 셋팅하여  설정하기-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="39000" initialCooltime="24000" isKeepBattle="true">
+							<node name="SetValue" key="CriticalBallAttackMode" value="1" />
+							<!--	자기 자신 이 변수 1로 만들어 가슴 강력 에너지볼 사용하도록 함-->
+							<node name="SetValueRangeTarget" key="CriticalBallAttackMode" value="1" radius="3800" height="2000" />
+							<!--주변 다른 크림슨 발록에게 신호보내서 이 스킬 동시에 사용하도록 함	-->
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="CriticalBallAttackMode" value="1">
+								<node name="select" prob="9999,1">
+									<node name="skill" cooltime="39000" isKeepBattle="true" idx="1">
+										<!-- 가슴 강력 에너지볼 투척 스킬 -->
+										<node name="SetValue" key="AttackDelay" value="31" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="CriticalBallAttackMode" value="0" />
+										<!--	이 변수 0으로 초기화, 초기화 안하면 무한으로 초강력 에너지볼 사용하는 대박 버그 생김	-->
+									</node>
+									<node name="standby" limit="200" faceTarget="1">
+										<!-- 위 스킬이 쿨타임 걸린 상태라면 아무것도 안함-->
+										<node name="SetValue" key="CriticalBallAttackMode" value="0" />
+										<!--	이 변수 0으로 초기화, 초기화 안하면 무한으로 초강력 에너지볼 사용하는 대박 버그 생김	-->
+									</node>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="3">
+								<!-- 할퀴기 사정거리 이내면 -->
+								<node name="conditions">
+									<condition name="extraData" key="BalrogCrimsonPhase" value="1">
+										<!-- 1페이즈 때 -->
+										<aiPreset name="1Pase_Close" />
+									</condition>
+									<condition name="true">
+										<!-- 2페이즈 때 -->
+										<aiPreset name="2Pase_Close" />
+									</condition>
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="4">
+								<!-- 몸통 돌진 사정거리 이내에 있으면-->
+								<node name="conditions">
+									<condition name="extraData" key="BalrogCrimsonPhase" value="1">
+										<!-- 1페이즈 때 -->
+										<aiPreset name="1Pase_Long" />
+									</condition>
+									<condition name="true">
+										<!-- 2페이즈 때 -->
+										<aiPreset name="2Pase_Long" />
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="extraData" key="BalrogCrimsonPhase" value="1">
+										<!-- 1페이즈 때 -->
+										<aiPreset name="1Pase_Long" />
+									</condition>
+									<condition name="true">
+										<!-- 2페이즈 때 -->
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="7">
+												<!--	50001288 은 전투판 안에 있는지를 판단하는 거리체크 용도	-->
+												<node name="trace" limit="8000" skillIdx="4" />
+												<!--몸통 돌진 거리까지 추적 -->
+											</condition>
+											<condition name="true">
+												<!--	파티원 전원 스타팅 포인트에 있다면	-->
+												<node name="standby" limit="300" faceTarget="1">
+													<node name="target" type="rand" from="10" to="2500" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="TargetLogic">
+			<node name="select" prob="50,50">
+				<node name="target" type="mid" from="10" to="5500" />
+				<node name="target" type="near" from="2" to="1800" />
+			</node>
+		</aiPreset>
+		<aiPreset name="1Pase_Close">
+			<node name="select" prob="70,30">
+				<!-- 1페이즈 때 뱃머리 공중에 떠있을 때-->
+				<node name="skill" idx="3">
+					<!--할퀴기 -->
+					<node name="move" destination="1480, -760, 2520" limit="3000">
+						<!--할퀴기후 무빙으로 벽에 걸려 있는 모습이 어색해서 최초 등장 지점으로 이동시킴 -->
+						<node name="SetValue" key="AttackDelay" value="25" />
+						<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+					</node>
+				</node>
+				<node name="skill" cooltime="21000" idx="2">
+					<!--바닥 설치 투척 -->
+					<node name="SetValue" key="AttackDelay" value="25" />
+					<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="2Pase_Close">
+			<node name="select" prob="70,30">
+				<node name="skill" idx="3">
+					<!--할퀴기 -->
+					<node name="SetValue" key="AttackDelay" value="25" />
+					<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				</node>
+				<node name="skill" cooltime="8000" idx="2">
+					<!--바닥 설치 투척 -->
+					<node name="SetValue" key="AttackDelay" value="25" />
+					<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="1Pase_Long">
+			<node name="select" prob="90,10">
+				<node name="skill" cooltime="8000" idx="2">
+					<!--바닥 설치 투척 -->
+					<node name="SetValue" key="AttackDelay" value="25" />
+					<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				</node>
+				<node name="SetValue" key="AttackDelay" value="35" />
+				<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+			</node>
+		</aiPreset>
+		<aiPreset name="2Pase_Long">
+			<node name="select" prob="30,35,35">
+				<node name="trace" limit="3000" skillIdx="3" />
+				<!--할퀴기 거리까지 추적 -->
+				<node name="skill" idx="4">
+					<!--몸통 돌진 -->
+					<node name="SetValue" key="AttackDelay" value="25" />
+					<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				</node>
+				<node name="skill" cooltime="8000" idx="2">
+					<!--바닥 설치 투척 -->
+					<node name="SetValue" key="AttackDelay" value="25" />
+					<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

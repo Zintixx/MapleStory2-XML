@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="1" animation="Idle_A" isKeepBattle="true">
+				<!-- animation="Idle_A" 는 플레이어가 때리지 못하게 컬리전 박스 위로 올린 형태임-->
+				<!-- 전투 상황 파악하는데 사용하는 각종 변수 설정 초기 셋티하기-->
+				<node name="SetValue" key="GrabSmack" value="1" />
+				<!-- 이 변수 1로 설정해,  <battle> 부분 실행하면 이변수에 의해서 바로 잡은 대상 내던지기 스킬 사용하도록 함-->
+				<node name="SetValue" key="MarblePosition10" value="0" />
+				<!-- 2페이즈 전투판 10시 시점에 마력 구슬 등장했으면, 이 변수 1이됨 -->
+				<node name="SetValue" key="MarblePosition02" value="0" />
+				<!-- 2페이즈 전투판 2시 시점에 마력 구슬 등장했으면, 이 변수 1 이상이됨, 2시 지역만은 다수 마력 구슬 등장함 -->
+				<node name="SetValue" key="MarblePosition04" value="0" />
+				<!-- 2페이즈 전투판 4시 시점에 마력 구슬 등장했으면, 이 변수 1이됨 -->
+				<node name="SetValue" key="MarblePosition08" value="0" />
+				<!-- 2페이즈 전투판 8시 시점에 마력 구슬 등장했으면, 이 변수 1이됨 -->
+				<node name="SetValue" key="LeftCourse" value="0" />
+				<!-- 왼쪽 마지막 코스의 졸몹을 다 클리어 하고 2페이즈 전투판으로 진입했는지를 체크하기 위한 변수임 -->
+				<node name="SetValue" key="CenterCourse" value="0" />
+				<!-- 가운데 마지막 코스의 졸몹을 다 클리어 하고 2페이즈 전투판으로 진입했는지를 체크하기 위한 변수임 -->
+				<node name="SetValue" key="RightCourse" value="0" />
+				<!-- 오른쪽 마지막 코스의 졸몹을 다 클리어 하고 2페이즈 전투판으로 진입했는지를 체크하기 위한 변수임 -->
+				<node name="SetValue" key="TwoPhaseMainBattle" value="0" />
+				<!-- 중요: 왼쪽 혹은 가운데 혹은 오른쪽의 마지막 코스 졸몹을 다 클리어 했을 때 이 변수 0에서 1 설정하여 본격 2페이즈 전투 시작하도록 함  -->
+				<!-- 그리고  TwoPhaseMainBattle 변수는 졸몹을 진행해서 다 클리어 하면, main.xml트리거에 의해서 이 변수가 1이 되거나 혹은 한두명의 파티원만 있어서 모든 플레이어가 잡혔을 경우 졸구간 건너띄는데 이때 2PhasePlayerCheck.xml 트리거에 의해서 이 변수 1이 됨-->
+				<node name="standby" limit="120" faceTarget="1" animation="Idle_A" />
+				<!-- 퀘스트용 2페이즈 보스는 이거 필요없음,    중요: 21502309  가운데 지점 몬스터에게 약점 속성 버프 사용 신호 보내기 위한 가짜 몬스터 생성하기, 원래 트리거에서 설정해야 하나 트리거가 너무 복잡해져서 이 가짜 몬스터가 AI 신호 보내는 방식으로 설정하였음 -->
+				<node name="standby" limit="200" faceTarget="1" animation="Idle_A" />
+				<node name="buff" type="add" id="50004567" level="1" />
+				<!-- 중요: 2페이지 전투판의 마법구슬 에너지에 맞기 위해서는 이 애디셔널이 기본으로 있어야 함, 퀘스트용 던전에서는 이거 사용 안함-->
+				<!-- 퀘스트용 2페이즈 보스는 강제 잡기 공격 패턴 사용안함  -->
+				<node name="standby" limit="500" facePos="-4050, -3750, 4800" animation="Idle_A" />
+				<!--   StageOpen = 1 신호에 의해서 쫄구간 몬스터 등장하도록 함	 즉 main.xml 에서 받음      param1="101" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<node name="TriggerSetUserValue" triggerID="101" key="StageOpen" value="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="60">
+			<!-- 중요: 안집힌 플레이어가 졸구간 진행 중에 잡혀서 2페이즈 전투판에 있는 플레이어가 너무 강력해서 보스 HP를 절반가까이 깍아버리면, 이 보스 AI 에서 자체적으로  TwoPhaseMainBattle=  1 셋팅해서 본격 전투 행위 하도록 함-->
+			<node name="SetValue" key="TwoPhaseMainBattle" value="1" />
+		</condition>
+		<!-- 이 몬스터는 죽지 않게 특수 설정 하였음-->
+		<condition name="hpLess" value="1">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="buff" type="remove" id="50001094" level="1" />
+				<!-- 잡기 시도때 한방킬 되어 바로 이 단계로 올수 있어 여기서 손에 붙는 애디셔널 제거하기 설정 넣음 -->
+				<node name="skill" facePos="-3900, -3600, 4800" idx="20" />
+				<!-- 순간이동 동작-->
+				<node name="teleport" pos="5100, 5400, 1810" />
+				<!-- 2페이즈 전투판 중앙 상단으로 순간이동해서 맵 바닥 파괴 행동을 함-->
+				<node name="TriggerSetUserValue" triggerID="101" key="TurkaTwoPhaseEnd" value="1" />
+				<!--   TurkaTwoPhaseEnd = 1 신호에 의해서 이벤트 연출 트리거 작동	 즉 main.xml 에서 받음      param1="101" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<node name="SetSlaveValue" key="DeathMarbleTurkaSupport" value="1" />
+				<!-- 마력구슬 오브젝트에게 자살 신호 보내기 -->
+				<node name="SetSlaveValue" key="DeathTurkaSummon" value="1" />
+				<!-- 분신에게 사라짐 신호 보내기 -->
+				<node name="skill" facePos="-3900, -3600, 4800" idx="13" />
+				<!-- 전투판 바닥 파괴를 위해 초강력 기폭발 공격-->
+				<node name="standby" limit="2300" faceTarget="0" />
+				<node name="RemoveMe" />
+				<!-- 스스로 사라지기-->
+				<node name="skill" facePos="-3900, -3600, 4800" idx="20" />
+				<!--Remove 실행한 후 순간이동 동작 나오게 하는 것이 타이밍에 어울림  -->
+				<node name="standby" limit="5200" faceTarget="1" />
+				<!-- Remove 로 사라지는 도중에 AI가 다음 턴으로 넘어가서 공격 동작 취하는 도중 사라지는 모습이 어색해서 이 단계에서 standby 넣어서 Attack_Idle 상태에서 사라지는 상황이 나오도록 함-->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="GrabSmack" value="1">
+				<!-- 퀘스트용 던전에서는 잡기 사용 안함 -->
+				<node name="standby" limit="1200" facePos="-3900, -3600, 4800" animation="Idle_A">
+					<!-- 이 2페이즈 보스는 퀘스트용 이기 때문에  animation="Attack_02_J" 넣지 않음 -->
+					<node name="target" type="grabbedUser" from="5" to="1800">
+						<!-- 잡은 대상 우선 타겟팅 하기 설정하기 -->
+						<node name="SetValue" key="GrabSmack" value="0">
+							<!-- 이 변수 0로 해서 잡은 대상 내던지기 한 후 이 단계 빠져 나와 다시는 이부분 실행되지 않도록 함-->
+							<node name="conditions">
+								<condition name="state" targetState="grabTarget">
+									<!-- 타겟팅 된 대상이 잡혀있다면, 즉 최소한 플레이어 한명이라도 보스한테 잡혀있다면-->
+									<!--  플레이어 잡은 상태로 점프 이동하기-->
+									<node name="skill" facePos="4050, 4350, 1810" isKeepBattle="true" idx="15">
+										<node name="jump" pos="4050, 4350, 1810" speed="2100" heightMultiplier="0.3" />
+										<node name="skill" faceTarget="0" idx="16" />
+										<node name="standby" limit="800" facePos="-3900, -3600, 4800" animation="Attack_02_J" />
+										<node name="teleport" pos="4050, 4350, 1810" />
+										<!--  점프 이동 했는데 혹시 낮은 확률로 인한 버그로 2페이즈 전투판 못가는 상황 생길 수 있어 안정 장치로 점프 이동 후 순간이동 하도록 함, 중요: 이 타이밍에 순간이동을 넣어야 전체적인 동작이 어색하지 않음 -->
+										<node name="standby" limit="900" faceTarget="0" animation="Attack_02_J" />
+										<node name="skill" facePos="-3900, -3600, 4800" idx="14" />
+										<!--던지기, 이 스킬에 잡기 시도때 손에 붙는 애디셔널 제거하는 기능 포함되어 있음-->
+										<node name="target" type="near" from="10" to="2400" />
+										<!-- 잡혀서 던져진 플레이어를 제일 먼저 최우선 타겟팅하기-->
+									</node>
+								</condition>
+								<condition name="true">
+									<!-- 타겟팅 된  잡혀있지 않다면, 즉 잡힌 플레이어 한명도 없다면,   퀘스트용 던전에서는 잡기 사용 안하기 때문에 무조건 이 부분 실행함 -->
+									<!--  잡힌 플레이어가 없으면, 순간이동 하기-->
+									<node name="buff" type="remove" id="50001094" level="1" isKeepBattle="true">
+										<!-- 잡기 시도때 손에 붙는 애디셔널 제거하기  -->
+										<node name="standby" limit="800" faceTarget="1" animation="Idle_A" />
+										<node name="skill" idx="20" />
+										<node name="teleport" pos="4050, 4350, 1810" />
+										<node name="standby" limit="1200" faceTarget="1" animation="Idle_A" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="TwoPhaseMainBattle" value="0">
+				<node name="select" prob="9999999,0">
+					<!-- 이 부분 실행 타이밍 중요, 보스가 1페이즈 전투판에서 잡기 시도 이후 2페이즈 전투판으로 도착하자마자 바로 딱 1회 실행 하는 것이 좋음 -->
+					<node name="standby" limit="200" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+						<!-- 2페이즈 시작때 보스가 잡기 시도하는데, 1~2명의 파티원만 있어서 모든 파티원이 잡힐 경우 졸구간 트리거 로직 필요 없기 때문에 이것을 구분하기 위한 트리거를 작동하기 위해 신호를 보냄-->
+						<node name="TriggerSetUserValue" triggerID="103" key="2PhasePlayerCheckStart" value="1" />
+						<!--   2PhasePlayerCheckStart = 1 신호에 의해서 이벤트 연출 트리거 작동	 즉 2PhasePlayerCheck.xml 에서 받음      param1="103" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+						<!--   TwoPhaseMainBattle =  0 전투 패턴 시작하면, 이 변수 1 신호를 2PhaseTubeAttackCheck.xml 트리거에게 보내서 보스 몸에 붙는 튜브 대미지 필드 1단계 진행하도록 함      param1="104" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+						<node name="TriggerSetUserValue" triggerID="104" key="2PhaseTubeStep" value="1" />
+						<!-- 퀘스트용 투르카는 마력구슬 패턴 사용안함-->
+						<!--   <summon npcId="21803600" npcCount="1" npcCountMax="1" group="101" summonPos="4050, 6600, 1510" summonRot="0,0,0"/>  10시 지점에 마략의 구슬 생성 -->
+						<node name="standby" limit="3200" faceTarget="1" />
+					</node>
+					<aiPreset name="Normal_PrePattern" />
+					<!-- 잡히지 않은 플레이어가 졸구간 진행할 때 이 보스의 공격 행동 패턴  -->
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999999,0">
+					<!-- TwoPhaseMainBattle = 1 인 경우, 즉  졸구간 클리어 했거나 모든 파티원이 잡혀서 졸구간 건너띄기 될 경우, TwoPhaseMainBattle 이 변수는  main.xml    2PhasePlayerCheck.xml   이 두 트리거에 의해서 1이 됨, 그리고 TwoPhaseMainBattle = 0 단계에서 보스 HP가 일정 이하가 될때도  <Rif hpLower="??">	단계에  TwoPhaseMainBattle = 1  실행함-->
+					<node name="standby" limit="200" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+						<node name="TriggerSetUserValue" triggerID="101" key="2PhaseStartOk" value="1" />
+						<!-- 2페이즈 전투 본격 시작되면, 모든 숨겨진 졸구간 지형 등장시키고, 졸몹 전부 제거시킴 즉 main.xml 에서 이 기능 실행함,      param1="101" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+						<node name="TriggerSetUserValue" triggerID="104" key="2PhaseTubeStep" value="2" />
+						<!--   TwoPhaseMainBattle =  1 전투 패턴 시작하면, 이 변수 2 신호를 2PhaseTubeAttackCheck.xml 트리거에게 보내서 보스 몸에 붙는 튜브 대미지 필드 2단계 진행하도록 함      param1="104" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+						<!--퀘스트용 2페이즈 보스는 마력구슬 패턴 사용 안함 -->
+						<node name="standby" limit="870" faceTarget="1" />
+					</node>
+					<!--퀘스트용 2페이즈 보스는 마력구슬 패턴 사용 안함 -->
+					<node name="conditions">
+						<condition name="hpOver" value="45">
+							<node name="select" prob="99999,0">
+								<node name="say" message="$TurkaHoodForce_2PhaseStartMainBattle$" durationTick="8000" cooltime="9999999">
+									<node name="standby" limit="1200" faceTarget="1" />
+								</node>
+								<aiPreset name="Normal_MainPattern" />
+								<!-- 모든 플레이어가 졸구간 끝내고 2페이즈로 합류 했을 때의 본격 전투 패턴, 혹은 파티원이 2명이하라서 모든 파티가 잡혔을 경우에도 바로 이부분 실행함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="extraData" key="DashPatternCheck" value="1" op="greaterEqual">
+									<!--  %&% <aiPreset name="Fianl_MainPattern"/>에서 DashPatternCheck = 1 이 되면, 연속돌진이동 후 발사 공격 패턴 시작하도록 함 -->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="8">
+											<!-- 레벨22: 같은 2페이지 메인 전투판 안에 공격 대상이 있어야만, 연속돌진이동 후 발사 공격 패턴 계속 사용함 -->
+											<aiPreset name="DashShot_Pattern" />
+										</condition>
+										<condition name="true">
+											<!-- 같은 2페이지 메인 전투판 안에 공격 대상이 없으면, 바로 풀림 -->
+											<node name="standby" limit="500" faceTarget="1" animation="Attack_02_E" isKeepBattle="true">
+												<node name="buff" type="remove" id="50001093" level="1" />
+												<!--  얼굴에 붙어있는 마법빛 애디셔널 효과 제거하기  -->
+												<!-- 각종 변수 0 초기화 후에 평상시 상태로 돌아오기  -->
+												<node name="SetValue" key="Shot" value="0" />
+												<node name="SetValue" key="DashPatternPos" value="0" />
+												<node name="SetValue" key="DashPatternCheck" value="0" />
+												<!-- DashPatternCheck 변수 여기서 0 셋팅하면서 <aiPreset name="DashShot_Pattern"> 부분 빠져나오게 함 -->
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+								<condition name="true">
+									<aiPreset name="Fianl_MainPattern" />
+									<!-- HP 50% 이하에서 평소 공격 패턴 상태임 -->
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="Normal_PrePattern">
+			<node name="select" prob="9999,0">
+				<!-- 졸구간 진행 플레이어 견제하는 부분 있음, 파티원이 졸구간 그룹 보스한테 잡혀서 2페이즈 전투판 그룹 즉 2개 그룹으로 나누어진 상태에서의 보스 행동 패턴-->
+				<node name="target" type="rand" from="10" to="1200" cooltime="13000" />
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="33,20,20,20,20,20">
+							<!-- 사정거리 470, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+							<node name="standby" limit="300" faceTarget="1" cooltime="21000">
+								<node name="select" prob="25,25,25,25">
+									<!--가까이 붙은 플레이어 떨구기 위해 여기저기 이동하기-->
+									<node name="move" destination="4800, 6150, 1810" limit="5000" cooltime="75000">
+										<!--11시 방향-->
+										<node name="standby" limit="1100" faceTarget="1" />
+									</node>
+									<node name="move" destination="5800, 5250, 1810" limit="5000" cooltime="75000">
+										<!--2시 방향-->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+									<node name="move" destination="4800, 3850, 1810" limit="5000" cooltime="75000">
+										<!--4시 방향-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="move" destination="3600, 4950, 1810" limit="5000" cooltime="75000">
+										<!--4시 방향-->
+										<node name="standby" limit="1170" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" idx="1">
+								<node name="select" prob="15,20,65">
+									<!-- 낫 휘둘기 2연타, 레벨1은 돌진함 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="runaway" till="900" limit="3000" />
+									<node name="skill" cooltime="11000" idx="20">
+										<node name="select" prob="50,50">
+											<!-- 낫 휘둘기 2연타 후 순간이동으로 도주 -->
+											<node name="teleport" pos="3900, 5700, 1810">
+												<!-- 9시쪽 -->
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+											<node name="teleport" pos="5550, 4050, 1810">
+												<!-- 6시쪽  -->
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="12000" idx="3">
+								<node name="select" prob="30,70">
+									<!-- 낫 내려찍기, 레벨2는 준비 동작때 뒤로 이동하기 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="move" destination="5100, 4950, 1810" limit="5000" cooltime="32000" />
+									<!--중앙 약간 오른쪽으로 이동-->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="9000" idx="9">
+								<node name="select" prob="30,70">
+									<!--얼굴 발사, 레벨1은 사정거리 650 -->
+									<node name="standby" limit="2900" faceTarget="1" />
+									<node name="move" destination="4950, 5400, 1810" limit="5000" cooltime="32000" />
+									<!--정 중앙으로 이동-->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="55000" idx="7">
+								<node name="select" prob="30,70">
+									<!-- 레벨11:  얼굴 바닥 레이저 발동-->
+									<node name="standby" limit="2900" faceTarget="1" />
+									<node name="runaway" till="900" limit="3000" />
+								</node>
+							</node>
+							<node name="standby" limit="200" faceTarget="1" cooltime="58000">
+								<node name="select" prob="50,50">
+									<!-- 메테오 드랍 -->
+									<node name="skill" faceTarget="1" idx="18">
+										<node name="move" destination="4500, 5550, 1810" limit="5000" cooltime="32000" />
+										<!--중앙 약간 왼쪽으로 이동-->
+									</node>
+									<node name="skill" faceTarget="1" idx="19">
+										<!-- 메테오 드랍 후 순간이동 -->
+										<node name="skill" idx="20">
+											<node name="select" prob="50,50">
+												<node name="teleport" pos="5700, 6000, 1810">
+													<!-- 12시쪽 -->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+												<node name="teleport" pos="4350, 4500, 1810">
+													<!-- 6시쪽  -->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="33,33,33">
+							<!-- 사정거리 1100, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+							<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="standby" limit="3100" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" idx="10">
+								<!-- 얼굴발사, 레벨2 사정거리 1900 -->
+								<node name="standby" limit="3200" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="45000" idx="7">
+								<!-- 레벨11: 얼굴 바닥 레이저 발동-->
+								<node name="standby" limit="3200" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="12">
+						<node name="select" prob="90,5,5">
+							<!--사정거리 9000 정도임 졸구간 1스테이지까지 포함되는 거리 , 2페이즈 메인 전투판에 플레이어 없으면, 보스는 졸구간 진행 플레이어 공격함 -->
+							<node name="move" destination="4050, 4350, 1810" limit="5000" cooltime="15000">
+								<node name="target" type="near" center="150, 450, 3000" />
+								<!-- 02020140 의 졸구간 지점의 좌표 플레이어를 최우선 타겟팅함-->
+							</node>
+							<!-- ##  퀘스트용 2페이즈 보스는 무조건 2페이즈 메인 전투판에서 졸구간 공격하는 상항이기 때문에 공격 빈도 엄청 낮게 설정함  ##-->
+							<node name="say" message="$TurkaHoodForce_2PhaseSoldierZone02$" durationTick="8000" cooltime="23000" isKeepBattle="true">
+								<!--말풍선-->
+								<node name="skill" faceTarget="1" idx="12" />
+								<!-- 5레벨은 졸구간 지형 얼굴 바닥 폭발-->
+								<node name="standby" limit="2700" faceTarget="1" />
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+							<node name="standby" limit="1100" faceTarget="1">
+								<node name="select" prob="50,50">
+									<node name="say" message="$TurkaHoodForce_2PhaseSoldierZone01$" durationTick="8000" cooltime="14000" />
+									<node name="standby" limit="1100" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="320" faceTarget="1">
+							<node name="select" prob="50,50">
+								<!-- 같은 2페이지 전투판에 있는 플레이어가 멀리 떨어져 있으면 졸구간 타겟팅 하거나 제일 가까운 대상 타겟팅 하도록 함-->
+								<node name="target" type="near" center="150, 450, 3000" cooltime="6000" />
+								<!-- 02020140 의 졸구간 지점의 좌표 플레이어를 최우선 타겟팅함-->
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Normal_MainPattern">
+			<node name="select" prob="999,99999,0">
+				<!-- 졸구간 진행 플레이어 견제하는 부분 없음, 마력의 구슬 2층지형의 플레이어 견제 부분은 있음-->
+				<node name="target" type="rand" from="10" to="1500" cooltime="9000" />
+				<node name="skill" cooltime="9999900" isKeepBattle="true" idx="20">
+					<!-- 제일 처음 순간이동 행동을 함-->
+					<node name="teleport" pos="4950, 5250, 1810" />
+					<node name="standby" limit="200" faceTarget="1" />
+					<node name="buff" type="add" id="50004566" level="2" />
+					<!-- 레벨2: 튜브 대미지 필드 생성 애디셔널 붙이기, 유지시간 60초 짜리로 레벨2이 퀘스트용 던전 전용임-->
+					<node name="standby" limit="300" faceTarget="1" />
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="17,17,17,17,17,17">
+							<!-- 사정거리 470, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+							<node name="standby" limit="300" faceTarget="1" cooltime="21000">
+								<node name="select" prob="25,25,25,25">
+									<!--가까이 붙은 플레이어 떨구기 위해 여기저기 이동하기-->
+									<node name="move" destination="4800, 6150, 1810" limit="5000" cooltime="75000">
+										<!--11시 방향-->
+										<node name="standby" limit="1100" faceTarget="1" />
+									</node>
+									<node name="move" destination="5800, 5250, 1810" limit="5000" cooltime="75000">
+										<!--2시 방향-->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+									<node name="move" destination="4800, 3850, 1810" limit="5000" cooltime="75000">
+										<!--4시 방향-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="move" destination="3600, 4950, 1810" limit="5000" cooltime="75000">
+										<!--4시 방향-->
+										<node name="standby" limit="1170" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" idx="1">
+								<node name="select" prob="15,15,70">
+									<!-- 낫 휘둘기 2연타, 레벨1은 돌진함 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="runaway" till="900" limit="3000" />
+									<node name="skill" cooltime="11000" idx="20">
+										<node name="select" prob="50,50">
+											<!-- 낫 휘둘기 2연타 후 순간이동으로 도주 -->
+											<node name="teleport" pos="3900, 5700, 1810">
+												<!-- 9시쪽 -->
+												<node name="standby" limit="3100" faceTarget="1" />
+											</node>
+											<node name="teleport" pos="5550, 4050, 1810">
+												<!-- 6시쪽  -->
+												<node name="standby" limit="3300" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="12000" idx="3">
+								<node name="select" prob="20,80">
+									<!-- 낫 내려찍기, 레벨2는 준비 동작때 뒤로 이동하기 -->
+									<node name="standby" limit="2300" faceTarget="1" />
+									<node name="move" destination="5100, 4950, 1810" limit="5000" cooltime="32000" />
+									<!--중앙 약간 오른쪽으로 이동-->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="9000" idx="9">
+								<node name="select" prob="20,80">
+									<!--얼굴 발사, 레벨1은 사정거리 650 -->
+									<node name="standby" limit="2100" faceTarget="1" />
+									<node name="move" destination="4950, 5400, 1810" limit="5000" cooltime="32000" />
+									<!--정 중앙으로 이동-->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="55000" idx="7">
+								<node name="select" prob="20,80">
+									<!-- 레벨11: 얼굴 바닥 레이저 발동-->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="runaway" till="900" limit="3000" />
+								</node>
+							</node>
+							<node name="standby" limit="200" faceTarget="1" cooltime="52000">
+								<node name="select" prob="30,70">
+									<!-- 메테오 드랍 -->
+									<node name="skill" faceTarget="1" idx="18">
+										<node name="select" prob="20,80">
+											<node name="standby" limit="2500" faceTarget="1" />
+											<node name="move" destination="4500, 5550, 1810" limit="5000" cooltime="32000" />
+											<!--중앙 약간 왼쪽으로 이동-->
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" idx="19">
+										<!-- 메테오 드랍 후 순간이동 -->
+										<node name="skill" idx="20">
+											<node name="select" prob="50,50">
+												<node name="teleport" pos="5700, 6000, 1810">
+													<!-- 12시쪽 -->
+													<node name="standby" limit="3500" faceTarget="1" />
+												</node>
+												<node name="teleport" pos="4350, 4500, 1810">
+													<!-- 6시쪽  -->
+													<node name="standby" limit="3500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="33,33,33">
+							<!-- 사정거리 1100, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+							<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="standby" limit="3100" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" idx="10">
+								<!-- 얼굴발사, 레벨2 사정거리 1900 -->
+								<node name="standby" limit="3200" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="45000" idx="7">
+								<!-- 레벨11: 얼굴 바닥 레이저 발동-->
+								<node name="standby" limit="3200" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="17">
+						<node name="select" prob="99999,2999,50,50">
+							<!-- 모든 파티원이 메인 2페이즈 전투판의 보스를 방치하고 2층 마법 구슬 오브젝트 쪽으로 갔을 경우, 레벨3의 사정거리 범위는 높이 200 정도 올려서 같은 높이의 전투판 대상은 포함되지 않도록 하였음-->
+							<node name="target" type="near" from="10" to="1500" cooltime="6000" />
+							<!-- 타겟팅 사정거리가 1100 이상 밖에 있으면, 우선 제일 먼저 제일 가까운 타겟팅 하며, 그래도 1100 있다면 구슬 오브젝트 쪽의 플레이어를 공격함-->
+							<node name="standby" limit="180" faceTarget="1" cooltime="7000">
+								<node name="conditions">
+									<condition name="extraData" key="MarblePosition10" value="1" op="greaterEqual">
+										<!--10시 시점에 마력 구슬 등장했으면, 10시 지점으로 이동함  -->
+										<node name="conditions">
+											<condition name="extraData" key="MarblePosition08" value="1" op="greaterEqual">
+												<node name="move" destination="4125, 6075, 1810" limit="9000" />
+												<!--10시  8시 둘다 등장했을 경우, 10시 8시 중간지점으로 이동함  -->
+											</condition>
+											<condition name="true">
+												<node name="move" destination="4575, 6225, 1810" limit="9000" />
+												<!--오직 10시 1개만 등장했을 경우, 10시 지점으로 이동함  -->
+											</condition>
+										</node>
+									</condition>
+									<condition name="extraData" key="MarblePosition02" value="1" op="greaterEqual">
+										<node name="conditions">
+											<condition name="extraData" key="MarblePosition04" value="1" op="greaterEqual">
+												<node name="move" destination="5850, 4350, 1810" limit="9000" />
+												<!--2시  4시 둘다 등장했을 경우, 2시 4시 중간지점으로 이동함  -->
+											</condition>
+											<condition name="true">
+												<node name="move" destination="5700, 4800, 1810" limit="9000" />
+												<!--오직 2시 지점에만 마력 구슬 등장했으면, 2시 지점으로 이동함, 참고로 2시 지점의 마력 구슬은 최대 3개까지 등장함  -->
+											</condition>
+										</node>
+									</condition>
+									<condition name="extraData" key="MarblePosition04" value="1" op="greaterEqual">
+										<node name="move" destination="4500, 3900, 1810" limit="9000" />
+										<!-- 오직 4시 1개 마력 구슬 등장했으면, 4시 근처 지점으로 이동함  -->
+									</condition>
+									<condition name="extraData" key="MarblePosition08" value="1" op="greaterEqual">
+										<node name="move" destination="3750, 4950, 1810" limit="9000" />
+										<!--  오직 8시 1개 마력 구슬 등장했으면, 8시 근처 지점으로 이동함  -->
+									</condition>
+									<condition name="true">
+										<!--마력 구슬 전부 파괴 되었기 때문에 별 행동 안함  -->
+										<node name="standby" limit="220" faceTarget="1">
+											<node name="target" type="near" from="10" to="2400" />
+										</node>
+									</condition>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="12000" idx="17">
+								<!-- 레벨3은 2층 지형 메테오 드랍-->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" idx="11">
+								<!-- 얼굴발사, 4레벨은 2층 지형 대상을 공격함 -->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="320" faceTarget="1">
+							<node name="target" type="near" from="10" to="2400" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Fianl_MainPattern">
+			<node name="select" prob="9999,999,0">
+				<!-- HP 40% 이하 되었을 때, 마지막 페이즈 공격패턴, 졸구간 진행 플레이어 견제하는 부분 없음, 마력의 구슬 2층지형의 플레이어 견제 부분은 있음-->
+				<node name="target" type="rand" from="10" to="1500" cooltime="9000" />
+				<node name="standby" limit="200" faceTarget="1" cooltime="65000">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<!-- 레벨3: 사정거리 1500, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음, 큐브 한칸 아래는 포함함-->
+							<node name="SetValue" key="DashPatternCheck" value="1" />
+							<!-- %&% 이 변수 1로 만들어 돌진이동 후 공격 연속 패턴 시작되도록 함 -->
+						</condition>
+						<condition name="true">
+							<node name="SetValue" key="Temp" value="1" />
+							<!-- 사정거리 밖에 있으면 아무것도 안함 -->
+						</condition>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="299,20,20,20,20,20">
+							<!-- 사정거리 470, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+							<node name="standby" limit="200" faceTarget="1" cooltime="35000">
+								<node name="select" prob="50,50">
+									<!-- 메테오 드랍 -->
+									<node name="skill" faceTarget="1" idx="18">
+										<node name="move" destination="4500, 5550, 1810" limit="5000" cooltime="32000" />
+										<!--중앙 약간 왼쪽으로 이동-->
+									</node>
+									<node name="skill" faceTarget="1" idx="19">
+										<!-- 메테오 드랍 후 순간이동 -->
+										<node name="skill" idx="20">
+											<node name="select" prob="50,50">
+												<node name="teleport" pos="5700, 6000, 1810">
+													<!-- 12시쪽 -->
+													<node name="standby" limit="3500" faceTarget="1" />
+												</node>
+												<node name="teleport" pos="4350, 4500, 1810">
+													<!-- 6시쪽  -->
+													<node name="standby" limit="3500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="standby" limit="300" faceTarget="1" cooltime="21000">
+								<node name="select" prob="25,25,25,25">
+									<!--가까이 붙은 플레이어 떨구기 위해 여기저기 이동하기-->
+									<node name="move" destination="4800, 6150, 1810" limit="5000" cooltime="75000">
+										<!--11시 방향-->
+										<node name="standby" limit="1100" faceTarget="1" />
+									</node>
+									<node name="move" destination="5800, 5250, 1810" limit="5000" cooltime="75000">
+										<!--2시 방향-->
+										<node name="standby" limit="1300" faceTarget="1" />
+									</node>
+									<node name="move" destination="4800, 3850, 1810" limit="5000" cooltime="75000">
+										<!--4시 방향-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+									<node name="move" destination="3600, 4950, 1810" limit="5000" cooltime="75000">
+										<!--4시 방향-->
+										<node name="standby" limit="1170" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" idx="1">
+								<node name="select" prob="15,20,65">
+									<!-- 낫 휘둘기 2연타, 레벨1은 돌진함 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="runaway" till="900" limit="3000" />
+									<node name="skill" cooltime="11000" idx="20">
+										<node name="select" prob="50,50">
+											<!-- 낫 휘둘기 2연타 후 순간이동으로 도주 -->
+											<node name="teleport" pos="3900, 5700, 1810">
+												<!-- 9시쪽 -->
+												<node name="standby" limit="3100" faceTarget="1" />
+											</node>
+											<node name="teleport" pos="5550, 4050, 1810">
+												<!-- 6시쪽  -->
+												<node name="standby" limit="3300" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="12000" idx="3">
+								<node name="select" prob="50,50">
+									<!-- 낫 내려찍기, 레벨2는 준비 동작때 뒤로 이동하기 -->
+									<node name="standby" limit="3500" faceTarget="1" />
+									<node name="move" destination="5100, 4950, 1810" limit="5000" cooltime="32000" />
+									<!--중앙 약간 오른쪽으로 이동-->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="9000" idx="9">
+								<node name="select" prob="40,50">
+									<!--얼굴 발사, 레벨1은 사정거리 650 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="move" destination="4950, 5400, 1810" limit="5000" cooltime="32000" />
+									<!--정 중앙으로 이동-->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="55000" idx="7">
+								<node name="select" prob="40,60">
+									<!-- 레벨11: 얼굴 바닥 레이저 발동-->
+									<node name="standby" limit="3500" faceTarget="1" />
+									<node name="runaway" till="900" limit="3000" />
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="33,33,33">
+							<!-- 사정거리 1100, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+							<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="standby" limit="3100" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" idx="10">
+								<!-- 얼굴발사, 레벨2 사정거리 1900 -->
+								<node name="standby" limit="3200" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="45000" idx="7">
+								<!-- 레벨11: 얼굴 바닥 레이저 발동-->
+								<node name="standby" limit="3200" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="17">
+						<node name="select" prob="99999,2999,50,50">
+							<!-- 모든 파티원이 메인 2페이즈 전투판의 보스를 방치하고 2층 마법 구슬 오브젝트 쪽으로 갔을 경우, 레벨3의 사정거리 범위는 높이 200 정도 올려서 같은 높이의 전투판 대상은 포함되지 않도록 하였음-->
+							<node name="target" type="near" from="10" to="1500" cooltime="6000" />
+							<!-- 타겟팅 사정거리가 1100 이상 밖에 있으면, 우선 제일 먼저 제일 가까운 타겟팅 하며, 그래도 1100 있다면 구슬 오브젝트 쪽의 플레이어를 공격함-->
+							<node name="standby" limit="180" faceTarget="1" cooltime="7000">
+								<node name="conditions">
+									<condition name="extraData" key="MarblePosition10" value="1" op="greaterEqual">
+										<!--10시 시점에 마력 구슬 등장했으면, 10시 지점으로 이동함  -->
+										<node name="conditions">
+											<condition name="extraData" key="MarblePosition08" value="1" op="greaterEqual">
+												<node name="move" destination="4125, 6075, 1810" limit="9000" />
+												<!--10시  8시 둘다 등장했을 경우, 10시 8시 중간지점으로 이동함  -->
+											</condition>
+											<condition name="true">
+												<node name="move" destination="4575, 6225, 1810" limit="9000" />
+												<!--오직 10시 1개만 등장했을 경우, 10시 지점으로 이동함  -->
+											</condition>
+										</node>
+									</condition>
+									<condition name="extraData" key="MarblePosition02" value="1" op="greaterEqual">
+										<node name="conditions">
+											<condition name="extraData" key="MarblePosition04" value="1" op="greaterEqual">
+												<node name="move" destination="5850, 4350, 1810" limit="9000" />
+												<!--2시  4시 둘다 등장했을 경우, 2시 4시 중간지점으로 이동함  -->
+											</condition>
+											<condition name="true">
+												<node name="move" destination="5700, 4800, 1810" limit="9000" />
+												<!--오직 2시 지점에만 마력 구슬 등장했으면, 2시 지점으로 이동함, 참고로 2시 지점의 마력 구슬은 최대 3개까지 등장함  -->
+											</condition>
+										</node>
+									</condition>
+									<condition name="extraData" key="MarblePosition04" value="1" op="greaterEqual">
+										<node name="move" destination="4500, 3900, 1810" limit="9000" />
+										<!-- 오직 4시 1개 마력 구슬 등장했으면, 4시 근처 지점으로 이동함  -->
+									</condition>
+									<condition name="extraData" key="MarblePosition08" value="1" op="greaterEqual">
+										<node name="move" destination="3750, 4950, 1810" limit="9000" />
+										<!--  오직 8시 1개 마력 구슬 등장했으면, 8시 근처 지점으로 이동함  -->
+									</condition>
+									<condition name="true">
+										<!--마력 구슬 전부 파괴 되었기 때문에 별 행동 안함  -->
+										<node name="standby" limit="220" faceTarget="1">
+											<node name="target" type="near" from="10" to="2400" />
+										</node>
+									</condition>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="12000" idx="17">
+								<!-- 레벨3은 2층 지형 메테오 드랍-->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" idx="11">
+								<!-- 얼굴발사, 4레벨은 2층 지형 대상을 공격함 -->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="320" faceTarget="1">
+							<node name="target" type="near" from="10" to="2400" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="DashShot_Pattern">
+			<!-- 돌진 이동 후 얼굴 발사 반복 공격 패턴 정의   <aiPreset name="Fianl_MainPattern"> 에서 DashPatternCheck 변수 1로 만들어서 이 행위 시작하도록 함-->
+			<node name="conditions">
+				<condition name="extraData" key="DashPatternCheck" value="6" op="greaterEqual">
+					<!-- DashPatternCheck 변수가 기준 이상 수가 되면 이 공격팬턴 최종 마무리 처리 하기 -->
+					<node name="standby" limit="600" faceTarget="1" animation="Attack_02_E" isKeepBattle="true">
+						<node name="target" type="near" center="4950, 5250, 1800" />
+						<!-- 2페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+						<node name="skill" faceTarget="1" idx="6" />
+						<!--  바닥 레이저  -->
+						<node name="buff" type="remove" id="50001093" level="1" />
+						<!--  얼굴에 붙어있는 마법빛 애디셔널 효과 제거하기  -->
+						<!-- 각종 변수 0 초기화 후에 평상시 상태로 돌아오기  -->
+						<node name="SetValue" key="Shot" value="0" />
+						<node name="SetValue" key="DashPatternPos" value="0" />
+						<node name="SetValue" key="DashPatternCheck" value="0" />
+						<!-- DashPatternCheck 변수 여기서 0 셋팅하면서 <aiPreset name="DashShot_Pattern"> 부분 빠져나오게 함 -->
+						<node name="standby" limit="2300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="Shot" value="1">
+					<node name="select" prob="70,30">
+						<!--  대쉬 이동 후 발사 공격 혹은 레이저 공격 행동을 정의하는 부분  -->
+						<node name="standby" limit="900" faceTarget="1" animation="Attack_02_E">
+							<node name="target" type="near" center="4950, 5250, 1800">
+								<!-- 2페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+								<node name="skill" faceTarget="1" idx="5">
+									<!--  투사체 발사 바닥 폭발  -->
+									<node name="SetValue" key="Shot" value="0">
+										<!-- Shot 변수에 0 초기화 하여, 한번 공격 행동 후 이 단계 빠져나오게 하기  -->
+										<node name="SetValue" key="DashPatternCheck" value="1" isModify="1">
+											<node name="select" prob="33,33,34">
+												<node name="standby" limit="2400" faceTarget="1" animation="Attack_02_E" />
+												<node name="standby" limit="3100" faceTarget="1" animation="Attack_02_E" />
+												<node name="standby" limit="3800" faceTarget="1" animation="Attack_02_E" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="600" faceTarget="1" animation="Attack_02_E" cooltime="21000">
+							<node name="target" type="near" center="4950, 5250, 1800">
+								<!-- 2페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+								<node name="skill" faceTarget="1" idx="6">
+									<!--  바닥 레이저  -->
+									<node name="SetValue" key="Shot" value="0">
+										<!-- Shot 변수에 0 초기화 하여, 한번 공격 행동 후 이 단계 빠져나오게 하기  -->
+										<node name="SetValue" key="DashPatternCheck" value="2" isModify="1">
+											<node name="conditions">
+												<condition name="extraData" key="DashPatternCheck" value="6" op="greaterEqual">
+													<!-- 바닥 레이저 공격 하고나서,   DashPatternCheck 변수 체크하여 이 변수가 기준 이상 수가 되면 이 공격팬턴 최종 마무리 처리 하기 -->
+													<node name="standby" limit="2300" faceTarget="1" isKeepBattle="true">
+														<node name="buff" type="remove" id="50001093" level="1" />
+														<!--  얼굴에 붙어있는 마법빛 애디셔널 효과 제거하기  -->
+														<!-- 각종 변수 0 초기화 후에 평상시 상태로 돌아오기  -->
+														<node name="SetValue" key="Shot" value="0" />
+														<node name="SetValue" key="DashPatternPos" value="0" />
+														<node name="SetValue" key="DashPatternCheck" value="0" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="select" prob="33,33,34">
+														<node name="standby" limit="800" faceTarget="1" animation="Attack_02_E" />
+														<node name="standby" limit="1300" faceTarget="1" animation="Attack_02_E" />
+														<node name="standby" limit="2100" faceTarget="1" animation="Attack_02_E" />
+													</node>
+												</condition>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="1">
+					<!-- DashPatternPos 변수 1을 할당받아 1시 방향으로 대시 이동하는 경우  -->
+					<node name="skill" facePos="6450, 5400, 1800" idx="8">
+						<!-- 1시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 1시 3시 제회-->
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="5" />
+								<node name="SetValue" key="DashPatternPos" value="7" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="9" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="11" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="3">
+					<!-- DashPatternPos 변수 3을 할당받아 3시 방향으로 대시 이동하는 경우  -->
+					<node name="skill" facePos="6000, 4050, 1800" idx="8">
+						<!-- 3시 방향으로 대시 이동 -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 3시 5시 제외  -->
+								<node name="SetValue" key="DashPatternPos" value="11" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="9" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="7" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="5">
+					<!-- DashPatternPos 변수 5를 할당받아 5시 방향으로 대시 이동하는 경우  -->
+					<node name="skill" facePos="4800, 3750, 1800" idx="8">
+						<!-- 5시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 5시 3시 제외  -->
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="7" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="11" />
+								<node name="SetValue" key="DashPatternPos" value="9" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="7">
+					<!-- DashPatternPos 변수 7을 할당받아 7시 방향으로 대시 이동하는 경우  -->
+					<node name="skill" facePos="3450, 5100, 1800" idx="8">
+						<!-- 7시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 7시 9시 제외 -->
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="5" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="11" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="1" />
+								<node name="SetValue" key="DashPatternPos" value="3" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="9">
+					<!-- DashPatternPos 변수 9를 할당받아 9시 방향으로 대시 이동하는 경우  -->
+					<node name="skill" facePos="3750, 6300, 1800" idx="8">
+						<!-- 9시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 9시 7시 제외  -->
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="1" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="11" />
+								<node name="SetValue" key="DashPatternPos" value="5" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="3" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="11">
+					<!-- DashPatternPos 변수 11을 할당받아 11시 방향으로 대시 이동하는 경우  -->
+					<node name="skill" facePos="5100, 6750, 1800" idx="8">
+						<!-- 11시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 11시 9시 제외  -->
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="1" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="5" />
+								<node name="SetValue" key="DashPatternPos" value="3" />
+								<node name="SetValue" cooltime="19000" key="DashPatternPos" value="7" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- ## 이 단계에 오면, 최초에 이 부분부터 실행함 ## -->
+					<node name="move" destination="4950, 5250, 1810" limit="1600">
+						<!-- 2페이즈 전투판 중앙 지점으로 이동  -->
+						<node name="skill" faceTarget="1" idx="4">
+							<!-- 최초 준비 동작으로 이 스킬에 50001093(레벨1) 얼굴에 마법 에너지 붙는 애디셔널 효과 붙이는 기능 있음 -->
+							<node name="skill" faceTarget="1" idx="5">
+								<node name="target" type="near" center="4950, 5250, 1800">
+									<!-- 2페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+									<node name="standby" limit="1800" faceTarget="1" animation="Attack_02_E">
+										<node name="select" prob="50,50">
+											<!-- 처음에 이 변수에 1 혹은 3을 할당하여, 1시방향 혹은 3시방향으로 대시 이동함-->
+											<node name="SetValue" key="DashPatternPos" value="1" />
+											<node name="SetValue" key="DashPatternPos" value="3" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

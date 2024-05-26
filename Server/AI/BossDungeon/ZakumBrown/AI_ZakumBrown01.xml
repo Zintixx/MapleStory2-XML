@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<node name="standby" limit="500" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="ZakumArmNumber" value="6" />
+				<node name="buff" type="add" id="50004403" level="1" />
+				<!--자쿰팔이 버프 스킬을 사용할 때 자쿰 몸에 붙는 아이콘 애디셔널은 팔에 붙지 않게 하기 위해 이 애디셔널을 부여함 -->
+				<node name="standby" limit="1200" faceTarget="0" />
+				<!--시작하자마자 바로 공격하는 것이 좀 어색해서 최초에만 몇초동안의 딜레이 설정을 넣음 -->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 왼쪽 3층 지형 -->
+			<node name="target" type="near" center="600, -1675, 2900" cooltime="8000" />
+			<node name="conditions">
+				<condition name="extraData" key="ZakumArmNumber" value="6">
+					<!-- 팔이 6개 있는 경우-->
+					<aiPreset name="MainBattle06" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="5">
+					<!-- 팔이 5개 있는 경우-->
+					<aiPreset name="MainBattle06" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="4">
+					<!-- 팔이 4개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="3">
+					<!-- 팔이 3개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="2">
+					<!-- 팔이 2개 있는 경우, 1번 팔은 중반에 처리해야지 남은 팔 2개 상태에서도 1번 팔이 계속 남아있으면 SP까는 스킬 자주 사용하게 됨-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+				<condition name="true">
+					<!-- 팔이 1개 있는 경우-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="VoiceDeathZakumArm" value="1">
+			<!-- 본체에게 팔이 죽음으로 인한 성우 목소리를 출력하라는 신호를 보냄-->
+			<node name="SetMasterValue" key="ZakumArmBuff" value="1" isModify="1">
+				<!-- 자쿰팔이 죽으면 이 변수에 1을 더해 자쿰 본체에서 자쿰팔에 버프 부야하는 행동을 하도록 함-->
+				<node name="SetValueRangeTarget" key="ZakumArmNumber" value="-1" radius="2500" height="4000" isModify="1">
+					<!-- 자쿰팔이 죽어서 본체와 다른 팔의 이 변수 -1을 하여 현재 팔이 몇개 남았는지 본체와 다른 팔에서 파악할 수 있도록 함-->
+					<!-- param3 은 좌우 영역, param4는 위아래 영역임, 자쿰몸체 컬리전 박스가 3600 높이에 어긋나게 있기 때문에 최소 param4=3600 이상이어야 함-->
+					<node name="TriggerSetUserValue" triggerID="999111" key="ZakumArmDeath01" value="1">
+						<!-- 자쿰팔이 죽으면 트리거 신호 보내기 -->
+						<node name="ModifyRoomTime" timeTick="80000" isShowEffect="1" />
+						<!--던전시간 80초 증가, param2="true" 이것을 넣어야 UI 표시를 함-->
+					</node>
+				</node>
+			</node>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="MainBattle06">
+			<!--팔 6~5개 남았을 때 공격 행동 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="70,15,14,1">
+						<!--3층 왼쪽 전투판에 있으면-->
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="15000" idx="3">
+							<node name="select" prob="50,50">
+								<!--레벨1은 왼쪽 2층 3층만 커버-->
+								<node name="standby" limit="4200" faceTarget="0" />
+								<node name="standby" limit="5750" faceTarget="0" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" cooltime="15000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="4800" faceTarget="0" />
+								<node name="standby" limit="5050" faceTarget="0" />
+							</node>
+						</node>
+						<!--파멸의 폭탄-->
+						<node name="skill" cooltime="47000" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="5500" faceTarget="0" />
+								<node name="standby" limit="4950" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1450" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="70,9,20,1">
+						<!--왼쪽 전투판 어디든지 있으면, 여기는 standby 시간 짧게 설정-->
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="21000" idx="5">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="2200" faceTarget="0" />
+								<node name="standby" limit="2750" faceTarget="0" />
+							</node>
+						</node>
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="11000" idx="5">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="2200" faceTarget="0" />
+								<node name="standby" limit="2750" faceTarget="0" />
+							</node>
+						</node>
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="11000" idx="4">
+							<node name="select" prob="50,50">
+								<!--레벨11은 왼쪽 지역 전체 커버-->
+								<node name="standby" limit="2200" faceTarget="0" />
+								<node name="standby" limit="2750" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1450" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="75,24,1">
+						<!--왼쪽이 아닌 오른쪽  자쿰팔 공격 가능 지역에 있으면-->
+						<!--파멸의 폭탄, 즉 플레이어가 왼쪽 전투판에 없으면 이 스킬 자주 사용하게 하여 오른쪽 플레이어 무리 상당히 짜증나게 함-->
+						<node name="skill" cooltime="17000" initialCooltime="20000" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="5200" faceTarget="0" />
+								<node name="standby" limit="4750" faceTarget="0" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="5200" faceTarget="0" />
+								<node name="standby" limit="4750" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1230" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1000" faceTarget="0" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle04">
+			<!--팔 4~3개 남았을 때 공격 행동 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="50,24,25,1">
+						<!--3층 왼쪽 전투판에 있으면-->
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="9000" idx="3">
+							<node name="select" prob="50,50">
+								<!--레벨1은 왼쪽 2층 3층만 커버-->
+								<node name="standby" limit="3000" faceTarget="0" />
+								<node name="standby" limit="3850" faceTarget="0" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" cooltime="9000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="2800" faceTarget="0" />
+								<node name="standby" limit="3800" faceTarget="0" />
+							</node>
+						</node>
+						<!--파멸의 폭탄-->
+						<node name="skill" cooltime="24000" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="3100" faceTarget="0" />
+								<node name="standby" limit="3750" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1450" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="70,9,20,1">
+						<!--왼쪽 전투판 어디든지 있으면, 여기는 standby 시간 짧게 설정-->
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="18000" idx="5">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="1300" faceTarget="0" />
+								<node name="standby" limit="2100" faceTarget="0" />
+							</node>
+						</node>
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="12000" idx="5">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="1800" faceTarget="0" />
+								<node name="standby" limit="2450" faceTarget="0" />
+							</node>
+						</node>
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="9000" idx="4">
+							<node name="select" prob="50,50">
+								<!--레벨11은 왼쪽 지역 전체 커버-->
+								<node name="standby" limit="1700" faceTarget="0" />
+								<node name="standby" limit="2650" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1450" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="75,24,1">
+						<!--왼쪽이 아닌 오른쪽  자쿰팔 공격 가능 지역에 있으면-->
+						<!--파멸의 폭탄, 즉 플레이어가 왼쪽 전투판에 없으면 이 스킬 자주 사용하게 하여 오른쪽 플레이어 무리 상당히 짜증나게 함-->
+						<node name="skill" cooltime="10000" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="2800" faceTarget="0" />
+								<node name="standby" limit="3650" faceTarget="0" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="2200" faceTarget="0" />
+								<node name="standby" limit="3200" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1230" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1000" faceTarget="0" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle02">
+			<!--팔 2~1개 남았을 때 공격 행동 패턴, SP 깎는 스킬 난사 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="70,14,15,1">
+						<!--왼쪽 전투판 어디든지 있으면, 이때는 굳이 3층에 있는 플레이어를 구분할 필요 없이 왼쪽이냐 오른쪽이냐만을 체크해도 괜찮음-->
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="10000" idx="5">
+							<node name="select" prob="48,52">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="200" faceTarget="0" />
+								<node name="standby" limit="500" faceTarget="0">
+									<node name="skill" idx="5">
+										<node name="standby" limit="300" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" idx="5">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="400" faceTarget="0" />
+								<node name="standby" limit="1650" faceTarget="0" />
+							</node>
+						</node>
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="9000" idx="4">
+							<node name="select" prob="50,50">
+								<!--레벨11은 왼쪽 지역 전체 커버-->
+								<node name="standby" limit="800" faceTarget="0" />
+								<node name="standby" limit="1350" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1450" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="80,19,1">
+						<!--왼쪽 아닌 오른쪽  자쿰팔 공격 가능 지역에 있으면-->
+						<!--파멸의 폭탄, 즉 플레이어가 왼쪽 전투판에 없으면 이 스킬 자주 사용하게 하여 오른쪽 플레이어 무리 상당히 짜증나게 함-->
+						<node name="skill" cooltime="5500" idx="2">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="800" faceTarget="0" />
+								<node name="standby" limit="1150" faceTarget="0" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="700" faceTarget="0" />
+								<node name="standby" limit="1250" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1230" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="1000" faceTarget="0" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

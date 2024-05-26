@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<node name="buff" type="add" id="69000501" />
+			<node name="standby" limit="3800" faceTarget="0" />
+			<node name="buff" type="remove" id="69000501" level="1" />
+			<node name="standby" limit="1000" faceTarget="0" />
+			<node name="SetValue" key="phase" value="1" />
+			<node name="target" type="rand" />
+		</condition>
+		<condition name="hpLess" value="70">
+			<node name="SetValue" key="phase" value="2" />
+		</condition>
+	</reserved>
+	<aiPresets>
+		<aiPreset name="Roll">
+			<!-- 기본공격 패턴1 (멀면 구르기 사용)-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<!-- 원거리 사거리 안이면 넘어가고 밖이면 구르기 -->
+					<node name="standby" limit="10" faceTarget="1" />
+				</condition>
+				<condition name="true">
+					<node name="skill" faceTarget="0" idx="6" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Atk_1">
+			<!-- 기본공격 패턴2 (가까우면 근거리 멀면 구르기 사용)-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="skill" faceTarget="0" idx="1">
+						<node name="standby" limit="100" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<!-- 원거리 사거리 안이면 걸어가고 밖이면 구르기 -->
+					<node name="trace" limit="1000" skillIdx="1" />
+				</condition>
+				<condition name="true">
+					<node name="skill" faceTarget="0" idx="6" />
+					<node name="trace" limit="500" skillIdx="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Atk_2">
+			<!-- 기본공격 패턴3 (가까우면 근거리 멀면 원거리) -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="skill" faceTarget="0" idx="1">
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="skill" faceTarget="0" idx="2">
+						<node name="standby" limit="300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="2" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Skill_1">
+			<!-- 야수의강타 스킬 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="skill" faceTarget="0" idx="3">
+						<node name="standby" limit="300" faceTarget="1" />
+						<node name="target" type="rand" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="3" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!-- 스킬사용 한번 더 체크 -->
+							<node name="skill" faceTarget="0" idx="3">
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" faceTarget="0" idx="6" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Skill_2">
+			<!-- 파괴 스킬 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<node name="skill" faceTarget="0" idx="4">
+						<node name="standby" limit="300" faceTarget="1" />
+						<node name="target" type="rand" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="4" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!-- 스킬사용 한번 더 체크 -->
+							<node name="skill" faceTarget="0" idx="4">
+								<node name="standby" limit="300" faceTarget="1" />
+								<node name="target" type="rand" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" faceTarget="0" idx="6" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Skill_3">
+			<!-- 야생의 부름 -->
+			<node name="skill" faceTarget="0" idx="5">
+				<node name="standby" limit="500" faceTarget="1" />
+			</node>
+		</aiPreset>
+	</aiPresets>
+	<!--전투-->
+	<battle>
+		<!--1페이즈 기본공격과 스킬을 사용 -->
+		<node name="conditions">
+			<condition name="extraData" key="phase" value="1">
+				<node name="select" prob="20,20,5,5,50">
+					<node name="standby" limit="10" faceTarget="1" cooltime="8000" initialCooltime="9000">
+						<aiPreset name="Skill_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="10000" initialCooltime="12000">
+						<aiPreset name="Skill_2" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+						<aiPreset name="Atk_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<aiPreset name="Atk_2" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="2000">
+						<aiPreset name="Roll" />
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="10,10,24,4,2,50">
+					<!-- 2페이즈 야생의 부름 사용 -->
+					<node name="standby" limit="10" faceTarget="1" cooltime="6000">
+						<aiPreset name="Skill_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+						<aiPreset name="Skill_2" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="18000">
+						<aiPreset name="Skill_3" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="2000">
+						<aiPreset name="Atk_1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1">
+						<aiPreset name="Atk_2" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="2000">
+						<aiPreset name="Roll" />
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

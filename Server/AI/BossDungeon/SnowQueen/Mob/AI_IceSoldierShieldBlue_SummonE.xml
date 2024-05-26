@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,99999,99999,9999,0">
+			<node name="SetValue" cooltime="999999" key="DefenceMode" value="1" />
+			<!--방패 방어 행위 유지를 계속 할지 말지를 정하는 변수 -->
+			<node name="SetValue" cooltime="999999" key="ActionMode" value="0" />
+			<!--공격 안하고 방어만 하게 하기 위한 변수로 보스한테 이 변수 값이 1로 셋팅되어 공격 행동 하도록 설정함 -->
+			<node name="SetValue" cooltime="999999" key="DefenceEnd" value="0" />
+			<!--버그로 인해 계속 방패 방어만 하면 클리어 불가이기 때문에 방패 방어 많이 하면 이후 스스로 풀도록 함-->
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="target" type="near" from="10" to="1300" cooltime="5000" />
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="5" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="DefenceEnd" value="17" op="greaterEqual">
+					<!-- 17~34 회 이상 너무 오랫동안 방어 행위 하고 있으면, ActionMode = 1로 설정해 방어 풀고 공격 해위 하도록 함,   혹시모를 버그 상황을 막기 위한 장치-->
+					<node name="skill" faceTarget="1" idx="2">
+						<node name="SetValue" key="DefenceEnd" value="0">
+							<!-- DefenceEnd 변수 초기화, 0으로 초기화 안하면 여기서 무한 루프 빠짐-->
+							<node name="SetValue" key="ActionMode" value="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DefenceMode" value="1">
+					<!-- DefenceMode = 1로 기본 셋팅되어있기 때문에 최초에는 무조건 이거 실행-->
+					<node name="skill" facePos="600, 150, 1450" idx="1">
+						<node name="SetValue" key="DefenceMode" value="2" />
+					</node>
+				</condition>
+				<condition name="extraData" key="DefenceMode" value="2">
+					<!-- 방패 방어 시작 행동 후  DefenceMode = 2로 기본 셋팅되어있기 때문에, 보스한테 ActionMode = 1  신호를 받을 때 까지 이 부분 계속 반복 실행함-->
+					<node name="skill" facePos="600, 150, 1450" idx="2">
+						<node name="conditions">
+							<condition name="extraData" key="ActionMode" value="0">
+								<node name="select" prob="65,35">
+									<!-- ActionMode = 0 : 계속 대기하고 있어라, ActionMode 변수는 보스한테 전달 받는 변수임-->
+									<node name="skill" facePos="600, 150, 1450" idx="2">
+										<!-- 계속 방어 행위만 하기-->
+										<node name="SetValue" key="DefenceEnd" value="1" isModify="1" />
+										<!--버그로 인해 계속 방패 방어만 하면 클리어 불가이기 때문에 방패 방어 많이 하면 1씩 더해 일정 수자 이상이 되면  이후 스스로 풀도록 함-->
+									</node>
+									<node name="skill" facePos="600, 150, 1450" cooltime="9000" idx="2">
+										<!-- 계속 방어 행위만 하기, 메시지 띄우기-->
+										<node name="say" message="$IceSoldierShieldBlue01$" durationTick="3000" delayTick="0" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--  ActionMode = 1 : 방어행위 그만하고 돌진 공격 해라, ActionMode 변수는 보스한테 전달 받는 변수임,  혹은 스스로 ActionMode = 1 설정   버그로 인해 방어 행위를 너무 오래 하면 스스로 이 변수를 설정함  -->
+								<node name="skill" facePos="600, 150, 1450" isKeepBattle="true" idx="2">
+									<node name="skill" faceTarget="0" idx="2" />
+									<node name="skill" faceTarget="1" idx="4" />
+									<node name="skill" faceTarget="0" idx="3" />
+									<node name="SetValue" key="DefenceMode" value="0" />
+									<!-- 이 변수 초기화 하여 평상시 공격 행위를 하도록 함-->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 평상시 공격 행동 하기-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="2">
+							<node name="select" prob="99,1">
+								<!--레벨2: 거리 1150 이내 -->
+								<node name="skill" faceTarget="1" cooltime="8000" isKeepBattle="true" idx="1">
+									<!--원거리 방패 돌진 공격 -->
+									<node name="skill" faceTarget="0" idx="4" />
+									<!--레벨22가 돌진 직전 대기, 레벨2는 디버프 방패 막기임 -->
+									<node name="skill" faceTarget="1" idx="4" />
+									<node name="skill" faceTarget="0" idx="3" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+								<!--플레이가 가까이 붙으면 바로바로 추척하도록 하기 위해 모든 스킬에 쿨타임 넣고 standby 시간 짧게 함 -->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="5000" skillIdx="2" />
+							<!--레벨2: 거리 1150 이내 -->
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+	</battleEnd>
+</npcAi>

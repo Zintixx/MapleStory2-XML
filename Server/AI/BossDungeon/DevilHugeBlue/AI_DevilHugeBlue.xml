@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<!-- 과거에 이 부분 있었는데, 서구권 난이도 이슈로 이부분 제거하였음, 73~45% : 석궁 공격 패턴,   73~50% 정상구간, 50~45% 3페이즈때의 회복 구간을 대비한 버퍼구간 -->
+		<condition name="hpLess" value="65">
+			<!--45~30% : 힐졸 패턴 3시에서 진행-->
+			<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+				<!--	<buff type ="remove" id = "50000313" prob="100"/>  방업버프 강제 제거하기 -->
+				<!-- 	<announce message="$DevilHugeBlue_BrokenBarrier$" durationTick="17000"/> 데보라크 보호막이 제거되었음을 알리는 메시지 -->
+				<!--	<standby limit="2000" faceTarget="1" prob="100"/>		-->
+				<!--<event eventName="SetExtra" target="Slaves" param1="DeathSummon" param2="1" prob="100" /> 적대적 소환몹 제거하기-->
+				<node name="skill" facePos="-2400, -1350, 1900" idx="6" />
+				<!-- 최후의 일격, 이때 플레이어 네임드 우호적NPC 기절하고, 일반병 우호적NPC를 다 죽임, 레벨2가 실제 전투 용도임 -->
+				<node name="standby" limit="2500" faceTarget="1" />
+				<node name="skill" idx="8" />
+				<!-- 성우 목소리 나오며 순간이동 -->
+				<node name="teleport" pos="2320, -2265, 1900" />
+				<!--3시 전투판 구석-->
+				<node name="standby" limit="2000" />
+				<node name="SetValue" key="Position" value="3" />
+				<!--이 변수에 3을 넣어 보스가 3시 방향 전투판에 있음을 알림-->
+				<!--힐졸 소환은 아래 Main AI 설정 부분에서 함-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="50">
+			<!-- 30~10% : 힐졸 패턴 11시에서 진행-->
+			<node name="skill" isKeepBattle="true" idx="8">
+				<!-- 성우 목소리 나오며 순간이동 -->
+				<node name="teleport" pos="2060, 1515, 1900" />
+				<!--11시 전투판 구석-->
+				<node name="SetValue" key="Position" value="11" />
+				<!--이 변수에 11을 넣어 보스가 11시 방향 전투판에 있음을 알림-->
+				<node name="SetSlaveValue" key="DeathSummon" value="1" />
+				<!--소환몹 제거하기-->
+				<node name="standby" limit="500" />
+				<!--11시로 순간이동 했는데 쿨타이에 걸려 소환을 안하는 경우가 있어서 여기서 소환시킴-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="211" summonPos="1950, 300, 1900" />
+				<!--11시-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="212" summonPos="1050, 750, 1900" />
+				<!--11시-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="213" summonPos="750, 1300, 1900" />
+				<!--11시-->
+				<node name="announce" message="$DevilHugeBlue_HealSummon$" durationTick="22000" />
+				<!-- 졸병 몬스터를 처리하라고 알리는 메시지 -->
+				<node name="standby" limit="1300" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="30">
+			<!--10~0% : 최후 마지막 모든 졸몹 제거 7시에서 진행-->
+			<node name="SetSlaveValue" key="DeathSummon" value="1" />
+			<!--소환몹 제거하기-->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999999,0">
+			<!--AI 로직을 위한 변수를 최초 선언 -->
+			<node name="standby" limit="100" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="Position" value="0" />
+				<node name="SetValue" key="LaserAttack" value="6" />
+				<!--최초 6로 설정함, 이 변수는 석궁 견제 페이즈에서 레이저 공격 사용 유무를 결정하는 변수 -->
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="65">
+					<!--#1페이즈   100~45% -->
+					<aiPreset name="MainBattle01" />
+				</condition>
+				<condition name="hpOver" value="30">
+					<node name="select" prob="9999,9999,0">
+						<!--#3페이즈, 힐졸 구간   45~30% : 3시 전투판에서 진행,   30~10% : 11시 전투판에서 진행, HP %구간은 위 <reserved/> 에서 설정하였음    -->
+						<node name="standby" limit="100" cooltime="120000">
+							<!--쿨타임 길게 하여 뻘짓만 안하면 다시 리젠되지 않도록 함  -->
+							<node name="conditions">
+								<condition name="extraData" key="Position" value="3">
+									<!--보스가 3시 전투판에 있다면  -->
+									<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+										<!--힐졸 소환하기-->
+										<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="201" summonPos="1750, -3150, 1900" />
+										<!--3시-->
+										<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="202" summonPos="900, -2250, 1900" />
+										<!--3시-->
+										<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="203" summonPos="1500, -1350, 1900" />
+										<!--3시-->
+										<node name="announce" message="$DevilHugeBlue_HealSummon$" durationTick="22000" />
+										<!-- 졸병 몬스터를 처리하라고 알리는 메시지 -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--보스가 11시 전투판에 있다면  -->
+									<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+										<!--힐졸 소환하기-->
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="211" summonPos="1950, 300, 1900" />
+										<!--11시-->
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="212" summonPos="1050, 750, 1900" />
+										<!--11시-->
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="213" summonPos="750, 1300, 1900" />
+										<!--11시-->
+										<node name="announce" message="$DevilHugeBlue_HealSummon$" durationTick="22000" />
+										<!-- 졸병 몬스터를 처리하라고 알리는 메시지 -->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="100" cooltime="5000">
+							<node name="SetSlaveValue" key="HealStop" value="0" />
+							<!--### 이 변수에 0을 넣어 소환몹이 힐 행위 하도록 함-->
+						</node>
+						<aiPreset name="MainBattle03" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99,1">
+						<!--#4페이즈   10~0% : 마지막 회전 레이저 사용후 죽음 -->
+						<node name="skill" idx="7">
+							<node name="select" prob="20,20,20,20">
+								<node name="teleport" pos="-900, -300, 1900" cooltime="20000">
+									<node name="standby" limit="2000" faceTarget="0">
+										<node name="select" prob="50,50">
+											<node name="skill" faceTarget="0" idx="12">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+											<node name="skill" faceTarget="0" idx="13">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="teleport" pos="-900, -1200, 1900" cooltime="20000">
+									<node name="standby" limit="2000" faceTarget="0">
+										<node name="select" prob="50,50">
+											<node name="skill" faceTarget="0" idx="12">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+											<node name="skill" faceTarget="0" idx="13">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="teleport" pos="-1950, -1200, 1900" cooltime="20000">
+									<node name="standby" limit="2000" faceTarget="0">
+										<node name="select" prob="50,50">
+											<node name="skill" faceTarget="0" idx="12">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+											<node name="skill" faceTarget="0" idx="13">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="teleport" pos="-1350, -750, 1900" cooltime="20000">
+									<node name="standby" limit="2000" faceTarget="0">
+										<node name="select" prob="50,50">
+											<node name="skill" faceTarget="0" idx="12">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+											<node name="skill" faceTarget="0" idx="13">
+												<node name="standby" limit="2000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="500" faceTarget="0" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="MainBattle01">
+			<node name="conditions">
+				<condition name="state" targetState="holdme">
+					<!-- 타겟팅 된 대상이 매달려 있다면 공격해서 무조건 떨구게 함-->
+					<node name="skill" idx="5" />
+					<!-- 기 내뿜기-->
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<node name="skill" faceTarget="0" cooltime="55000" initialCooltime="14000" idx="5">
+							<!-- 기 내뿜기-->
+							<node name="standby" limit="2000" faceTarget="0" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="49,50,1">
+									<!-- 사정거리가 1700 이라서 전투판 벗어날일 없을거 같음  -->
+									<!--손바닥 대미지 필드 -->
+									<node name="skill" cooltime="10000" initialCooltime="8000" idx="9">
+										<node name="standby" limit="2000" faceTarget="0" />
+									</node>
+									<!--어둠의 화살-->
+									<node name="skill" idx="1">
+										<node name="target" type="near" from="10" to="1500">
+											<node name="standby" limit="1200" faceTarget="0" />
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="60,40">
+									<node name="standby" limit="100" faceTarget="0">
+										<node name="target" type="near" from="10" to="4500">
+											<node name="skill" idx="2">
+												<!-- 레벨2: 대상이 멀리 떨어져 있으면 어둠의 화살 발사 -->
+												<node name="standby" limit="1000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle02">
+			<!-- 석궁 조작하는 플레이어 견제하기-->
+			<node name="conditions">
+				<condition name="state" targetState="holdme">
+					<!-- 타겟팅 된 대상이 매달려 있다면 공격해서 무조건 떨구게 함-->
+					<node name="skill" idx="5" />
+					<!-- 기 내뿜기-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="3">
+							<!-- 레벨3 그린후드 석궁 조작하는 플레이어 견제용 사정거리 -->
+							<node name="conditions">
+								<condition name="extraData" key="LaserAttack" value="10" op="greaterEqual">
+									<!--회전 레이저 공격으로 모든 석궁 파괴함 -->
+									<node name="skill" facePos="-2400, -1350, 1900" cooltime="53000" idx="11">
+										<node name="standby" limit="1000" faceTarget="1">
+											<node name="SetValue" key="LaserAttack" value="0" />
+											<!--0으로 셋팅 -->
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="95,4,1">
+										<!--어둠의 화살, 레벨3: 석궁 조작하는 플레이어 견제하기-->
+										<node name="standby" limit="100" faceTarget="1" cooltime="12000" isKeepBattle="true">
+											<node name="target" type="far" from="10" to="1320" />
+											<!-- 석궁 발사 위치 최대 거리가 대략 1320 정도 -->
+											<node name="standby" limit="300" faceTarget="1" />
+											<node name="skill" idx="3" />
+											<!-- 레벨3 그린후드 석궁 조작하는 플레이어 견제용 사정거리 -->
+											<node name="standby" limit="5200" faceTarget="1" />
+											<node name="SetValue" key="LaserAttack" value="1" isModify="1" />
+											<!-- 1씩 더함 -->
+										</node>
+										<!--어둠의 화살, 레벨3: 석궁 조작하는 플레이어 견제하기, 석궁공격 메시지 출력 부분 있음-->
+										<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+											<node name="target" type="far" from="10" to="1320" />
+											<!-- 석궁 발사 위치 최대 거리가 대략 1320 정도 -->
+											<node name="standby" limit="300" faceTarget="1" />
+											<node name="skill" idx="3" />
+											<!-- 레벨3 그린후드 석궁 조작하는 플레이어 견제용 사정거리 -->
+											<node name="standby" limit="5800" faceTarget="1" />
+											<node name="SetValue" key="LaserAttack" value="1" isModify="1" />
+											<!-- 1씩 더함 -->
+											<node name="announce" message="$DevilHugeBlue_Crossbow$" durationTick="15000" />
+											<!-- 그린후드 석궁으로 보스를 처리하라고 알리는 메시지 -->
+										</node>
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,49,1">
+								<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+									<node name="target" type="far" from="10" to="1320" />
+									<!-- 석궁 발사 위치 최대 거리가 대략 1320 정도 -->
+									<node name="standby" limit="300" faceTarget="1" />
+									<node name="skill" idx="2" />
+									<!-- 레벨2: 대상이 멀리 떨어져 있으면 어둠의 화살 발사 -->
+									<node name="standby" limit="2200" faceTarget="1" />
+									<node name="SetValue" key="LaserAttack" value="1" isModify="1" />
+									<!-- 1씩 더함 -->
+									<node name="target" type="far" from="10" to="1320" />
+								</node>
+								<node name="standby" limit="100" faceTarget="0" cooltime="28000" isKeepBattle="true">
+									<node name="target" type="near" from="10" to="800" />
+									<node name="standby" limit="300" faceTarget="1" />
+									<node name="skill" idx="10" />
+									<!-- 레벨2: 제자리 점프쾅 스킬임 -->
+									<node name="standby" limit="2500" faceTarget="1" />
+									<node name="SetValue" key="LaserAttack" value="1" isModify="1" />
+									<!-- 1씩 더함 -->
+									<node name="target" type="far" from="10" to="1320" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle03">
+			<node name="conditions">
+				<condition name="state" targetState="holdme">
+					<!-- 타겟팅 된 대상이 매달려 있다면 공격해서 무조건 떨구게 함-->
+					<node name="skill" idx="5" />
+					<!-- 기 내뿜기-->
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<node name="skill" faceTarget="0" cooltime="32000" idx="5">
+							<!-- 기 내뿜기-->
+							<node name="standby" limit="1700" faceTarget="0" />
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<node name="select" prob="49,50,1">
+									<!-- 사정거리가 1700 이라서 전투판 벗어날일 없을거 같음  -->
+									<!--손바닥 대미지 필드, 레벨2가 제자리 공격임 -->
+									<node name="standby" limit="100" faceTarget="0" cooltime="13000">
+										<node name="target" type="near" from="10" to="800">
+											<node name="skill" idx="10">
+												<node name="standby" limit="1700" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<!--어둠의 화살-->
+									<node name="skill" idx="1">
+										<node name="target" type="near" from="10" to="1500">
+											<node name="standby" limit="2000" faceTarget="0" />
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="60,40">
+									<node name="standby" limit="100" faceTarget="0">
+										<node name="target" type="near" from="10" to="4500">
+											<node name="skill" idx="2">
+												<!-- 레벨2: 대상이 멀리 떨어져 있으면 어둠의 화살 발사 -->
+												<node name="standby" limit="1000" faceTarget="0" />
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="200" faceTarget="1" cooltime="3000">
+				<node name="target" type="near" center="-450, 8100, 900" />
+				<!-- 오른쪽 지점의 대상 최우선 타겟팅 하기-->
+			</node>
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="50,50">
+						<node name="skill" idx="1">
+							<node name="runaway" till="1045" limit="500">
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</node>
+						<node name="standby" limit="700" faceTarget="1">
+							<node name="skill" idx="1">
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="80,20">
+						<!--전투 초반 들어서자마자 trace 실행하면 건너편 대상을 공격하기 위해 맵 구석에 파묻히는 문제가 있어서  initialCooltime 을 넣음-->
+						<node name="trace" limit="500" initialCooltime="7000" skillIdx="1" />
+						<node name="standby" limit="1200" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="350" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="ZakumArmNumber" value="6" />
+				<node name="SetValue" key="ZakumArm0306Death" value="2" />
+				<!-- 3번 6번 자쿰팔이 죽었는지 안죽었는지를 알게 하는 변수, 이 변수가 0이 되면 3번 6번 자쿰팔이 죽은 것으로 판단하여, 자신한테 속성 버프 적용 유무를 판단할 것임 -->
+				<node name="buff" type="add" id="50004403" level="1" />
+				<!--자쿰팔이 버프 스킬을 사용할 때 자쿰 몸에 붙는 아이콘 애디셔널은 팔에 붙지 않게 하기 위해 이 애디셔널을 부여함 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="30">
+			<node name="buff" type="add" id="50006006" level="1" />
+			<!-- HP 30% 이하로 급 감소되면 이 애디셔널 부여하여 모든 속성 버프 제거하기 -->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 오른쪽 3층 지형 -->
+			<node name="target" type="near" center="3000, -1675, 2900" cooltime="8000" />
+			<node name="conditions">
+				<condition name="extraData" key="ElementsDecision04" value="1" op="greaterEqual">
+					<!-- 자쿰 몸체로 부터 ElementsDecision04 변수 신호를 받았으면-->
+					<!--1번 자쿰팔은 남은 자쿰팔이 4개 이하일 때 그리고 3번 6번 팔이 제거되면 속성 보호 버프 사용하지 않음-->
+					<node name="conditions">
+						<condition name="extraData" key="ZakumArmNumber" value="5" op="greaterEqual">
+							<aiPreset name="ElementsBarrier" />
+							<!--그런데 3번 6번 팔 제거 유무 상관 없이 자쿰팔 2개 이하가 되면 무조건 AI_ZakumBrownImitation.xml 에서 ElementsDecision04 = 99 신호를 보내기 때문에 속성 버프 제거될 것임-->
+						</condition>
+						<condition name="extraData" key="ZakumArm0306Death" value="1" op="greaterEqual">
+							<!--아직 3번팔 5번팔 둘다 제거되지 않았기 때문에 속성 보호 버프 계속 유지하기 -->
+							<aiPreset name="ElementsBarrier" />
+							<!--그런데 3번 6번 팔 제거 유무 상관 없이 자쿰팔 2개 이하가 되면 무조건 AI_ZakumBrownImitation.xml 에서 ElementsDecision04 = 99 신호를 보내기 때문에 속성 버프 제거될 것임-->
+						</condition>
+						<condition name="true">
+							<!--자쿰팔이 4개 이하 그리고 3번 6번 팔이 제거된 상태이기 때문에  버프 제거하고, 변수 초기화 하고  아무것도 안함-->
+							<node name="buff" type="add" id="50006006" level="1">
+								<!--이 애디셔널 부여하여 모든 속성 버프 제거하기 -->
+								<node name="SetValue" key="ElementsDecision04" value="0" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+						<node name="standby" limit="100" faceTarget="0" />
+					</node>
+				</condition>
+				<!--여기 아래서 부터는 본격 공격 행동하는 부분임 -->
+				<condition name="extraData" key="ZakumArmNumber" value="6">
+					<node name="select" prob="99999,0">
+						<!-- 팔이 6개 있는 경우-->
+						<node name="standby" limit="4600" faceTarget="0" cooltime="9999999" />
+						<!--시작하자마자 바로 공격하는 것이 좀 어색해서 최초에만 몇초동안의 딜레이 설정을 넣음 -->
+						<aiPreset name="MainBattle06" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="5">
+					<!-- 팔이 5개 있는 경우-->
+					<aiPreset name="MainBattle06" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="4">
+					<!-- 팔이 4개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="3">
+					<!-- 팔이 3개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="2">
+					<!-- 팔이 2개 있는 경우, 4번 팔은 중반에 처리해야지 남은 팔 2개 상태에서도 4번 팔이 계속 남아있으면 SP까는 스킬 자주 사용하게 됨-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+				<condition name="true">
+					<!-- 팔이 1개 있는 경우-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="VoiceDeathZakumArm" value="1">
+			<!-- 본체에게 팔이 죽음으로 인한 성우 목소리를 출력하라는 신호를 보냄-->
+			<node name="SetValueRangeTarget" key="ZakumArmNumber" value="-1" radius="2500" height="4000" isModify="1" />
+			<!-- 자쿰팔이 죽어서 본체와 다른 팔의 이 변수 -1을 하여 현재 팔이 몇개 남았는지 본체와 다른 팔에서 파악할 수 있도록 함-->
+			<!-- param3 은 좌우 영역, param4는 위아래 영역임, 자쿰몸체 컬리전 박스가 3600 높이에 어긋나게 있기 때문에 최소 param4=3600 이상이어야 함-->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<!--어떤  속성 보호를 받을지를 결정하는데 부분-->
+		<aiPreset name="ElementsBarrier">
+			<node name="conditions">
+				<condition name="extraData" key="ElementsDecision04" value="1">
+					<node name="buff" type="add" id="50006000" level="1">
+						<!-- 화명 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision04" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision04" value="2">
+					<node name="buff" type="add" id="50006001" level="1">
+						<!-- 빙결 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision04" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision04" value="3">
+					<node name="buff" type="add" id="50006002" level="1">
+						<!-- 전격 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision04" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision04" value="4">
+					<node name="buff" type="add" id="50006003" level="1">
+						<!-- 신성 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision04" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision04" value="5">
+					<node name="buff" type="add" id="50006004" level="1">
+						<!-- 암흑 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision04" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision04" value="6">
+					<node name="buff" type="add" id="50006005" level="1">
+						<!-- 독속 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision04" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="buff" type="add" id="50006006" level="1">
+						<!--이 애디셔널 부여하여 모든 속성 보호 버프 제거하기 -->
+						<node name="SetValue" key="ElementsDecision04" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 -->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle06">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<node name="select" prob="70,15,14,1">
+						<!--3층 오른쪽 전투판에 있으면-->
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="15000" idx="4">
+							<node name="select" prob="50,50">
+								<!--레벨1은 오른쪽 2층 3층만 커버-->
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="47" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" cooltime="15000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="47" />
+							</node>
+						</node>
+						<!--파멸의 폭탄-->
+						<node name="skill" cooltime="47000" idx="3">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="47" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="14" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="6">
+					<node name="select" prob="70,9,20,1">
+						<!--오른쪽 전투판 어디든지 있으면, 여기는 standby 시간 짧게 설정-->
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="21000" idx="6">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<node name="SetValue" key="AttackDelay" value="47" />
+							</node>
+						</node>
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="11000" idx="6">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<node name="SetValue" key="AttackDelay" value="27" />
+							</node>
+						</node>
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="11000" idx="5">
+							<node name="select" prob="50,50">
+								<!--레벨12는 오른쪽 지역 전체 커버-->
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<node name="SetValue" key="AttackDelay" value="27" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="14" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="75,24,1">
+						<!--오른쪽이 아닌 왼쪽  자쿰팔 공격 가능 지역에 있으면-->
+						<!--파멸의 폭탄, 즉 플레이어가 왼쪽 전투판에 없으면 이 스킬 자주 사용하게 하여 오른쪽 플레이어 무리 상당히 짜증나게 함-->
+						<node name="skill" cooltime="12000" initialCooltime="22000" idx="3">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="45" />
+								<node name="SetValue" key="AttackDelay" value="50" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="42" />
+								<node name="SetValue" key="AttackDelay" value="47" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="12" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="SetValue" key="AttackDelay" value="10" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle04">
+			<!--팔 4~3개 남았을 때 공격 행동 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<node name="select" prob="50,24,25,1">
+						<!--3층 오른쪽 전투판에 있으면-->
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="9000" idx="4">
+							<node name="select" prob="50,50">
+								<!--레벨1은 오른쪽 2층 3층만 커버-->
+								<node name="SetValue" key="AttackDelay" value="30" />
+								<node name="SetValue" key="AttackDelay" value="38" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" cooltime="9000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="28" />
+								<node name="SetValue" key="AttackDelay" value="38" />
+							</node>
+						</node>
+						<!--파멸의 폭탄-->
+						<node name="skill" cooltime="24000" idx="3">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="31" />
+								<node name="SetValue" key="AttackDelay" value="37" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="14" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="6">
+					<node name="select" prob="70,9,20,1">
+						<!--오른쪽 전투판 어디든지 있으면, 여기는 standby 시간 짧게 설정-->
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="18000" idx="6">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="13" />
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+						</node>
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="12000" idx="6">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="18" />
+								<node name="SetValue" key="AttackDelay" value="24" />
+							</node>
+						</node>
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="9000" idx="5">
+							<node name="select" prob="50,50">
+								<!--레벨12는 오른쪽 지역 전체 커버-->
+								<node name="SetValue" key="AttackDelay" value="17" />
+								<node name="SetValue" key="AttackDelay" value="26" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="14" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="75,24,1">
+						<!--오른쪽이 아닌 왼쪽  자쿰팔 공격 가능 지역에 있으면-->
+						<!--파멸의 폭탄, 즉 플레이어가 왼쪽 전투판에 없으면 이 스킬 자주 사용하게 하여 오른쪽 플레이어 무리 상당히 짜증나게 함-->
+						<node name="skill" cooltime="10000" idx="3">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="28" />
+								<node name="SetValue" key="AttackDelay" value="36" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="22" />
+								<node name="SetValue" key="AttackDelay" value="32" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="12" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="SetValue" key="AttackDelay" value="10" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle02">
+			<!--팔 2~1개 남았을 때 공격 행동 패턴, SP 깎는 스킬 난사 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="6">
+					<node name="select" prob="70,14,15,1">
+						<!--오른쪽 전투판 어디든지 있으면, 이때는 굳이 3층에 있는 플레이어를 구분할 필요 없이 왼쪽이냐 오른쪽이냐만을 체크해도 괜찮음-->
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" cooltime="10000" idx="6">
+							<node name="select" prob="48,52">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="standby" limit="200" faceTarget="0" />
+								<node name="standby" limit="500" faceTarget="0">
+									<node name="skill" idx="6">
+										<node name="standby" limit="300" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--SP 강제 깎기, 즉 플레이어 중 3층 전투판에 없으면 SP를 깍는 공격을자주 사용하게 하여 딜이 안나오게 함-->
+						<node name="skill" idx="6">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="5" />
+								<node name="SetValue" key="AttackDelay" value="18" />
+							</node>
+						</node>
+						<!--HP 강제 깎기-->
+						<node name="skill" cooltime="9000" idx="5">
+							<node name="select" prob="50,50">
+								<!--레벨12는 오른쪽 지역 전체 커버-->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<node name="SetValue" key="AttackDelay" value="13" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="14" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="80,19,1">
+						<!--오른쪽이 아닌 왼쪽  자쿰팔 공격 가능 지역에 있으면-->
+						<!--파멸의 폭탄, 즉 플레이어가 왼쪽 전투판에 없으면 이 스킬 자주 사용하게 하여 오른쪽 플레이어 무리 상당히 짜증나게 함-->
+						<node name="skill" cooltime="5500" idx="3">
+							<node name="select" prob="50,50">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<node name="SetValue" key="AttackDelay" value="11" />
+							</node>
+						</node>
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<node name="SetValue" key="AttackDelay" value="11" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="12" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="SetValue" key="AttackDelay" value="10" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

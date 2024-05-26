@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<!--냉기 보호막 버프 부여하기    , 이 기능 제거하기
+		<buff type ="add" id = "50004502" level="4" prob="9999" cooltime = "8000"/> -->
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="4" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!--같은 영역의 전투판 내에 있어야만 전투 행위를 하도록 함-->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="3">
+									<node name="select" prob="50,49,1">
+										<!--거리 500 이내 -->
+										<node name="skill" cooltime="21000" idx="3">
+											<!--돌진 창 찌르기 -->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="2500" skillIdx="2">
+											<!--거리 300 이내 -->
+											<node name="skill" idx="2">
+												<!--근접  -->
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99,1">
+										<node name="standby" limit="4500" faceTarget="1" cooltime="999000" />
+										<!--근거리형 몬스터가 전투판에 들어서자마자 우르르 달려드는 상황을 막기 위해, 최초에는 2~4초 정도 대기하도록 함 -->
+										<node name="trace" limit="1000" skillIdx="3" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+	</battleEnd>
+</npcAi>

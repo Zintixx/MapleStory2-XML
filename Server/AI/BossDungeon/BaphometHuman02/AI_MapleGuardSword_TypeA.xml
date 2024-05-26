@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="4000">
+				<node name="target" type="near" from="10" to="3500" />
+			</node>
+			<!--해당 스킬 범위 내에 타겟이 있을 경우 아래의 스킬들을 확률적으로 발동-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="16,68,15">
+						<!--아래의 스킬을 확률적으로 발동, prob가 발동 확률-->
+						<node name="skill" idx="1">
+							<node name="select" prob="33,33,34">
+								<node name="standby" limit="100" faceTarget="1" />
+								<!--다수 우호적 NPC 무리가 너무 같은 타이밍에 공격하는 것을 피하기 위해 다양한 경우의 standby 넣었음-->
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="standby" limit="350" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" idx="2" cooltime="6000" initialCooltime="12000" />
+						<node name="standby" limit="16" faceTarget="1" cooltime="10000">
+							<node name="select" prob="33,34,33">
+								<node name="runaway" till="175" limit="3000" />
+								<!--다수 우호적 NPC 무리가 너무 같은 위치에서 공격하는 것을 피하기 위해 다양한 경우의 runaway 넣었음-->
+								<node name="runaway" till="145" limit="3000" />
+								<node name="runaway" till="120" limit="3000" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="30,30,30,10">
+						<node name="trace" skillIdx="1" limit="4000" />
+						<!--다수 우호적 NPC 무리가 너무 같은 위치에서 공격하는 것을 피하기 위해 다양한 경우의 trace 넣었음-->
+						<node name="trace" till="120" limit="4000" />
+						<node name="trace" till="165" limit="4000" />
+						<node name="standby" limit="800" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

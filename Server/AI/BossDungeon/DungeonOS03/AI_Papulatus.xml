@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="hpOver" value="70">
+				<node name="select" prob="999999,999,99,0">
+					<!--1페이즈, 바닥 시계 대미지 필드 깔기 패턴 -->
+					<node name="move" destination="-750, -900, 1700" limit="5000" cooltime="999999">
+						<node name="standby" limit="1000" facePos="-1950, -2100, 1700">
+							<node name="SetValue" key="AlramOnAttack" value="0" />
+							<!--  알람 공격 발동을 위한 변수 최초 선언하기, 노말 난이도에서는 다크스타 나오지 않게 함-->
+						</node>
+					</node>
+					<!--	<event eventName="ModifyRoomTime" param1="300000"  prob="9999" cooltime = "999999"/>    -->
+					<!--던전시간 늘리기 테스트용 나중에 삭제해야 함     -->
+					<node name="standby" limit="500" cooltime="33000">
+						<node name="conditions">
+							<condition name="extraData" key="AlramOnAttack" value="2" op="greaterEqual">
+								<!--AlramOnAttack 변수가 2가 되면 알람공격 발동  -->
+								<node name="standby" limit="500" facePos="-1350, -1500, 1700" cooltime="65000" isKeepBattle="true">
+									<node name="skill" facePos="-1950, -2100, 1700" idx="6" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<!--공격 Tick 2번 -->
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--공격 Tick 1번, 밀치기 -->
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="10" />
+									<node name="SetValue" key="AlramOnAttack" value="0" />
+									<!--  알람 공격 발동을 위한 변수 초기화 하기-->
+									<node name="standby" limit="3500" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<!--AlramOnAttack 변수가 0 과 1일때 이 스킬 사용함  -->
+								<node name="skill" facePos="-1350, -1500, 1700" idx="2">
+									<!--바닥 시계 대미지필드 깔기,  facePos = "-1950, -2100, 1700"-->
+									<node name="standby" limit="1500" faceTarget="1">
+										<node name="SetValue" key="AlramOnAttack" value="1" isModify="1" />
+										<!--알람 공격 발동을 위한 변수 1씩 더하기  -->
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+					<!--90도 회전 레이저 공격 -->
+					<node name="standby" limit="10" faceTarget="1" cooltime="24000" initialCooltime="20000">
+						<node name="select" prob="50,50">
+							<node name="skill" cooltime="45000" idx="13">
+								<!--앞뒤 회전 레이저 -->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="45000" idx="14">
+								<!--좌우 회전 레이저 -->
+								<node name="standby" limit="3000" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!--주먹 2연타 범위에 있으면 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="12">
+									<node name="select" prob="34,33,33">
+										<!--원형 밀쳐내기 사정권에 들어오면 -->
+										<node name="skill" cooltime="9000" idx="12">
+											<!--주변 바닥쾅!~ 원형 밀쳐내기 사정권에 들어오면 -->
+											<node name="target" type="rand" from="10" to="1300">
+												<!--밀치기 공격 사정권에 안에서 랜덤 타겟팅 하기 -->
+												<node name="standby" limit="3500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" idx="1">
+											<!--근거리 주먹 2연타 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="25000" idx="1">
+											<!--근거리 주먹 2연타 -->
+											<node name="standby" limit="800" faceTarget="1">
+												<node name="skill" idx="1">
+													<!--근거리 주먹 2연타 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="30,30,40,1">
+										<node name="skill" idx="1">
+											<!--근거리 주먹 2연타 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" idx="3">
+											<!--밀치기 공격 -->
+											<node name="target" type="rand" from="10" to="1300">
+												<!--밀치기 공격 사정권에 안에서 랜덤 타겟팅 하기 -->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" cooltime="20000" idx="5">
+											<!--거대 레이저 줄기 -->
+											<node name="standby" limit="3500" faceTarget="1" />
+										</node>
+										<node name="standby" limit="500" faceTarget="0" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99,1">
+								<node name="skill" idx="11">
+									<!--공격 대기 상태 -->
+									<node name="target" type="rand" from="10" to="1300">
+										<!--밀치기 공격 사정권에 안에서 랜덤 타겟팅 하기 -->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="25">
+				<node name="select" prob="9999,0">
+					<!--2페이즈,  다크스타 소환 공격   70~25 -->
+					<!-- 다크스타 소환 패턴 3가지, 혹은 끌어당기기 폭발 공격-->
+					<node name="standby" limit="100" faceTarget="1" cooltime="23000">
+						<node name="select" prob="25,25,25,25">
+							<node name="standby" limit="100" faceTarget="1" cooltime="65000" isKeepBattle="true">
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="-300, 300, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 빨리 자폭-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPosOffset="300, -300, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 중간 자폭-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPosOffset="-300, -300, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 중간 자폭-->
+							</node>
+							<node name="standby" limit="100" faceTarget="1" cooltime="65000" isKeepBattle="true">
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="-350, 200, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 빨리 자폭-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPosOffset="380, -50, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 중간 자폭-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPosOffset="-150, -380, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 중간 자폭-->
+							</node>
+							<node name="standby" limit="100" faceTarget="1" cooltime="65000" isKeepBattle="true">
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="200, -350, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 빨리 자폭-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPosOffset="0, 400, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 중간 자폭-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPosOffset="-400, 0, 0" summonRot="0,0,-50" />
+								<!--다크스타 , 중간 자폭-->
+							</node>
+							<!--바람일으켜 원형 폭발, 이 스킬은 맵 구석에서 사용하면 안되기 때문에 이 스킬은 맵 중앙 쪽을  바라보면서 사용하도록 함 -->
+							<node name="skill" facePos="-760, -910, 1700" cooltime="85000" idx="4">
+								<!--주먹 바닥에 박기, 스킬 사용 방향 기준은 맵 중앙에서 약간 아래쪽 -->
+								<node name="standby" limit="3500" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!--주먹 2연타 범위에 있으면 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="12">
+									<node name="select" prob="30,30,40">
+										<!--원형 밀쳐내기 사정권에 들어오면 -->
+										<node name="skill" cooltime="11000" idx="12">
+											<!--원형 밀쳐내기 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" idx="1">
+											<!--근거리 주먹 2연타 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="18000" idx="5">
+											<!--거대 레이저 줄기 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="30,30,40,1">
+										<node name="skill" idx="1">
+											<!--근거리 주먹 2연타 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="11000" idx="3">
+											<!--밀치기 공격 -->
+											<node name="target" type="rand" from="10" to="1300">
+												<!--밀치기 공격 사정권에 안에서 랜덤 타겟팅 하기 -->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" cooltime="18000" idx="5">
+											<!--거대 레이저 줄기 -->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="standby" limit="500" faceTarget="0" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="90,10">
+								<node name="trace" limit="4000" skillIdx="12" />
+								<!--원형 밀쳐내기 사정권에까지 쫓아가기 -->
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="99999,0">
+					<!--3페이즈, 알람 공격 자주 사용 -->
+					<!--마지막 페이즈 시작되면 적용된 버프 제거하고 맵 중앙으로 이동함-->
+					<node name="move" destination="-750, -900, 1700" limit="3000" cooltime="9999000">
+						<node name="SetValue" key="AlramOnAttack" value="2" />
+						<!--  알람 공격 발동을 위한 변수 초기화 하기, 알람 공격 2연속 사용하는 상황을 막기 위한 안정장치 -->
+					</node>
+					<!--3페이즈 들어서자 마자 바로 알람공격하면 알람 공격이 2연속 나오는 위험한 상황이 생길 수 있기 때문에 AlramOnAttack 변수가 2이 상 될때까지 사용하지 못하도록 안전장치를 설정함 -->
+					<node name="conditions">
+						<condition name="extraData" key="AlramOnAttack" value="2" op="greaterEqual">
+							<node name="select" prob="99,1">
+								<!--알람 공격 모드 -->
+								<node name="standby" limit="500" facePos="-1950, -2100, 1700" isKeepBattle="true">
+									<node name="skill" facePos="-1950, -2100, 1700" idx="6" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<!--공격 Tick 2번 -->
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--공격 Tick 1번, 밀치기 -->
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<!--공격 Tick 1번, 천장 돌 떨어짐 -->
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--공격 Tick 1번, 밀치기 -->
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="skill" faceTarget="0" idx="10" />
+									<node name="standby" limit="3000" faceTarget="1" />
+									<node name="SetValue" key="AlramOnAttack" value="0" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="45,45,10">
+								<node name="skill" cooltime="15000" idx="5">
+									<!--거대 레이저 줄기 -->
+									<node name="target" type="rand" from="10" to="1400">
+										<node name="skill" idx="13">
+											<!--앞뒤 회전 레이저 -->
+											<node name="standby" limit="3000" faceTarget="1">
+												<node name="SetValue" key="AlramOnAttack" value="1" isModify="1" />
+												<!--알람 공격 발동을 위한 변수 1씩 더하기  -->
+											</node>
+											<!--  2페이즈->3페이지 전환에 따른 알람 공격 2연속 사용하는 상황을 막기 위한 안정장치 -->
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="8000" idx="3">
+									<!--손뼉치기 -->
+									<node name="target" type="rand" from="10" to="1400">
+										<node name="standby" limit="3000" faceTarget="1">
+											<node name="SetValue" key="AlramOnAttack" value="1" isModify="1" />
+											<!--알람 공격 발동을 위한 변수 1씩 더하기  -->
+										</node>
+									</node>
+								</node>
+								<node name="standby" limit="1000" faceTarget="1">
+									<node name="SetValue" key="AlramOnAttack" value="1" isModify="1" />
+									<!--알람 공격 발동을 위한 변수 1씩 더하기  -->
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 몬스터 소환, 죽을때 나오는 소환몹 닥터피피 나오지 않음-->
+		<!--	<summon npcId="22400062" npcCount="1" npcCountMax="1" group="109" master = "None" lifeTime="600" delayTick="12000" summonPos="-300, -450, 1700" summonRot="0,0,-50"/> -->
+		<!--  <event eventName="ModifyRoomTime" param1="90000" param2="true"/>      -->
+		<!--이 시간은 시체 유지시간보다 짧아야 함-->
+		<node name="TriggerModifyUserValue" triggerID="9001" key="MonsterMany" value="1" />
+		<node name="TriggerSetUserValue" triggerID="9003" key="debuffclearcounter" value="1" />
+	</battleEnd>
+</npcAi>

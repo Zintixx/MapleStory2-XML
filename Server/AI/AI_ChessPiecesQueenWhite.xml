@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,9999,0">
+			<!--30초 마다 가까운 유저로 타겟을 변경 -->
+			<node name="standby" limit="3000" faceTarget="1" cooltime="30000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<node name="standby" limit="10" faceTarget="1" cooltime="30000" initialCooltime="20000">
+				<node name="select" prob="70,70,100">
+					<node name="move" destination="333,-169,1351">
+						<node name="skill" idx="1" />
+					</node>
+					<node name="move" destination="-627,-23,1351">
+						<node name="skill" idx="1" />
+					</node>
+					<node name="move" destination="444,749,1351">
+						<node name="skill" idx="1" />
+					</node>
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="50">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="80,100,50,50,100">
+								<node name="skill" cooltime="7000" idx="1">
+									<!--도끼 공격을 2번 사용-->
+									<node name="skill" idx="3" />
+								</node>
+								<node name="target" type="far" from="10" to="1100" cooltime="15000" initialCooltime="10000">
+									<!--돌진 이후 회전공격 -->
+									<node name="skill" faceTarget="0" idx="1" />
+									<node name="skill" faceTarget="0" idx="3" />
+									<node name="standby" limit="4000" faceTarget="1" />
+								</node>
+								<node name="target" type="far" from="10" to="1100" cooltime="7000">
+									<!--돌진 이후 회전공격 -->
+									<node name="skill" faceTarget="0" idx="3" />
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+								<node name="target" type="near" from="10" to="1100" cooltime="7000">
+									<!--돌진 이후 회전공격 -->
+									<node name="standby" limit="100" faceTarget="1" />
+									<node name="skill" faceTarget="0" idx="2" />
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+								<node name="move" destination="-87,214,1351" cooltime="45000" initialCooltime="30000">
+									<node name="standby" limit="100" faceTarget="1" />
+									<node name="skill" idx="6">
+										<!--내려치기 -->
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="-300, 300, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="-300, -300, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="-150, 0, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="0, 150, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="0, -150, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="150, 0, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="300, 300, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="300, -300, 0" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,20">
+								<node name="trace" limit="2500" skillIdx="4">
+									<!--도끼 휘두르기까지 추적하기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- hp 10% 미만 패턴 시작-->
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<node name="select" prob="80,100,50,50,100">
+								<node name="skill" cooltime="7000" idx="4">
+									<!--도끼 공격을 2번 사용-->
+									<node name="skill" idx="5" />
+								</node>
+								<node name="target" type="far" from="10" to="1100" cooltime="15000" initialCooltime="10000">
+									<!--돌진 이후 회전공격 -->
+									<node name="runaway" till="1200" limit="3000" />
+									<node name="skill" faceTarget="0" idx="4" />
+									<node name="skill" faceTarget="0" idx="5" />
+									<node name="standby" limit="4000" faceTarget="1" />
+								</node>
+								<node name="target" type="far" from="10" to="1100" cooltime="7000">
+									<!--돌진 이후 회전공격 -->
+									<node name="skill" faceTarget="0" idx="5" />
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+								<node name="target" type="near" from="10" to="1100" cooltime="7000">
+									<!--돌진 이후 회전공격 -->
+									<node name="skill" faceTarget="0" idx="2" />
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+								<node name="move" destination="-87,214,1351" cooltime="45000" initialCooltime="30000">
+									<node name="skill" idx="6">
+										<!--내려치기 -->
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="-300, 300, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="-300, -300, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="-150, 0, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="0, 150, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="0, -150, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="150, 0, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="300, 300, 0" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="30" master="Slave" group="101" summonRadius="0, 0, 0" summonPosOffset="300, -300, 0" />
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,20">
+								<node name="trace" limit="2500" skillIdx="4">
+									<!--도끼 휘두르기까지 추적하기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

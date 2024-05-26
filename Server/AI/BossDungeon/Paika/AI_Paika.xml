@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 페이즈 -->
+	<reserved>
+		<condition name="hpLess" value="110">
+			<node name="SetValue" key="phase" value="1" />
+			<node name="SetValue" key="Sidephase" value="1" />
+		</condition>
+		<condition name="hpLess" value="85">
+			<node name="SetValue" key="phase" value="2" />
+		</condition>
+		<condition name="hpLess" value="70">
+			<node name="say" message="$Paika_Phase03$" durationTick="3000" />
+			<node name="TriggerSetUserValue" triggerID="1002" key="gogo" value="1" />
+			<node name="TriggerSetUserValue" triggerID="1003" key="gogo" value="1" />
+			<node name="TriggerSetUserValue" triggerID="1004" key="gogo" value="1" />
+		</condition>
+		<condition name="hpLess" value="35">
+			<node name="say" message="$Paika_Phase04$" durationTick="3000" />
+			<node name="SetValue" key="phase" value="10" />
+		</condition>
+	</reserved>
+	<aiPresets>
+		<aiPreset name="Marking">
+			<!-- 먼거리 플레이어에게 마킹 하러 가기 -->
+			<node name="target" type="far" from="10" to="1300" />
+			<!-- 1300 이상 거리로 할 경우, 보스방 포탈 근처 캐릭터에게 타겟이 감 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="6">
+					<node name="buff" type="add" id="49288101" level="1" isTarget="true" />
+					<node name="skill" faceTarget="1" idx="6" />
+				</condition>
+				<condition name="true">
+					<node name="trace" skillIdx="6" />
+					<node name="buff" type="add" id="49288101" level="1" isTarget="true" />
+					<node name="skill" faceTarget="1" idx="6" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Atk_1">
+			<!-- 기본공격 1 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="skill" faceTarget="0" idx="1">
+						<node name="standby" limit="400" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Atk_2">
+			<!-- 기본공격 2 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<node name="skill" faceTarget="0" idx="2">
+						<node name="standby" limit="400" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="2" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Atk_3">
+			<!-- 시공간베기 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="3">
+					<node name="skill" faceTarget="0" idx="3">
+						<node name="standby" limit="400" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="3" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Atk_4">
+			<!-- 마력방출 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<node name="skill" faceTarget="0" idx="4">
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="trace" limit="1000" skillIdx="4" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+	<battle>
+		<!-- 사잇 페이즈 부터 체크 , 사잇 페이즈에서는 5번째 스킬만 사용하고 원래 페이즈 대로 돌아간다 __ 일단 사용 안함 equl 4로 바꾸면 사용가능-->
+		<node name="conditions">
+			<condition name="extraData" key="Sidephase" value="5">
+				<node name="skill" faceTarget="0" idx="5" />
+				<node name="standby" limit="500" faceTarget="1" />
+				<aiPreset name="Atk_1" />
+			</condition>
+			<!-- 1페이즈 기본공격 사용, 약 15초 전후로 3번 스킬 사용 -->
+			<condition name="extraData" key="phase" value="1">
+				<node name="conditions">
+					<condition name="additional" id="49288101" isTarget="1">
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="7000" battleTimeLoop="10000">
+								<aiPreset name="Atk_3" />
+							</condition>
+							<condition name="true">
+								<node name="select" prob="70,30">
+									<aiPreset name="Atk_1" />
+									<aiPreset name="Atk_2" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<aiPreset name="Marking" />
+					</condition>
+				</node>
+			</condition>
+			<!-- 2페이즈에서는 4번 스킬을 약 25초 전후로 사용하는 것을 추가 -->
+			<condition name="extraData" key="phase" value="2">
+				<node name="conditions">
+					<condition name="additional" id="49288101" isTarget="1">
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="7000" battleTimeLoop="10000">
+								<aiPreset name="Atk_3" />
+							</condition>
+							<condition name="combatTime" battleTimeBegin="20000" battleTimeLoop="23000">
+								<aiPreset name="Atk_4" />
+							</condition>
+							<condition name="true">
+								<node name="select" prob="70,30">
+									<aiPreset name="Atk_1" />
+									<aiPreset name="Atk_2" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<aiPreset name="Marking" />
+					</condition>
+				</node>
+			</condition>
+			<!-- 마지막 페이즈 에서는 25초마다 마력폭주를 사용하며, 그 외 스킬은 정해진 패턴없이 사용 한다.-->
+			<condition name="true">
+				<node name="conditions">
+					<condition name="additional" id="49288101" isTarget="1">
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="1000" battleTimeEnd="4500" battleTimeLoop="25000">
+								<node name="say" message="$Paika_LastSkill$" durationTick="5000" />
+								<node name="skill" faceTarget="0" idx="5">
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="25,25,25,25">
+									<aiPreset name="Atk_3" />
+									<aiPreset name="Atk_4" />
+									<aiPreset name="Atk_1" />
+									<aiPreset name="Atk_2" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<aiPreset name="Marking" />
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

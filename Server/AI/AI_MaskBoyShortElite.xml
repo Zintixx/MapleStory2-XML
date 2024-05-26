@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<!-- HP 75% 이상 -->
+			<node name="conditions">
+				<condition name="hpOver" value="75">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="69,30,1">
+								<node name="skill" idx="1">
+									<!--발도 공격 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="trace" limit="2500" skillIdx="1" />
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="99,30,1">
+										<!--검기 공격 거리 체크-->
+										<node name="skill" idx="2">
+											<!--검기 공격 -->
+											<node name="target" type="rand" from="10" to="900">
+												<!--타겟팅 변경 -->
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="trace" limit="2500" skillIdx="1" />
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="2500" skillIdx="1">
+										<node name="select" prob="0,1">
+											<node name="skill" idx="1" />
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- HP 33% 이상 -->
+				<condition name="true">
+					<node name="conditions">
+						<condition name="hpOver" value="33">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="69,20,1">
+										<node name="skill" idx="3">
+											<!--십자베기 공격-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="skill" idx="2" />
+										<!-- 발도 공격 -->
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="4">
+											<node name="select" prob="69,30,1">
+												<!--대쉬 발도 공격 거리 체크-->
+												<node name="skill" cooltime="9000" idx="4">
+													<!--대쉬 발도 공격 -->
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+												<node name="trace" limit="2500" skillIdx="4" />
+												<!--강베기 -->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="2">
+													<node name="select" prob="99,30,1">
+														<!--검기 공격 거리 체크-->
+														<node name="skill" idx="2">
+															<!--검기 공격 -->
+															<node name="target" type="rand" from="10" to="900">
+																<!--타겟팅 변경 -->
+																<node name="standby" limit="1500" faceTarget="1" />
+															</node>
+														</node>
+														<node name="trace" limit="2500" skillIdx="1" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="trace" limit="2500" skillIdx="1">
+														<node name="select" prob="0,100">
+															<node name="skill" idx="1" />
+															<node name="standby" limit="1500" faceTarget="1" />
+														</node>
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<!--#3페이즈   HP 33% 이하 -->
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="6">
+									<node name="select" prob="69,69,30,1">
+										<node name="skill" cooltime="10000" idx="6">
+											<!--대쉬 발도 공격 1타-->
+											<node name="skill" idx="4" />
+											<!--대쉬 발도 공격 2타-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="5000" idx="4">
+											<!--대쉬 발도 공격 1타-->
+											<node name="skill" idx="4" />
+											<!--대쉬 발도 공격 2타-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="2500" skillIdx="1">
+											<node name="select" prob="0,100">
+												<node name="skill" idx="1" />
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="5">
+											<node name="select" prob="30,69,29,1">
+												<!--강화 검기 공격 거리 체크-->
+												<node name="skill" idx="5">
+													<!--강화 검기 공격 공격 1타-->
+													<node name="target" type="rand" from="10" to="900">
+														<!--타겟팅 변경 -->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+												<node name="skill" idx="2">
+													<!--검기 공격 1타-->
+													<node name="skill" idx="2" />
+													<!--검기 공격 2타-->
+													<node name="skill" idx="5" />
+													<!--강화 검기 공격-->
+													<node name="standby" limit="2500" faceTarget="1" />
+												</node>
+												<node name="trace" limit="2500" skillIdx="1">
+													<node name="select" prob="0,100">
+														<node name="skill" idx="1" />
+														<node name="standby" limit="2500" faceTarget="1" />
+													</node>
+												</node>
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="trace" limit="2500" skillIdx="5">
+												<node name="select" prob="0,100">
+													<node name="skill" idx="5" />
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

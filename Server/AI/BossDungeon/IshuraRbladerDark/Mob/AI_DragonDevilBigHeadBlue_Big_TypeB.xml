@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetMasterValue" key="MonsterNumber" value="1" isModify="1" />
+				<!--전투 상태가 되면 보스가 졸몹 마리수 체크할 때 +1 하기-->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0,20,20,40,40,9999,19,1,40">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="target" type="near" center="-3600, 450, 5260" />
+			</node>
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="8">
+					<node name="select" prob="50,49,49,1">
+						<!--근거리 타겟팅 500 이내 -->
+						<node name="skill" isKeepBattle="true" idx="8">
+							<!--연속 발차기 하면서 돌진 공격 -->
+							<node name="target" type="rand" from="10" to="600" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!-- 연속 발차기-->
+							<node name="target" type="near" from="10" to="600" />
+							<node name="skill" faceTarget="1" idx="9" />
+							<!-- 연속 발차기-->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!-- 마무리-->
+							<node name="standby" limit="3500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="17000" initialCooltime="17000" isKeepBattle="true" idx="8">
+							<!--연속 발차기 하면서 돌진 공격 -->
+							<node name="target" type="rand" from="10" to="600" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!-- 연속 발차기-->
+							<node name="target" type="near" from="10" to="600" />
+							<node name="skill" faceTarget="1" idx="9" />
+							<!-- 연속 발차기-->
+							<node name="target" type="rand" from="10" to="600" />
+							<node name="skill" faceTarget="1" idx="9" />
+							<!-- 연속 발차기-->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!-- 마무리-->
+							<node name="standby" limit="3500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="17000" initialCooltime="17000" idx="7">
+							<!--가로지르기 브레스-->
+							<node name="standby" limit="3500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="2500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="select" prob="80,80,9999,19,1">
+								<!--타겟팅이  1000  멀리 있으면 -->
+								<!--구토 유발  -->
+								<node name="skill" idx="12">
+									<node name="select" prob="100,100,100">
+										<!--레벨2: 이슈라 던전 전용, 마비 시간 짧은거 -->
+										<node name="target" type="near" from="10" to="1300" />
+										<node name="skill" faceTarget="1" idx="11" />
+										<!--초강력 브레스 -->
+										<node name="standby" limit="3000" faceTarget="1" />
+									</node>
+								</node>
+								<node name="skill" idx="7">
+									<node name="select" prob="100,100,100">
+										<!--슬로우 흩뿌리기 -->
+										<node name="target" type="near" from="10" to="1300" />
+										<node name="skill" faceTarget="1" idx="11" />
+										<!--초강력 브레스 -->
+										<node name="standby" limit="3400" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="10" faceTarget="1" cooltime="12000" initialCooltime="1">
+									<node name="select" prob="100,100">
+										<node name="target" type="rand" from="10" to="1300" />
+										<node name="skill" faceTarget="1" idx="11" />
+										<!--초강력 브레스 -->
+									</node>
+								</node>
+								<node name="trace" limit="2500" skillIdx="8" />
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="55,45">
+								<node name="trace" limit="2500" skillIdx="1" />
+								<node name="trace" limit="2500" skillIdx="7" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+			<node name="skill" cooltime="60000" initialCooltime="28000" isKeepBattle="true" idx="1">
+				<!--하늘 날기 패턴, initialCooltime 더 길게, 두마리가 동시에 이 스킬 사용하면 괘적하지 못하니 다른 타이밍에 사용하게 하기 -->
+				<node name="target" type="rand" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="2" />
+				<!--공중  날아다니기 -->
+				<node name="target" type="rand" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="2" />
+				<!--공중  날아다니기 -->
+				<node name="target" type="near" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="3" />
+				<!--바닥 쾅!~ 공격-->
+				<node name="skill" faceTarget="0" idx="6" />
+				<!--잠시 기절-->
+				<node name="skill" faceTarget="0" idx="5" />
+				<node name="standby" limit="3300" faceTarget="1" />
+			</node>
+			<node name="skill" cooltime="80000" initialCooltime="60000" isKeepBattle="true" idx="1">
+				<!--하늘 날기 패턴, initialCooltime 더 길게, 두마리가 동시에 이 스킬 사용하면 괘적하지 못하니 다른 타이밍에 사용하게 하기 -->
+				<node name="target" type="rand" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="2" />
+				<!--공중  날아다니기 -->
+				<node name="target" type="rand" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="2" />
+				<!--공중  날아다니기 -->
+				<node name="target" type="near" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="3" />
+				<!--바닥 쾅!~ 공격-->
+				<node name="skill" faceTarget="0" idx="4" />
+				<!--쾅!~ 후에 바로 올라가기 -->
+				<node name="skill" faceTarget="0" idx="1" />
+				<!--하늘로 올라가기 -->
+				<node name="target" type="rand" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="2" />
+				<!--공중  날아다니기 -->
+				<node name="target" type="rand" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="2" />
+				<!--공중  날아다니기 -->
+				<node name="target" type="near" from="10" to="1800" />
+				<node name="skill" faceTarget="1" idx="3" />
+				<!--바닥 쾅!~ 공격-->
+				<node name="skill" faceTarget="0" idx="6" />
+				<!--잠시기절-->
+				<node name="skill" faceTarget="0" idx="5" />
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<node name="skill" sequnce="true" idx="12">
+				<node name="select" prob="100,100,100,19">
+					<!--레벨2: 이슈라 던전 전용, 마비 시간 짧은거 -->
+					<node name="target" type="near" from="10" to="1300" />
+					<node name="skill" faceTarget="1" idx="11" />
+					<!--초강력 브레스 -->
+					<node name="standby" limit="3000" faceTarget="1" />
+					<node name="trace" limit="2500" skillIdx="8" />
+				</node>
+			</node>
+			<node name="skill" idx="7">
+				<!--슬로우 흩뿌리기 -->
+				<node name="target" type="near" from="10" to="1300" />
+				<node name="skill" faceTarget="1" idx="11" />
+				<!--초강력 브레스 -->
+				<node name="standby" limit="3000" faceTarget="1" />
+				<node name="trace" limit="2500" skillIdx="8" />
+			</node>
+			<node name="standby" limit="10" faceTarget="1" cooltime="15000" initialCooltime="1">
+				<node name="select" prob="100,100">
+					<node name="target" type="rand" from="10" to="1300" />
+					<node name="skill" faceTarget="1" idx="11" />
+					<!--초강력 브레스 -->
+				</node>
+			</node>
+			<node name="trace" limit="2500" skillIdx="8" />
+			<node name="standby" limit="2500" faceTarget="1" />
+			<node name="skill" isKeepBattle="true" idx="8">
+				<!--연속 발차기 하면서 돌진 공격 -->
+				<node name="target" type="rand" from="10" to="600" />
+				<node name="skill" faceTarget="0" idx="9" />
+				<!-- 연속 발차기-->
+				<node name="target" type="near" from="10" to="600" />
+				<node name="skill" faceTarget="1" idx="9" />
+				<!-- 연속 발차기-->
+				<node name="skill" faceTarget="0" idx="10" />
+				<!-- 마무리-->
+				<node name="standby" limit="3500" faceTarget="1" />
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기-->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+				<!--전투 상태가 되면 보스가 졸몹 마리수 체크할 때 -1 하기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

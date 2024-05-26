@@ -1,0 +1,1317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="101">
+			<!--1페이즈-->
+			<!--전투 활성화 되면 최초 딱 한번만 실행함-->
+			<node name="standby" limit="500" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="Phase" value="1" />
+				<!-- 1페이즈 -->
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!-- 공격 후 standby 행동을 하는데 사용하는 변수-->
+				<!-- 아주아주 중요!!: 블랙빈 소환하기, 난이도별 몬스터 코드 확인 중요!!!-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" option="masterHP,linkHP" summonPos="-1050, -1050, 1350" summonRot="0,0,0" />
+				<!-- 블랙빈 소환, 핑크빈과 블랙빈 HP 같이 공유하는 설정하기, 코드: 23000161은 어려운 난이도, 코드: 23000163은 보통 난이도  -->
+				<node name="SetValue" key="JumpPosition" value="0" />
+				<node name="SetValue" key="PogoStickMode" value="0" />
+				<!-- 스카이콩콩 모드에서 사용하는 변수-->
+				<node name="SetValue" key="JumpNumber" value="0" />
+				<node name="SetValue" key="AttackNumber" value="0" />
+				<node name="SetValue" key="JumpUpDown" value="0" />
+				<!-- 1 위쪽, 2 아래쪽 -->
+				<node name="skill" facePos="-1875, -1875, 1350" idx="17" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="-1875, -1875, 1350" speed="1500" heightMultiplier="0.6" />
+				<!--1셋트 전투판 중앙으로 오기-->
+				<node name="skill" faceTarget="0" idx="18" />
+				<!--레벨2: 점프 착지 -->
+				<node name="standby" limit="2100" faceTarget="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="80">
+			<!--2페이즈  -->
+			<node name="SetValue" key="Phase" value="2">
+				<!-- 2페이즈 -->
+				<node name="SetValue" key="BigPogoStickMode" value="0" />
+				<!-- 이 변수 숫자 넣어 거대 스카이 콩콩 행동 패턴 시작, 이 변수 3 넣으면 스카이콩콩 공격 2번 함, 예: 이 변수 4 넣으면 스카이콩콩 공격 3번 함 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="75">
+			<!--3페이즈 -->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="3">
+				<!-- 3페이즈 -->
+				<node name="buff" type="add" id="50001067" level="1" />
+				<!-- 안전장치: HP 20% 이하때 거대 스카이 콩콩때의 덩치커짐 공방 상승 버프 제거하는 애디셔널 부여 -->
+				<node name="SetValue" key="PatternMaster" value="1" />
+				<!-- 3페이즈는 이 변수에 의해 패턴이 변경됨, 초기값 1 -->
+				<node name="SetValue" key="JumpNumber" value="0" />
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!-- 페이즈로 넘어가면 바로 행동하도로 하기 위해 이 변수 0 설정-->
+				<node name="SetValue" key="AttackNumber" value="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="38">
+			<!--4페이즈 두번째 전투판으로 점프이동하기 -->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="4">
+				<!-- 4페이즈 -->
+				<node name="buff" type="add" id="50001067" level="1" />
+				<!-- 안전장치: HP 20% 이하때 거대 스카이 콩콩때의 덩치커짐 공방 상승 버프 제거하는 애디셔널 부여 -->
+				<node name="TriggerSetUserValue" triggerID="529" key="SecondBattleMove" value="1" />
+				<!-- 두번째 전투판으로 이동하기 위해  bossSpawn.xml  트리거에게 SecondBattleMove = 1 신호 보냄      param1="529" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+				<node name="skill" facePos="650, 1950, 750" idx="17" />
+				<!--레벨1 일반 점프 도약 -->
+				<node name="jump" pos="650, 1950, 750" speed="1500" heightMultiplier="0.6" />
+				<!--2셋트 전투판 7시 지점-->
+				<node name="skill" faceTarget="0" idx="18" />
+				<!--레벨2: 점프 착지 -->
+				<node name="SetValue" key="JumpPosition" value="7" />
+				<!-- 점프 도작 지점이 어디인지 알게하는 변수 설정-->
+				<node name="SetValue" key="JumpNumber" value="0" />
+				<node name="SetValue" key="AttackNumber" value="0" />
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!-- 페이즈로 넘어가면 바로 행동하도로 하기 위해 이 변수 0 설정-->
+				<node name="SetValue" key="PogoStickMode" value="0" />
+				<node name="SetValue" key="BigPogoStickMode" value="0" />
+				<!-- 이 변수 숫자 넣어 거대 스카이 콩콩 행동 패턴 시작, 이 변수 3 넣으면 스카이콩콩 공격 2번 함, 예: 이 변수 4 넣으면 스카이콩콩 공격 3번 함 -->
+				<node name="standby" limit="2100" faceTarget="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="21">
+			<!--5페이즈 -->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="5">
+				<!-- 5페이즈 -->
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!-- 페이즈로 넘어가면 바로 행동하도로 하기 위해 이 변수 0 설정-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+				<!-- 공격 후 standby 상태 -->
+				<node name="standby" limit="100" faceTarget="1">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="1">
+				<!--1페이즈: 첫번째 전투판 중앙에서 서서 공격 패턴 -->
+				<node name="conditions">
+					<condition name="extraData" key="PogoStickMode" value="2" op="greaterEqual">
+						<!-- 스카이콩콩 행동 모드 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="8">
+								<!-- 레벨3: 거리 420 이내에 있으면 -->
+								<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="8" />
+									<!--레벨3: 점프때 돌진 거리 200 -->
+									<node name="target" type="rand" from="10" to="2500" />
+									<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+									<node name="standby" limit="300" faceTarget="1" animation="Attack_02_B" />
+									<node name="SetValue" key="PogoStickMode" value="-1" isModify="1" />
+									<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+								</node>
+							</condition>
+							<condition name="true">
+								<!-- 거리 420 이외에 있으면 -->
+								<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="10" />
+									<!--레벨33: 점프때 돌진 거리 600 -->
+									<node name="target" type="rand" from="10" to="2500" />
+									<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+									<node name="standby" limit="300" faceTarget="1" animation="Attack_02_B" />
+									<node name="SetValue" key="PogoStickMode" value="-1" isModify="1" />
+									<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="extraData" key="PogoStickMode" value="1">
+						<node name="select" prob="999,1">
+							<!-- 스카이콩콩 행동 끝 -->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="9">
+								<!--레벨4: 스카이콩콩 마무리 동작 -->
+								<node name="SetValue" key="PogoStickMode" value="0" />
+								<!-- 이 변수 초기화 하여 평상시 상태로 돌아가기 -->
+								<node name="SetValue" key="AttackDelay" value="2" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<!--점프뛰는 부분 거의 사용 안함 -->
+							<node name="jump" pos="-1875, -1875, 1350" speed="1500" heightMultiplier="0.6" cooltime="65000" isKeepBattle="true">
+								<!-- 스카이콩콩 끝나면 바로 1셋트 전투판 중앙으로 점프 뛰기-->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--레벨2: 점프 착지 -->
+								<node name="SetValue" key="PogoStickMode" value="0" />
+								<!-- 이 변수 초기화 하여 평상시 상태로 돌아가기 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<!-- 평상시 행동패턴 -->
+					<condition name="skillRange" skillIdx="28">
+						<node name="select" prob="25,25,25,24,1">
+							<!-- 사정거리 1070 -->
+							<!-- 스카이콩콩  -->
+							<node name="skill" faceTarget="1" cooltime="24000" initialCooltime="7100" idx="7">
+								<!-- 스카이콩콩 최초 시작 동작 -->
+								<node name="target" type="near" from="10" to="2100">
+									<node name="SetValue" key="PogoStickMode" value="4" />
+									<!-- 이 변수 숫자 넣어 스카이 콩콩 행동 패턴 시작 -->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="24000" initialCooltime="7100" isKeepBattle="true" idx="1">
+								<!--롤링어택 짧게 공격-->
+								<node name="target" type="rand" from="10" to="1800" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리-->
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리-->
+								<node name="target" type="rand" from="10" to="1800" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리-->
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리-->
+								<node name="target" type="rand" from="10" to="1800" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리-->
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리-->
+								<node name="jump" pos="-1875, -1875, 1350" speed="1500" heightMultiplier="0.6" />
+								<!-- 롤링 끝나면 1셋트 전투판 중앙으로 오기-->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--레벨2: 점프 착지 -->
+								<node name="SetValue" key="AttackDelay" value="5" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" faceTarget="1" cooltime="15000" idx="13">
+								<!--빛기둥 공격-->
+								<node name="target" type="near" from="10" to="2100">
+									<node name="SetValue" key="AttackDelay" value="5" />
+									<!-- standby 동작 길이 설정 -->
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="7000" idx="28">
+								<!--확성기 기절 공격-->
+								<node name="target" type="near" from="10" to="2100">
+									<node name="SetValue" key="AttackDelay" value="8" />
+									<!-- standby 동작 길이 설정 -->
+								</node>
+							</node>
+							<!--확성기 기절 공격, 위 스킬 쿨타임 걸리면 이거 사용함-->
+							<node name="skill" faceTarget="1" idx="28">
+								<node name="target" type="near" from="10" to="2100">
+									<node name="SetValue" key="AttackDelay" value="9" />
+									<!-- standby 동작 길이 설정 -->
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="19">
+								<!-- 레벨1: 사정거리 3600 높이 180 아래쪽은 50 이내에 있으면 -->
+								<node name="target" type="near" from="5" to="2400">
+									<node name="trace" limit="4700" skillIdx="28" />
+									<!-- 거리 1070 이내로 -->
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="600" faceTarget="1">
+									<node name="target" type="near" from="5" to="2400" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="2">
+				<!--2페이즈:  83~73% -->
+				<aiPreset name="CombineAttack_Main" />
+			</condition>
+			<condition name="extraData" key="Phase" value="3">
+				<!--3페이즈:  73~35% -->
+				<node name="conditions">
+					<condition name="extraData" key="PatternMaster" value="1">
+						<node name="select" prob="9999,1">
+							<!-- 증요!!: 이  JumpNumber AttackNumber 두변수는 여기저기서 자주 사용되기 때문에 이 페이즈의 시작단계에서 꼭 0 초기화 해야함!! -->
+							<node name="SetValue" cooltime="4970" key="JumpNumber" value="0">
+								<node name="SetValue" key="AttackNumber" value="0" />
+							</node>
+							<node name="SetValue" key="PatternMaster" value="3">
+								<aiPreset name="RolingAttack_Main" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="PatternMaster" value="3">
+						<!-- 블랙빈이 진공청소기 공격할지 핑크빈이 요요 공격할지 이 부분에서 정함  -->
+						<!-- 중요: 여기서 구르기 돌진 공격 이후에 다음 턴에서 블랙빈 진공청소기 할지 핑크빈 요요 할지 결정함 -->
+						<node name="standby" limit="230" faceTarget="1">
+							<node name="select" prob="75,25">
+								<!-- 변수 3으로 셋팅하여 블랙빈 진공청소기 공격 패턴 하도록 하기 -->
+								<node name="SetValue" key="PatternMaster" value="4">
+									<node name="SetSlaveValue" key="PatternSlave" value="4" />
+									<!-- 분신인 블랙빈에게 신호보내기 -->
+								</node>
+								<!-- 변수 4으로 셋팅하여 핑크빈 요요 공격 패턴 하도록 하기 -->
+								<node name="SetValue" cooltime="375000" key="PatternMaster" value="5">
+									<node name="SetSlaveValue" key="PatternSlave" value="5" />
+									<!-- 분신인 블랙빈에게 신호보내기 -->
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="PatternMaster" value="4">
+						<node name="select" prob="9999,99,1">
+							<!--  PatternMaster = 4는 블랙빈이 진공청소기 공격할 때 맵 구석으로 가서 대기상태로 있기  -->
+							<node name="skill" facePos="-1200, -150, 1650" cooltime="81000" idx="17">
+								<!--레벨1 일반 점프 도약 -->
+								<node name="jump" pos="-1200, -150, 1650" speed="1500" heightMultiplier="0.6">
+									<!--점프뛰기-->
+									<node name="skill" faceTarget="0" idx="18" />
+									<!--레벨2: 점프 착지 -->
+								</node>
+							</node>
+							<node name="target" type="near" from="5" to="1800" cooltime="2300" />
+							<node name="standby" limit="1100" faceTarget="1" />
+							<!--  블랙빈 AI로 부터 PatternMaster = 6 신호 받을때까지 대기하  -->
+						</node>
+					</condition>
+					<condition name="extraData" key="PatternMaster" value="5">
+						<node name="select" prob="9999,1">
+							<!--  PatternMaster = 5는 핑크빈이 요오 공격하기  -->
+							<node name="say" message="$Pinkbean_Yoyo01$" durationTick="5000" cooltime="87000">
+								<node name="select" prob="37,37,26">
+									<!--이 부분은 이 단계에서 딱 한번만 실행 -->
+									<!-- 11시쪽으로 점프  -->
+									<node name="skill" facePos="-1800, -900, 1350" idx="17">
+										<!--레벨1 일반 점프 도약 -->
+										<node name="jump" pos="-1800, -900, 1350" speed="1500" heightMultiplier="0.6">
+											<!--1셋트 전투판 중앙으로 오기-->
+											<node name="skill" faceTarget="0" idx="18" />
+											<!--레벨2: 점프 착지 -->
+										</node>
+									</node>
+									<!-- 1시쪽으로 점프  -->
+									<node name="skill" facePos="-900, -1800, 1350" idx="17">
+										<!--레벨1 일반 점프 도약 -->
+										<node name="jump" pos="-900, -1800, 1350" speed="1500" heightMultiplier="0.6">
+											<!--1셋트 전투판 중앙으로 오기-->
+											<node name="skill" faceTarget="0" idx="18" />
+											<!--레벨2: 점프 착지 -->
+										</node>
+									</node>
+									<!-- 12시쪽으로 점프  -->
+									<node name="skill" facePos="-975, -975, 1350" idx="17">
+										<!--레벨1 일반 점프 도약 -->
+										<node name="jump" pos="-975, -975, 1350" speed="1500" heightMultiplier="0.6">
+											<!--1셋트 전투판 중앙으로 오기-->
+											<node name="skill" faceTarget="0" idx="18" />
+											<!--레벨2: 점프 착지 -->
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="skill" facePos="-1875, -1875, 1350" idx="11">
+								<!--요요 공격 한 다음에 다른족 지점으로 순간이동 도망가기-->
+								<node name="SetValue" key="PatternMaster" value="6">
+									<node name="SetSlaveValue" key="PatternSlave" value="6">
+										<node name="select" prob="33,34,33">
+											<!-- 요요 공격 끝났으니 블랙빈에게 신호보내기 -->
+											<node name="say" message="$Pinkbean_Yoyo02$" durationTick="5000">
+												<aiPreset name="TeleportYoyo3" />
+											</node>
+											<node name="say" message="$Pinkbean_Yoyo02$" durationTick="5000">
+												<aiPreset name="TeleportYoyo6" />
+											</node>
+											<node name="say" message="$Pinkbean_Yoyo02$" durationTick="5000">
+												<aiPreset name="TeleportYoyo9" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="PatternMaster" value="60" op="lessEqual">
+						<!--  PatternMaster = 6~60  -->
+						<node name="SetValue" key="PatternMaster" value="1" isModify="1">
+							<node name="conditions">
+								<condition name="extraData" key="JumpNumber" value="3" op="lessEqual">
+									<aiPreset name="JumpMovePattern_1st" />
+								</condition>
+								<condition name="extraData" key="AttackNumber" value="2" op="lessEqual">
+									<!-- 몇번 이상 하면 공격 행동 하면 다음 단계로 넘어감 -->
+									<aiPreset name="NormalAttackPattern_2Phase" />
+								</condition>
+								<condition name="true">
+									<node name="SetValue" key="JumpNumber" value="0">
+										<node name="SetValue" key="AttackNumber" value="0" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--  PatternMaster = 61 이상,  핑크빈 블랙빈 중 먼저 이 던계에 오는 몬스터가 AI에서 신호 보내서 처음 단계로 가도록 함 -->
+						<node name="standby" limit="270" faceTarget="1">
+							<node name="SetSlaveValue" key="PatternSlave" value="1">
+								<node name="SetValue" key="PatternMaster" value="1" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="true">
+				<!--4~5페이즈: 미술관 전투판으로 이동 RGB 공격 패턴 -->
+				<node name="conditions">
+					<condition name="extraData" key="JumpNumber" value="1" op="lessEqual">
+						<node name="select" prob="9999,0">
+							<!-- 중요!!: 아래 <aiPreset name="JumpMovePattern"/>  실행때 최초에 JumpNumber + 1 할수 있기 때문에 이 부분 빠져나가는 조건을 2 이상으로 함  -->
+							<node name="target" type="near" from="5" to="2800" cooltime="2100" />
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="19">
+									<!-- 레벨1: 사정거리 3600 높이 180 아래쪽은 50 이내에 있으면 (즉 물큐브 빠진 플레이어도 포함시키는 범위) -->
+									<aiPreset name="JumpMovePattern_2nd" />
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="350" faceTarget="1">
+										<node name="SetValue" key="JumpNumber" value="1" isModify="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="AttackNumber" value="4" op="lessEqual">
+						<!-- 몇번 이상 하면 공격 행동 하면 다음 단계로 넘어감 -->
+						<!-- ## 스카이콩콩 행동 모드 ## -->
+						<node name="conditions">
+							<condition name="extraData" key="PogoStickMode" value="2" op="greaterEqual">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="8">
+										<!-- 레벨3: 거리 420 이내에 있으면 -->
+										<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+											<node name="skill" faceTarget="0" idx="8" />
+											<!--레벨3: 점프때 돌진 거리 200 -->
+											<node name="target" type="near" from="10" to="2500" />
+											<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+											<node name="standby" limit="300" faceTarget="1" animation="Attack_02_B" />
+											<node name="SetValue" key="PogoStickMode" value="-1" isModify="1" />
+											<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+										</node>
+									</condition>
+									<condition name="true">
+										<!-- 거리 420 이외에 있으면 -->
+										<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+											<node name="skill" faceTarget="0" idx="10" />
+											<!--레벨33: 점프때 돌진 거리 600 -->
+											<node name="target" type="near" from="10" to="2500" />
+											<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+											<node name="standby" limit="300" faceTarget="1" animation="Attack_02_B" />
+											<node name="SetValue" key="PogoStickMode" value="-1" isModify="1" />
+											<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="extraData" key="PogoStickMode" value="1">
+								<!-- 스카이콩콩 행동 끝 -->
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="9">
+									<!--레벨4: 스카이콩콩 끝내는 동작 -->
+									<node name="SetValue" key="PogoStickMode" value="0" />
+									<!-- 이 변수 초기화 하여 평상시 상태로 돌아가기 -->
+									<node name="SetValue" key="AttackNumber" value="5" />
+									<!-- 스카이콩콩 끝나면 바로 점프 뛰는 단계로 넘어가게 하기 -->
+									<node name="SetValue" key="AttackDelay" value="0" />
+									<!-- standby 동작 길이 설정 -->
+								</node>
+							</condition>
+							<!-- ## 몸거대 스카이콩콩 행동 모드 ## -->
+							<condition name="extraData" key="BigPogoStickMode" value="2" op="greaterEqual">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="25">
+										<!-- 레벨3: 거리 580 이내에 있으면 -->
+										<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+											<node name="skill" faceTarget="0" idx="25" />
+											<!--레벨3: 점프때 돌진 거리 300 -->
+											<node name="target" type="rand" from="10" to="2500" />
+											<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+											<node name="standby" limit="300" faceTarget="1" animation="Attack_02_B" />
+											<node name="SetValue" key="BigPogoStickMode" value="-1" isModify="1" />
+											<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+										</node>
+									</condition>
+									<condition name="skillRange" skillIdx="27">
+										<!-- 거리 580~1000 이내에 있으면 -->
+										<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+											<node name="skill" faceTarget="0" idx="27" />
+											<!--레벨33: 점프때 돌진 거리 800 -->
+											<node name="target" type="rand" from="10" to="2500" />
+											<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+											<node name="standby" limit="300" faceTarget="1" animation="Attack_02_B" />
+											<node name="SetValue" key="BigPogoStickMode" value="-1" isModify="1" />
+											<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+										</node>
+									</condition>
+									<!-- 거리 1000 이외에 있으면 -->
+									<condition name="true">
+										<node name="target" type="near" from="5" to="2400">
+											<node name="trace" limit="4700" animation="Attack_02_B" skillIdx="27">
+												<!-- 거리 1400 이내로 -->
+												<node name="SetValue" key="BigPogoStickMode" value="-1" isModify="1" />
+												<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="extraData" key="BigPogoStickMode" value="1">
+								<!-- 스카이콩콩 행동 끝 -->
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="26">
+									<!--레벨4: 스카이콩콩 끝내는 동작 -->
+									<!-- 덩치커짐 공방 상승 버프 제거하는 애디셔널 부여는 점프뛰는 단계에서 진행함 -->
+									<node name="SetValue" key="BigPogoStickMode" value="0" />
+									<!-- 이 변수 초기화 하여 평상시 상태로 돌아가기 -->
+									<node name="SetValue" key="AttackNumber" value="5" />
+									<!-- 스카이콩콩 끝나면 바로 점프 뛰는 단계로 넘어가게 하기 -->
+									<node name="SetValue" key="AttackDelay" value="0" />
+									<!-- standby 동작 길이 설정 -->
+								</node>
+							</condition>
+							<!-- ##  공격반사 애디셔널 버프일때의 행동패턴  ## -->
+							<condition name="additional" id="50003300">
+								<node name="select" prob="3999,99999,25,25,25,25">
+									<!-- #$@# 공격행동 얼만큼 하고 다시 점프뛰는 단계로 넘어가계 할지 정하는 변수 설정-->
+									<node name="standby" limit="120" faceTarget="1" cooltime="3000">
+										<node name="select" prob="30,70">
+											<node name="SetValue" key="AttackNumber" value="2" isModify="1" />
+											<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+										</node>
+									</node>
+									<node name="target" type="near" from="5" to="1800" cooltime="2100" />
+									<!-- ## 스카이콩콩 ## -->
+									<node name="skill" faceTarget="1" idx="7">
+										<!-- 스카이콩콩 최초 시작 동작 -->
+										<node name="target" type="near" from="10" to="2100">
+											<node name="SetValue" key="PogoStickMode" value="2" />
+											<!-- 이 변수 숫자 넣어 스카이 콩콩 행동 패턴 시작, 이 변수 2 넣으면 스카이콩콩 공격 1번 함, 예: 이 변수 4 넣으면 스카이콩콩 공격 3번 함 -->
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" cooltime="32000" idx="20">
+										<!-- 동그리 도발 동작, 레벨2로 해야 플레이어가 때릴 수있음, 공격반사때 사용하는 것이 레벨2임 -->
+										<node name="SetValue" key="AttackDelay" value="4" />
+										<!-- standby 동작 길이 설정 -->
+									</node>
+									<node name="skill" faceTarget="1" idx="21">
+										<!-- 스카이콩콩 도발 동작, 레벨2로 해야 플레이어가 때릴 수있음, 공격반사때 사용하는 것이 레벨2임 -->
+										<node name="SetValue" key="AttackDelay" value="3" />
+										<!-- standby 동작 길이 설정 -->
+									</node>
+									<node name="skill" faceTarget="1" cooltime="32000" idx="23">
+										<!-- 헤드셋 쓰는 도발 동작, 레벨2로 해야 플레이어가 때릴 수있음, 공격반사때 사용하는 것이 레벨2임 -->
+										<node name="SetValue" key="AttackDelay" value="4" />
+										<!-- standby 동작 길이 설정 -->
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="99999,0">
+									<!-- 평상시 공격 행동 정의하는 부분  -->
+									<!-- !! HP가 20% 이하 되면 난이도 상승 거대 스카이콩콩 발동!! -->
+									<node name="standby" limit="92" faceTarget="1" cooltime="32400">
+										<node name="conditions">
+											<condition name="hpOver" value="20">
+												<node name="target" type="near" from="5" to="2400" />
+												<!--HP가 20% 이상이면 아무것도 안함  -->
+											</condition>
+											<condition name="true">
+												<!--HP가 20%~0% 이면 거대 스카이콩콩 공격 자주 하기  -->
+												<!-- ## 거대 스카이콩콩 ## -->
+												<node name="buff" type="add" id="50001066" level="2" isKeepBattle="true">
+													<!-- 덩치커짐 공방 상승 버프 부여, 레벨2는 툴팁 메시지 이슈, 참고로 이 애디셔널은 다른 쪽에서 50001067 애디셔널 부여하면서 덩치커짐 제거함-->
+													<node name="skill" faceTarget="1" idx="24" />
+													<!-- 거대 스카이콩콩 최초 시작 동작 -->
+													<node name="target" type="near" from="10" to="2800" />
+													<node name="SetValue" key="BigPogoStickMode" value="9" />
+													<!-- 이 변수 숫자 넣어 거대 스카이 콩콩 행동 패턴 시작, 이 변수 3 넣으면 스카이콩콩 공격 2번 함, 예: 이 변수 4 넣으면 스카이콩콩 공격 3번 함 -->
+												</node>
+											</condition>
+										</node>
+									</node>
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="31">
+											<node name="select" prob="2999,35,30,17,18">
+												<!-- 레벨1: 거리 530 이내에 있고, 위로 350 아래로 50 포함 (블랙오닉스 졸구간 거리체크용도 코드임)-->
+												<!-- #$@# 공격행동 얼만큼 하고 다시 점프뛰는 단계로 넘어가계 할지 정하는 변수 설정-->
+												<node name="standby" limit="120" faceTarget="1" cooltime="2700">
+													<node name="target" type="near" from="5" to="2800">
+														<node name="select" prob="15,85">
+															<node name="SetValue" key="AttackNumber" value="0" isModify="1" />
+															<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+														</node>
+													</node>
+												</node>
+												<node name="skill" faceTarget="1" idx="13">
+													<!--빛기둥 공격-->
+													<node name="target" type="near" from="10" to="2800">
+														<node name="SetValue" key="AttackDelay" value="5" />
+														<!-- standby 동작 길이 설정 -->
+													</node>
+												</node>
+												<node name="skill" faceTarget="1" cooltime="21000" idx="28">
+													<!--확성기 기절 공격, 공격 대상이 가까이 붙으면 이 공격 빈도 비교적 낮게 설정-->
+													<node name="target" type="near" from="10" to="2800">
+														<node name="SetValue" key="AttackDelay" value="7" />
+														<!-- standby 동작 길이 설정 -->
+													</node>
+												</node>
+												<!-- ## 스카이콩콩 ## -->
+												<node name="skill" faceTarget="1" cooltime="37000" idx="7">
+													<!-- 스카이콩콩 최초 시작 동작 -->
+													<node name="target" type="near" from="10" to="2800">
+														<node name="SetValue" key="PogoStickMode" value="3" />
+														<!-- 이 변수 숫자 넣어 스카이 콩콩 행동 패턴 시작, 이 변수 3 넣으면 스카이콩콩 공격 2번 함, 예: 이 변수 4 넣으면 스카이콩콩 공격 3번 함 -->
+													</node>
+												</node>
+												<!-- ## 공격반사 ## -->
+												<node name="skill" faceTarget="1" cooltime="51000" isKeepBattle="true" idx="16">
+													<!-- 공격반사 버프 사용하기, 공격반사 버프 코드는 50003300 <elseif effectId ="50003300" effectLevel ="1">  -->
+													<node name="target" type="near" from="10" to="2800" />
+													<node name="say" message="$Pinkbean_Provoke01$" durationTick="9000" />
+													<!--자신을 때리라고 도발하는 듯한 대사-->
+													<node name="SetValue" key="AttackDelay" value="30" />
+													<!-- standby 동작 길이 설정 -->
+												</node>
+											</node>
+										</condition>
+										<condition name="skillRange" skillIdx="22">
+											<node name="select" prob="2999,67,33">
+												<!-- 사정거리 2500  높이는 100 즉 같은 높이의 대상만 포함  -->
+												<!-- #$@# 공격행동 얼만큼 하고 다시 점프뛰는 단계로 넘어가계 할지 정하는 변수 설정-->
+												<node name="standby" limit="120" faceTarget="1" cooltime="2700">
+													<node name="select" prob="19,81">
+														<node name="SetValue" cooltime="9100" key="AttackNumber" value="0" isModify="1" />
+														<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+													</node>
+												</node>
+												<node name="skill" faceTarget="1" idx="28">
+													<!--확성기 기절 공격-->
+													<node name="target" type="near" from="10" to="2800">
+														<node name="SetValue" key="AttackDelay" value="13" />
+														<!-- standby 동작 길이 설정 -->
+													</node>
+												</node>
+												<node name="skill" faceTarget="1" cooltime="24700" idx="14">
+													<!--좌우 반전 원거리 공격, 레벨4: 머리위 느낌표 아이콘 위치가 더 큰 버전임-->
+													<node name="target" type="near" from="10" to="2800">
+														<node name="SetValue" key="AttackDelay" value="8" />
+														<!-- standby 동작 길이 설정 -->
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="standby" limit="320" faceTarget="1" isKeepBattle="true">
+												<node name="target" type="near" from="5" to="2800" />
+												<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="92" faceTarget="1" isKeepBattle="true">
+							<!-- 변수 초기화 -->
+							<node name="SetValue" key="JumpNumber" value="0" />
+							<node name="SetValue" key="AttackNumber" value="0" />
+							<node name="buff" type="add" id="50003304" level="1" />
+							<!-- 중요!: 공격 반사 애디셔널을 제거하기 위한 버프를 자신 몸에 걸기,  참고로 공격반사 애디셔널은 50003300 -->
+							<node name="standby" limit="100" faceTarget="1" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 선언하는 부분, bossSpawn.xml   Barricade.xml   GiveUpTime.xml 에 신호 보내기-->
+		<node name="TriggerSetUserValue" triggerID="529" key="BattleEnd" value="1">
+			<!-- bossSpawn.xml  에 신호 보내기-->
+			<node name="TriggerSetUserValue" triggerID="5291" key="BattleEnd" value="1">
+				<!-- Barricade.xml  에 신호 보내기-->
+				<node name="TriggerSetUserValue" triggerID="5292" key="BattleEnd" value="1" />
+				<!-- GiveUpTime.xml 에 신호 보내기-->
+			</node>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="RolingAttack_Main">
+			<node name="skill" idx="1">
+				<node name="say" message="$Pinkbean_Rolling01$" durationTick="9000">
+					<node name="skill" faceTarget="1" idx="2">
+						<node name="select" prob="33,33,34">
+							<!--패턴1-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="4">
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="SetValue" key="PatternMaster" value="3" />
+								<!-- 낮은 확률로 변수 신호 꼬일수 있어서 안정장치 -->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="far" from="10" to="1000" />
+								<node name="skill" faceTarget="1" idx="5" />
+								<!--장거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="SetValue" key="AttackDelay" value="11" />
+							</node>
+							<!--패턴2-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="3">
+								<!--근거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="SetValue" key="PatternMaster" value="3" />
+								<!-- 낮은 확률로 변수 신호 꼬일수 있어서 안정장치 -->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="far" from="10" to="1000" />
+								<node name="skill" faceTarget="1" idx="5" />
+								<!--장거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="SetValue" key="AttackDelay" value="9" />
+							</node>
+							<!--패턴3-->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="4">
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="SetValue" key="PatternMaster" value="3" />
+								<!-- 낮은 확률로 변수 신호 꼬일수 있어서 안정장치 -->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="0" idx="4" />
+								<!--중거리 돌진-->
+								<node name="target" type="rand" from="10" to="1100" />
+								<node name="skill" faceTarget="1" idx="4" />
+								<!--중거리 돌진-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="skill" faceTarget="1" idx="2" />
+								<!--대기-->
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="skill" faceTarget="0" idx="3" />
+								<!--근거리 돌진-->
+								<node name="skill" faceTarget="1" idx="3" />
+								<!--근거리 돌진-->
+								<node name="target" type="far" from="10" to="1000" />
+								<node name="skill" faceTarget="1" idx="5" />
+								<!--장거리 돌진-->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--마무리 동작-->
+								<node name="SetValue" key="AttackDelay" value="10" />
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="CombineAttack_Main">
+			<!-- ## 몸거대 스카이콩콩 행동 모드 ## -->
+			<node name="conditions">
+				<condition name="extraData" key="BigPogoStickMode" value="2" op="greaterEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="25">
+							<!-- 레벨3: 거리 580 이내에 있으면 -->
+							<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+								<node name="skill" faceTarget="0" idx="25" />
+								<!--레벨3: 점프때 돌진 거리 300 -->
+								<node name="target" type="rand" from="10" to="2500" />
+								<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+								<node name="standby" limit="300" faceTarget="1" animation="Attack_02_B" />
+								<node name="SetValue" key="BigPogoStickMode" value="-1" isModify="1" />
+								<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="27">
+							<!-- 거리 580~1000 이내에 있으면 -->
+							<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+								<node name="skill" faceTarget="0" idx="27" />
+								<!--레벨33: 점프때 돌진 거리 800 -->
+								<node name="target" type="rand" from="10" to="2500" />
+								<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+								<node name="standby" limit="300" faceTarget="1" animation="Attack_02_B" />
+								<node name="SetValue" key="BigPogoStickMode" value="-1" isModify="1" />
+								<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+							</node>
+						</condition>
+						<!-- 거리 1000 이외에 있으면 -->
+						<condition name="true">
+							<node name="target" type="near" from="5" to="2400">
+								<node name="trace" limit="4700" animation="Attack_02_B" skillIdx="27">
+									<!-- 거리 1400 이내로 -->
+									<node name="SetValue" key="BigPogoStickMode" value="-1" isModify="1" />
+									<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="BigPogoStickMode" value="1">
+					<!-- 스카이콩콩 행동 끝 -->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="26">
+						<!--레벨4: 스카이콩콩 끝내는 동작 -->
+						<!-- 덩치커짐 공방 상승 버프 제거하는 애디셔널 부여는 점프뛰는 단계에서 진행함 -->
+						<node name="SetValue" key="BigPogoStickMode" value="0" />
+						<!-- 이 변수 초기화 하여 평상시 상태로 돌아가기 -->
+						<node name="SetValue" key="AttackDelay" value="21" />
+						<!-- standby 동작 길이 설정 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- ## 거대 스카이콩콩 ## -->
+					<node name="buff" type="add" id="50001066" level="2" isKeepBattle="true">
+						<!-- 덩치커짐 공방 상승 버프 부여, 레벨2는 툴팁 메시지 이슈, 참고로 이 애디셔널은 다른 쪽에서 50001067 애디셔널 부여하면서 덩치커짐 제거함-->
+						<node name="skill" faceTarget="1" idx="24" />
+						<!-- 거대 스카이콩콩 최초 시작 동작 -->
+						<node name="target" type="near" from="10" to="2800" />
+						<node name="SetValue" key="BigPogoStickMode" value="18" />
+						<!-- 이 변수 숫자 넣어 거대 스카이 콩콩 행동 패턴 시작, 이 변수 3 넣으면 스카이콩콩 공격 2번 함, 예: 이 변수 4 넣으면 스카이콩콩 공격 3번 함 -->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalAttackPattern_2Phase">
+			<node name="select" prob="99999,0">
+				<node name="standby" limit="120" faceTarget="1" cooltime="2100">
+					<node name="select" prob="90,10">
+						<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+						<node name="SetValue" cooltime="62500" key="AttackNumber" value="0" isModify="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="28">
+						<node name="select" prob="9999,25,25,25,25">
+							<!-- 거리 1070 -->
+							<node name="target" type="rand" from="10" to="2400" cooltime="2400" />
+							<!--스카이 콩콩 1회 공격 -->
+							<node name="skill" faceTarget="1" cooltime="9800" idx="7">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="8">
+										<!-- 레벨3: 거리 420 이내에 있으면 -->
+										<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+											<node name="skill" faceTarget="0" idx="8" />
+											<!--레벨3: 점프때 돌진 거리 200 -->
+											<node name="skill" faceTarget="0" idx="9" />
+											<!--스카이 콩콩 마무리 내려오기 -->
+										</node>
+									</condition>
+									<condition name="true">
+										<!-- 거리 420 이외에 있으면 -->
+										<node name="standby" limit="800" faceTarget="1" animation="Attack_02_B" isKeepBattle="true">
+											<node name="skill" faceTarget="0" idx="10" />
+											<!--레벨33: 점프때 돌진 거리 600 -->
+											<node name="skill" faceTarget="0" idx="9" />
+											<!--스카이 콩콩 마무리 내려오기 -->
+										</node>
+									</condition>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" idx="28">
+								<!-- 확성기 공격 -->
+								<node name="SetValue" key="AttackDelay" value="6" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="41800" idx="15">
+								<!-- 음악 폭탄 레벨11: 1개 발사 -->
+								<node name="SetValue" key="AttackDelay" value="5" />
+							</node>
+							<node name="skill" faceTarget="1" idx="13">
+								<!-- 빛기둥 공격 -->
+								<node name="SetValue" key="AttackDelay" value="4" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="19">
+								<!-- 레벨1: 사정거리 3600 높이 180 아래쪽은 50 이내에 있으면 (즉 물큐브 빠진 플레이어도 포함시키는 범위) -->
+								<node name="target" type="near" from="5" to="2400">
+									<node name="trace" limit="4700" skillIdx="28" />
+									<!-- 거리 1070 이내로 -->
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="600" faceTarget="1">
+									<node name="target" type="near" from="5" to="2400" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="JumpMovePattern_1st">
+			<node name="select" prob="99999,0">
+				<node name="standby" limit="120" faceTarget="1" cooltime="2000">
+					<node name="select" prob="50,50">
+						<node name="SetValue" cooltime="14500" key="JumpNumber" value="1" isModify="1" />
+						<node name="SetValue" key="JumpNumber" value="2" isModify="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="JumpPosition" value="2">
+						<node name="select" prob="50,50">
+							<!-- 현재 위치 두번째 전투판 기준 2시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="-2850, -1500, 1350" isKeepBattle="true" idx="17">
+								<!--8시 지점으로 점프 -->
+								<node name="jump" pos="-2850, -1500, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="8" />
+								<!--1층 전투판 8시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-1500, -900, 1350" isKeepBattle="true" idx="17">
+								<!--11시 지점으로 점프 -->
+								<node name="jump" pos="-1500, -900, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="11" />
+								<!--1층 전투판 11시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="5">
+						<node name="select" prob="50,50">
+							<!-- 현재 위치 두번째 전투판 기준 5시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="-2850, -1500, 1350" isKeepBattle="true" idx="17">
+								<!--8시 지점으로 점프 -->
+								<node name="jump" pos="-2850, -1500, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="8" />
+								<!--1층 전투판 8시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-900, -2250, 1350" isKeepBattle="true" idx="17">
+								<!--2시 지점으로 점프 -->
+								<node name="jump" pos="-900, -2250, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="2" />
+								<!--1층 전투판 2시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="11" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="8">
+						<node name="select" prob="50,50">
+							<!-- 현재 위치 두번째 전투판 기준 8시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="-1500, -900, 1350" isKeepBattle="true" idx="17">
+								<!--11시 지점으로 점프 -->
+								<node name="jump" pos="-1500, -900, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="11" />
+								<!--1층 전투판 11시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-2250, -2850, 1350" isKeepBattle="true" idx="17">
+								<!--5시 지점으로 점프 -->
+								<node name="jump" pos="-2250, -2850, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="5" />
+								<!--1층 전투판 5시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="11">
+						<node name="select" prob="50,50">
+							<!-- 현재 위치 두번째 전투판 기준 11시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="-2250, -2850, 1350" isKeepBattle="true" idx="17">
+								<!--5시 지점으로 점프 -->
+								<node name="jump" pos="-2250, -2850, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="5" />
+								<!--1층 전투판 5시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="10" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-900, -2250, 1350" isKeepBattle="true" idx="17">
+								<!--2시 지점으로 점프 -->
+								<node name="jump" pos="-900, -2250, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="2" />
+								<!--1층 전투판 2시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="50,50">
+							<node name="skill" facePos="-2850, -1500, 1350" isKeepBattle="true" idx="17">
+								<!--8시 지점으로 점프 -->
+								<node name="jump" pos="-2850, -1500, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="8" />
+								<!--1층 전투판 8시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-1500, -900, 1350" isKeepBattle="true" idx="17">
+								<!--11시 지점으로 점프 -->
+								<node name="jump" pos="-1500, -900, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="11" />
+								<!--1층 전투판 11시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="JumpMovePattern_2nd">
+			<node name="select" prob="99999,0">
+				<node name="standby" limit="120" faceTarget="1" cooltime="2100">
+					<node name="buff" type="add" id="50001067" level="1">
+						<node name="select" prob="80,10,10">
+							<!-- HP 20% 이하때 거대 스카이 콩콩때의 덩치커짐 공방 상승 버프 제거하는 애디셔널 부여 -->
+							<node name="SetValue" key="JumpNumber" value="1" isModify="1" />
+							<node name="SetValue" cooltime="89500" key="JumpNumber" value="0" isModify="1" />
+							<node name="SetValue" cooltime="237500" key="JumpNumber" value="0" isModify="1" />
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="JumpPosition" value="10">
+						<node name="select" prob="33,33,33,1">
+							<!-- 현재 위치 두번째 전투판 기준 10시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="2950, 2950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--12시 지점으로 점프 -->
+								<node name="jump" pos="2950, 2950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="12" />
+								<!--1층 전투판 12시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="950, 950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--6시 지점으로 점프 -->
+								<node name="jump" pos="950, 950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="6" />
+								<!--1층 전투판 6시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="1950, 650, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--5시 지점으로 점프 -->
+								<node name="jump" pos="1950, 650, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="5" />
+								<!--1층 전투판 5시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="standby" limit="772" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="12">
+						<node name="select" prob="50,50,1">
+							<!-- 현재 위치 두번째 전투판 기준 12시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="650, 1950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--7시 지점으로 점프 -->
+								<node name="jump" pos="650, 1950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="7" />
+								<!--1층 전투판 7시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="1950, 650, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--5시 지점으로 점프 -->
+								<node name="jump" pos="1950, 650, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="5" />
+								<!--1층 전투판 5시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="standby" limit="772" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="1">
+						<node name="select" prob="50,50,1">
+							<!-- 현재 위치 두번째 전투판 기준 1시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="1800, 3250, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--10시 지점으로 점프 -->
+								<node name="jump" pos="1800, 3250, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="10" />
+								<!--1층 전투판 10시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="950, 950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--6시 지점으로 점프 -->
+								<node name="jump" pos="950, 950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="6" />
+								<!--1층 전투판 6시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="standby" limit="772" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="5">
+						<node name="select" prob="50,50,1">
+							<!-- 현재 위치 두번째 전투판 기준 5시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="3250, 1950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--1 지점으로 점프 -->
+								<node name="jump" pos="3250, 1950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2-->
+								<node name="SetValue" key="JumpPosition" value="1" />
+								<!--1층 전투판 1 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="650, 1950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--7시 지점으로 점프 -->
+								<node name="jump" pos="650, 1950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="7" />
+								<!--1층 전투판 7시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="standby" limit="772" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="6">
+						<node name="select" prob="50,50,1">
+							<!-- 현재 위치 두번째 전투판 기준 6시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="2950, 2950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--12시 지점으로 점프 -->
+								<node name="jump" pos="2950, 2950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="12" />
+								<!--1층 전투판 12시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="3250, 1950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--1 지점으로 점프 -->
+								<node name="jump" pos="3250, 1950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2-->
+								<node name="SetValue" key="JumpPosition" value="1" />
+								<!--1층 전투판 1 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="standby" limit="772" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="33,33,33,1">
+							<!-- JumpPosition = 7, 현재 위치 두번째 전투판 기준 7시쪽 저점에 있을 경우  -->
+							<node name="skill" facePos="3250, 1950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--1 지점으로 점프 -->
+								<node name="jump" pos="3250, 1950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2-->
+								<node name="SetValue" key="JumpPosition" value="1" />
+								<!--1층 전투판 1 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="950, 950, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--6시 지점으로 점프 -->
+								<node name="jump" pos="950, 950, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="6" />
+								<!--1층 전투판 6시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="1800, 3250, 750" cooltime="12500" isKeepBattle="true" idx="17">
+								<!--10시 지점으로 점프 -->
+								<node name="jump" pos="1800, 3250, 750" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="18" />
+								<!--점프 착지, 레벨2 -->
+								<node name="SetValue" key="JumpPosition" value="10" />
+								<!--1층 전투판 10시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="standby" limit="772" faceTarget="1" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<!-- 이거 사용 안함 -->
+		<aiPreset name="NormalAttackPattern_Final">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="29">
+					<!-- 거리 1400 -->
+					<node name="skill" faceTarget="1" idx="30" />
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="500" faceTarget="1">
+						<node name="select" prob="99,1">
+							<node name="target" type="near" from="5" to="1800" cooltime="2300" />
+							<node name="SetValue" key="Temp" value="0" />
+							<!-- 아무것도 안한다는 뜻 -->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--요요 공격 후 다른쪽 지점으로 순간이동 도망가는 행동 정의하는 부분-->
+		<aiPreset name="TeleportYoyo3">
+			<node name="teleport" pos="-1650, -2700, 1350">
+				<!--4시 방향으로 순간이동 회피-->
+				<node name="skill" idx="12">
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TeleportYoyo6">
+			<node name="teleport" pos="-2400, -2400, 1350">
+				<!--6시 방향으로 순간이동 회피-->
+				<node name="skill" idx="12">
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TeleportYoyo9">
+			<node name="teleport" pos="-2700, -1650, 1350">
+				<!--8시 방향으로 순간이동 회피-->
+				<node name="skill" idx="12">
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<!--요요 공격 후 다른쪽 지점으로 순간이동 도망가는 행동 정의하는 부분-->
+	</aiPresets>
+</npcAi>

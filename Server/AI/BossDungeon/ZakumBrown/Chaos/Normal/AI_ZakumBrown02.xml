@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="350" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="ZakumArmNumber" value="6" />
+				<node name="buff" type="add" id="50004403" level="1" />
+				<!--자쿰팔이 버프 스킬을 사용할 때 자쿰 몸에 붙는 아이콘 애디셔널은 팔에 붙지 않게 하기 위해 이 애디셔널을 부여함 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="30">
+			<node name="buff" type="add" id="50006006" level="1" />
+			<!-- HP 30% 이하로 급 감소되면 이 애디셔널 부여하여 모든 속성 버프 제거하기 -->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 왼쪽 2층 지형 -->
+			<node name="target" type="near" center="450, -1675, 2450" cooltime="8000" />
+			<node name="conditions">
+				<condition name="extraData" key="ElementsDecision02" value="1" op="greaterEqual">
+					<!-- 자쿰 몸체로 부터 ElementsDecision02 변수 신호를 받았으면-->
+					<aiPreset name="ElementsBarrier" />
+					<!-- 자쿰팔 2개 이하가 되면 무조건 AI_ZakumBrownImitation.xml 에서 ElementsDecision02 = 99 신호를 보내기 때문에 속성 버프 제거될 것임-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+						<node name="standby" limit="100" faceTarget="0" />
+					</node>
+				</condition>
+				<!--여기 아래서 부터는 본격 공격 행동하는 부분임 -->
+				<condition name="extraData" key="ZakumArmNumber" value="6">
+					<node name="select" prob="99999,0">
+						<!-- 팔이 6개 있는 경우-->
+						<node name="standby" limit="2800" faceTarget="0" cooltime="9999999" />
+						<!--시작하자마자 바로 공격하는 것이 좀 어색해서 최초에만 몇초동안의 딜레이 설정을 넣음 -->
+						<aiPreset name="MainBattle06" />
+					</node>
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="5">
+					<!-- 팔이 5개 있는 경우-->
+					<aiPreset name="MainBattle06" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="4">
+					<!-- 팔이 4개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="3">
+					<!-- 팔이 3개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="2">
+					<!-- 팔이 2개 있는 경우-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+				<condition name="true">
+					<!-- 팔이 1개 있는 경우-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="VoiceDeathZakumArm" value="1">
+			<!-- 본체에게 팔이 죽음으로 인한 성우 목소리를 출력하라는 신호를 보냄-->
+			<node name="SetValueRangeTarget" key="ZakumArmNumber" value="-1" radius="2500" height="4000" isModify="1" />
+			<!-- 자쿰팔이 죽어서 본체와 다른 팔의 이 변수 -1을 하여 현재 팔이 몇개 남았는지 본체와 다른 팔에서 파악할 수 있도록 함-->
+			<!-- param3 은 좌우 영역, param4는 위아래 영역임, 자쿰몸체 컬리전 박스가 3600 높이에 어긋나게 있기 때문에 최소 param4=3600 이상이어야 함-->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<!--어떤  속성 보호를 받을지를 결정하는데 부분-->
+		<aiPreset name="ElementsBarrier">
+			<node name="conditions">
+				<condition name="extraData" key="ElementsDecision02" value="1">
+					<node name="buff" type="add" id="50006000" level="1">
+						<!-- 화명 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision02" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 하기, 안하면 이 구간에서 무한루프에 빠짐-->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision02" value="2">
+					<node name="buff" type="add" id="50006001" level="1">
+						<!-- 빙결 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision02" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 하기, 안하면 이 구간에서 무한루프에 빠짐-->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision02" value="3">
+					<node name="buff" type="add" id="50006002" level="1">
+						<!-- 전격 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision02" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 하기, 안하면 이 구간에서 무한루프에 빠짐-->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision02" value="4">
+					<node name="buff" type="add" id="50006003" level="1">
+						<!-- 신성 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision02" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 하기, 안하면 이 구간에서 무한루프에 빠짐-->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision02" value="5">
+					<node name="buff" type="add" id="50006004" level="1">
+						<!-- 암흑 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision02" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 하기, 안하면 이 구간에서 무한루프에 빠짐-->
+					</node>
+				</condition>
+				<condition name="extraData" key="ElementsDecision02" value="6">
+					<node name="buff" type="add" id="50006005" level="1">
+						<!-- 독속 속성 보호 생성 -->
+						<node name="SetValue" key="ElementsDecision02" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 하기, 안하면 이 구간에서 무한루프에 빠짐-->
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="buff" type="add" id="50006006" level="1">
+						<!--이 애디셔널 부여하여 모든 속성 보호 버프 제거하기 -->
+						<node name="SetValue" key="ElementsDecision02" value="0" />
+						<!-- 속성 작동 시키는 변수 0 초기화 하기, 안하면 이 구간에서 무한루프에 빠짐-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle06">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="40,29,15,15,1">
+						<!--2층 왼쪽 전투판에 있으면, 암흑화살 번개 위주 공격-->
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="62" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="57" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+						<!--번개 공격, 2층 왼쪽 대상만 번개  공격, 레벨3-->
+						<node name="skill" cooltime="27000" idx="4">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="43" />
+							</node>
+						</node>
+						<!--번개 공격-->
+						<node name="skill" cooltime="63000" idx="2">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="43" />
+							</node>
+						</node>
+						<!--각종 상태이상 걸기-->
+						<node name="standby" limit="700" faceTarget="1" cooltime="91000">
+							<node name="select" prob="25,25,25,25">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="skill" idx="5">
+									<!--키반대-->
+									<node name="SetValue" key="AttackDelay" value="28" />
+								</node>
+								<node name="skill" idx="6">
+									<!--물약효과 저하-->
+									<node name="SetValue" key="AttackDelay" value="34" />
+								</node>
+								<node name="skill" idx="7">
+									<!--방어력 저하-->
+									<node name="SetValue" key="AttackDelay" value="23" />
+								</node>
+								<node name="skill" idx="8">
+									<!--SP 소모 증가-->
+									<node name="SetValue" key="AttackDelay" value="31" />
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="1300" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="55,12,12,20,1">
+						<!--2층 왼쪽이 아닌 다른 곳에 있으면 상태이상 공격  번개 공격  더 자주 사용함, #일반 난이도는 이때 방치해도 괜찮게 함-->
+						<!--각종 상태이상 걸기-->
+						<node name="standby" limit="700" faceTarget="1" cooltime="300000">
+							<node name="select" prob="25,25,25,25">
+								<!--쿨타임 조절 난이도 포인트, #일반 난이도는 이때 방치해도 괜찮게 함-->
+								<node name="skill" idx="5">
+									<!--키반대-->
+									<node name="SetValue" key="AttackDelay" value="28" />
+								</node>
+								<node name="skill" idx="6">
+									<!--물약효과 저하-->
+									<node name="SetValue" key="AttackDelay" value="34" />
+								</node>
+								<node name="skill" idx="7">
+									<!--방어력 저하-->
+									<node name="SetValue" key="AttackDelay" value="23" />
+								</node>
+								<node name="skill" idx="8">
+									<!--SP 소모 증가-->
+									<node name="SetValue" key="AttackDelay" value="31" />
+								</node>
+							</node>
+						</node>
+						<!--번개 공격, 비교적 자주 사용, #일반 난이도는 이때 방치해도 괜찮게 함-->
+						<node name="skill" cooltime="200000" idx="2">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="47" />
+							</node>
+						</node>
+						<!--번개 공격, 플레이어 서있는 지점 연속 두번 발동, #일반 난이도는 이때 방치해도 괜찮게 함-->
+						<node name="skill" cooltime="200000" idx="3">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="52" />
+								<node name="SetValue" key="AttackDelay" value="47" />
+							</node>
+						</node>
+						<!--암흑화살, 가끔 사용-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="62" />
+								<node name="SetValue" key="AttackDelay" value="57" />
+							</node>
+						</node>
+						<node name="standby" limit="1300" faceTarget="0" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle04">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="35,29,15,20,1">
+						<!--2층 왼쪽 전투판에 있으면, 암흑화살 번개 위주 공격-->
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<node name="SetValue" key="AttackDelay" value="27" />
+							</node>
+						</node>
+						<!--번개 공격, 2층 왼쪽 대상만 번개  공격, 레벨3-->
+						<node name="skill" cooltime="27000" idx="4">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+						</node>
+						<!--번개 공격-->
+						<node name="skill" cooltime="63000" idx="2">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<node name="SetValue" key="AttackDelay" value="23" />
+							</node>
+						</node>
+						<!--각종 상태이상 걸기-->
+						<node name="standby" limit="700" faceTarget="1" cooltime="84000">
+							<node name="select" prob="25,25,25,25">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="skill" idx="5">
+									<!--키반대-->
+									<node name="SetValue" key="AttackDelay" value="18" />
+								</node>
+								<node name="skill" idx="6">
+									<!--물약효과 저하-->
+									<node name="SetValue" key="AttackDelay" value="24" />
+								</node>
+								<node name="skill" idx="7">
+									<!--방어력 저하-->
+									<node name="SetValue" key="AttackDelay" value="13" />
+								</node>
+								<node name="skill" idx="8">
+									<!--SP 소모 증가-->
+									<node name="SetValue" key="AttackDelay" value="21" />
+								</node>
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="96,1,1,1,1">
+						<!--2층 왼쪽이 아닌 다른 곳에 있으면 상태이상 공격  번개 공격  더 자주 사용함-->
+						<!--각종 상태이상 걸기-->
+						<node name="standby" limit="700" faceTarget="1" cooltime="15000">
+							<node name="select" prob="25,25,25,25">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="skill" idx="5">
+									<!--키반대-->
+									<node name="SetValue" key="AttackDelay" value="18" />
+								</node>
+								<node name="skill" idx="6">
+									<!--물약효과 저하-->
+									<node name="SetValue" key="AttackDelay" value="21" />
+								</node>
+								<node name="skill" idx="7">
+									<!--방어력 저하-->
+									<node name="SetValue" key="AttackDelay" value="13" />
+								</node>
+								<node name="skill" idx="8">
+									<!--SP 소모 증가-->
+									<node name="SetValue" key="AttackDelay" value="17" />
+								</node>
+							</node>
+						</node>
+						<!--번개 공격, 비교적 자주 사용-->
+						<node name="skill" cooltime="10000" idx="2">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<node name="SetValue" key="AttackDelay" value="27" />
+							</node>
+						</node>
+						<!--번개 공격, 플레이어 서있는 지점 연속 두번 발동-->
+						<node name="skill" cooltime="10000" idx="3">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<node name="SetValue" key="AttackDelay" value="27" />
+							</node>
+						</node>
+						<!--암흑화살, 가끔 사용-->
+						<node name="skill" cooltime="62000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="32" />
+								<node name="SetValue" key="AttackDelay" value="27" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle02">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="5">
+					<node name="select" prob="45,24,15,15,1">
+						<!--2층 왼쪽 전투판에 있으면, 암흑화살 번개 공격 더 자주 사용함-->
+						<!--암흑화살-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="4" />
+								<node name="SetValue" key="AttackDelay" value="12" />
+							</node>
+						</node>
+						<!--번개 공격, 플레이어 서있는 지점 연속 두번 발동-->
+						<node name="skill" cooltime="20000" idx="3">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<node name="SetValue" key="AttackDelay" value="13" />
+							</node>
+						</node>
+						<!--번개 공격-->
+						<node name="skill" cooltime="45000" idx="2">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<node name="SetValue" key="AttackDelay" value="13" />
+							</node>
+						</node>
+						<!--각종 상태이상 걸기-->
+						<node name="standby" limit="700" faceTarget="1" cooltime="48000">
+							<node name="select" prob="25,25,25,25">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="skill" idx="5">
+									<!--키반대-->
+									<node name="SetValue" key="AttackDelay" value="8" />
+								</node>
+								<node name="skill" idx="6">
+									<!--물약효과 저하-->
+									<node name="SetValue" key="AttackDelay" value="4" />
+								</node>
+								<node name="skill" idx="7">
+									<!--방어력 저하-->
+									<node name="SetValue" key="AttackDelay" value="3" />
+								</node>
+								<node name="skill" idx="8">
+									<!--SP 소모 증가-->
+									<node name="SetValue" key="AttackDelay" value="4" />
+								</node>
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="96,1,1,1,1">
+						<!--2층 왼쪽이 아닌 다른 곳에 있으면 상태이상 공격 위주 자주 사용함-->
+						<!--각종 상태이상 걸기-->
+						<node name="standby" limit="700" faceTarget="1">
+							<node name="select" prob="25,25,25,25">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="skill" idx="5">
+									<!--키반대-->
+									<node name="SetValue" key="AttackDelay" value="8" />
+								</node>
+								<node name="skill" idx="6">
+									<!--물약효과 저하-->
+									<node name="SetValue" key="AttackDelay" value="3" />
+								</node>
+								<node name="skill" idx="7">
+									<!--방어력 저하-->
+									<node name="SetValue" key="AttackDelay" value="3" />
+								</node>
+								<node name="skill" idx="8">
+									<!--SP 소모 증가-->
+									<node name="SetValue" key="AttackDelay" value="6" />
+								</node>
+							</node>
+						</node>
+						<!--번개 공격, 비교적 자주 사용-->
+						<node name="skill" cooltime="10000" idx="2">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<node name="SetValue" key="AttackDelay" value="13" />
+							</node>
+						</node>
+						<!--번개 공격, 플레이어 서있는 지점 연속 두번 발동-->
+						<node name="skill" cooltime="10000" idx="3">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="6" />
+								<node name="SetValue" key="AttackDelay" value="13" />
+							</node>
+						</node>
+						<!--암흑화살, 가끔 사용-->
+						<node name="skill" idx="1">
+							<node name="select" prob="50,50">
+								<node name="SetValue" key="AttackDelay" value="3" />
+								<node name="SetValue" key="AttackDelay" value="11" />
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="13" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

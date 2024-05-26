@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetMasterValue" key="MonsterNumber" value="1" isModify="1" />
+				<!--전투 상태가 되면 보스가 졸몹 마리수 체크할 때 +1 하기-->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="state" targetState="grabTarget">
+				<!-- 타겟팅 된 대상이 물려있다면-->
+				<node name="move" destination="-1500, 4650, 4210" limit="8000" isKeepBattle="true">
+					<!--물고 있는 대상 던지기 위한 장소로 이동-->
+					<node name="skill" facePos="-2100, 4050, 4050" idx="3" />
+					<node name="standby" limit="2400" faceTarget="0" />
+				</node>
+			</condition>
+			<condition name="hpOver" value="93">
+				<node name="select" prob="9999,9999,0">
+					<!--#1페이즈     7%  -->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="near" center="-1275, 4875, 4210" cooltime="8000" />
+					<node name="skill" cooltime="33000" initialCooltime="15000" idx="11">
+						<node name="select" prob="50,50">
+							<!-- 3~4연속 바닥 폭발-->
+							<node name="skill" cooltime="30000" idx="11">
+								<!-- 바닥 폭발 정면-->
+								<node name="target" type="near" from="300" to="1200">
+									<node name="skill" faceTarget="0" idx="12">
+										<!-- 바닥 폭발 양 측면-->
+										<node name="standby" limit="2300" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="0" cooltime="30000" idx="12">
+								<!-- 바닥 폭발 양 측면-->
+								<node name="target" type="near" from="300" to="1200">
+									<node name="skill" idx="11">
+										<node name="skill" faceTarget="0" idx="12">
+											<node name="standby" limit="2400" faceTarget="0" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="select" prob="70,30">
+								<!--근거리 할퀴기 사정권에 들어오면 -->
+								<node name="skill" idx="7">
+									<!-- 근거리 할퀴기 -->
+									<node name="standby" limit="2200" faceTarget="1" />
+								</node>
+								<node name="skill" idx="11">
+									<!-- 바닥 폭발 정면-->
+									<node name="standby" limit="2700" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="8">
+							<node name="select" prob="70,30">
+								<!--근거리 할퀴기 사정권에 들어오면 -->
+								<node name="skill" idx="8">
+									<node name="select" prob="60,40">
+										<!-- 뛰어들기 후 할퀴기-->
+										<node name="standby" limit="2400" faceTarget="1" />
+										<node name="skill" idx="8">
+											<!-- 뛰어들기 후 할퀴기-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="trace" limit="1500" skillIdx="7" />
+								<!-- 근거리 할퀴기 사정권으로 추적하기 -->
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="9">
+							<node name="select" prob="50,30,20">
+								<!--원거리 발사 공격, 전투판 외부에 있으면 원거공격만 사용 -->
+								<node name="skill" faceTarget="1" idx="9">
+									<!-- 정면 발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="1" idx="10">
+									<!-- 양측면  발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="move" destination="-1125, 5025, 4210" limit="18000" cooltime="4000" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1000" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="70">
+				<node name="select" prob="9999,0">
+					<!--#2페이즈  물기 패턴   23% -->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="near" center="-1275, 4875, 4210" cooltime="8000" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="select" prob="9999,70,30">
+								<!--근거리 할퀴기 사정권에 들어오면 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="32000">
+									<!--물기 공격 패턴 -->
+									<node name="target" type="near" center="-1275, 4875, 4210">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="1">
+												<!--근거리 물기-->
+												<node name="skill" idx="1">
+													<!-- 근거리 물기 -->
+													<node name="target" type="grabbedUser" from="5" to="1800">
+														<!-- 물기 공격 후 잡은 대상 우선 타겟팅 하기 설정하기 -->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" idx="2">
+													<!-- 원거리 물기-->
+													<node name="target" type="grabbedUser" from="5" to="1800">
+														<!-- 물기 공격 후 잡은 대상 우선 타겟팅 하기 설정하기 -->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="7" />
+								<!-- 근거리 할퀴기 -->
+								<node name="skill" cooltime="23000" idx="11">
+									<node name="select" prob="50,50">
+										<!-- 가운데 바닥 폭발-->
+										<node name="skill" idx="11">
+											<!--가운데 바닥 폭발-->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="0" idx="12">
+											<!--측면 바닥 폭발-->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="8">
+							<node name="select" prob="35,35,30">
+								<!--뛰어들기 후 할퀴기 사정권에 들어오면 -->
+								<node name="trace" limit="1500" skillIdx="7" />
+								<!--근거리 할퀴기  스킬  거리 좁히기-->
+								<node name="skill" idx="8">
+									<node name="select" prob="70,30">
+										<!-- 뛰어들기 후 할퀴기-->
+										<node name="standby" limit="2500" faceTarget="1" />
+										<node name="skill" idx="8">
+											<!-- 뛰어들기 후 할퀴기-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="25000" idx="11">
+									<node name="select" prob="50,50">
+										<!-- 가운데 바닥 폭발-->
+										<node name="skill" idx="11">
+											<!--가운데 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="0" idx="12">
+											<!--측면 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="9">
+							<node name="select" prob="50,30,20">
+								<!--원거리 발사 공격, 전투판 외부에 있으면 원거공격만 사용 -->
+								<node name="skill" faceTarget="1" idx="9">
+									<!-- 정면 발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="1" idx="10">
+									<!-- 양측면  발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="move" destination="-1125, 5025, 4210" limit="18000" cooltime="4000" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1000" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="56">
+				<node name="select" prob="9999,0">
+					<!--#3페이즈   브레스 가끔   14%  -->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="near" center="-1275, 4875, 4210" cooltime="8000" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="select" prob="299,70,30">
+								<!--근거리 할퀴기 사정권에 들어오면 -->
+								<node name="skill" cooltime="28000" idx="5">
+									<!-- 3개 머리서 브레스 공격, 가운데 먼저-->
+									<node name="standby" limit="2700" faceTarget="1" />
+								</node>
+								<node name="skill" idx="7" />
+								<!-- 근거리 할퀴기 -->
+								<node name="skill" cooltime="13000" idx="11">
+									<node name="select" prob="30,70">
+										<!-- 가운데 바닥 폭발-->
+										<node name="skill" faceTarget="0" idx="12">
+											<!--측면 바닥 폭발-->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="0" idx="10">
+											<!-- 양측면  발사 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="8">
+							<node name="select" prob="30,40,30">
+								<!--뛰어들기 후 할퀴기 사정권에 들어오면 -->
+								<node name="trace" limit="1500" skillIdx="7" />
+								<!--근거리 할퀴기  스킬  거리 좁히기-->
+								<node name="skill" idx="8">
+									<node name="select" prob="70,30">
+										<!-- 뛰어들기 후 할퀴기-->
+										<node name="skill" faceTarget="0" idx="10">
+											<!-- 양측면  발사 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+										<node name="skill" idx="8">
+											<!-- 뛰어들기 후 할퀴기-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="28000" idx="11">
+									<node name="select" prob="50,50">
+										<!-- 가운데 바닥 폭발-->
+										<node name="skill" idx="11">
+											<!--가운데 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="0" idx="12">
+											<!--측면 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="9">
+							<node name="select" prob="50,30,20">
+								<!--원거리 발사 공격, 전투판 외부에 있으면 원거공격만 사용 -->
+								<node name="skill" faceTarget="1" idx="9">
+									<!-- 정면 발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="1" idx="10">
+									<!-- 양측면  발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="move" destination="-1125, 5025, 4210" limit="18000" cooltime="4000" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1000" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="28">
+				<node name="select" prob="9999,0">
+					<!--#4페이즈  물기 패턴  28% -->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="near" center="-1275, 4875, 4210" cooltime="8000" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="select" prob="9999,70,30">
+								<!--근거리 할퀴기 사정권에 들어오면 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="32000">
+									<!--물기 공격 패턴 -->
+									<node name="target" type="near" center="-1275, 4875, 4210">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="1">
+												<!--근거리 물기-->
+												<node name="skill" idx="1">
+													<!-- 근거리 물기 -->
+													<node name="target" type="grabbedUser" from="5" to="1800">
+														<!-- 물기 공격 후 잡은 대상 우선 타겟팅 하기 설정하기 -->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="skill" idx="2">
+													<!-- 원거리 물기-->
+													<node name="target" type="grabbedUser" from="5" to="1800">
+														<!-- 물기 공격 후 잡은 대상 우선 타겟팅 하기 설정하기 -->
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="7" />
+								<!-- 근거리 할퀴기 -->
+								<node name="skill" cooltime="23000" idx="11">
+									<node name="select" prob="50,50">
+										<!-- 가운데 바닥 폭발-->
+										<node name="skill" idx="11">
+											<!--가운데 바닥 폭발-->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="0" idx="12">
+											<!--측면 바닥 폭발-->
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="8">
+							<node name="select" prob="35,35,30">
+								<!--뛰어들기 후 할퀴기 사정권에 들어오면 -->
+								<node name="trace" limit="1500" skillIdx="7" />
+								<!--근거리 할퀴기  스킬  거리 좁히기-->
+								<node name="skill" idx="8">
+									<node name="select" prob="70,30">
+										<!-- 뛰어들기 후 할퀴기-->
+										<node name="standby" limit="2200" faceTarget="1" />
+										<node name="skill" idx="8">
+											<!-- 뛰어들기 후 할퀴기-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="25000" idx="11">
+									<node name="select" prob="50,50">
+										<!-- 가운데 바닥 폭발-->
+										<node name="skill" idx="11">
+											<!--가운데 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="0" idx="12">
+											<!--측면 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="9">
+							<node name="select" prob="50,30,20">
+								<!--원거리 발사 공격, 전투판 외부에 있으면 원거공격만 사용 -->
+								<node name="skill" faceTarget="1" idx="9">
+									<!-- 정면 발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="1" idx="10">
+									<!-- 양측면  발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="move" destination="-1125, 5025, 4210" limit="18000" cooltime="4000" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1000" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,0">
+					<!--#6페이즈   마지막   브레스 난사     28% -->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="near" center="-1275, 4875, 4210" cooltime="8000" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="select" prob="299,70,30">
+								<!--근거리 할퀴기 사정권에 들어오면 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+									<node name="select" prob="34,33,33">
+										<node name="skill" cooltime="48000" idx="5">
+											<!-- 3개 머리서 브레스 공격, 가운데 먼저-->
+											<node name="standby" limit="2600" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="48000" idx="6">
+											<!-- 3개 머리서 브레스 공격, 양끝 먼저-->
+											<node name="standby" limit="2700" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="48000" idx="4">
+											<!-- 3개 머리서 브레스 공격, 동시-->
+											<node name="standby" limit="2700" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="7" />
+								<!-- 근거리 할퀴기 -->
+								<node name="skill" cooltime="16000" idx="11">
+									<!-- 가운데 바닥 폭발-->
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="8">
+							<node name="select" prob="35,35,30">
+								<!--뛰어들기 후 할퀴기 사정권에 들어오면 -->
+								<node name="trace" limit="1500" skillIdx="7" />
+								<!--근거리 할퀴기  스킬  거리 좁히기-->
+								<node name="skill" idx="8">
+									<node name="select" prob="70,30">
+										<!-- 뛰어들기 후 할퀴기-->
+										<node name="skill" faceTarget="0" idx="10">
+											<!-- 양측면  발사 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+										<node name="skill" idx="8">
+											<!-- 뛰어들기 후 할퀴기-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="28000" idx="11">
+									<node name="select" prob="50,50">
+										<!-- 가운데 바닥 폭발-->
+										<node name="skill" idx="11">
+											<!--가운데 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+										<node name="skill" faceTarget="0" idx="12">
+											<!--측면 바닥 폭발-->
+											<node name="standby" limit="2400" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="skillRange" skillIdx="9">
+							<node name="select" prob="50,30,20">
+								<!--원거리 발사 공격, 전투판 외부에 있으면 원거공격만 사용 -->
+								<node name="skill" faceTarget="1" idx="9">
+									<!-- 정면 발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="1" idx="10">
+									<!-- 양측면  발사 바닥 폭발-->
+									<node name="standby" limit="2400" faceTarget="1" />
+								</node>
+								<node name="move" destination="-1125, 5025, 4210" limit="18000" cooltime="4000" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="1000" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기-->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+				<!--전투 상태가 되면 보스가 졸몹 마리수 체크할 때 -1 하기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

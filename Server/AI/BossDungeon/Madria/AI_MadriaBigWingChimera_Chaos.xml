@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--마드리아+루카락스 AI는 일반과 카오스가 다름, 즉 졸구간 클리어 하면 이 AI에 이ㅡ해서 최종 막보스 몬스터 코드를 호출하는데, 이 몬스터 코드가 일반용 카오스용 각각 다름-->
+	<reserved>
+		<condition name="hpLess" value="90">
+			<node name="conditions">
+				<condition name="extraData" key="StageCheck" value="2">
+					<!-- 2스테이지에서 HP 90 이하가 되면 HPClearTwoStage 변수를 1로 만들어 3스테이지 시작때까지 보스 전투판에서 대기 상태로 만듦-->
+					<node name="SetValue" key="HPClearTwoStage" value="1" />
+				</condition>
+				<condition name="extraData" key="StageCheck" value="3">
+					<!-- 2스테이지에서 보스의 HP 90% 이하로 깍지 못한 상태에서 3스테이지를 맞이하여 보스 HP가 막 90% 이하가 되면, 아무런 일이 발생하지 않도록 함 -->
+					<node name="standby" limit="700" faceTarget="1" />
+				</condition>
+				<condition name="true">
+					<!-- 이거는 별 의미없는 설정임 ,  StageCheck 변수는 2 혹은 3 혹은 4 숫자만 가질 수 있는데, 4인 경우 이 단계에 올일 없는데 혹시 몰라서 만약을 대비해 이렇게 설정하였음-->
+					<node name="standby" limit="700" faceTarget="1" />
+				</condition>
+			</node>
+		</condition>
+		<condition name="hpLess" value="80">
+			<node name="SetValue" key="HPClearThreeStage" value="1">
+				<!--3스테이지에서 HP가 기준 이하가 되면 이 변수 1로 셋팅-->
+				<node name="SetValue" key="HPClearTwoStage" value="99" />
+				<!-- 이 변수에 1 이외의 아무 숫자를 넣어서 이 단계 벗어나도록 함 , HPClearTwoStage=99 라는 얘기는 이제 이 변수 사용 안한다는 뜻임 -->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="99999,0">
+			<!--전투 최초 시작 때 제일 먼저 꼭 이루어 져야 하는 거 설정-->
+			<node name="standby" limit="100" faceTarget="1" cooltime="19999999" isKeepBattle="true">
+				<node name="SetValue" key="StageCheck" value="2" />
+				<!-- 현재 줄구간 몇 스테이지인지 체크하기 위한 변수, 변수 선언하자마자 최초 2을 넣어 졸구간 2스테이지임을 알림-->
+				<node name="SetValue" key="MobClearTwoStage" value="3" />
+				<!-- 2스테이지 졸몹이 3마리 등장하기 때문에 최초 3으로 설정함 , 2스테이지 졸몹을 다 잡았는지 체크하기 위한 변수, 졸몹이 죽으면서 이 변수에서 신호를 받음-->
+				<node name="SetValue" key="MobClearThreeStage" value="3" />
+				<!-- 3스테이지 졸몹이 3마리 등장하기 때문에 최초 3으로 설정함 , 3 테이지 졸몹을 다 잡았는지 체크하기 위한 변수, 졸몹이 죽으면서 이 변수에서 신호를 받음-->
+				<node name="SetValue" key="HPClearTwoStage" value="0" />
+				<!-- 2스테이지에서 HP가 기준 이하가 되어 3스테이지로 넘어갔을 경우를 체크 하기 위한 변수-->
+				<node name="SetValue" key="HPClearThreeStage" value="0" />
+				<!-- 3스테이지에서 HP가 기준 이하가 되어 보스 전투판으로 가서 대기 상태로 있기 위해 사용하는 변수-->
+				<node name="SetValue" key="JumpArrival" value="0" />
+				<!-- 2 3스테이지 점프 도착 지점이 어디인지 알려주기 위한 변수-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="HPClearThreeStage" value="1">
+					<node name="select" prob="9999,10">
+						<!--3스테이지에서 HP가 기준 이하가 되어 이 변수 1이 되면,  보스는 전투판으로 이동하여 대기 상태로 만듦, 이후 3스테이지 졸이 다 죽으면 진행함  -->
+						<!--## 3스테이지 클리어 후 보스전 넘어가는 처리 부분 ##, 이 부분은 보스의 HP가 기준 이하가 되어 진행되는 경우임-->
+						<node name="standby" limit="500" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="skill" facePos="750, 1350, 9200" idx="10" />
+							<!--하늘 위로 퇴장, *#* 레벨22: 3스테이지 전투 끝나고 퇴장할때 나오는 성우 음성-->
+							<node name="jump" pos="750, 1350, 9200" speed="2400" heightMultiplier="0.4" />
+							<!--점프중, 퇴장은 빠른 속도로 날라서 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<!--2스테이지 진행 중에 이 단계에 올 수 있기 때문에 이것에 대한 별도 처리도 꼭 해야함-->
+						<node name="standby" limit="200" faceTarget="1">
+							<node name="conditions">
+								<condition name="extraData" key="MobClearThreeStage" value="0" op="lessEqual">
+									<!--보스는 계속 대기 상태로 있다가 3 스테이지 졸몹이 다 죽으면 진짜 보스 소환하고 트리거 신호 보내고, 자신은 퇴장함-->
+									<node name="standby" limit="430" faceTarget="1" isKeepBattle="true">
+										<!--***** 최종 보스 코드 소환하는 부분  두군데에 되어있음, 즉 이곳은 3스테이지에서 보스 HP가 기준 이하가 되어 처리하는 부분임-->
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="991" master="None" option="masterHP" summonPos="2400, 1650, 9200" />
+										<!-- 루카락스 보스 몬스터 소환, 코드: 23200067 는 루카락스 카오스 난이도용 코드임-->
+										<!-- master = "None" 없으면 소환 모체가 사라지면, 소환몹이 같이 사라지기 때문에 꼭 있어야 함 -->
+										<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="992" master="None" summonPos="1050, 1650, 9200" />
+										<!-- 마드리아 소환, 코드: 23200065 는 마드리아 카오스 난이도용 코드임-->
+										<node name="TriggerSetUserValue" triggerID="385" key="LadderGoBossRoom" value="1" />
+										<!-- 최종 보스방으로 가기 위한 사다리 생성하기, 맵 트리거 신호 보내기-->
+										<node name="RemoveMe" />
+										<!-- 자기 자신 스스로 제거하기 -->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="500" faceTarget="1" />
+									<!-- 3스테이지에서 기준 HP 깍인 상태에서 아직 3스테이지 졸몹 다 안죽었으면 여기 단계에서 계속 머뭄-->
+								</condition>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="HPClearTwoStage" value="1">
+					<node name="select" prob="9999,10">
+						<!--2스테이지에서 보스 HP를 기준 이하로 줄이면 이 변수가 1이 되게 하여 보스 전투판으로 이동하여 대기 상태로 만듦  -->
+						<node name="standby" limit="500" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+							<node name="skill" facePos="750, 1350, 9200" idx="9" />
+							<!--하늘 위로 퇴장-->
+							<node name="jump" pos="750, 1350, 9200" speed="2400" heightMultiplier="0.4" />
+							<!--점프중 , 퇴장은 빠른 속도로 날라서 이동-->
+							<node name="SetValue" key="StageCheck" value="3" />
+							<!-- 2스테이지에서 끝나고 다음 3스테이지 시작을 이 변수에 3을 넣어서 자신에게  알림-->
+							<node name="standby" limit="4500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="200" faceTarget="1">
+							<node name="conditions">
+								<condition name="extraData" key="MobClearTwoStage" value="0" op="lessEqual">
+									<!--보스는 계속 대기 상태로 있다가 2스테이지 졸몹이 다 죽으면 3스테이지 전투 진행함-->
+									<node name="standby" limit="700" faceTarget="1" isKeepBattle="true">
+										<node name="SetValue" key="HPClearTwoStage" value="99" />
+										<!-- 이 변수에 1 이외의 아무 숫자를 넣어서 이 단계 벗어나도록 함 , HPClearTwoStage=99 라는 얘기는 이제 이 변수 사용 안한다는 뜻임 -->
+										<node name="SetValue" key="MobClearTwoStage" value="99" />
+										<!-- 이 변수 0 이상의 값을 설정에 이 단계 벗어 나도록 함, MobClearTwoStage=99 라는 것인 이 변두 다시 사용하지 않는 다는 뜻임-->
+										<node name="SetValue" key="StageCheck" value="3" />
+										<!-- 2스테이지에서 끝나고 다음 3스테이지 시작을 이 변수에 3을 넣어서 자신에게  알림-->
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="500" faceTarget="1" />
+									<!-- 2스테이지에서 기준 HP 깍인 상태에서 아직 2스테이지 졸몹 다 안죽었으면 여기 단계에서 계속 머뭄-->
+								</condition>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="MobClearTwoStage" value="0" op="lessEqual">
+					<!--2스테이지 졸몹이 다 죽일 경우,  보스 전투판으로 이동시켜 3스테이지 전투 준바하도록 함-->
+					<node name="standby" limit="250" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MobClearTwoStage" value="99" />
+						<!-- 이 변수에 0 이상의 아무 숫자를 넣어서 이 단계 벗어나도록 함 , MobClearTwoStage=99 라는 얘기는 이제 이 변수 사용 안한다는 뜻임 -->
+						<node name="skill" facePos="750, 1350, 9200" idx="9" />
+						<!--하늘 위로 퇴장-->
+						<node name="jump" pos="750, 1350, 9200" speed="3800" heightMultiplier="0.4" />
+						<!--점프중, 퇴장은 빠른 속도로 날라서, 여기도 특히 빠르기 -->
+						<node name="SetValue" key="StageCheck" value="3" />
+						<!-- 2스테이지에서 끝나고 다음 3스테이지 시작을 이 변수에 3을 넣어서 자신에게  알림-->
+						<node name="standby" limit="3500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="MobClearThreeStage" value="0" op="lessEqual">
+					<!--3스테이지 졸몹이 다 죽일 경우,  보스 전투판으로 이동시켜 보스 전투를 준비하도록 함-->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="MobClearThreeStage" value="99" />
+						<!-- 이 변수에 0 이상의 아무 숫자를 넣어서, 보스 전투 시작을 알리는 부분으로 넘어 가도록 함, MobClearThreeStage=99 라는 얘기는 이제 이 변수 사용 안한다는 뜻임 -->
+						<node name="SetValue" key="StageCheck" value="4" />
+						<!-- 이 변수에 4를 넣어서, 보스는 보스 전투판으로 이동하도록 히고 진짜 보스 코드를 생성하도록 함-->
+						<node name="skill" facePos="2400, 1650, 9200" idx="10" />
+						<!--하늘 위로 퇴장, *#* 레벨22: 3스테이지 전투 끝나고 퇴장할때 나오는 성우 음성-->
+						<node name="jump" pos="2400, 1650, 9200" speed="3800" heightMultiplier="0.4" />
+						<!--점프중, 이부분은 신속하게 이루어 져야 하기 때문에  speed를 더 높게 설정함 특히 이 곳은 매우 빠르게 함-->
+					</node>
+				</condition>
+				<condition name="extraData" key="StageCheck" value="2">
+					<node name="select" prob="9999,0">
+						<!--플레이어가 현재 2스테이지 전투를 진행하고 있을 때, 보스의 주 행동 패턴-->
+						<node name="standby" limit="200" faceTarget="1" cooltime="9999999">
+							<node name="select" prob="33,33,34">
+								<!--2스테이지 전투판으로 뛰어 들기 -->
+								<node name="jump" pos="-3600, -300, 4700" speed="1500" heightMultiplier="0.4" isKeepBattle="true">
+									<!--점프중, 8시쪽 -->
+									<node name="skill" idx="8" />
+									<!--하늘에서 등장 -->
+									<node name="target" type="near" from="10" to="1500" />
+									<node name="standby" limit="1500" faceTarget="1" />
+									<node name="skill" idx="3" />
+									<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨11: 2스테이지용 성우음성-->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+								<node name="jump" pos="-900, -3000, 4700" speed="1500" heightMultiplier="0.4" isKeepBattle="true">
+									<!--점프중, 4시쪽 -->
+									<node name="skill" idx="8" />
+									<!--하늘에서 등장 -->
+									<node name="target" type="near" from="10" to="1500" />
+									<node name="standby" limit="1500" faceTarget="1" />
+									<node name="skill" idx="3" />
+									<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨11: 2스테이지용 성우음성-->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+								<node name="jump" pos="-2700, -2400, 4700" speed="1500" heightMultiplier="0.4" isKeepBattle="true">
+									<!--점프중, 6시쪽 -->
+									<node name="skill" idx="8" />
+									<!--하늘에서 등장 -->
+									<node name="target" type="near" from="10" to="1500" />
+									<node name="standby" limit="1500" faceTarget="1" />
+									<node name="skill" idx="3" />
+									<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨11: 2스테이지용 성우음성-->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<aiPreset name="MainBattle_SecondsStage" />
+						<!--2스테이지에서의 주 공격 패턴-->
+					</node>
+				</condition>
+				<condition name="extraData" key="StageCheck" value="3">
+					<node name="select" prob="9999,0">
+						<!--플레이어가 현재 3스테이지 전투를 진행하고 있을 때, 보스의 주 해동 패턴-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="9999999">
+							<node name="select" prob="33,33,34">
+								<!--3스테이지 전투판으로 뛰어 들기 -->
+								<node name="jump" pos="600, -450, 7080" speed="1500" heightMultiplier="0.4" isKeepBattle="true">
+									<!--점프중, 2시쪽 -->
+									<node name="skill" idx="8" />
+									<!--하늘에서 등장 -->
+									<node name="target" type="near" from="10" to="1500" />
+									<node name="standby" limit="1500" faceTarget="1" />
+									<node name="skill" idx="4" />
+									<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨12: 3스테이지용 성우 음성-->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+								<node name="jump" pos="-1050, 1050, 7080" speed="1500" heightMultiplier="0.4" isKeepBattle="true">
+									<!--점프중, 11시쪽 -->
+									<node name="skill" idx="8" />
+									<!--하늘에서 등장 -->
+									<node name="target" type="near" from="10" to="1500" />
+									<node name="standby" limit="1500" faceTarget="1" />
+									<node name="skill" idx="4" />
+									<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨12: 3스테이지용 성우 음성-->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+								<node name="jump" pos="-1350, -1950, 7080" speed="1500" heightMultiplier="0.4" isKeepBattle="true">
+									<!--점프중, 5시쪽 -->
+									<node name="skill" idx="8" />
+									<!--하늘에서 등장 -->
+									<node name="target" type="near" from="10" to="1500" />
+									<node name="standby" limit="1500" faceTarget="1" />
+									<node name="skill" idx="4" />
+									<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨12: 3스테이지용 성우 음성-->
+									<node name="standby" limit="1800" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+						<aiPreset name="MainBattle_ThirdsStage" />
+						<!--3스테이지에서의 주 공격 패턴-->
+					</node>
+				</condition>
+				<condition name="true">
+					<!--StageCheck = 4 인 경우,  3스테이지 전투가 끝났으면, 보스 전투판으로 이동해 루카락스와 마드리아 소환하고 자신은 퇴장함-->
+					<!--## 3스테이지 클리어 후 보스전 넘어가는 처리 부분 ## , 이 경우는 보스 HP 기준 이하가 되지 않은 상태에서 졸몹을 다 잡은 경우임-->
+					<node name="standby" limit="500" faceTarget="1" facePos="2400, 1650, 9200" isKeepBattle="true">
+						<!--***** 최종 보스 코드 소환하는 부분  두군데에 되어있음, 즉 이곳은 3스테이지에서 보스 HP가 기준 이하가 되지 않은 상태에서  처리하는 부분임-->
+						<!-- option="masterHP"  HP 상속함 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="991" master="None" option="masterHP" summonPos="2400, 1650, 9200" />
+						<!-- 루카락스 보스 몬스터 소환, 코드: 23200067 는 루카락스 카오스 난이도용 코드임-->
+						<!-- master = "None" 없으면 소환 모체가 사라지면, 소환몹이 같이 사라지기 때문에 꼭 있어야 함 -->
+						<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="992" master="None" summonPos="1050, 1650, 9200" />
+						<!-- 마드리아 소환, 코드: 23200065 는 마드리아 카오스 난이도용 코드임-->
+						<node name="TriggerSetUserValue" triggerID="385" key="LadderGoBossRoom" value="1" />
+						<!-- 최종 보스방으로 가기 위한 사다리 생성하기, 맵 트리거 신호 보내기-->
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="MainBattle_SecondsStage">
+			<node name="select" prob="9999,9999,0">
+				<!--2스테이지에서의 주 전투 행동 -->
+				<node name="target" type="rand" from="10" to="900" cooltime="9000" />
+				<node name="standby" limit="100" faceTarget="1" cooltime="45000">
+					<node name="select" prob="20,21,20,21,6,7,6">
+						<!--여기저기 점프 이동하는 부분 -->
+						<!--아래 4개는 전투판 바깥 지형에서 하락함-->
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="750, -4200, 4700" speed="1500" heightMultiplier="0.4" />
+							<!--점프중 , 4시-->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 -->
+							<node name="SetValue" key="JumpArrival" value="4" />
+							<!--4시 방향에 도착했음을 알림-->
+							<node name="standby" limit="2500" faceTarget="1" />
+							<node name="skill" faceTarget="1" idx="1" />
+							<!--화면 밖에서 투척 공격-->
+							<node name="standby" limit="1500" faceTarget="1" />
+							<!--이 단계에서 너무 지체하면, 다음 스테이지 넘어갈 때 바로바로 넘어가지 않는 문제가 있음-->
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="7">
+							<!--몸통 돌진 공격 후 퇴장하기 -->
+							<node name="skill" idx="9" />
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-3000, -4050, 4700" speed="1500" heightMultiplier="0.4" />
+							<!--점프중 , 5시-->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 -->
+							<node name="SetValue" key="JumpArrival" value="5" />
+							<!--5시 방향에 도착했음을 알림-->
+							<node name="standby" limit="2200" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-4800, -1950, 4700" speed="1500" heightMultiplier="0.4" />
+							<!--점프중 , 7시-->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 -->
+							<node name="SetValue" key="JumpArrival" value="7" />
+							<!--7시 방향에 도착했음을 알림-->
+							<node name="standby" limit="2100" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-4500, 1050, 4700" speed="1500" heightMultiplier="0.4" />
+							<!--점프중 , 8시-->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 등장 -->
+							<node name="SetValue" key="JumpArrival" value="8" />
+							<!--8시 방향에 도착했음을 알림-->
+							<node name="standby" limit="4500" faceTarget="1" />
+							<node name="skill" faceTarget="1" idx="1" />
+							<!--화면 밖에서 투척 공격-->
+							<node name="standby" limit="2100" faceTarget="1" />
+						</node>
+						<!--아래 3개는 전투판 부근에서 하락함-->
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-3600, -300, 4700" speed="1500" heightMultiplier="0.4" />
+							<!--점프중, 8시쪽 -->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 등장 -->
+							<node name="SetValue" key="JumpArrival" value="99" />
+							<!--이 변수 99는 전투판 근처에 있으니 바로 공격 하라는 뜻-->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-900, -3000, 4700" speed="1500" heightMultiplier="0.4" />
+							<!--점프중, 4시쪽 -->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 등장 -->
+							<node name="SetValue" key="JumpArrival" value="99" />
+							<!--이 변수 99는 전투판 근처에 있으니 바로 공격 하라는 뜻-->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-2700, -2400, 4700" speed="1500" heightMultiplier="0.4" />
+							<!--점프중, 6시쪽 -->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 등장 -->
+							<node name="SetValue" key="JumpArrival" value="99" />
+							<!--이 변수 99는 전투판 근처에 있으니 바로 공격 하라는 뜻-->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+					</node>
+				</node>
+				<!--전투판 먼 지점으로 점프 이동 한 경우, 우선 전투판 인근으로 이동하는 움직임을 함-->
+				<node name="conditions">
+					<condition name="extraData" key="JumpArrival" value="4">
+						<node name="SetValue" key="JumpArrival" value="99">
+							<node name="select" prob="50,50">
+								<node name="move" destination="300, -2100, 4700" limit="19000" />
+								<node name="move" destination="-300, -2550, 4700" limit="19000" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpArrival" value="5">
+						<node name="SetValue" key="JumpArrival" value="99">
+							<node name="select" prob="50,50">
+								<node name="move" destination="-1950, -3000, 4700" limit="19000" />
+								<node name="move" destination="-2700, -2250, 4700" limit="19000" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpArrival" value="7">
+						<node name="SetValue" key="JumpArrival" value="99">
+							<node name="select" prob="50,50">
+								<node name="move" destination="-2850, -1650, 4700" limit="19000" />
+								<node name="move" destination="-3600, -1350, 4700" limit="19000" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpArrival" value="8">
+						<node name="SetValue" key="JumpArrival" value="99">
+							<node name="select" prob="50,50">
+								<node name="move" destination="-3450, 150,  4700" limit="19000" />
+								<node name="move" destination="-2700, 900, 4700" limit="19000" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--JumpArrival = 99 인 경우, 전투판 인근에 있는 경우 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="55,45">
+									<!--사정거리  650 이내 -->
+									<node name="skill" idx="5">
+										<!--입에서 폭발 3연발 -->
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+									<node name="skill" idx="2">
+										<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨2 근거리 전용(여기도 성우 음성 넣음)-->
+										<node name="standby" limit="3200" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="34,33,33">
+									<node name="skill" idx="1">
+										<!--투사체 바닥 아래 그림자 불꽃 깔기-->
+										<node name="standby" limit="3200" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="12000" idx="3">
+										<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨11: 2스테이지용 성우 음성 출력-->
+										<node name="standby" limit="3200" faceTarget="1" />
+									</node>
+									<node name="standby" limit="600" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle_ThirdsStage">
+			<node name="select" prob="9999,9999,0">
+				<!--3스테이지에서의 주 전투 행동 -->
+				<node name="target" type="rand" from="10" to="900" cooltime="9000" />
+				<node name="standby" limit="100" faceTarget="1" cooltime="45000">
+					<node name="select" prob="21,20,20,21,6,7,6">
+						<!--여기저기 점프 이동하는 부분 -->
+						<!--아래 4개는 전투판 바깥 지형에서 하락함-->
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="7">
+							<!--몸통 돌진 공격 후 퇴장하기 -->
+							<node name="skill" idx="9" />
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="1350, -2400, 7080" speed="1500" heightMultiplier="0.4" />
+							<!--점프중 , 3시-->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 -->
+							<node name="SetValue" key="JumpArrival" value="3" />
+							<!--3시 방향에 도착했음을 알림-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<!--졸몹 잡으면 바로바로 최종 보스 방으로 날아가도록 하기 위해 점프 도착 후 별도 행동 일체 넣지 않음-->
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-900, 2175, 7080" speed="1500" heightMultiplier="0.4" />
+							<!--점프중 , 11시-->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 -->
+							<node name="SetValue" key="JumpArrival" value="11" />
+							<!--11시 방향에 도착했음을 알림-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<!--졸몹 잡으면 바로바로 최종 보스 방으로 날아가도록 하기 위해 점프 도착 후 별도 행동 일체 넣지 않음-->
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-3150, 900, 7080" speed="1500" heightMultiplier="0.4" />
+							<!--점프중 , 8시-->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 -->
+							<node name="SetValue" key="JumpArrival" value="8" />
+							<!--8시 방향에 도착했음을 알림-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<!--졸몹 잡으면 바로바로 최종 보스 방으로 날아가도록 하기 위해 점프 도착 후 별도 행동 일체 넣지 않음-->
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-3150, -2400, 7080" speed="1500" heightMultiplier="0.4" />
+							<!--점프중 , 6시-->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 등장 -->
+							<node name="SetValue" key="JumpArrival" value="6" />
+							<!--6시 방향에 도착했음을 알림-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<!--졸몹 잡으면 바로바로 최종 보스 방으로 날아가도록 하기 위해 점프 도착 후 별도 행동 일체 넣지 않음-->
+						</node>
+						<!--아래 3개는 전투판 부근에서 하락함-->
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="600, -450, 7080" speed="1500" heightMultiplier="0.4" />
+							<!--점프중, 2시쪽 -->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 등장 -->
+							<node name="SetValue" key="JumpArrival" value="99" />
+							<!--이 변수 99는 전투판 근처에 있으니 바로 공격 하라는 뜻-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<!--졸몹 잡으면 바로바로 최종 보스 방으로 날아가도록 하기 위해 점프 도착 후 별도 행동 일체 넣지 않음-->
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="7">
+							<!--몸통 돌진 공격 후 퇴장하기 -->
+							<node name="skill" idx="9" />
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-1050, 1050, 7080" speed="1500" heightMultiplier="0.4" />
+							<!--점프중, 11시쪽 -->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 등장 -->
+							<node name="SetValue" key="JumpArrival" value="99" />
+							<!--이 변수 99는 전투판 근처에 있으니 바로 공격 하라는 뜻-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<!--졸몹 잡으면 바로바로 최종 보스 방으로 날아가도록 하기 위해 점프 도착 후 별도 행동 일체 넣지 않음-->
+						</node>
+						<node name="skill" cooltime="150000" isKeepBattle="true" idx="9">
+							<!--하늘 위로 퇴장 -->
+							<node name="jump" pos="-1350, -1950, 7080" speed="1500" heightMultiplier="0.4" />
+							<!--점프중, 5시쪽 -->
+							<node name="skill" idx="8" />
+							<!--하늘에서 하락 등장 -->
+							<node name="SetValue" key="JumpArrival" value="99" />
+							<!--이 변수 99는 전투판 근처에 있으니 바로 공격 하라는 뜻-->
+							<node name="standby" limit="200" faceTarget="1" />
+							<!--졸몹 잡으면 바로바로 최종 보스 방으로 날아가도록 하기 위해 점프 도착 후 별도 행동 일체 넣지 않음-->
+						</node>
+					</node>
+				</node>
+				<!--전투판 먼 지점으로 점프 이동 한 경우, 우선 전투판 인근으로 이동하는 움직임을 함-->
+				<node name="conditions">
+					<condition name="extraData" key="JumpArrival" value="11">
+						<node name="SetValue" key="JumpArrival" value="99">
+							<node name="move" destination="-825, 1000, 7080" limit="19000" />
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpArrival" value="3">
+						<node name="SetValue" key="JumpArrival" value="99">
+							<node name="select" prob="50,50">
+								<node name="move" destination="450, -1200, 7080" limit="19000" />
+								<node name="move" destination="-300, -1950, 7080" limit="19000" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpArrival" value="8">
+						<node name="SetValue" key="JumpArrival" value="99">
+							<node name="select" prob="50,50">
+								<node name="move" destination="-1800, 1050, 7080" limit="19000" />
+								<node name="move" destination="-2550, 300, 7080" limit="19000" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpArrival" value="6">
+						<node name="SetValue" key="JumpArrival" value="99">
+							<node name="select" prob="50,50">
+								<node name="move" destination="-1650, -1950, 7080" limit="19000" />
+								<node name="move" destination="-2550, -1050, 7080" limit="19000" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--JumpArrival = 99 인 경우, 전투판 인근에 있는 경우 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<node name="select" prob="55,45">
+									<!--사정거리  650 이내 -->
+									<node name="skill" idx="6">
+										<!--입에서 폭발 3연발, 3스테이지는 꼭 레벨2 사용해야 함, 2스테이지 3스테이지의 보스가 밟고 다니는 높이 차이 때문에 바닥에 깔리는 이펙트 높이 이슈로 여기서는 레벨2 사용-->
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+									<node name="skill" idx="2">
+										<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨2 근거리 전용(여기도 성우 음성 넣음)-->
+										<node name="standby" limit="3200" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="35,35,30">
+									<node name="skill" idx="1">
+										<!--투사체 바닥 아래 그림자 불꽃 깔기-->
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="12000" idx="4">
+										<!--투사체 바닥 아래 그림자 불꽃 깔기, 레벨12 3스테이지용 성우 음성 출력용-->
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+									<node name="standby" limit="600" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="30">
+					<node name="select" prob="99999,9999">
+						<node name="skill" faceTarget="0" cooltime="20000" initialCooltime="20000" idx="7">
+							<node name="select" prob="0,0,0">
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="0,150,0" cooltime="75000">
+									<node name="skill" faceTarget="0" idx="8" />
+								</node>
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPosOffset="0,150,0" cooltime="75000">
+									<node name="skill" faceTarget="0" idx="8" />
+								</node>
+								<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPosOffset="0,150,0" cooltime="75000">
+									<node name="skill" faceTarget="0" idx="8" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="IsBuff" value="0">
+								<node name="select" prob="100,100">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="target" type="rand" from="400" to="1500" />
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="skill" idx="2" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</condition>
+										<condition name="true">
+											<node name="trace" limit="2500" skillIdx="2" />
+										</condition>
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,9999,100">
+									<!--event eventName="SetExtra" target="Me" param1="IsBuff" param2="1"/-->
+									<!--독이 포함된 찌르기 3종 셋트-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="40,30,30">
+												<!-- 돌진 찌르기-->
+												<node name="skill" idx="4">
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+												<!--돌진찌르기 2연속-->
+												<node name="skill" idx="4">
+													<node name="skill" idx="3">
+														<node name="select" prob="100,99">
+															<node name="standby" limit="500" faceTarget="1" />
+															<node name="trace" limit="2500" skillIdx="1" />
+														</node>
+													</node>
+												</node>
+												<!--돌진찌르기 3연속-->
+												<node name="skill" idx="4">
+													<node name="skill" idx="3">
+														<node name="skill" idx="4">
+															<node name="select" prob="100,99">
+																<node name="standby" limit="500" faceTarget="1" />
+																<node name="trace" limit="2500" skillIdx="1" />
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="99,1">
+												<node name="trace" limit="2500" skillIdx="1" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+									<!--순간이동 후 안전 지대 설치 후 광역 밀쳐내기-->
+									<node name="skill" faceTarget="0" cooltime="15000" initialCooltime="10000" idx="5">
+										<node name="select" prob="100,100,100,100">
+											<node name="teleport" pos="-3050,-650, 5400">
+												<node name="skill" facePos="-3600, -3450, 6200" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="teleport" pos="-2650,-1150, 5400">
+												<node name="skill" facePos="-3600, -3450, 6200" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="teleport" pos="-2150,-700, 5400">
+												<node name="skill" facePos="-3600, -3450, 6200" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="teleport" pos="-2650,-250, 5400">
+												<node name="skill" facePos="-3600, -3450, 6200" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,9999,1">
+						<node name="skill" faceTarget="0" cooltime="50000" initialCooltime="1000" idx="7">
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPosOffset="-300,0,0" />
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPosOffset="300,0,0" />
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPosOffset="0,150,0" />
+							<node name="skill" faceTarget="0" idx="8" />
+						</node>
+						<node name="conditions">
+							<condition name="extraData" key="IsBuff" value="0">
+								<node name="select" prob="100,100">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="target" type="rand" from="10" to="1500">
+												<node name="skill" idx="2">
+													<node name="standby" limit="1000" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="trace" limit="2500" skillIdx="2" />
+										</condition>
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="100,9999,100,99">
+									<!--event eventName="SetExtra" target="Me" param1="IsBuff" param2="1"/-->
+									<!--독이 포함된 찌르기 3종 셋트-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="1">
+											<node name="select" prob="40,30,30">
+												<!-- 돌진 찌르기-->
+												<node name="skill" idx="4">
+													<node name="standby" limit="500" faceTarget="1" />
+												</node>
+												<!--돌진찌르기 2연속-->
+												<node name="skill" idx="4">
+													<node name="skill" idx="3">
+														<node name="standby" limit="500" faceTarget="1" />
+													</node>
+												</node>
+												<!--돌진찌르기 3연속-->
+												<node name="skill" idx="4">
+													<node name="skill" idx="3">
+														<node name="skill" idx="4">
+															<node name="standby" limit="500" faceTarget="1" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="99,1">
+												<node name="trace" limit="2500" skillIdx="1" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+									<!--순간이동 후 안전 지대 설치 후 광역 밀쳐내기-->
+									<node name="skill" faceTarget="0" cooltime="15000" initialCooltime="20000" idx="5">
+										<node name="select" prob="100,100,100,100">
+											<node name="teleport" pos="-3050,-650, 5400">
+												<node name="skill" facePos="-3600, -3450, 6200" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="teleport" pos="-2650,-1150, 5400">
+												<node name="skill" facePos="-3600, -3450, 6200" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="teleport" pos="-2150,-700, 5400">
+												<node name="skill" facePos="-3600, -3450, 6200" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+											<node name="teleport" pos="-2650,-250, 5400">
+												<node name="skill" facePos="-3600, -3450, 6200" idx="6">
+													<node name="standby" limit="1500" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="trace" limit="2500" skillIdx="2" />
+								</node>
+							</condition>
+						</node>
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

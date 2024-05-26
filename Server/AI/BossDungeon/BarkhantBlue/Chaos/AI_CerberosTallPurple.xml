@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="5000" initialCooltime="1">
+				<node name="target" type="near" from="10" to="2600" />
+				<!--제일 가까운 대상 타겟팅 잡기 -->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<node name="skill" idx="1" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="CoolTime" value="1" op="greaterEqual">
+					<!--   보스한테 자살 신호를 받으면, 바로 다음 행동 하도록 하기 위해 standby 상태를 이 변수로 진행되도록 하였음     -->
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="CoolTime" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<node name="select" prob="35,35,30">
+								<!--사정거리 250 이내에 있으면-->
+								<node name="skill" faceTarget="0" idx="6">
+									<!--주먹 1타-->
+									<node name="SetValue" key="CoolTime" value="23" />
+									<!--공격후 standby 상태 비교적 길게 설정함-->
+									<!--   보스한테 자살 신호를 받으면, 바로 다음 행동 하도록 하기 위해 standby 상태를 이 변수로 진행되도록 하였음     -->
+								</node>
+								<node name="skill" faceTarget="0" idx="7">
+									<!--주먹 2연타-->
+									<node name="SetValue" key="CoolTime" value="27" />
+									<!--공격후 standby 상태 비교적 길게 설정함-->
+								</node>
+								<node name="skill" faceTarget="0" cooltime="8000" idx="5">
+									<!--브레스 공격-->
+									<node name="SetValue" key="CoolTime" value="42" />
+									<!--공격후 standby 상태 비교적 길게 설정함-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="4">
+									<!--사정거리 600 이내에 있으면-->
+									<node name="skill" faceTarget="0" idx="5">
+										<!--브레스 공격-->
+										<node name="SetValue" key="CoolTime" value="37" />
+										<!--공격후 standby 상태 비교적 길게 설정함-->
+									</node>
+								</condition>
+								<condition name="true">
+									<!--사정거리 1500 이내에 있으면-->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="select" prob="40,60">
+												<node name="skill" faceTarget="0" idx="3">
+													<!-- 바위 던지기-->
+													<node name="SetValue" key="CoolTime" value="68" />
+													<!--공격후 standby 상태 비교적 길게 설정함-->
+												</node>
+												<node name="skill" faceTarget="0" cooltime="8000" initialCooltime="14000" idx="2">
+													<!-- 입김 당기기-->
+													<node name="SetValue" key="CoolTime" value="45" />
+													<!--공격후 standby 상태 비교적 길게 설정함-->
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="40,60">
+												<node name="skill" idx="8" />
+												<!--Attack_Idle_A-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

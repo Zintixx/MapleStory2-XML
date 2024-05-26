@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅 갱신 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="999999" initialCooltime="1">
+				<node name="standby" limit="1000" faceTarget="1" />
+			</node>
+			<!-- HP 80% 이상 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="60,40,1">
+						<!-- 근거리 스킬 사거리 체크 -->
+						<node name="skill" idx="1">
+							<!-- 연속 주먹 날리기 -->
+							<node name="standby" limit="500" faceTarget="0" />
+						</node>
+						<node name="skill" idx="2">
+							<!-- 돌려차기 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="1">
+									<node name="skill" idx="1">
+										<node name="select" prob="10,10,100">
+											<node name="trace" limit="1000" animation="Walk_A" skillIdx="1" />
+											<node name="trace" limit="1000" animation="Walk_A" skillIdx="1" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="skill" idx="1">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions" initialCooltime="3000">
+						<condition name="skillRange" skillIdx="3">
+							<node name="select" prob="30,10,10">
+								<!-- 플라잉 니킥 범위 안에 있으면 -->
+								<node name="skill" idx="3">
+									<!-- 플라잉 니킥 -->
+									<node name="standby" limit="1000" faceTarget="0" />
+								</node>
+								<node name="trace" limit="1000" animation="Walk_A" initialCooltime="4000" skillIdx="1" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="100,10">
+								<node name="trace" limit="1000" animation="Walk_A" initialCooltime="4000" skillIdx="2" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

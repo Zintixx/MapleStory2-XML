@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--체력 캡 걸어주기 59%까지-->
+			<node name="MinimumHp" hpPercent="59" />
+		</condition>
+		<condition name="hpLess" value="60">
+			<!--체력이 60%이하가 되면-->
+			<node name="TriggerSetUserValue" triggerID="99990008" key="ObjectStart" value="2">
+				<!-- 유저데이터 세팅해서 기믹 발동 -->
+				<node name="say" message="$LEGIONBATTLE__AI_LEGION_FINALBOSS__0$" durationTick="5000" delayTick="0" />
+				<node name="buff" type="add" id="70002201" level="1" />
+				<node name="move" destination="-1500, -750, 2700" animation="Run_A" speed="800" />
+				<node name="SetValue" key="BattleMode" value="1" />
+				<node name="MinimumHp" hpPercent="39" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="40">
+			<!--체력이 40%이하가 되면-->
+			<node name="TriggerSetUserValue" triggerID="99990008" key="ObjectStart" value="3">
+				<node name="TriggerSetUserValue" triggerID="99990013" key="BombPhase" value="2" />
+				<node name="TriggerSetUserValue" triggerID="99990009" key="BossObjectStart" value="2" />
+				<node name="TriggerSetUserValue" triggerID="99990010" key="BossObjectStart" value="2" />
+				<node name="TriggerSetUserValue" triggerID="99990011" key="BossObjectStart" value="2" />
+				<node name="TriggerSetUserValue" triggerID="99990012" key="BossObjectStart" value="2" />
+				<node name="say" message="$LEGIONBATTLE__AI_LEGION_FINALBOSS__1$" durationTick="5000" delayTick="0" />
+				<node name="MinimumHp" hpPercent="0" />
+				<node name="buff" type="remove" id="70002201" level="1" />
+				<node name="SetValue" key="BattleMode" value="0" />
+				<!-- 체력이 30%이하로 내려가면 다시 일반 배틀모드 설정 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="BattleMode" value="1">
+				<!-- 기믹 모드 -->
+				<aiPreset name="ShieldMode" />
+			</condition>
+			<condition name="true">
+				<!-- 일반 배틀 모드 -->
+				<aiPreset name="NormalMode" />
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<!--일반적인 상태-->
+		<aiPreset name="NormalMode">
+			<node name="select" prob="9999,0">
+				<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+					<node name="target" type="rand" from="10" to="4500" />
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="55,55,55,9999,9999,9999,1">
+							<node name="skill" idx="1">
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+							<node name="skill" idx="2">
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+							<node name="skill" idx="3">
+								<node name="skill" idx="4" />
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="15000" idx="5">
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+							<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="1">
+								<node name="TargetEffect" effectName="Additional/Etc/Eff_Target_Red_Keep.xml" />
+								<node name="skill" idx="8" />
+								<node name="skill" idx="9" />
+								<node name="skill" idx="10" />
+								<node name="skill" idx="11" />
+								<node name="TargetEffect" effectName="" />
+							</node>
+							<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="1">
+								<node name="skill" idx="6" />
+								<node name="skill" idx="7" />
+							</node>
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="0,9999,9999,100,10">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="5">
+									<node name="select" prob="60,30,10">
+										<node name="skill" cooltime="15000" idx="5">
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="2500" skillIdx="12" />
+										<node name="standby" limit="2500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="100,10">
+										<node name="trace" limit="3500" skillIdx="12" />
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+							<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="1">
+								<node name="TargetEffect" effectName="Additional/Etc/Eff_Target_Red_Keep.xml" />
+								<node name="skill" idx="8" />
+								<node name="skill" idx="9" />
+								<node name="skill" idx="10" />
+								<node name="skill" idx="11" />
+								<node name="TargetEffect" effectName="" />
+							</node>
+							<node name="standby" limit="10" faceTarget="1" cooltime="25000" initialCooltime="1">
+								<node name="TargetEffect" effectName="Additional/Etc/Eff_Target_Red_Keep.xml" />
+								<node name="skill" idx="8" />
+								<node name="skill" idx="9" />
+								<node name="skill" idx="10" />
+								<node name="skill" idx="11" />
+								<node name="TargetEffect" effectName="" />
+							</node>
+							<node name="trace" limit="3500" skillIdx="12" />
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<!--중앙에 무적 상태로 대기-->
+		<aiPreset name="ShieldMode">
+			<node name="standby" limit="3000" facePos="-2000, -750, 2700" />
+		</aiPreset>
+	</aiPresets>
+</npcAi>

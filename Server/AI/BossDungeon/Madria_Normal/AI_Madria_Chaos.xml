@@ -1,0 +1,727 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--마드리아 AI는 일반이나 카오스 동일함-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--전투 최초 시작 때 제일 먼저 꼭 이루어 져야 하는 거 설정-->
+			<node name="standby" limit="300" faceTarget="1" cooltime="19999999" isKeepBattle="true">
+				<node name="SetValue" key="Position" value="0" />
+				<!--  전투판 어느 구석에 있는지를 아는데 이용되는 변수   0: 구석이 아닌 일반 공격을 하고 있는 상태임, 2: 2시쪽, 4: 4시쪽, 8: 8시쪽, 10: 10시쪽,  99: 공중에 떠있는 상태임-->
+				<node name="SetValue" key="Phase" value="1" />
+				<!--  자신이 몇 페이즈인지 아는데 이용되는 변수, 변수 1을 최초에 선언하여 1페이즈임을 자신에게 알림-->
+				<node name="SetValue" key="ChargeTeleportMode" value="0" />
+				<!--루카락스 공중 공격 패턴 때 마드리아는 마법기력 모으면서 순간이동 회피 동작을 하는데, 이 것에 이용되는 변수임-->
+				<node name="SetValue" key="ChargeTeleportContinue" value="0" />
+				<!--루카락스 공중 공격 패턴 때 마드리아는 마법기력 모으면서 순간이동 하는데, 이때 계속 플레이어가 가까이 붙으면 계속 순간이동만 하는데, 이것을 몇번 할지 결정하는데 사용되는 변수-->
+				<node name="SetValue" key="FlyAssistanceMode" value="0" />
+				<!--루카락스가 날기 공격 때 마드리아가 지원 공격하는 패턴할때 사용하는 변수-->
+				<node name="SetValue" key="FlyContinue" value="0" />
+				<!--날기 공격 때 계속 날기 공격 할지 말지를 경정하는  변수, 이 변수가 1이라는 것은 2페이즈에서 반드시 날고 있다는 뜻임 , 매우 중요한 변수-->
+				<node name="SetValue" key="FlyMadriaSOS" value="0" />
+				<!--날기 공격 때 마드리아가 극딜 당하면 이 변수를 1로 만들어 루카락스가 땅에 내려오도록 함-->
+				<node name="SetValue" key="RoarBuffMe" value="0" />
+				<!--마지막 페이즈에서 루카룩스한테 광폭화 버프 보내달라고 신호를 받게 되는 변수-->
+				<node name="SetValue" key="RoarMode" value="0" />
+				<!--마지막 페이즈에서 마드리아한테 광폭화 공격 명령 받으면 이 변수가 1이 되어 폭주하는 상황-->
+				<node name="SetValue" key="RoarModeStop" value="0" />
+				<!--마드리아한테 광폭화 폭주 정지 명령 신호를 이 변수를 통해 받으면, 버프 지우는 행동을 하게끔 설정함 -->
+				<node name="SetValue" key="ChimeraDeath" value="0" />
+				<!--루카락스 죽음 유무를 인지하기 위해 사용하는 변수-->
+				<node name="buff" type="add" id="50001008" level="1" />
+				<!--눈에 잘 띄는 바디 이펙트 붙이기-->
+			</node>
+			<!--루카락스가 극 초반에 죽을 수도 있기 때문에 우선순위 가장 높게 설정함 -->
+			<node name="conditions">
+				<condition name="extraData" key="ChimeraDeath" value="1">
+					<!--루카락스가 죽었으면 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!-- 죽음 연출용 마드리아 소환하고 자신은 퇴장 -->
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" master="None" lifeTime="14" summonPosOffset="0, 0, 0" summonRot="0,0,130" />
+						<node name="RemoveMe" />
+						<!-- 자기 자신 스스로 제거하기 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="Phase" value="1">
+					<!--루카락스가 1페이즈 일때 마드리아가 하는 행동-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<node name="conditions">
+								<condition name="extraData" key="Position" value="2">
+									<!--루카락스가 2시 방향으로 구석으로 점프 이동 했으면-->
+									<node name="skill" isKeepBattle="true" idx="12">
+										<node name="teleport" pos="0, 1650, 9200" />
+										<!--8시, 마드리아는 반대편인 8시 방향으로 순간이동 해서, 불큐브 설치-->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--순간이동 도착-->
+										<node name="standby" limit="500" faceTarget="1" animation="Attack_02_D" />
+										<node name="skill" facePos="1050, 1650, 9200" idx="5" />
+										<node name="SetValue" key="Position" value="0" />
+										<node name="standby" limit="13000" faceTarget="1" animation="Attack_02_D" />
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--8시 단상 위로 점프 이동-->
+										<node name="skill" facePos="225, 2475, 9500" idx="6" />
+										<node name="jump" pos="225, 2475, 9500" speed="900" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="7" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="extraData" key="Position" value="4">
+									<!--루카락스가 4시 방향으로 구석으로 점프 이동 했으면-->
+									<node name="skill" isKeepBattle="true" idx="12">
+										<node name="teleport" pos="1050, 2700, 9200" />
+										<!--10시, 마드리아는 반대편인 10시 방향으로 순간이동 해서, 불큐브 설치-->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--순간이동 도착-->
+										<node name="standby" limit="500" faceTarget="1" animation="Attack_02_D" />
+										<node name="skill" facePos="1050, 1650, 9200" idx="5" />
+										<node name="SetValue" key="Position" value="0" />
+										<node name="standby" limit="13000" faceTarget="1" animation="Attack_02_D" />
+										<!--12시 단상 위로 점프 이동-->
+										<node name="skill" facePos="1875, 2466, 9500" idx="6" />
+										<node name="jump" pos="1875, 2466, 9500" speed="900" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="7" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="extraData" key="Position" value="8">
+									<!--루카락스가 8시 방향으로 구석으로 점프 이동 했으면-->
+									<node name="skill" isKeepBattle="true" idx="12">
+										<node name="teleport" pos="2100, 1650, 9200" />
+										<!--2시, 마드리아는 반대편인 2시 방향으로 순간이동 해서, 불큐브 설치-->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--순간이동 도착-->
+										<node name="standby" limit="500" faceTarget="1" animation="Attack_02_D" />
+										<node name="skill" facePos="1050, 1650, 9200" idx="5" />
+										<node name="SetValue" key="Position" value="0" />
+										<node name="standby" limit="13000" faceTarget="1" animation="Attack_02_D" />
+										<!--12시 단상 위로 점프 이동-->
+										<node name="skill" facePos="1875, 2466, 9500" idx="6" />
+										<node name="jump" pos="1875, 2466, 9500" speed="900" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="7" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="extraData" key="Position" value="10">
+									<!--루카락스가 10시 방향으로 구석으로 점프 이동 했으면-->
+									<node name="skill" isKeepBattle="true" idx="12">
+										<node name="teleport" pos="1050, 600, 9200" />
+										<!--4시, 마드리아는 반대편인 4시 방향으로 순간이동 해서, 불큐브 설치-->
+										<node name="skill" faceTarget="0" idx="13" />
+										<!--순간이동 도착-->
+										<node name="standby" limit="500" faceTarget="1" animation="Attack_02_D" />
+										<node name="skill" facePos="1050, 1650, 9200" idx="5" />
+										<node name="SetValue" key="Position" value="0" />
+										<node name="standby" limit="13000" faceTarget="1" animation="Attack_02_D" />
+										<!--3시 단상 위로 점프 이동-->
+										<node name="skill" facePos="1875, 825, 9500" idx="6" />
+										<node name="jump" pos="1875, 825, 9500" speed="900" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="7" />
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="9999,9,1">
+										<!--플레이어가 전투판에 올라가자 마자 마드리아는 2층 단상 위로 점프 이동 함-->
+										<node name="standby" limit="300" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+											<node name="skill" facePos="1875, 2466, 9500" idx="8" />
+											<!--도약, 12시쪽, 레벨11: 마드리아 성우 음성 전용-->
+											<node name="jump" pos="1875, 2466, 9500" speed="1000" heightMultiplier="0.4" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<!--루카락스가 몸통 돌진 하는 일반적인 상황에는 주로 이 행동을 함-->
+										<node name="skill" cooltime="28000" initialCooltime="10000" idx="21">
+											<node name="target" type="near" from="10" to="1500" />
+										</node>
+										<node name="standby" limit="200" faceTarget="1">
+											<node name="target" type="near" from="10" to="1500" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="Phase" value="2">
+					<node name="select" prob="99999,0">
+						<!--루카락스가 2페이즈 일때 마드리아가 하는 행동, 루카락스, 공중 패턴임-->
+						<node name="skill" cooltime="9999999" idx="1" />
+						<!--2페이즈 시작을 알리는 마드리아 성우 음성-->
+						<node name="conditions">
+							<condition name="hpOver" value="10">
+								<!--마드리아 HP가 10% 이상이면 평상시 공격 행동을 함-->
+								<node name="conditions">
+									<condition name="extraData" key="FlyAssistanceMode" value="1">
+										<!--루카락스가  공중 패턴 막 시작하면 마드리아는 전투판 중앙으로 점프 뛰어 내려옴-->
+										<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+											<node name="SetValue" key="FlyAssistanceMode" value="2" />
+											<node name="skill" facePos="1050, 1650, 9200" idx="6" />
+											<!--도약, 전투판 정 중앙-->
+											<node name="jump" pos="1050, 1650, 9200" speed="900" heightMultiplier="0.4" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="9" />
+											<!--점프 착지, 레벨22: 마드리아 성우 전용, 루카락스가 막 날기 공격 시작때 나오는 성우대사-->
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="extraData" key="FlyAssistanceMode" value="2">
+										<!--전투판 중앙에서 광역 공격 기 모으기 패턴 시작함-->
+										<aiPreset name="FlyAssistancePattern" />
+										<!--기 모으기 & 순간이동 회피 & 광역공격 발동 로직 여기서 선언함-->
+									</condition>
+									<condition name="true">
+										<node name="select" prob="9999,9,1">
+											<!--평상시 하는 행동-->
+											<node name="standby" limit="300" faceTarget="1" cooltime="38000">
+												<aiPreset name="UpperPlatformTypeB" />
+												<!--단상 위로 점프 올라가기, 단상위 점프 뛰기 1페이즈에서 위치 겹치는 것을 피하기 위해 TypeB으로 설정함-->
+											</node>
+											<!--루카락스가 몸통 돌진 하는 일반적인 상황에는 주로 이 행동을 함-->
+											<node name="skill" cooltime="28000" idx="21">
+												<node name="target" type="near" from="10" to="1500" />
+											</node>
+											<node name="standby" limit="200" faceTarget="1">
+												<node name="target" type="near" from="10" to="1500" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--마드리아 HP가 10% 이하 되면 구석으로 도망간 다음에 루카락스 SOS 신호를 보냄-->
+								<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+									<!--이 SOS 신호에 의해 루카락스가 공중에 소환한 소환몹도 자살하게 함-->
+									<node name="SetValueRangeTarget" key="FlyMadriaSOS" value="1" radius="3500" height="3500" />
+									<!--루카락스한에 SOS 신호를 보내 땅으로 내려오게 하기, 점프 이동 전에 먼저 제일 먼저 하기 그래야 루카루스가 공중 선회 한 다음 땅으로 내려요는 타이밍이 맞음-->
+									<node name="skill" facePos="1050, 150, 9200" idx="6" />
+									<!--도약, 12시쪽-->
+									<node name="jump" pos="1050, 150, 9200" speed="900" heightMultiplier="0.4" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="7" />
+									<node name="SetValue" key="FlyAssistanceMode" value="0" />
+									<!--변수 초기화-->
+									<node name="SetValue" key="ChargeTeleportMode" value="0" />
+									<!-- 다음 사용을 위해 변수 초기화 하기-->
+									<node name="SetValue" key="ChargeTeleportContinue" value="0" />
+									<!-- 다음 사용을 위해 변수 초기화 하기,   마드리아가 기력 모을 때 플레이어가 계속 가까이 붙어서 순간이동 하는데 얼마나 계속 순간이동 할지를 경정하는 변수 -->
+									<node name="skill" faceTarget="0" idx="3" />
+									<!--지친동작 취하기-->
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="buff" type="add" id="50170030" level="1" />
+									<!-- 레벨1: HP 48% 회복하기-->
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="Phase" value="3">
+					<node name="select" prob="99999,9899,80,4,16">
+						<!--루카락스가 3페이즈 일때  행동 , 다음 4페이지 신호 받으면 바로바로 행동할 수 있도록 고려해서 잘 설정해야 함-->
+						<node name="skill" cooltime="9999999" idx="2" />
+						<!--3페이즈 시작을 알리는 마드리아 성우 음성-->
+						<!--단상 위로 점프 올라가기-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="9999999">
+							<!-- 다음 4페이지 신호 받으면 바로바로 행동할 수 있도록, 이 행동 최초 딱 한번만 하도록 쿨타임 길게 설정해야 함 -->
+							<aiPreset name="UpperPlatformTypeA" />
+							<!--2페이지에서 TypeB 사용했기에 겹치지 않기 위헤 TypeA사용-->
+						</node>
+						<!--루카락스가 몸통 돌진 하는 일반적인 상황에는 주로 이 행동을 함-->
+						<node name="skill" cooltime="65000" idx="11">
+							<!--불큐브 분산 배치-->
+							<node name="target" type="near" from="10" to="1500">
+								<node name="standby" limit="300" faceTarget="1" />
+								<!--다음 4페이즈에서 루카락스한테 신호 받으면 바로바로 행동해야 하기 때문에 standby 시간 짧게 함-->
+							</node>
+						</node>
+						<node name="skill" cooltime="23000" idx="21">
+							<!--투척 바닥 불큐브-->
+							<node name="target" type="near" from="10" to="1500">
+								<node name="standby" limit="300" faceTarget="1" />
+							</node>
+						</node>
+						<node name="standby" limit="500" faceTarget="1">
+							<node name="target" type="near" from="10" to="1500" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="999999,0">
+						<!--루카락스가 4페이즈 일때  행동-->
+						<!--아래 ##prob와 선언된 것과 경쟁하기 때문에 확률 확실이 높게 해야 함-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="9999999">
+							<!--이 페이지 넘어오자마자 바로 순간이동 하는 상황 막기 위해 시작하자마자 1초 이내 대기 상태로 있음-->
+							<!--Phase = 2 루카락스 날기 패턴 때 깍였던 HP 상태가 아직 유지될 수 있기 때문에 마드리아 HP 상태에 따라 어느정도 회복 시킴-->
+							<node name="conditions">
+								<condition name="hpOver" value="50">
+									<node name="standby" limit="200" faceTarget="1" />
+								</condition>
+								<condition name="hpOver" value="30">
+									<node name="buff" type="add" id="50170030" level="2">
+										<!--레벨2: HP 20% 회복하기-->
+										<node name="standby" limit="900" faceTarget="1" />
+										<!--HP회복하는 동안 가만히 서있는  타이밍 꼭  필요, 이거 없으면 아래 ##prob 부분 먼저 선언되고 이후 HP 회복되어서 "if hpHigher="10" 실행되면 AI꼬이기 때문에 꼭 이거 넣어야 함-->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="buff" type="add" id="50170030" level="1">
+										<!--레벨1: HP 48% 회복하기-->
+										<node name="standby" limit="900" faceTarget="1" />
+										<!--HP회복하는 동안 가만히 서있는  타이밍 꼭  필요, 이거 없으면 아래 ##prob 부분 먼저 선언되고 이후 HP 회복되어서 "if hpHigher="10" 실행되면 AI꼬이기 때문에 꼭 이거 넣어야 함-->
+									</node>
+								</condition>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="hpOver" value="10">
+								<!--마드리아 HP가 10% 이상이면 평상시 공격 행동을 함-->
+								<node name="conditions">
+									<condition name="extraData" key="RoarBuffMe" value="1">
+										<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+											<node name="skill" facePos="1500, 2050, 9200" idx="6" />
+											<!--전투판 바닥 12시쪽 -->
+											<node name="jump" pos="1500, 2050, 9200" speed="1000" heightMultiplier="0.4" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="7" />
+											<node name="standby" limit="200" faceTarget="1" />
+											<node name="SetValueRangeTarget" key="RoarMode" value="1" radius="3500" height="3500" />
+											<!--광폭화 행동을 하라고 신호 보냄, 먼저 신호 보내고 버프 투사체는 이어서 행동하도록 함, 버프 투사체 받고 바로 루카락스가 괴성 지르는 행동을 해야 하는데, 그것이 잘 안되어서 우선 먼저 신호 보내는 형태로 설정함 -->
+											<node name="skill" faceTarget="0" idx="10" />
+											<!--루카락스한테 광폭화 명령 버프 투척함 -->
+											<node name="SetValue" key="RoarBuffMe" value="0" />
+											<!--이 변수 초기화 하기, 초기화 안하면 이 단계에서 계속 머물게 됨 -->
+											<node name="standby" limit="1200" faceTarget="1" />
+											<node name="announce" message="$MadriaKillBuffOff_Appearance$" durationTick="12000" />
+											<!-- 마드리아를 공격하면 루카락스 버프 풀림을  알리는 메시지 -->
+											<node name="standby" limit="2300" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="989,9,1,1">
+											<!--마드리아가 루카락스한테 광폭화 명령 내린 다음에 HP 10% 이상이면 계속 아래 행동을 반복함-->
+											<!--순간이동 행동 패턴, 주로 남쪽 지점으로 순간이동함-->
+											<node name="standby" limit="200" faceTarget="1" cooltime="11000">
+												<node name="select" prob="20,20,20,20,20">
+													<node name="skill" cooltime="45000" idx="12">
+														<node name="teleport" pos="1490, 1010, 9200" />
+														<!--3시쪽 -->
+													</node>
+													<node name="skill" cooltime="45000" idx="12">
+														<node name="teleport" pos="1050, 300, 9200" />
+														<!--5시쪽 -->
+													</node>
+													<node name="skill" cooltime="45000" idx="12">
+														<node name="teleport" pos="525, 1125, 9200" />
+														<!--6시쪽 -->
+													</node>
+													<node name="skill" cooltime="45000" idx="12">
+														<node name="teleport" pos="-300, 1650, 9200" />
+														<!--7시쪽 -->
+													</node>
+													<node name="skill" ooltime="45000" idx="12">
+														<node name="teleport" pos="360, 2015, 9200" />
+														<!--9시쪽 -->
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="5000" idx="21">
+												<!--투척 바닥 불큐브-->
+												<node name="target" type="near" from="10" to="1500">
+													<node name="standby" limit="700" faceTarget="1" />
+												</node>
+											</node>
+											<node name="standby" limit="250" faceTarget="1">
+												<node name="target" type="near" from="10" to="1500" />
+											</node>
+											<node name="standby" limit="200" faceTarget="1" cooltime="15000">
+												<node name="announce" message="$MadriaKillBuffOff_Appearance$" durationTick="12000" />
+												<!-- 마드리아를 공격하면 루카락스 버프 풀림을  알리는 메시지 -->
+											</node>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="999,9,1">
+									<!--위 ##prob와 선언된 것과 경쟁하기 때문에 확률 적당히 높게 해야 함-->
+									<node name="standby" limit="300" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+										<node name="SetValueRangeTarget" key="RoarModeStop" value="1" radius="3500" height="3500" />
+										<!--광폭화 종료  신호 보냄 -->
+										<node name="skill" faceTarget="0" idx="20" />
+										<!--바닥 전체 독 필드 깔기, 최후의 발악 -->
+										<node name="skill" facePos="150, 2250, 9500" idx="6" />
+										<!--단상 12시쪽으로 도망 -->
+										<node name="jump" pos="150, 2250, 9500" speed="1000" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="7" />
+										<node name="announce" message="$MadriaFianlAttack_Appearance$" durationTick="18000" />
+										<!-- 마드리아가 바닥에 대미지필드를 설치하고 도망갔다는 것을 알림-->
+										<node name="standby" limit="300" faceTarget="1" />
+									</node>
+									<node name="skill" faceTarget="0" cooltime="60000" idx="3" />
+									<!--지친 상태로 있기, 레벨1 성우 음성 출력, 이 부분 쿨타임 없으면 마드리아가 계속 괴로워 하는 소리를 낼것임 -->
+									<node name="skill" faceTarget="0" idx="4" />
+									<!--지친 상태로 있기, 레벨2 음성 없음 -->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="UpperPlatformTypeA">
+			<node name="select" prob="33,33,33">
+				<!--마드리아가 전투판 바닥에서 단상 위로 올라갈때 점프 이동 설정하는 부분-->
+				<node name="standby" limit="1200" faceTarget="1" cooltime="55000" isKeepBattle="true">
+					<node name="skill" facePos="1875, 2466, 9500" idx="6" />
+					<!--도약, 12시쪽-->
+					<node name="jump" pos="1875, 2466, 9500" speed="1000" heightMultiplier="0.4" />
+					<!--점프중 -->
+					<node name="skill" faceTarget="0" idx="7" />
+					<node name="standby" limit="2000" faceTarget="1" />
+				</node>
+				<node name="standby" limit="1200" faceTarget="1" cooltime="55000" isKeepBattle="true">
+					<node name="skill" facePos="1875, 825, 9500" idx="6" />
+					<!--도약, 3시쪽-->
+					<node name="jump" pos="1875, 825, 9500" speed="1000" heightMultiplier="0.4" />
+					<!--점프중 -->
+					<node name="skill" faceTarget="0" idx="7" />
+					<node name="standby" limit="2000" faceTarget="1" />
+				</node>
+				<node name="standby" limit="1200" faceTarget="1" cooltime="55000" isKeepBattle="true">
+					<node name="skill" facePos="225, 2475, 9500" idx="6" />
+					<!--도약, 9시쪽-->
+					<node name="jump" pos="225, 2475, 9500" speed="1000" heightMultiplier="0.4" />
+					<!--점프중 -->
+					<node name="skill" faceTarget="0" idx="7" />
+					<node name="standby" limit="2000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="UpperPlatformTypeB">
+			<node name="select" prob="25,25,25,25">
+				<!--마드리아가 전투판 바닥에서 단상 위로 올라갈때 점프 이동 설정하는 부분-->
+				<node name="standby" limit="1200" faceTarget="1" cooltime="75000" isKeepBattle="true">
+					<node name="skill" facePos="1950, 1050, 9500" idx="6" />
+					<!--도약, 3시쪽 상단 -->
+					<node name="jump" pos="1950, 1050, 9500" speed="1000" heightMultiplier="0.4" />
+					<!--점프중 -->
+					<node name="skill" faceTarget="0" idx="7" />
+					<node name="standby" limit="2000" faceTarget="1" />
+				</node>
+				<node name="standby" limit="1200" faceTarget="1" cooltime="75000" isKeepBattle="true">
+					<node name="skill" facePos="1650, 600, 9500" idx="6" />
+					<!--도약, 3시쪽 하단-->
+					<node name="jump" pos="1650, 600, 9500" speed="1000" heightMultiplier="0.4" />
+					<!--점프중 -->
+					<node name="skill" faceTarget="0" idx="7" />
+					<node name="standby" limit="2000" faceTarget="1" />
+				</node>
+				<node name="standby" limit="1200" faceTarget="1" cooltime="75000" isKeepBattle="true">
+					<node name="skill" facePos="450, 2550, 9500" idx="6" />
+					<!--도약, 9시쪽 상단 -->
+					<node name="jump" pos="450, 2550, 9500" speed="1000" heightMultiplier="0.4" />
+					<!--점프중 -->
+					<node name="skill" faceTarget="0" idx="7" />
+					<node name="standby" limit="2000" faceTarget="1" />
+				</node>
+				<node name="standby" limit="1200" faceTarget="1" cooltime="75000" isKeepBattle="true">
+					<node name="skill" facePos="0, 2250, 9500" idx="6" />
+					<!--도약, 9시쪽 하단-->
+					<node name="jump" pos="0, 2250, 9500" speed="1000" heightMultiplier="0.4" />
+					<!--점프중 -->
+					<node name="skill" faceTarget="0" idx="7" />
+					<node name="standby" limit="2000" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FlyAssistancePattern">
+			<node name="conditions">
+				<condition name="extraData" key="ChargeTeleportMode" value="0">
+					<!--기력 모으기 패턴  최초 시작 -->
+					<node name="skill" faceTarget="1" idx="14">
+						<!--기력 모으기 시작 -->
+						<node name="skill" faceTarget="0" idx="15">
+							<!--기력 모으기 계속 -->
+							<node name="SetValue" key="ChargeTeleportMode" value="1">
+								<!--이 변수를 1로 셋팅해 다음 단계로 넘어가도록 함 -->
+								<node name="announce" message="$MadriaCloseUpperOff_Appearance$" durationTick="9000" />
+								<!-- 마드리아한테 계속 가까이 붙어서 하늘에 있는 동료를 보호하라고 알리는 메시지 -->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="ChargeTeleportMode" value="1">
+					<node name="select" prob="9999,25,24,25,25,1">
+						<!--기력 모으며 순간이동 도망가기 -->
+						<!--여기는 같은 전투판에 플레이어가 1명이라도 있으면 무조건 광역 전체 스턴 기술 사용하도록 함-->
+						<node name="skill" faceTarget="0" cooltime="100000" idx="16">
+							<!--기력 모으며 순간이동 , 나이트의 기사의 의지 쿨타임 100초이기 때문에 이 공격 쿨타임 100초로 함-->
+							<node name="teleport" pos="550, 2150, 9200">
+								<!--9시-->
+								<node name="target" type="near" from="10" to="1700">
+									<node name="skill" faceTarget="0" idx="16">
+										<!--기력 모으며 순간이동 -->
+										<node name="teleport" pos="1550, 2150, 9200">
+											<!--12시-->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="15">
+													<!--같은 전투판에 플레이어가 1명이라도 있으면, 반경 1300 이내-->
+													<node name="skill" faceTarget="0" isKeepBattle="true" idx="19">
+														<!--##사방 폭발## -->
+														<node name="standby" limit="2500" faceTarget="1" />
+														<node name="skill" faceTarget="1" idx="14" />
+														<!--기력 모으기 시작, 전투판 아래쪽에 있는 파티원이 기절할 경우 패널티를 주기 위해 이 단계에서 스킬 다시 시용함 -->
+														<node name="skill" faceTarget="0" idx="15" />
+														<!--기력 모으기 -->
+														<node name="skill" faceTarget="0" idx="17" />
+														<!--##전방 발사## -->
+														<node name="standby" limit="7000" faceTarget="1" />
+														<node name="SetValue" key="ChargeTeleportMode" value="0" />
+														<!--이 변수를 0으로 로 셋팅해 처음부터 다시 시작함 -->
+														<node name="SetValue" key="ChargeTeleportContinue" value="0" />
+														<!-- 다음 사용을 위해 변수 초기화 하기,   마드리아가 기력 모을 때 플레이어가 계속 가까이 붙어서 순간이동 하는데 얼마나 계속 순간이동 할지를 경정하는 변수 -->
+														<node name="skill" faceTarget="1" idx="21" />
+														<!--투사체 발사 바닥 불깔기 공격 -->
+														<node name="standby" limit="4000" faceTarget="1" />
+													</node>
+												</condition>
+												<condition name="true">
+													<!--없으면-->
+													<node name="skill" faceTarget="1" isKeepBattle="true" idx="18">
+														<!--## 위쪽 발사## -->
+														<node name="standby" limit="2000" faceTarget="1" />
+														<node name="SetValue" key="ChargeTeleportMode" value="0" />
+														<!--이 변수를 0으로 로 셋팅해 처음부터 다시 시작함 -->
+														<node name="SetValue" key="ChargeTeleportContinue" value="0" />
+														<!-- 다음 사용을 위해 변수 초기화 하기,   마드리아가 기력 모을 때 플레이어가 계속 가까이 붙어서 순간이동 하는데 얼마나 계속 순간이동 할지를 경정하는 변수 -->
+														<!--위쪽 발사 하면 12시 단상위로 점프 한 다음에, 4~5초 뒤 다시 전투판 정중앙으로 점프 내려오도록 함-->
+														<node name="skill" facePos="1875, 2466, 9500" idx="6" />
+														<!--도약, 12시쪽-->
+														<node name="jump" pos="1875, 2466, 9500" speed="900" heightMultiplier="0.4" />
+														<!--점프중 -->
+														<node name="skill" faceTarget="0" idx="7" />
+														<node name="standby" limit="1000" faceTarget="1" />
+														<node name="announce" message="$MadriaKillUpperOff_Appearance$" durationTick="8000" />
+														<!-- 마드리아를 공격하면 날고있는 루카락스가 내려온다는 내용을 알려줌 -->
+														<node name="standby" limit="3200" faceTarget="1" />
+														<node name="skill" facePos="1050, 1650, 9200" idx="6" />
+														<!--도약, 전투판 정 중앙-->
+														<node name="jump" pos="1050, 1650, 9200" speed="900" heightMultiplier="0.4" />
+														<!--점프중 -->
+														<node name="skill" faceTarget="0" idx="7" />
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</condition>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="9500" idx="16">
+							<!--기력 모으며 순간이동 -->
+							<node name="SetValue" key="ChargeTeleportMode" value="2">
+								<!--이 변수를 2로 셋팅해 다음 단계로 넘어가도록 함 -->
+								<node name="teleport" pos="1550, 2150, 9200" />
+								<!--12시-->
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="9500" idx="16">
+							<!--기력 모으며 순간이동 -->
+							<node name="SetValue" key="ChargeTeleportMode" value="2">
+								<!--이 변수를 2로 셋팅해 다음 단계로 넘어가도록 함 -->
+								<node name="teleport" pos="1550, 1100, 9200" />
+								<!--3시-->
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="9500" idx="16">
+							<!--기력 모으며 순간이동 -->
+							<node name="SetValue" key="ChargeTeleportMode" value="2">
+								<!--이 변수를 2로 셋팅해 다음 단계로 넘어가도록 함 -->
+								<node name="teleport" pos="500, 1150, 9200" />
+								<!--6시-->
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" cooltime="9500" idx="16">
+							<!--기력 모으며 순간이동 -->
+							<node name="SetValue" key="ChargeTeleportMode" value="2">
+								<!--이 변수를 2로 셋팅해 다음 단계로 넘어가도록 함 -->
+								<node name="teleport" pos="550, 2150, 9200" />
+								<!--9시-->
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" idx="16">
+							<!--기력 모으며 순간이동 -->
+							<node name="SetValue" key="ChargeTeleportMode" value="2">
+								<!--이 변수를 2로 셋팅해 다음 단계로 넘어가도록 함 -->
+								<node name="teleport" pos="1550, 1100, 9200" />
+								<!--	3시   전투판 정 중앙, 혹시 위 4개가 쿨타임에 걸릴 경우를 대비한 설정임,  "1050, 1650, 9200" 이 좌표는 정 중앙-->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="ChargeTeleportMode" value="2">
+					<!--순간이동 도망 후 플레이어가 가까이 붙어있는지 거리체크하는 부분 -->
+					<node name="target" type="near" from="10" to="1700">
+						<!--이 단계에서 거리체크 하는 부분 꼭 필요 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="14">
+								<!--마드리아가 기력 모을 때 가까이 붙은 플레이어가 있다면, 가까이 붙는 기준은 반경 713, 검색하기 편하게 하기 위해 특별한 숫자로 설정 -->
+								<node name="conditions">
+									<condition name="extraData" key="ChargeTeleportContinue" value="2" op="lessEqual">
+										<!--이 변수가 2 이하라는 것은 기력모으기 순간이동 행동을 3번 해야하는데 이상하개 4번 함, 나중에 살펴보자 -->
+										<node name="SetValue" key="ChargeTeleportMode" value="1">
+											<!--이 변수를 2로 셋팅해 이전 단계인 순간이동 회피 단계로 가도록 함-->
+											<node name="SetValue" key="ChargeTeleportContinue" value="1" isModify="1" />
+											<!--이 변수 1씩 더하는데, 4번 이상 더하면 @@성공@@ 처리됨-->
+										</node>
+									</condition>
+									<condition name="true">
+										<!--ChargeTeleportContinue = 3 즉 기력모으기 순간이동 행동 3번 했다는 뜻인데, 실제로 4번함 나중에 자세히 살펴봐야할거 같음 -->
+										<!--@@성공@@-->
+										<node name="SetValue" key="ChargeTeleportMode" value="3">
+											<!--@@성공@@:  이 변수를 3으로 셋팅해 다음 단계인 같은 전투판에 있는 대상 공격하기 상태로 가기 -->
+											<node name="SetValue" key="ChargeTeleportContinue" value="0" />
+											<!-- 다음 사용을 위해 변수 초기화 하기,   마드리아가 기력 모을 때 플레이어가 계속 가까이 붙어서 순간이동 하는데 얼마나 계속 순간이동 할지를 경정하는 변수 -->
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<!--마드리아가 순간이동 기력 모을 때 가까이 붙은 플레이어가 없다면 -->
+								<!-- @@실패@@ -->
+								<node name="target" type="near" center="730, 1387, 10680">
+									<!--2층 지형의 대상을 최우선 타겟팅 함 -->
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="18">
+											<node name="select" prob="50,50">
+												<!--타겟팅 대상이 위에 있으면 -->
+												<node name="SetValue" cooltime="10000" key="ChargeTeleportMode" value="1" />
+												<!--이 변수를 1으로 위 단계로 넘어감, 순간이동 기력 모으기 단계에서 플레이어가 가까이 다가가지 못해도 바로 공격하지 말고 한번 정도는 봐주기, 즉 실패했지만 한번정도는 봐주기 -->
+												<node name="skill" faceTarget="1" idx="18">
+													<!--## 위쪽 발사## -->
+													<node name="standby" limit="2000" faceTarget="1">
+														<node name="SetValue" key="ChargeTeleportMode" value="0">
+															<!--이 변수를 0으로 로 셋팅해 처음부터 다시 시작함 -->
+															<node name="SetValue" key="ChargeTeleportContinue" value="0">
+																<!-- 다음 사용을 위해 변수 초기화 하기,   마드리아가 기력 모을 때 플레이어가 계속 가까이 붙어서 순간이동 하는데 얼마나 계속 순간이동 할지를 경정하는 변수 -->
+																<node name="target" type="near" from="10" to="2600">
+																	<node name="conditions">
+																		<condition name="skillRange" skillIdx="15">
+																			<!--플레이어가 같은 바닥 전투판에 있으면, 위쪽 지형으로 점프 이동해 잠시 피신함 -->
+																			<!--위쪽 발사 하면 12시 단상위로 점프 한 다음에, 4~5초 뒤 다시 전투판 정중앙으로 점프 내려오도록 함-->
+																			<node name="skill" facePos="1875, 2466, 9500" isKeepBattle="true" idx="6">
+																				<!--도약, 12시쪽-->
+																				<node name="jump" pos="1875, 2466, 9500" speed="900" heightMultiplier="0.4" />
+																				<!--점프중 -->
+																				<node name="skill" faceTarget="0" idx="7" />
+																				<node name="standby" limit="1000" faceTarget="1" />
+																				<node name="announce" message="$MadriaKillUpperOff_Appearance$" durationTick="8000" />
+																				<!-- 마드리아를 공격하면 날고있는 루카락스가 내려온다는 내용을 알려줌 -->
+																				<node name="standby" limit="3500" faceTarget="1" />
+																				<node name="skill" facePos="1050, 1650, 9200" idx="6" />
+																				<!--도약, 전투판 정 중앙-->
+																				<node name="jump" pos="1050, 1650, 9200" speed="900" heightMultiplier="0.4" />
+																				<!--점프중 -->
+																				<node name="skill" faceTarget="0" idx="7" />
+																				<node name="standby" limit="1500" faceTarget="1" />
+																			</node>
+																		</condition>
+																		<condition name="true">
+																			<!--같은 바닥 전투판에 아무도 없으면, 0.3초 standby 후 바로 다음 행동을 취함-->
+																			<node name="standby" limit="300" faceTarget="1">
+																				<node name="announce" message="$MadriaKillUpperOff_Appearance$" durationTick="5000" />
+																				<!-- 마드리아를 공격하면 날고있는 루카락스가 내려온다는 내용을 알려줌 -->
+																			</node>
+																		</condition>
+																	</node>
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="50,50">
+												<!-- 모든 파티원이 아래에 있으면, 일부러 마드리아를 극딜하려고 모든 파티원이 전부 내려올 경우를 견제하기 위한 장치 -->
+												<!--사방 폭발 공격 타입-->
+												<node name="skill" faceTarget="0" cooltime="100000" isKeepBattle="true" idx="16">
+													<!--기력 모으기 순간이동, 나이트의 기사의 의지 쿨타임 100초이기 때문에 이 공격 쿨타임 100초로 함-->
+													<node name="teleport" pos="1550, 1100, 9200" />
+													<!--3시-->
+													<node name="skill" faceTarget="0" idx="19" />
+													<!--##사방 폭발## -->
+													<node name="standby" limit="3500" faceTarget="1" />
+													<node name="skill" faceTarget="1" idx="14" />
+													<!--기력 모으기 시작, 전투판 아래쪽에 있는 파티원이 기절할 경우 패널티를 주기 위해 이 단계에서 스킬 다시 시용함 -->
+													<node name="skill" faceTarget="0" idx="16" />
+													<!--기력 모으기 순간이동-->
+													<node name="teleport" pos="500, 1150, 9200" />
+													<!--6시-->
+													<node name="skill" faceTarget="0" idx="17" />
+													<!--##전방 발사## -->
+													<node name="standby" limit="6000" faceTarget="1" />
+													<node name="SetValue" key="ChargeTeleportMode" value="0" />
+													<!--이 변수를 0으로 로 셋팅해 처음부터 다시 시작함 -->
+													<node name="SetValue" key="ChargeTeleportContinue" value="0" />
+													<!-- 다음 사용을 위해 변수 초기화 하기,   마드리아가 기력 모을 때 플레이어가 계속 가까이 붙어서 순간이동 하는데 얼마나 계속 순간이동 할지를 경정하는 변수 -->
+													<node name="skill" faceTarget="1" idx="21" />
+													<!--투사체 발사 바닥 불깔기 공격 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<!--전방 발사 공격 타입-->
+												<node name="skill" faceTarget="0" isKeepBattle="true" idx="16">
+													<!--기력 모으기 순간이동-->
+													<node name="teleport" pos="500, 1150, 9200" />
+													<!--6시-->
+													<node name="skill" faceTarget="0" idx="16" />
+													<!--기력 모으기 순간이동-->
+													<node name="teleport" pos="550, 2150, 9200" />
+													<!--9시-->
+													<node name="skill" faceTarget="0" idx="17" />
+													<!--##전방 발사## -->
+													<node name="standby" limit="2000" faceTarget="1" />
+													<node name="SetValue" key="ChargeTeleportMode" value="0" />
+													<!--이 변수를 0으로 로 셋팅해 처음부터 다시 시작함 -->
+													<node name="SetValue" key="ChargeTeleportContinue" value="0" />
+													<!-- 다음 사용을 위해 변수 초기화 하기,   마드리아가 기력 모을 때 플레이어가 계속 가까이 붙어서 순간이동 하는데 얼마나 계속 순간이동 할지를 경정하는 변수 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--ChargeTeleportMode = 3 인 경우, 즉 @@성공@@ 에 마드리아가 같은 전투판 대상을 공격하는 행동임-->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="17">
+						<!--##전방 발사## -->
+						<node name="standby" limit="9300" faceTarget="1" />
+						<node name="SetValue" key="ChargeTeleportMode" value="0" />
+						<!--이 변수를 0으로 로 셋팅해 처음부터 다시 시작함 -->
+						<node name="skill" faceTarget="1" idx="21" />
+						<!--투사체 발사 바닥 불깔기 공격 -->
+						<node name="standby" limit="4000" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

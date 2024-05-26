@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<!-- 페이즈1 -->
+			<node name="SetValue" key="phase" value="1" />
+		</condition>
+		<condition name="hpLess" value="70">
+			<!-- 페이즈2 -->
+			<node name="SetValue" key="phase" value="2" />
+			<node name="TriggerSetUserValue" triggerID="400005" key="Sidetalk" value="1" />
+			<node name="skill" idx="18" />
+			<node name="skill" idx="19" />
+			<node name="TriggerSetUserValue" triggerID="400004" key="Mesh" value="2" />
+			<node name="standby" limit="500" />
+			<node name="move" destination="-150, -165, 1515" />
+		</condition>
+		<condition name="hpLess" value="40">
+			<!-- 페이즈3 -->
+			<node name="SetValue" key="phase" value="3" />
+			<node name="TriggerSetUserValue" triggerID="400005" key="Sidetalk" value="2" />
+			<node name="skill" idx="18" />
+			<node name="skill" idx="19" />
+			<node name="TriggerSetUserValue" triggerID="400004" key="Mesh" value="3" />
+			<node name="standby" limit="500" />
+			<node name="move" destination="-1050, -165, 1515" />
+			<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonRadius="80, 80, 0" summonPosOffset="-925, -1100, 60" />
+			<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonRadius="80, 80, 0" summonPosOffset="-925, 1100, 60" />
+		</condition>
+	</reserved>
+	<aiPresets>
+		<!-- 내려찍기 패턴 -->
+		<!-- 1페이즈 내려찍기 패턴 1 순차적으로 내려 찍기 -->
+		<aiPreset name="Smash_1">
+			<node name="skill" idx="9" />
+			<node name="standby" limit="100" />
+			<node name="skill" idx="10" />
+			<node name="standby" limit="100" />
+			<node name="skill" idx="11" />
+		</aiPreset>
+		<!-- 내려찍기 랜덤 2번 or 1번-->
+		<aiPreset name="Smash_3">
+			<node name="standby" limit="100">
+				<node name="select" prob="33,33,33">
+					<node name="skill" idx="9" />
+					<node name="skill" idx="10" />
+					<node name="skill" idx="11" />
+				</node>
+			</node>
+			<node name="standby" limit="100">
+				<node name="select" prob="25,25,25,25">
+					<node name="skill" idx="9" />
+					<node name="skill" idx="10" />
+					<node name="skill" idx="11" />
+					<node name="standby" limit="10" />
+				</node>
+			</node>
+		</aiPreset>
+		<!-- 레이저 공격 패턴 -->
+		<!-- 랜덤하게 레이저 사용 -->
+		<aiPreset name="Laser_1">
+			<node name="select" prob="25,25,25,99">
+				<node name="skill" idx="12" />
+				<node name="skill" idx="13" />
+				<node name="skill" idx="14" />
+				<node name="skill" idx="15" />
+			</node>
+		</aiPreset>
+		<!-- 플레이어 체크 후 레이저 사용 -->
+		<aiPreset name="Laser_2">
+			<node name="target" type="far" from="100" to="2500" />
+			<!-- 범위 중에 멀리 있는 플레이어 타겟 -->
+			<node name="conditions">
+				<condition name="extraData" key="phase" value="5">
+					<node name="select" prob="50,50">
+						<!-- 스킬리스트에 범위체크 스킬 표시를 위한 사용하지 않는 스킬 -->
+						<node name="skill" idx="7" />
+						<node name="skill" idx="8" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="8">
+					<node name="select" prob="50,50">
+						<!-- 뒷라인 체크 -->
+						<node name="skill" idx="14" />
+						<node name="skill" idx="15" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="7">
+					<node name="select" prob="50,50">
+						<!-- 뒷라인에 없으면 앞라인 체크 -->
+						<node name="skill" idx="12" />
+						<node name="skill" idx="13" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="10,10,40,40">
+						<!-- 둘다 체크 안되면 -->
+						<node name="skill" idx="12" />
+						<node name="skill" idx="13" />
+						<node name="skill" idx="14" />
+						<node name="skill" idx="15" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!-- 투사체 공격 패턴 -->
+		<!-- 투사체별 공격 패턴 -->
+		<aiPreset name="Ball_Black01">
+			<!-- 검은 산탄 3가지중 랜덤 -->
+			<node name="skill" idx="16" />
+		</aiPreset>
+		<aiPreset name="Ball_White01">
+			<!-- 하얀 산탄 3가지중 랜덤 -->
+			<node name="skill" idx="17" />
+		</aiPreset>
+		<!-- 1페이즈 검정, 하얀 랜덤 -->
+		<aiPreset name="Ball_A1">
+			<node name="select" prob="50,50">
+				<node name="standby" limit="10">
+					<node name="select" prob="33,33,33">
+						<node name="skill" idx="3" />
+						<node name="skill" idx="4" />
+						<node name="skill" idx="5" />
+					</node>
+				</node>
+				<node name="standby" limit="10">
+					<node name="target" type="far" from="100" to="2500" />
+					<!-- 범위 중에 멀리 있는 플레이어 타겟 -->
+					<node name="skill" idx="6" />
+				</node>
+			</node>
+		</aiPreset>
+		<!-- 번개 떨어뜨리기 -->
+		<aiPreset name="Thunder1">
+			<node name="target" type="far" from="100" to="2500" />
+			<!-- 범위 중에 멀리 있는 플레이어 타겟 -->
+			<node name="skill" idx="1" />
+		</aiPreset>
+		<aiPreset name="Thunder2">
+			<node name="target" type="far" from="100" to="2500" />
+			<!-- 범위 중에 멀리 있는 플레이어 타겟 -->
+			<node name="skill" idx="2" />
+		</aiPreset>
+		<!-- 필드 부수기 , 부순 다음 점점 이동 -->
+		<aiPreset name="Field_Break">
+			<node name="skill" idx="18">
+				<node name="standby" limit="1000" />
+				<node name="conditions">
+					<condition name="extraData" key="break" value="1">
+						<node name="TriggerSetUserValue" triggerID="400004" key="Mesh" value="2" />
+						<node name="move" destination="-150, -165, 915" />
+						<node name="SetValue" key="break" value="2" />
+					</condition>
+					<condition name="extraData" key="break" value="2">
+						<node name="TriggerSetUserValue" triggerID="400004" key="Mesh" value="3" />
+						<node name="move" destination="-1050, -165, 915" />
+						<node name="SetValue" key="break" value="3" />
+					</condition>
+					<condition name="true">
+						<node name="TriggerSetUserValue" triggerID="400004" key="Mesh" value="4" />
+						<node name="move" destination="-1950, -165, 915" />
+						<node name="SetValue" key="break" value="4" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+	<battle>
+		<!-- 1페이즈 전투 -->
+		<node name="conditions">
+			<condition name="extraData" key="phase" value="1">
+				<node name="select" prob="70,30">
+					<node name="standby" limit="10" cooltime="20000">
+						<aiPreset name="Smash_1" />
+					</node>
+					<node name="standby" limit="10">
+						<aiPreset name="Laser_2" />
+					</node>
+				</node>
+			</condition>
+			<!--2페이즈 -->
+			<condition name="extraData" key="phase" value="2">
+				<node name="select" prob="20,20,60">
+					<node name="standby" limit="10">
+						<aiPreset name="Laser_2" />
+					</node>
+					<node name="standby" limit="10" cooltime="15000">
+						<aiPreset name="Smash_3" />
+					</node>
+					<node name="standby" limit="10">
+						<node name="select" prob="50,50">
+							<aiPreset name="Ball_Black01" />
+							<aiPreset name="Ball_White01" />
+						</node>
+					</node>
+				</node>
+			</condition>
+			<!-- 3페이즈 -->
+			<condition name="true">
+				<node name="select" prob="20,40,40">
+					<node name="standby" limit="10">
+						<aiPreset name="Laser_2" />
+					</node>
+					<node name="standby" limit="10" cooltime="15000">
+						<aiPreset name="Smash_3" />
+					</node>
+					<node name="standby" limit="10">
+						<node name="select" prob="50,50">
+							<aiPreset name="Ball_Black01" />
+							<aiPreset name="Ball_White01" />
+						</node>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

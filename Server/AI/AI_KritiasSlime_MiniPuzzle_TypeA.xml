@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--황금상자 발견 기믹 / 크리티아스 슬라임 / 길 막고 있는 NPC에게 감정 표현하기 / 경계 상태에서 PC가 정중한 인사 감정 표현을 하면 길을 비켜주는 타입 -->
+	<battle>
+		<node name="select" prob="99999999,0">
+			<!-- 도전자 버프를 가진 우호적인 PC 타겟 -->
+			<node name="standby" limit="10" faceTarget="1" animation="Sit_Down_A" cooltime="100" initialCooltime="1">
+				<node name="target" type="near" target="friendly" from="10" to="600" />
+			</node>
+			<!--  경계 중 버프를 가지고 있으면 (PC가 정중한 인사하기 전) -->
+			<node name="conditions">
+				<condition name="additional" id="71001191">
+					<!-- 경계 상태 유지 / 도전자 버프를 가진 우호적인 PC 바라보면서 대기 -->
+					<node name="standby" limit="1000" faceTarget="1" animation="Sit_Down_A" />
+				</condition>
+				<!--  경계 중 버프가 없으면 (PC가 정중한 인사한 이후) -->
+				<condition name="true">
+					<node name="select" prob="100,1">
+						<!-- 트리거에 신호 보내고 사망 (트리거에서 연출용 NPC 소환) -->
+						<node name="standby" limit="10" faceTarget="1" animation="Sit_Down_A" cooltime="100">
+							<node name="TriggerSetUserValue" triggerID="15000" key="StandAsideTypeA" value="1" />
+						</node>
+						<node name="standby" limit="10" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

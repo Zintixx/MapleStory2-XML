@@ -1,0 +1,898 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<node name="conditions">
+				<condition name="hpOver" value="98">
+					<node name="select" prob="9999,0">
+						<!--#1페이즈   방어력 높은 상태에서 힘들게 HP를 줄어야 하는 페이즈-->
+						<node name="skill" cooltime="999999" faceTarget="0" idx="18" />
+						<!--최초 전투 돌입 때 그림자 갑옷 버프 사용하기-->
+						<node name="conditions">
+							<condition name="state" targetState="holdme">
+								<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+								<node name="skill" idx="3" />
+								<!-- 매달린 상대 떨구기 위한 돌진 공격-->
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="50,30,19,1">
+											<node name="skill" idx="2">
+												<node name="select" prob="40,35,25">
+													<!--양손 공격 -->
+													<node name="standby" limit="500" faceTarget="0" />
+													<node name="skill" faceTarget="0" idx="7" />
+													<!--귀찮아서 밀처내기 -->
+													<node name="skill" faceTarget="0" idx="8" />
+													<!--두리번 거리기 -->
+												</node>
+											</node>
+											<node name="skill" idx="1">
+												<node name="select" prob="40,35,25">
+													<!--한손 공격 -->
+													<node name="standby" limit="500" faceTarget="0" />
+													<node name="skill" faceTarget="0" idx="7" />
+													<!--귀찮아서 밀처내기 -->
+													<node name="skill" faceTarget="0" idx="8" />
+													<!--두리번 거리기 -->
+												</node>
+											</node>
+											<node name="skill" idx="3">
+												<node name="select" prob="40,35,25">
+													<!--돌진 공격 -->
+													<node name="standby" limit="500" faceTarget="0" />
+													<node name="skill" faceTarget="0" idx="7" />
+													<!--귀찮아서 밀처내기 -->
+													<node name="skill" faceTarget="0" idx="8" />
+													<!--두리번 거리기 -->
+												</node>
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="1">
+												<node name="select" prob="52,47,1">
+													<node name="skill" idx="1">
+														<node name="select" prob="40,35,25">
+															<!--한손 공격 -->
+															<node name="standby" limit="500" faceTarget="0" />
+															<node name="skill" faceTarget="0" idx="7" />
+															<!--귀찮아서 밀처내기 -->
+															<node name="skill" faceTarget="0" idx="8" />
+															<!--두리번 거리기 -->
+														</node>
+													</node>
+													<node name="skill" idx="3">
+														<node name="select" prob="40,35,25">
+															<!--돌진 공격 -->
+															<node name="standby" limit="500" faceTarget="0" />
+															<node name="skill" faceTarget="0" idx="7" />
+															<!--귀찮아서 밀처내기 -->
+															<node name="skill" faceTarget="0" idx="8" />
+															<!--두리번 거리기 -->
+														</node>
+													</node>
+													<node name="standby" limit="500" faceTarget="0" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="50,49,1">
+													<node name="skill" idx="3">
+														<node name="select" prob="40,35,25">
+															<!--돌진 공격 -->
+															<node name="standby" limit="500" faceTarget="0" />
+															<node name="skill" faceTarget="0" idx="7" />
+															<!--귀찮아서 밀처내기 -->
+															<node name="skill" faceTarget="0" idx="8" />
+															<!--두리번 거리기 -->
+														</node>
+													</node>
+													<node name="trace" limit="2000" skillIdx="2" />
+													<node name="standby" limit="500" faceTarget="0" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="85">
+					<node name="select" prob="9999,9999,9999,0">
+						<!--#2페이즈   석궁이 소환되어서 이것을 활용해 공략해야하는 페이즈, 애디셔널의 방아력 해제 조건과 일치해야 함-->
+						<node name="setData" key="aiBattleTime" value="0" cooltime="999999" />
+						<!--2페이즈 시작시 battleTimeBegin="0"  설정하기 위해 이 부분을 넣음-->
+						<!--이 페이즈는 다수의 석궁 오브젝트 등장으로 타겟팅 가능 목표물이 많아지기 때문에 가까이 있는 대상을 바로 타겟팅 하도록 이 페이즈에서만 넣음 -->
+						<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+							<node name="target" type="near" from="10" to="1200" />
+						</node>
+						<!--석궁 파괴용 밀치기 기폭발 -->
+						<node name="skill" cooltime="27000" initialCooltime="1" idx="6">
+							<node name="skill" faceTarget="0" cooltime="40000" idx="25" />
+							<!-- 석궁 파괴하면서 성우 목소리 나오게 하기-->
+						</node>
+						<node name="conditions">
+							<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="13000" battleTimeLoop="52000">
+								<node name="select" prob="9999,0">
+									<!--석궁 공격 패턴 Type1-->
+									<!--***그린후드 보우 소환 생성   4개-->
+									<node name="standby" limit="200" cooltime="30000" initialCooltime="1" isKeepBattle="true">
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" lifeTime="6000" summonPos="4200, -3450, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" lifeTime="6000" summonPos="4050, -4050, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" lifeTime="6000" summonPos="3450, -4350, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" lifeTime="6000" summonPos="3000, -4200, 2950" />
+									</node>
+									<node name="conditions">
+										<condition name="state" targetState="holdme">
+											<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+											<node name="skill" idx="3" />
+											<!-- 매달린 상대 구르기 위한 돌진 공격-->
+										</condition>
+										<condition name="true">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="2">
+													<node name="select" prob="50,30,19,1">
+														<node name="skill" idx="2">
+															<!--양손 공격 -->
+															<node name="standby" limit="500" faceTarget="0" />
+														</node>
+														<node name="skill" idx="1">
+															<!--한손 공격 -->
+															<node name="standby" limit="500" faceTarget="0" />
+														</node>
+														<node name="skill" idx="3">
+															<!--돌진 공격 -->
+															<node name="standby" limit="500" faceTarget="0" />
+														</node>
+														<node name="standby" limit="500" faceTarget="0" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="conditions">
+														<condition name="skillRange" skillIdx="1">
+															<node name="select" prob="52,47,1">
+																<node name="skill" idx="1">
+																	<!--한손 공격 -->
+																	<node name="standby" limit="500" faceTarget="0" />
+																</node>
+																<node name="skill" idx="3">
+																	<!--돌진 공격 -->
+																	<node name="standby" limit="500" faceTarget="0" />
+																</node>
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</condition>
+														<condition name="true">
+															<node name="select" prob="50,49,1">
+																<node name="skill" idx="3">
+																	<!--돌진 공격 -->
+																	<node name="standby" limit="500" faceTarget="0" />
+																</node>
+																<node name="trace" limit="2000" skillIdx="2" />
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</condition>
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+									<!--석궁 공격 패턴 Type1-->
+								</node>
+							</condition>
+							<condition name="combatTime" battleTimeBegin="13000" battleTimeEnd="26000" battleTimeLoop="52000">
+								<node name="select" prob="9999,0">
+									<!--석궁 공격 패턴 Type2-->
+									<!--***그린후드 보우 소환 생성  3개-->
+									<node name="standby" limit="200" cooltime="30000" initialCooltime="1" isKeepBattle="true">
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="105" lifeTime="6000" summonPos="2700, -4500, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="106" lifeTime="6000" summonPos="2550, -3900, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="107" lifeTime="6000" summonPos="2100, -4050, 2950" />
+									</node>
+									<node name="conditions">
+										<condition name="state" targetState="holdme">
+											<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+											<node name="skill" idx="3" />
+											<!-- 매달린 상대 구르기 위한 돌진 공격-->
+										</condition>
+										<condition name="true">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="2">
+													<node name="select" prob="50,30,19,1">
+														<node name="skill" idx="2">
+															<!--양손 공격 -->
+														</node>
+														<node name="skill" idx="1">
+															<!--한손 공격 -->
+														</node>
+														<node name="skill" idx="3">
+															<!--돌진 공격 -->
+														</node>
+														<node name="standby" limit="500" faceTarget="0" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="conditions">
+														<condition name="skillRange" skillIdx="1">
+															<node name="select" prob="52,47,1">
+																<node name="skill" idx="1">
+																	<!--한손 공격 -->
+																</node>
+																<node name="skill" idx="3">
+																	<!--돌진 공격 -->
+																</node>
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</condition>
+														<condition name="true">
+															<node name="select" prob="50,49,1">
+																<node name="skill" idx="3">
+																	<!--돌진 공격 -->
+																</node>
+																<node name="trace" limit="2000" skillIdx="2" />
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</condition>
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+									<!--석궁 공격 패턴  Type2-->
+								</node>
+							</condition>
+							<condition name="combatTime" battleTimeBegin="26000" battleTimeEnd="39000" battleTimeLoop="52000">
+								<node name="select" prob="9999,0">
+									<!--석궁 공격 패턴  Type3-->
+									<!--***그린후드 보우 소환 생성   4개-->
+									<node name="standby" limit="200" cooltime="30000" initialCooltime="1" isKeepBattle="true">
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="108" lifeTime="6000" summonPos="2400, -3600, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="109" lifeTime="6000" summonPos="1950, -3750, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="110" lifeTime="6000" summonPos="2700, -3000, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="111" lifeTime="6000" summonPos="3150, -2700, 2950" />
+									</node>
+									<node name="conditions">
+										<condition name="state" targetState="holdme">
+											<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+											<node name="skill" idx="3" />
+											<!-- 매달린 상대 구르기 위한 돌진 공격-->
+										</condition>
+										<condition name="true">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="2">
+													<node name="select" prob="50,30,19,1">
+														<node name="skill" idx="2">
+															<!--양손 공격 -->
+														</node>
+														<node name="skill" idx="1">
+															<!--한손 공격 -->
+														</node>
+														<node name="skill" idx="3">
+															<!--돌진 공격 -->
+														</node>
+														<node name="standby" limit="500" faceTarget="0" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="conditions">
+														<condition name="skillRange" skillIdx="1">
+															<node name="select" prob="52,47,1">
+																<node name="skill" idx="1">
+																	<!--한손 공격 -->
+																</node>
+																<node name="skill" idx="3">
+																	<!--돌진 공격 -->
+																</node>
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</condition>
+														<condition name="true">
+															<node name="select" prob="50,49,1">
+																<node name="skill" idx="3">
+																	<!--돌진 공격 -->
+																</node>
+																<node name="trace" limit="2000" skillIdx="2" />
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</condition>
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+									<!--석궁 공격 패턴  Type3-->
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="select" prob="9999,0">
+									<!--석궁 공격 패턴  Type4-->
+									<!--***그린후드 보우 소환 생성   3개-->
+									<node name="standby" limit="200" cooltime="30000" initialCooltime="1" isKeepBattle="true">
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="112" lifeTime="6000" summonPos="3450, -2100, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="113" lifeTime="6000" summonPos="4050, -2400, 2950" />
+										<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="114" lifeTime="6000" summonPos="4350, -2700, 2950" />
+									</node>
+									<node name="conditions">
+										<condition name="state" targetState="holdme">
+											<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+											<node name="skill" idx="3" />
+											<!-- 매달린 상대 구르기 위한 돌진 공격-->
+										</condition>
+										<condition name="true">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="2">
+													<node name="select" prob="50,30,19,1">
+														<node name="skill" idx="2">
+															<!--양손 공격 -->
+														</node>
+														<node name="skill" idx="1">
+															<!--한손 공격 -->
+														</node>
+														<node name="skill" idx="3">
+															<!--돌진 공격 -->
+														</node>
+														<node name="standby" limit="500" faceTarget="0" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="conditions">
+														<condition name="skillRange" skillIdx="1">
+															<node name="select" prob="52,47,1">
+																<node name="skill" idx="1">
+																	<!--한손 공격 -->
+																</node>
+																<node name="skill" idx="3">
+																	<!--돌진 공격 -->
+																</node>
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</condition>
+														<condition name="true">
+															<node name="select" prob="50,49,1">
+																<node name="skill" idx="3">
+																	<!--돌진 공격 -->
+																</node>
+																<node name="trace" limit="2000" skillIdx="2" />
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</condition>
+													</node>
+												</condition>
+											</node>
+										</condition>
+									</node>
+									<!--석궁 공격 패턴  Type4-->
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="60">
+					<node name="select" prob="99999,999,0">
+						<!--#3페이즈    레이저 350도 회전 페이즈 -->
+						<!--맵 중앙으로 이동 후 충격파로 피 강제로 90% 깍기 -->
+						<node name="standby" limit="100" faceTarget="0" cooltime="999999" initialCooltime="1">
+							<node name="skill" facePos="3450, -3300, 2900" isKeepBattle="true" idx="10">
+								<!--전투판  중앙쪽으로 점프 뛰기 -->
+								<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="11" />
+								<!--점프 착지 -->
+								<node name="skill" facePos="2250, -4650, 2900" idx="9" />
+								<!--충격파로 피 강제로 70% 깍기, 페이즈 전환 때 최초 1번만 등장 -->
+								<node name="standby" limit="1000" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="500" cooltime="27000" initialCooltime="1" faceTarget="0">
+							<node name="select" prob="50,50">
+								<node name="skill" idx="12">
+									<!--시계방향으로 회전-->
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+								<node name="skill" idx="13">
+									<!--반시계방향으로 회전-->
+									<node name="standby" limit="500" faceTarget="0" />
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="state" targetState="holdme">
+								<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기  공격을 하여 무조건 떨구게 함-->
+								<node name="skill" idx="3" />
+								<!-- 매달린 상대 떨구기 위한 돌진 공격-->
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="99,1">
+											<node name="skill" idx="2">
+												<!--양손 공격 -->
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2000" skillIdx="2" />
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="35">
+					<node name="select" prob="99999,0">
+						<!--#4페이즈    지진 큐브공격 페이즈  -->
+						<node name="skill" cooltime="999999" initialCooltime="1" faceTarget="0" idx="9">
+							<!--충격파로 피 강제로 70% 깍기, 페이즈 전환 때 최초 1번만 등장 -->
+							<node name="standby" limit="1000" faceTarget="0" />
+						</node>
+						<node name="conditions">
+							<condition name="state" targetState="holdme">
+								<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+								<node name="skill" idx="3" />
+								<!-- 매달린 상대 구르기 위한 돌진 공격-->
+							</condition>
+							<condition name="true">
+								<!--맵 중앙에서 지진큐브공격 패턴-->
+								<node name="skill" facePos="3300, -3450, 2900" cooltime="1" initialCooltime="1" idx="10">
+									<!--전투판  중앙쪽으로 점프 뛰기 -->
+									<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4">
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11">
+											<!--점프 착지 -->
+											<node name="target" type="near" from="50" to="1800">
+												<node name="skill" faceTarget="1" idx="19">
+													<node name="select" prob="25,25,25,25">
+														<!--양손바닥치기  -->
+														<node name="skill" facePos="3300, -4800, 2900" cooltime="100" isKeepBattle="true" idx="20">
+															<!--바닥치기, 큐브 (4~5시)  -->
+															<node name="skill" facePos="1800, -3450, 2900" idx="21" />
+															<!--바닥치기, 큐브  (7~8시)  -->
+															<node name="skill" facePos="3300, -1650, 2900" idx="22" />
+															<!--바닥치기, 큐브  (10~11시) -->
+															<node name="skill" facePos="3300, -4800, 2900" idx="20" />
+															<!--바닥치기, 큐브 (4~5시)  -->
+															<node name="skill" faceTarget="0" idx="24" />
+															<!--몸 휘돌리면서 마무리  -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="1" />
+															<!--한손 공격 -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="4" />
+															<!--3연속 돌진 -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="4" />
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="3" />
+															<node name="standby" limit="500" faceTarget="0" />
+															<node name="standby" limit="1000" faceTarget="0" />
+														</node>
+														<node name="skill" facePos="1800, -3450, 2900" cooltime="100" isKeepBattle="true" idx="21">
+															<!--바닥치기, 큐브  (7~8시)  -->
+															<node name="skill" facePos="3300, -4800, 2900" idx="20" />
+															<!--바닥치기, 큐브 (4~5시)  -->
+															<node name="skill" facePos="4950, -3450, 2900" idx="23" />
+															<!--바닥치기, 큐브 (1~2시) -->
+															<node name="skill" faceTarget="0" idx="24" />
+															<!--몸 휘돌리면서 마무리  -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="1" />
+															<!--한손 공격 -->
+															<node name="target" type="rand" from="50" to="1200" />
+															<node name="skill" idx="1" />
+															<!--한손 공격 -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="4" />
+															<!--2연속 돌진 -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="3" />
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="1" />
+															<!--한손 공격 -->
+															<node name="standby" limit="500" faceTarget="0" />
+														</node>
+														<node name="skill" facePos="3300, -1650, 2900" cooltime="100" isKeepBattle="true" idx="22">
+															<!--바닥치기, 큐브  (10~11시) -->
+															<node name="skill" facePos="1800, -3450, 2900" idx="21" />
+															<!--바닥치기, 큐브  (7~8시)  -->
+															<node name="skill" facePos="4950, -3450, 2900" idx="23" />
+															<!--바닥치기, 큐브 (1~2시) -->
+															<node name="skill" faceTarget="0" idx="24" />
+															<!--몸 휘돌리면서 마무리  -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="19" />
+															<!--양손바닥치기  -->
+															<node name="skill" facePos="1800, -3450, 2900" idx="21" />
+															<!--바닥치기, 큐브  (7~8시)  -->
+															<node name="skill" facePos="3300, -4800, 2900" idx="20" />
+															<!--바닥치기, 큐브 (4~5시)  -->
+															<node name="skill" faceTarget="0" idx="24" />
+															<!--몸 휘돌리면서 마무리  -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="4" />
+															<!--2연속 돌진 -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="3" />
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="1" />
+															<!--한손 공격 -->
+															<node name="target" type="rand" from="50" to="1400" />
+															<node name="skill" idx="1" />
+															<!--한손 공격 -->
+															<node name="standby" limit="500" faceTarget="0" />
+														</node>
+														<node name="skill" facePos="4950, -3450, 2900" cooltime="100" isKeepBattle="true" idx="23">
+															<!--바닥치기, 큐브 (1~2시) -->
+															<node name="skill" facePos="3300, -4800, 2900" idx="20" />
+															<!--바닥치기, 큐브 (4~5시)  -->
+															<node name="skill" facePos="3300, -1650, 2900" idx="22" />
+															<!--바닥치기, 큐브  (10~11시) -->
+															<node name="skill" faceTarget="0" idx="24" />
+															<!--몸 휘돌리면서 마무리  -->
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="4" />
+															<!--4연속 돌진 -->
+															<node name="target" type="rand" from="50" to="1100" />
+															<node name="skill" idx="4" />
+															<node name="target" type="rand" from="50" to="1100" />
+															<node name="skill" idx="4" />
+															<node name="target" type="near" from="50" to="1800" />
+															<node name="skill" idx="3" />
+															<node name="standby" limit="500" faceTarget="0" />
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="17">
+					<node name="select" prob="99999,999,0">
+						<!--#5페이즈    매달리기+360도 회전 페이즈-->
+						<node name="skill" cooltime="999999" initialCooltime="1" idx="9">
+							<!--충격파로 피 강제로 70% 깍기, 페이즈 전환 때 최초 1번만 등장 -->
+							<!--전에 공격력업 버프 사용 했었는데 난이도 이슈 때문에 삭제함   <skill id="50100383" level="1" prob="100" faceTarget="0"/>  -->
+							<node name="standby" limit="1000" faceTarget="0" />
+						</node>
+						<!--맵 중앙으로 이동 후 레이저 발사 -->
+						<node name="standby" limit="100" faceTarget="0" cooltime="45000" initialCooltime="100">
+							<node name="select" prob="34,34,32">
+								<!--패턴 1-->
+								<node name="skill" facePos="3450, -3300, 2900" isKeepBattle="true" idx="10">
+									<!--전투판  중앙쪽으로 점프 뛰기 -->
+									<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+									<!--기폭발 밀쳐내기-->
+									<node name="skill" faceTarget="0" idx="14" />
+									<!--반시계방향 회전 레이저 발사-->
+									<node name="standby" limit="500" faceTarget="0" />
+									<node name="target" type="near" from="150" to="1300" />
+									<node name="skill" idx="3" />
+									<!--돌진 공격 -->
+								</node>
+								<!--패턴 2-->
+								<node name="skill" facePos="3450, -3300, 2900" cooltime="70000" isKeepBattle="true" idx="10">
+									<!--전투판  중앙쪽으로 점프 뛰기 -->
+									<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+									<!--기폭발 밀쳐내기-->
+									<node name="skill" faceTarget="0" idx="15" />
+									<!--시계방향 회전 레이저 발사-->
+									<node name="standby" limit="500" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="5" />
+									<!--기폭발 밀쳐내기  두번?-->
+									<node name="target" type="near" from="150" to="1300" />
+									<node name="skill" idx="3" />
+									<!--돌진 공격 -->
+								</node>
+								<!--패턴 3-->
+								<node name="skill" facePos="3450, -3300, 2900" cooltime="120000" isKeepBattle="true" idx="10">
+									<!--전투판  중앙쪽으로 점프 뛰기  기폭발 연속 2번 버전-->
+									<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+									<!--기폭발 밀쳐내기 첫번? -->
+									<node name="skill" faceTarget="0" idx="5" />
+									<!--기폭발 밀쳐내기  두번?-->
+									<node name="skill" faceTarget="0" idx="15" />
+									<!--시계방향 회전 레이저 발사-->
+									<node name="standby" limit="500" faceTarget="0" />
+									<node name="target" type="near" from="150" to="1300" />
+									<node name="skill" idx="3" />
+									<!--돌진 공격 -->
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="state" targetState="holdme">
+								<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+								<node name="skill" idx="3" />
+								<!-- 매달린 상대 구르기 위한 돌진 공격-->
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="65,34,1">
+											<node name="skill" idx="2">
+												<!--양손 공격 -->
+											</node>
+											<node name="skill" idx="3">
+												<!--돌진 공격 -->
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="44,55,1">
+											<node name="trace" limit="2000" skillIdx="2" />
+											<node name="skill" idx="3">
+												<!--돌진 공격 -->
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="9">
+					<node name="select" prob="999,0">
+						<!--#6페이즈    매달리기+360도 2연속 회전 페이즈-->
+						<!--맵 중앙으로 이동 후 레이저 2연속 발사 -->
+						<node name="standby" limit="100" faceTarget="0" cooltime="42000" initialCooltime="100">
+							<node name="select" prob="50,50">
+								<node name="skill" facePos="3450, -3300, 2900" isKeepBattle="true" idx="10">
+									<!--전투판  중앙쪽으로 점프 뛰기 -->
+									<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+									<!--기폭발 밀쳐내기-->
+									<node name="skill" faceTarget="0" idx="16" />
+									<!--시계+반시계방향 2연속 회전 레이저 발사-->
+									<node name="standby" limit="500" faceTarget="0" />
+									<node name="target" type="near" from="150" to="1300" />
+									<node name="skill" idx="3" />
+									<!--돌진 공격 -->
+								</node>
+								<node name="skill" facePos="3450, -3300, 2900" isKeepBattle="true" idx="10">
+									<!--전투판  중앙쪽으로 점프 뛰기 -->
+									<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+									<!--점프중 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--점프 착지 -->
+									<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+									<!--기폭발 밀쳐내기-->
+									<node name="skill" faceTarget="0" idx="17" />
+									<!--반시계+시계방향 2연속 회전 레이저 발사-->
+									<node name="standby" limit="500" faceTarget="0" />
+									<node name="target" type="near" from="150" to="1300" />
+									<node name="skill" idx="3" />
+									<!--돌진 공격 -->
+								</node>
+							</node>
+						</node>
+						<node name="conditions">
+							<condition name="state" targetState="holdme">
+								<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+								<node name="skill" idx="3" />
+								<!-- 매달린 상대 구르기 위한 돌진 공격-->
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="65,34,1">
+											<node name="skill" idx="2">
+												<!--양손 공격 -->
+											</node>
+											<node name="skill" idx="3">
+												<!--돌진 공격 -->
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="55,44,1">
+											<node name="trace" limit="2000" skillIdx="2" />
+											<node name="skill" idx="3">
+												<!--돌진 공격 -->
+											</node>
+											<node name="standby" limit="500" faceTarget="0" />
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--#7페이즈    막가는  페이즈-->
+					<node name="conditions">
+						<condition name="state" targetState="holdme">
+							<!-- 타겟팅 된 대상이 매달려 있다면 돌진 구르기 공격을 하여 무조건 떨구게 함-->
+							<node name="skill" idx="3" />
+							<!-- 매달린 상대 구르기 위한 돌진 공격-->
+						</condition>
+						<condition name="true">
+							<node name="select" prob="25,25,25,25,1">
+								<!--패턴1 -->
+								<node name="standby" limit="100" faceTarget="0" cooltime="90000">
+									<node name="skill" facePos="3450, -3300, 2900" isKeepBattle="true" idx="10">
+										<!--전투판  중앙쪽으로 점프 뛰기 -->
+										<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11" />
+										<!--점프 착지 -->
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="skill" faceTarget="0" idx="16" />
+										<!--반시계+시계방향 2연속 회전 레이저 발사-->
+										<node name="standby" limit="500" faceTarget="0" />
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="4" />
+										<!--돌진 공격 착지 동작 빠름 -->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="4" />
+										<!--돌진 공격 착지 동작 빠름 -->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="4" />
+										<!--돌진 공격 착지 동작 빠름 -->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="3" />
+										<!--돌진 공격 -->
+										<node name="standby" limit="3500" faceTarget="0" />
+									</node>
+								</node>
+								<!--패턴2 -->
+								<node name="standby" limit="100" faceTarget="0" cooltime="90000">
+									<node name="skill" facePos="3450, -3300, 2900" isKeepBattle="true" idx="10">
+										<!--전투판  중앙쪽으로 점프 뛰기 -->
+										<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11" />
+										<!--점프 착지 -->
+										<node name="skill" facePos="2250, -4650, 2900" faceTarget="0" idx="14" />
+										<!--반시계방향 회전 레이저 발사-->
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="skill" faceTarget="0" idx="17" />
+										<!--시계+반시계방향 2연속 회전 레이저 발사-->
+										<node name="standby" limit="2000" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="15" />
+										<!--시계방향 회전 레이저 발사-->
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="skill" faceTarget="0" idx="17" />
+										<!--시계+반시계방향 2연속 회전 레이저 발사-->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="4" />
+										<!--돌진 공격 착지 동작 빠름 -->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="3" />
+										<!--돌진 공격 -->
+										<node name="trace" limit="1500" skillIdx="2" />
+										<node name="skill" idx="2" />
+										<!--양손공격 -->
+										<node name="standby" limit="3500" faceTarget="0" />
+									</node>
+								</node>
+								<!--패턴3 -->
+								<node name="standby" limit="100" faceTarget="0" cooltime="90000">
+									<node name="skill" facePos="3450, -3300, 2900" isKeepBattle="true" idx="10">
+										<!--전투판  중앙쪽으로 점프 뛰기 -->
+										<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11" />
+										<!--점프 착지 -->
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="standby" limit="2000" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="17" />
+										<!--시계+반시계방향 2연속 회전 레이저 발사-->
+										<node name="standby" limit="1500" faceTarget="0" />
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="standby" limit="2000" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="16" />
+										<!--반시계+시계방향 2연속 회전 레이저 발사-->
+										<node name="target" type="near" from="1" to="1300" />
+										<node name="skill" idx="2" />
+										<!--양손공격 -->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="3" />
+										<!--돌진 공격 -->
+										<node name="trace" limit="1500" skillIdx="2" />
+										<node name="skill" idx="2" />
+										<!--양손공격 -->
+										<node name="standby" limit="3500" faceTarget="0" />
+									</node>
+								</node>
+								<!--패턴4-->
+								<node name="standby" limit="100" faceTarget="0" cooltime="90000">
+									<node name="skill" facePos="3450, -3300, 2900" isKeepBattle="true" idx="10">
+										<!--전투판  중앙쪽으로 점프 뛰기 -->
+										<node name="jump" pos="3450, -3300, 2900" speed="2100" heightMultiplier="0.4" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="11" />
+										<!--점프 착지 -->
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="skill" faceTarget="0" idx="16" />
+										<!--반시계+시계방향 2연속 회전 레이저 발사-->
+										<node name="target" type="near" from="1" to="1300" />
+										<node name="skill" idx="2" />
+										<!--양손공격 -->
+										<node name="standby" limit="2000" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="17" />
+										<!--시계+반시계방향 2연속 회전 레이저 발사-->
+										<node name="standby" limit="1500" faceTarget="0" />
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="standby" limit="2000" faceTarget="1" />
+										<node name="skill" faceTarget="0" idx="16" />
+										<!--반시계+시계방향 2연속 회전 레이저 발사-->
+										<node name="skill" facePos="2250, -4650, 2900" idx="5" />
+										<!--기폭발 밀쳐내기-->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="4" />
+										<!--돌진 공격 착지 동작 빠름 -->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="4" />
+										<!--돌진 공격 착지 동작 빠름 -->
+										<node name="target" type="near" from="150" to="1300" />
+										<node name="skill" idx="3" />
+										<!--돌진 공격 -->
+										<node name="standby" limit="3500" faceTarget="0" />
+									</node>
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<!--  summon 에서 lifeTime 기능이 적용되려면 monsterMob.xlsx 의 ignoreExtendLifeTime 항목을 true로 해야함-->
+	<battleEnd onlyDead="true">
+		<node name="select" prob="33,67">
+			<!--데블린 워리어가 죽을 때 33% 확률로 벨라를 소환함, 그리고 벨라는 데블린 치프를 소환하고 사라질 것임-->
+			<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" master="None" lifeTime="15.6" summonPos="4050, -2400, 2900" summonRot="0,0,-50" />
+			<!--벨라 소환하는 부분-->
+			<node name="setData" key="aiBattleTime" value="0" />
+			<!--  벨라 소환 확률을 1/3로 만들기 위해 2/3 차지하기 위한 껍데기 데이터 설정 부분-->
+		</node>
+	</battleEnd>
+</npcAi>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--보스 전투판에서 메인 전투판에서, 플레이어 대상 유도탄 3발 발사 공격을 함-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="StageSummonMany" value="1" isModify="1" />
+				<!--전투 상태가 되면 소환몹 마리수 체크 +1 신호 보냄-->
+				<node name="standby" limit="800" faceTarget="0" />
+				<!--인페르녹AI에게 CrimsonPhase 변수 신호 받을때까지 여기서 잠시 대기하기-->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="99999,0">
+			<node name="target" type="hasAdditional" additionalId="50001118" additionalLevel="1" target="hostile" cooltime="3200" />
+			<!--50001118 애디셔널은 트리스탄이 기본적으로 달고 나오는 것임, 항상 트리스탄을 타겟팅 하기 위한 설정임-->
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 보스한테 받는 자살 명령 신호 변수-->
+					<node name="skill" idx="5" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<aiPreset name="Normal_Attack" />
+					<!-- 평상시 공격 행동을 정의한 부분 -->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="StageSummonMany" value="-1" isModify="1" />
+				<!--죽으면  소환몹 마리수 체크 -1 신호 보냄-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="99999,0">
+						<!--레벨11 거리는 1150임-->
+						<node name="say" message="$BalrogCrimsonKritias_InfernoGuard03$" durationTick="9000" cooltime="3200" />
+						<!--CrimsonPhase 변수 신호를 인페르록AI에게 받아서 현재 몇페이즈 전투중인지에 따라 스킬 발동 방향이 결정됨-->
+						<node name="conditions">
+							<condition name="extraData" key="CrimsonPhase" value="1">
+								<!--1페이지 메인 전투판 중앙 방향으로 스킬 발동, 레벨13은 1페이지 메인 전투판 크기에 맞게 히트박스 세부 조절 했음-->
+								<node name="skill" facePos="3375, 3225, 6450" idx="3">
+									<node name="select" prob="100,100,100">
+										<!--레벨13는 유도탄 3발 발사,   2발 이상 맞으면 기절시키는  공격 부여, 플레이어가 한 전투판에 4명 이상 있어야 하는 이유를 부여하기 위한 장치임-->
+										<node name="SetValue" key="AttackDelay" value="15" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="AttackDelay" value="17" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="AttackDelay" value="19" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									</node>
+								</node>
+							</condition>
+							<condition name="extraData" key="CrimsonPhase" value="2">
+								<!--2페이지 메인 전투판 중앙 방향으로 스킬 발동, 레벨14은 2페이지 메인 전투판 크기에 맞게 히트박스 세부 조절 했음-->
+								<node name="skill" facePos="3225, 3975, 4500" idx="4">
+									<node name="select" prob="100,100,100">
+										<!--레벨14는 유도탄 3발 발사,  2발 이상 맞으면 기절시키는  공격 부여, 플레이어가 한 전투판에 4명 이상 있어야 하는 이유를 부여하기 위한 장치임-->
+										<node name="SetValue" key="AttackDelay" value="15" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="AttackDelay" value="17" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="AttackDelay" value="19" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="skill" idx="1">
+									<node name="select" prob="100,100,100">
+										<!--레벨2는 유도탄 3발 발사,   2발 이상 맞으면 기절시키는  공격 부여, 플레이어가 한 전투판에 3명 이상 있어야 하는 이유를 부여하기 위한 장치임-->
+										<node name="SetValue" key="AttackDelay" value="15" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="AttackDelay" value="17" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+										<node name="SetValue" key="AttackDelay" value="19" />
+										<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="800" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

@@ -1,0 +1,1062 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="101">
+			<!--1페이즈  -->
+			<!--전투 활성화 되면 최초 딱 한번만 실행함-->
+			<node name="standby" limit="1100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="Phase" value="1" />
+				<!-- 1페이즈 -->
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!-- 공격 후 standby 행동을 하는데 사용하는 변수-->
+				<node name="SetValue" key="JumpPosition" value="0" />
+				<node name="SetValue" key="JumpNumber" value="0" />
+				<node name="SetValue" key="AttackNumber" value="0" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="80">
+			<!--2페이즈  -->
+			<node name="SetValue" key="Phase" value="2">
+				<!-- 2페이즈 -->
+				<node name="SetValue" key="SpraykMode" value="0" />
+				<!-- 이 변수 숫자 넣어 스프레이 공격 패턴 시작, 이 변수 3 넣으면 스프레이 공격 2번 함, 예: 이 변수 4 넣으면 스프레이 공격 3번 함 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="75">
+			<!--3페이즈 -->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="3">
+				<!-- 3페이즈 -->
+				<node name="SetValue" key="PatternSlave" value="1" />
+				<!-- Master인 핑크빈에게 받는 신호 변수, 최초 숫자 설정은 1로 하기 -->
+				<node name="SetValue" key="VacuumNumber" value="1" />
+				<!-- 이 변수는 초기값 1, 스킬 레벨과 숫자 동일하게 하기 위해 -->
+				<node name="SetValue" key="JumpNumber" value="0" />
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!-- 페이즈로 넘어가면 바로 행동하도로 하기 위해 이 변수 0 설정-->
+				<node name="SetValue" key="AttackNumber" value="0" />
+				<node name="SetValue" key="SafeSafe" value="0" />
+				<!-- 3페이즈에서 신호 꼬였을 때를 대비하는 안전장치용 변수 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="38">
+			<!--4페이즈 , 두번째 전투판으로 점프이동하기-->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="4">
+				<!-- 4페이즈 -->
+				<node name="skill" facePos="1950, 1950, 750" idx="4" />
+				<!-- 점프 도약 -->
+				<node name="jump" pos="1950, 1950, 750" speed="1300" heightMultiplier="0.3" />
+				<!--점프중 -->
+				<node name="skill" faceTarget="0" idx="5" />
+				<!-- 점프 착지 -->
+				<node name="SetValue" key="JumpNumber" value="0" />
+				<node name="SetValue" key="AttackNumber" value="0" />
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!-- 페이즈로 넘어가면 바로 행동하도로 하기 위해 이 변수 0 설정-->
+				<node name="standby" limit="2100" faceTarget="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="21">
+			<!--5페이즈 -->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="5">
+				<!-- 5페이즈 -->
+				<node name="SetValue" key="AttackDelay" value="0" />
+				<!-- 페이즈로 넘어가면 바로 행동하도로 하기 위해 이 변수 0 설정-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+				<!-- 공격 후 standby 상태 -->
+				<node name="standby" limit="100" faceTarget="1">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="1">
+				<!--1페이즈:  첫번째 전투판 여기저기 점프이동하기  -->
+				<node name="conditions">
+					<condition name="extraData" key="JumpNumber" value="2" op="lessEqual">
+						<aiPreset name="JumpMovePattern_1st" />
+					</condition>
+					<condition name="extraData" key="AttackNumber" value="6" op="lessEqual">
+						<node name="select" prob="9999,99999,0">
+							<!-- 몇번 이상 하면 공격 행동 하면 다음 단계로 넘어감 -->
+							<node name="target" type="near" from="10" to="1800" cooltime="2400" />
+							<!-- 제일 가까운 대상 타겟팅 하기 -->
+							<node name="standby" limit="120" faceTarget="1" cooltime="33400">
+								<node name="conditions">
+									<condition name="hpOver" value="93">
+										<node name="target" type="near" from="10" to="1800" />
+										<!--HP가 93% 이상이면 아무것도 안함  -->
+									</condition>
+									<condition name="true">
+										<!--HP가 93%~80% 이면 스프레이 공격 자주 하기  -->
+										<node name="skill" faceTarget="1" isKeepBattle="true" idx="20">
+											<!-- 스프레이 뿌리기 준비 -->
+											<node name="skill" faceTarget="0" idx="21" />
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="25" />
+											<!-- 레벨24: 상태이상 없음 400 이동-->
+											<node name="skill" faceTarget="0" idx="25" />
+											<!-- 레벨24: 상태이상 없음 400 이동-->
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="25" />
+											<!-- 레벨24: 상태이상 없음 400 이동-->
+											<node name="skill" faceTarget="0" idx="25" />
+											<!-- 레벨24: 상태이상 없음 400 이동-->
+											<node name="skill" faceTarget="0" idx="22" />
+											<node name="SetValue" key="AttackNumber" value="8" />
+											<!-- 스프레이 공격 후 바로 점프단계로 넘어가도록 하기 -->
+											<node name="SetValue" key="AttackDelay" value="0" />
+										</node>
+									</condition>
+								</node>
+							</node>
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="31">
+									<node name="select" prob="99999,45,27,28">
+										<!-- 레벨2: 거리 550, 플레이어가 가까이 붙으면 딜하기 더 좋게 하기 위한 설정-->
+										<node name="standby" limit="120" faceTarget="1" cooltime="2400">
+											<node name="select" prob="80,20">
+												<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+												<node name="SetValue" cooltime="15400" key="AttackNumber" value="2" isModify="1" />
+											</node>
+										</node>
+										<node name="standby" limit="120" faceTarget="1">
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="32">
+													<!-- 레벨2: 거리 420 이내에 있으면 제자리 휘두르기-->
+													<node name="skill" faceTarget="1" isKeepBattle="true" idx="32">
+														<!-- 붓 휘두르기, 레벨2 제자리 휘두르기 -->
+														<node name="SetValue" key="AttackDelay" value="18" />
+													</node>
+												</condition>
+												<condition name="true">
+													<!-- 420~550 사이에 있으면 돌진 휘두르기-->
+													<node name="skill" faceTarget="1" isKeepBattle="true" idx="31">
+														<!-- 붓 휘두르기, 레벨1 돌진 휘두르기 -->
+														<node name="SetValue" key="AttackDelay" value="22" />
+													</node>
+												</condition>
+											</node>
+										</node>
+										<node name="skill" faceTarget="1" cooltime="12000" isKeepBattle="true" idx="2">
+											<!-- 사방 발사 바닥 얼굴 폭발, 레벨2은 자동차 탑승 상태 아님 -->
+											<node name="SetValue" key="AttackDelay" value="20" />
+										</node>
+										<node name="skill" faceTarget="1" cooltime="15000" isKeepBattle="true" idx="1">
+											<!-- 얼굴 투사체 발사, 레벨3 상태이상 없음 -->
+											<node name="SetValue" key="AttackDelay" value="19" />
+										</node>
+									</node>
+								</condition>
+								<condition name="skillRange" skillIdx="1">
+									<node name="select" prob="99999,34,33,32,1">
+										<!-- 거리 1400, 먼 거리이ㅔ 있으면 더 자주 공격함 -->
+										<node name="standby" limit="120" faceTarget="1" cooltime="3000">
+											<node name="select" prob="1,99">
+												<node name="SetValue" key="AttackNumber" value="0" isModify="1" />
+												<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+											</node>
+										</node>
+										<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="3">
+											<!-- 브러쉬 거대 투사체, 레벨2가 자동타 탑승 아닌 상태에서 사용하는 스킬임 -->
+											<node name="SetValue" key="AttackDelay" value="17" />
+										</node>
+										<node name="skill" faceTarget="1" cooltime="6000" isKeepBattle="true" idx="1">
+											<!-- 얼굴 투사체 발사, 레벨3은 상태이상 없음-->
+											<node name="SetValue" key="AttackDelay" value="21" />
+										</node>
+										<node name="skill" faceTarget="1" cooltime="39500" initialCooltime="9000" isKeepBattle="true" idx="20">
+											<!-- 스프레이 뿌리기 준비 -->
+											<node name="skill" faceTarget="0" idx="25" />
+											<!-- 레벨24: 상태이상 없음 400 이동-->
+											<node name="skill" faceTarget="1" idx="25" />
+											<!-- 레벨24: 상태이상 없음 400 이동-->
+											<node name="target" type="rand" from="10" to="2500" />
+											<node name="skill" faceTarget="1" idx="25" />
+											<!-- 레벨24: 상태이상 없음 400 이동-->
+											<node name="skill" faceTarget="0" idx="25" />
+											<!-- 레벨24: 상태이상 없음 400 이동-->
+											<node name="skill" faceTarget="0" idx="22" />
+											<node name="SetValue" key="AttackNumber" value="8" />
+											<!-- 스프레이 공격 후 바로 점프단계로 넘어가도록 하기 -->
+											<node name="SetValue" key="AttackDelay" value="19" />
+										</node>
+										<!-- 위 스킬 쿨타임 걸리면 이거 사용함: 얼굴 투사체 발사, 레벨3은 상태이상 없음 -->
+										<node name="skill" faceTarget="1" isKeepBattle="true" idx="1">
+											<node name="SetValue" key="AttackDelay" value="19" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="260" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="near" from="5" to="1800" />
+										<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="250" faceTarget="1" isKeepBattle="true">
+							<!-- 변수 초기화 -->
+							<node name="SetValue" key="JumpNumber" value="0" />
+							<node name="SetValue" key="AttackNumber" value="0" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="2">
+				<!--2페이즈:  83~73% -->
+				<aiPreset name="CombineAttack_Main" />
+			</condition>
+			<condition name="extraData" key="Phase" value="3">
+				<!--3페이즈:  73~35% -->
+				<node name="conditions">
+					<condition name="extraData" key="PatternSlave" value="1">
+						<node name="select" prob="9999,1">
+							<!-- 증요!!: 이  JumpNumber AttackNumber 두변수는 여기저기서 자주 사용되기 때문에 이 페이즈의 시작단계에서 꼭 0 초기화 해야함!! -->
+							<node name="SetValue" cooltime="4970" key="JumpNumber" value="0">
+								<node name="SetValue" key="AttackNumber" value="0">
+									<node name="SetValue" key="SafeSafe" value="0" />
+									<!-- 증요!!: 변수 신호 꼬였을 때를 대비하는 안전장치용 변수도 0 초기화 -->
+								</node>
+							</node>
+							<node name="SetValue" key="PatternSlave" value="3">
+								<aiPreset name="RolingAttack_Main" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="PatternSlave" value="3">
+						<node name="select" prob="99,1">
+							<!--  PatternSlave = 3는 핑크빈 AI로 부터 PatternSlave 변수 4 혹은 5 신호 받을때까지 standby 하거나 점프뛰기  -->
+							<node name="standby" limit="1100" faceTarget="1" cooltime="3100" />
+							<node name="standby" limit="230" faceTarget="1">
+								<aiPreset name="JumpMovePattern_1st_Mini" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="PatternSlave" value="4">
+						<!--  PatternSlave = 4는 블랙빈 진공청소기 공격하기  -->
+						<aiPreset name="VacuumAttack" />
+					</condition>
+					<condition name="extraData" key="PatternSlave" value="5">
+						<node name="select" prob="9999,99,1">
+							<!--  PatternSlave = 5는 블랙빈이 요요 공격할 때 맵 구석으로 가서 대기상태로 있기  -->
+							<node name="skill" facePos="-1200, -150, 1650" cooltime="81000" idx="4">
+								<!--레벨1 일반 점프 도약 -->
+								<node name="jump" pos="-1200, -150, 1650" speed="1500" heightMultiplier="0.6">
+									<!--점프뛰기-->
+									<node name="skill" faceTarget="0" idx="5" />
+									<!--레벨2: 점프 착지 -->
+								</node>
+							</node>
+							<node name="target" type="near" from="5" to="1800" cooltime="2300" />
+							<node name="standby" limit="1100" faceTarget="1" />
+							<!-- 핑크빈 AI로 부터  PatternSlave = 6 신호 받을때까지 대기하기 -->
+						</node>
+					</condition>
+					<condition name="extraData" key="PatternSlave" value="60" op="lessEqual">
+						<!--PatternSlave = 6~60, AI_Pinkbean_Together_Hard.xml AI_Pinkbean_Together_Normal.xml 에서 신호 받음-->
+						<node name="SetValue" key="PatternSlave" value="1" isModify="1">
+							<node name="conditions">
+								<condition name="extraData" key="JumpNumber" value="3" op="lessEqual">
+									<aiPreset name="JumpMovePattern_1st" />
+								</condition>
+								<condition name="extraData" key="AttackNumber" value="2" op="lessEqual">
+									<!-- 몇번 이상 하면 공격 행동 하면 다음 단계로 넘어감 -->
+									<aiPreset name="NormalAttackPattern_2Phase" />
+								</condition>
+								<condition name="true">
+									<node name="SetValue" key="JumpNumber" value="0">
+										<node name="SetValue" key="AttackNumber" value="0" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--  PatternSlave = 61 이상, 핑크빈 블랙빈 중 먼저 이 던계에 오는 몬스터가 AI에서 신호 보내서 처음 단계로 가도록 함 -->
+						<node name="standby" limit="270" faceTarget="1">
+							<node name="SetValue" key="PatternSlave" value="1">
+								<node name="SetMasterValue" key="PatternMaster" value="1" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="true">
+				<!--  4~5페이즈: 두번째 전투판으로 이동 RGB 공격 패턴 -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="33">
+						<node name="select" prob="99999,0">
+							<!-- 사정거리 1300, 높이 250 -->
+							<node name="standby" limit="200" faceTarget="1" cooltime="45000">
+								<node name="select" prob="33,34,33">
+									<!-- 전투판 바닥 전체 RGB 설치하기 -->
+									<node name="say" message="$Blackbean_Paint01$" durationTick="8000" cooltime="115000">
+										<node name="skill" facePos="-2100, -2100, -1800" idx="34" />
+									</node>
+									<node name="say" message="$Blackbean_Paint02$" durationTick="8000" cooltime="115000">
+										<node name="skill" facePos="-2100, -2100, -1800" idx="35" />
+									</node>
+									<node name="skill" facePos="-2100, -2100, -1800" cooltime="115000" idx="36" />
+								</node>
+							</node>
+							<aiPreset name="NormalAttackPattern_Final" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="500" faceTarget="1">
+							<node name="target" type="near" from="5" to="1800" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 선언하는 부분, bossSpawn.xml   Barricade.xml   GiveUpTime.xml 에 신호 보내기-->
+		<node name="TriggerSetUserValue" triggerID="529" key="BattleEnd" value="1">
+			<!-- bossSpawn.xml  에 신호 보내기-->
+			<node name="TriggerSetUserValue" triggerID="5291" key="BattleEnd" value="1">
+				<!-- Barricade.xml  에 신호 보내기-->
+				<node name="TriggerSetUserValue" triggerID="5292" key="BattleEnd" value="1" />
+				<!-- GiveUpTime.xml 에 신호 보내기-->
+			</node>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="JumpMovePattern_1st">
+			<node name="select" prob="99999,0">
+				<node name="standby" limit="120" faceTarget="1" cooltime="2000">
+					<node name="select" prob="50,50">
+						<node name="SetValue" cooltime="14500" key="JumpNumber" value="1" isModify="1" />
+						<node name="SetValue" key="JumpNumber" value="2" isModify="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="JumpPosition" value="1">
+						<node name="select" prob="50,50">
+							<!-- 현재 위치 두번째 전투판 기준 1시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="-2850, -2250, 1350" isKeepBattle="true" idx="4">
+								<!--7시 지점으로 점프 -->
+								<node name="jump" pos="-2850, -2250, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="7" />
+								<!--1층 전투판 7시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-2250, -900, 1350" isKeepBattle="true" idx="4">
+								<!--10시 지점으로 점프 -->
+								<node name="jump" pos="-2250, -900, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="10" />
+								<!--1층 전투판 10시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="4">
+						<node name="select" prob="50,50">
+							<!-- 현재 위치 두번째 전투판 기준 4시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="-2850, -2250, 1350" isKeepBattle="true" idx="4">
+								<!--7시 지점으로 점프 -->
+								<node name="jump" pos="-2850, -2250, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="7" />
+								<!--1층 전투판 7시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-900, -1500, 1350" isKeepBattle="true" idx="4">
+								<!--1시 지점으로 점프 -->
+								<node name="jump" pos="-900, -1500, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="1" />
+								<!--1층 전투판 1시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="11" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="7">
+						<node name="select" prob="50,50">
+							<!-- 현재 위치 두번째 전투판 기준 7시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="-2250, -900, 1350" isKeepBattle="true" idx="4">
+								<!--10시 지점으로 점프 -->
+								<node name="jump" pos="-2250, -900, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="10" />
+								<!--1층 전투판 10시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-1500, -2850, 1350" isKeepBattle="true" idx="4">
+								<!--4시 지점으로 점프 -->
+								<node name="jump" pos="-1500, -2850, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="4" />
+								<!--1층 전투판 4시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="JumpPosition" value="10">
+						<node name="select" prob="50,50">
+							<!-- 현재 위치 두번째 전투판 기준 10시쪽 저점에 있을 경우 -->
+							<node name="skill" facePos="-1500, -2850, 1350" isKeepBattle="true" idx="4">
+								<!--4시 지점으로 점프 -->
+								<node name="jump" pos="-1500, -2850, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="4" />
+								<!--1층 전투판 4시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-900, -1500, 1350" isKeepBattle="true" idx="4">
+								<!--1시 지점으로 점프 -->
+								<node name="jump" pos="-900, -1500, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="1" />
+								<!--1층 전투판 1시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="10" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="50,50">
+							<node name="skill" facePos="-1500, -2850, 1350" isKeepBattle="true" idx="4">
+								<!--4시 지점으로 점프 -->
+								<node name="jump" pos="-1500, -2850, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="4" />
+								<!--1층 전투판 4시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+							<node name="skill" facePos="-900, -1500, 1350" isKeepBattle="true" idx="4">
+								<!--1시 지점으로 점프 -->
+								<node name="jump" pos="-900, -1500, 1350" speed="1300" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="6" />
+								<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+								<node name="SetValue" key="JumpPosition" value="1" />
+								<!--1층 전투판 1시 지점에 있음을 알림 -->
+								<node name="SetValue" key="AttackDelay" value="8" />
+								<!-- standby 동작 길이 설정 -->
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="JumpMovePattern_1st_Mini">
+			<node name="conditions">
+				<condition name="extraData" key="SafeSafe" value="8" op="greaterEqual">
+					<node name="standby" limit="270" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="SafeSafe" value="0" />
+						<node name="SetValue" key="PatternSlave" value="6" />
+						<node name="SetMasterValue" key="PatternMaster" value="6" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="25,25,25,24,1">
+						<node name="skill" facePos="-2850, -2250, 1350" cooltime="8000" isKeepBattle="true" idx="4">
+							<!--7시 지점으로 점프 -->
+							<node name="jump" pos="-2850, -2250, 1350" speed="1300" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="6" />
+							<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+							<node name="SetValue" key="JumpPosition" value="7" />
+							<!--1층 전투판 7시 지점에 있음을 알림 -->
+							<node name="SetValue" key="AttackDelay" value="2" />
+							<!-- standby 동작 길이 설정 -->
+							<node name="SetValue" key="SafeSafe" value="1" isModify="1" />
+						</node>
+						<node name="skill" facePos="-2250, -900, 1350" cooltime="8000" isKeepBattle="true" idx="4">
+							<!--10시 지점으로 점프 -->
+							<node name="jump" pos="-2250, -900, 1350" speed="1300" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="6" />
+							<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+							<node name="SetValue" key="JumpPosition" value="10" />
+							<!--1층 전투판 10시 지점에 있음을 알림 -->
+							<node name="SetValue" key="AttackDelay" value="2" />
+							<!-- standby 동작 길이 설정 -->
+							<node name="SetValue" key="SafeSafe" value="1" isModify="1" />
+						</node>
+						<node name="skill" facePos="-1500, -2850, 1350" cooltime="8000" isKeepBattle="true" idx="4">
+							<!--4시 지점으로 점프 -->
+							<node name="jump" pos="-1500, -2850, 1350" speed="1300" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="6" />
+							<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+							<node name="SetValue" key="JumpPosition" value="4" />
+							<!--1층 전투판 4시 지점에 있음을 알림 -->
+							<node name="SetValue" key="AttackDelay" value="2" />
+							<!-- standby 동작 길이 설정 -->
+							<node name="SetValue" key="SafeSafe" value="1" isModify="1" />
+						</node>
+						<node name="skill" facePos="-900, -1500, 1350" cooltime="8000" isKeepBattle="true" idx="4">
+							<!--1시 지점으로 점프 -->
+							<node name="jump" pos="-900, -1500, 1350" speed="1300" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="6" />
+							<!--점프 착지, 레벨3은 바닥 얼굴 대미지 필드 공격 -->
+							<node name="SetValue" key="JumpPosition" value="1" />
+							<!--1층 전투판 1시 지점에 있음을 알림 -->
+							<node name="SetValue" key="AttackDelay" value="2" />
+							<!-- standby 동작 길이 설정 -->
+							<node name="SetValue" key="SafeSafe" value="1" isModify="1" />
+						</node>
+						<node name="standby" limit="200" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="CombineAttack_Main">
+			<!-- ## 몸거대 스카이콩콩 행동 + 스프레이 조합 행동 모드 ## -->
+			<node name="conditions">
+				<condition name="extraData" key="SpraykMode" value="2" op="greaterEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="21">
+							<node name="select" prob="70,30">
+								<!-- 레벨2: 거리 950 이내에 있으면 -->
+								<node name="skill" faceTarget="1" isKeepBattle="true" idx="24">
+									<!--레벨23: 상태이상 없음 제자리 스프레이 -->
+									<node name="target" type="rand" from="10" to="2500" />
+									<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+									<node name="SetValue" key="SpraykMode" value="-1" isModify="1" />
+									<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+								</node>
+								<node name="skill" faceTarget="1" cooltime="22000" isKeepBattle="true" idx="25">
+									<!-- 레벨24: 상태이상 없음 400 이동-->
+									<node name="target" type="rand" from="10" to="2500" />
+									<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+									<node name="SetValue" key="SpraykMode" value="-1" isModify="1" />
+									<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- 거리 950 이외에 있으면 -->
+							<node name="skill" faceTarget="1" isKeepBattle="true" idx="25">
+								<!-- 레벨24: 상태이상 없음 400 이동-->
+								<node name="target" type="rand" from="10" to="2500" />
+								<!--즉 4~5분 이전에는 2페이즈 상태일 것이고 4~5분 이휴는 4페이즈라 판단되어 쿨타임을 대충 250000~320000 정도 넣음 -->
+								<node name="SetValue" key="SpraykMode" value="-1" isModify="1" />
+								<!-- 이 변수 -1씩 하여 정해진 공격 횟수 대로 공겨 하도록 하고 마무리 단계로 넘어가게 함  -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="SpraykMode" value="1">
+					<!-- 스카이콩콩 행동 끝 -->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="22">
+						<!--레벨3: 스프레이 끝내는 동작 -->
+						<!-- 덩치커짐 공방 상승 버프 제거하는 애디셔널 부여는 점프뛰는 단계에서 진행함 -->
+						<node name="SetValue" key="SpraykMode" value="0" />
+						<!-- 이 변수 초기화 하여 평상시 상태로 돌아가기 -->
+						<node name="SetValue" key="AttackDelay" value="5" />
+						<!-- standby 동작 길이 설정 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- ## 스프레이 시작 ## -->
+					<node name="skill" faceTarget="1" isKeepBattle="true" idx="20">
+						<!-- 스프레이 최초 시작 동작 -->
+						<node name="target" type="near" from="10" to="2800" />
+						<node name="SetValue" key="SpraykMode" value="13" />
+						<!-- 이 변수 숫자 넣어 스프레이 공격 행동 패턴 시작, 이 변수 3 넣으면 스카이콩콩 공격 2번 함, 예: 이 변수 4 넣으면 스카이콩콩 공격 3번 함 -->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="RolingAttack_Main">
+			<node name="skill" idx="7">
+				<!-- 롤링어택 연속 공격 -->
+				<node name="skill" faceTarget="1" idx="8">
+					<node name="select" prob="33,33,34">
+						<!--패턴1-->
+						<node name="skill" faceTarget="0" cooltime="17000" isKeepBattle="true" idx="10">
+							<!--중거리 돌진-->
+							<node name="target" type="rand" from="10" to="1100" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="SetValue" key="PatternSlave" value="3" />
+							<!-- 낮은 확률로 변수 신호 꼬일수 있어서 안정장치 -->
+							<node name="say" message="$Blackbean_Rolling01$" durationTick="9000" />
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--근거리 돌진-->
+							<node name="target" type="rand" from="10" to="1100" />
+							<node name="skill" faceTarget="1" idx="9" />
+							<!--근거리 돌진-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="9" />
+							<!--근거리 돌진-->
+							<node name="target" type="rand" from="10" to="1100" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--중거리 돌진-->
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--중거리 돌진-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="11" />
+							<!--장거리 돌진-->
+							<node name="skill" faceTarget="0" idx="12" />
+							<!--마무리 동작-->
+							<node name="SetValue" key="AttackDelay" value="9" />
+						</node>
+						<!--패턴2-->
+						<node name="skill" faceTarget="0" isKeepBattle="true" idx="9">
+							<!--근거리 돌진-->
+							<node name="say" message="$Blackbean_Rolling02$" durationTick="9000" />
+							<node name="target" type="rand" from="10" to="1100" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<!--중거리 돌진-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="SetValue" key="PatternSlave" value="3" />
+							<!-- 낮은 확률로 변수 신호 꼬일수 있어서 안정장치 -->
+							<node name="target" type="rand" from="10" to="1100" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--중거리 돌진-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--근거리 돌진-->
+							<node name="skill" faceTarget="1" idx="9" />
+							<!--근거리 돌진-->
+							<node name="skill" faceTarget="1" idx="10" />
+							<!--중거리 돌진-->
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="target" type="rand" from="10" to="1500" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--근거리 돌진-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="11" />
+							<!--장거리 돌진-->
+							<node name="skill" faceTarget="0" idx="12" />
+							<!--마무리 동작-->
+							<node name="SetValue" key="AttackDelay" value="8" />
+						</node>
+						<!--패턴3-->
+						<node name="skill" faceTarget="0" isKeepBattle="true" idx="10">
+							<!--중거리 돌진-->
+							<node name="say" message="$Blackbean_Rolling03$" durationTick="9000" />
+							<node name="target" type="rand" from="10" to="1100" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<!--중거리 돌진-->
+							<node name="SetValue" key="PatternSlave" value="3" />
+							<!-- 낮은 확률로 변수 신호 꼬일수 있어서 안정장치 -->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="target" type="rand" from="10" to="1100" />
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--중거리 돌진-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<!--중거리 돌진-->
+							<node name="target" type="rand" from="10" to="1100" />
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="0" idx="10" />
+							<!--중거리 돌진-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="10" />
+							<!--중거리 돌진-->
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="skill" faceTarget="1" idx="8" />
+							<!--대기-->
+							<node name="target" type="rand" from="10" to="1500" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--근거리 돌진-->
+							<node name="skill" faceTarget="1" idx="9" />
+							<!--근거리 돌진-->
+							<node name="target" type="near" center="825, 825, 1050" />
+							<node name="skill" faceTarget="1" idx="11" />
+							<!--장거리 돌진-->
+							<node name="skill" faceTarget="0" idx="12" />
+							<!--마무리 동작-->
+							<node name="SetValue" key="AttackDelay" value="9" />
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="VacuumAttack">
+			<!-- 진공 청소기 공격 패턴 -->
+			<node name="conditions">
+				<condition name="extraData" key="VacuumNumber" value="1">
+					<node name="skill" facePos="-1025, -1025, 1350" isKeepBattle="true" idx="4">
+						<!--12시 진공청소기 공격 지점으로 점프 -->
+						<node name="jump" pos="-1025, -1025, 1350" speed="1300" heightMultiplier="0.3" />
+						<!--점프중 -->
+						<node name="skill" faceTarget="0" idx="5" />
+						<!--점프 착지 -->
+						<node name="SetValue" key="AttackDelay" value="0" />
+						<node name="standby" limit="900" faceTarget="1" />
+						<node name="skill" facePos="-1875, -1875, 1350" idx="13" />
+						<node name="say" message="$Blackbean_VacuumStart$" durationTick="8000" />
+						<node name="SetValue" key="VacuumNumber" value="2" />
+					</node>
+				</condition>
+				<condition name="extraData" key="VacuumNumber" value="2">
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="14">
+						<node name="SetValue" key="VacuumNumber" value="3" />
+						<node name="target" type="near" center="-1875, -1875, 1350" />
+						<!-- 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+					</node>
+				</condition>
+				<condition name="extraData" key="VacuumNumber" value="3">
+					<node name="target" type="near" center="-1875, -1875, 1350">
+						<node name="skill" facePos="-1875, -1875, 1350" isKeepBattle="true" idx="15">
+							<!-- 청소기 주둥이 내밀면서 바닥 바람 끌어당기기 설치 시작-->
+							<node name="SetValue" key="VacuumNumber" value="4" />
+							<node name="target" type="near" center="-1875, -1875, 1350" />
+							<!-- 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="VacuumNumber" value="4">
+					<node name="skill" facePos="-1875, -1875, 1350" isKeepBattle="true" idx="19">
+						<node name="skill" faceTarget="0" idx="18" />
+						<!-- 플레이어 흡수, 레벨41은 1명 흡수 -->
+						<node name="skill" faceTarget="0" idx="19" />
+						<node name="skill" faceTarget="0" idx="18" />
+						<!-- 플레이어 흡수, 레벨41은 1명 흡수 -->
+						<node name="skill" faceTarget="0" idx="19" />
+						<node name="skill" faceTarget="0" idx="18" />
+						<!-- 플레이어 흡수, 레벨41은 1명 흡수 -->
+						<node name="skill" faceTarget="0" idx="19" />
+						<node name="skill" faceTarget="0" idx="18" />
+						<!-- 플레이어 흡수, 레벨41은 1명 흡수 -->
+						<node name="skill" faceTarget="0" idx="16" />
+						<!-- 레벨5: 진공 청소기 거두는 동작 -->
+						<node name="SetValue" key="VacuumNumber" value="5" />
+						<node name="target" type="near" center="-1875, -1875, 1350" />
+						<!-- 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+					</node>
+				</condition>
+				<condition name="extraData" key="VacuumNumber" value="5">
+					<node name="select" prob="99999,1">
+						<node name="skill" facePos="-1875, -1875, 1350" cooltime="2700" idx="14">
+							<!-- 레벨2는 진공 청소기 세우고 대기 동작 -->
+							<node name="target" type="grabbedUser" from="5" to="1800">
+								<!-- 잡은 대상 우선 타겟팅 하기 설정하기 -->
+								<node name="conditions">
+									<condition name="state" targetState="grabTarget">
+										<node name="TriggerSetUserValue" triggerID="529" key="VacuumMessage" value="1">
+											<!-- 다음맵으로 이동하는 포탈 등장, main.xml 트리거에  VacuumMessage= 1 신호 보내기,      param1="529" 은   MS2TriggerModel의 TriggerModelID 번호임,  -->
+											<node name="target" type="near" center="-1875, -1875, 1350" />
+											<!-- 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="target" type="near" center="-1875, -1875, 1350" />
+										<!-- 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="target" type="near" center="-1875, -1875, 1350">
+							<node name="select" prob="99,99,99,1">
+								<!-- 전투판 중앙 지점의 대상을 최우선 타겟팅 함-->
+								<node name="say" message="$Blackbean_Vacuum01$" durationTick="8000" cooltime="47900">
+									<node name="skill" facePos="-1875, -1875, 1350" idx="14">
+										<!-- 레벨2는 진공 청소기 세우고 대기 동작 -->
+										<node name="SetValue" key="VacuumNumber" value="3" />
+									</node>
+								</node>
+								<node name="skill" facePos="-1875, -1875, 1350" cooltime="47900" isKeepBattle="true" idx="14">
+									<!-- 레벨2는 진공 청소기 세우고 대기 동작 -->
+									<node name="say" message="$Blackbean_Vacuum02$" durationTick="8000" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="SetValue" key="VacuumNumber" value="3" />
+								</node>
+								<node name="say" message="$Blackbean_Vacuum03$" durationTick="8000" cooltime="47900" isKeepBattle="true">
+									<node name="skill" facePos="-1875, -1875, 1350" idx="14" />
+									<!-- 레벨2는 진공 청소기 세우고 대기 동작 -->
+									<node name="skill" faceTarget="0" idx="14" />
+									<node name="SetValue" key="VacuumNumber" value="3" />
+								</node>
+								<node name="skill" facePos="-1875, -1875, 1350" idx="14">
+									<!-- 레벨2는 진공 청소기 세우고 대기 동작 -->
+									<node name="SetValue" key="VacuumNumber" value="6" />
+									<!-- VacuumNumber = 6 은 진공청소기 공격 끝낸다는 뜻 -->
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="VacuumNumber" value="6">
+					<node name="say" message="$Blackbean_Vacuum_End01$" durationTick="8000" isKeepBattle="true">
+						<node name="skill" facePos="-1875, -1875, 1350" idx="17" />
+						<!-- 레벨7: 흡수되어 있는 플레이어 전부 죽이면서 마무리 동작, 무조건 이것으로 설정하기 -->
+						<node name="SetValue" key="VacuumNumber" value="8" />
+						<!-- VacuumNumber = 8 롤링어택 공격 하기 -->
+						<node name="SetValue" key="AttackDelay" value="10" />
+					</node>
+				</condition>
+				<condition name="extraData" key="VacuumNumber" value="7">
+					<node name="say" message="$Blackbean_Vacuum_End02$" durationTick="8000" isKeepBattle="true">
+						<node name="skill" facePos="-1875, -1875, 1350" idx="17" />
+						<!-- 흡수되어 있는 플레이어 전부 죽이면서 마무리 동작 -->
+						<node name="SetValue" key="VacuumNumber" value="8" />
+						<!-- VacuumNumber = 8 롤링어택 공격 하기 -->
+						<node name="SetValue" key="AttackDelay" value="10" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- VacuumNumber = 8 인 경우 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<node name="SetValue" key="VacuumNumber" value="1" />
+						<!-- 변수 초기화 -->
+						<node name="SetValue" key="PatternSlave" value="6" />
+						<!-- 진청소기 공격 끝났으니 자신의 이 변수 6 설정 다음 스탭 넘어가기-->
+						<node name="SetMasterValue" key="PatternMaster" value="6" />
+						<!-- 진청소기 공격 끝났으니 핑크빈에게 신호보내기 -->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalAttackPattern_2Phase">
+			<node name="select" prob="99999,0">
+				<node name="standby" limit="120" faceTarget="1" cooltime="2100">
+					<node name="select" prob="90,10">
+						<node name="SetValue" key="AttackNumber" value="1" isModify="1" />
+						<node name="SetValue" cooltime="62500" key="AttackNumber" value="0" isModify="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="9999,20,20,19,20,20,1">
+							<!-- 거리 1400 -->
+							<node name="target" type="rand" from="10" to="1800" cooltime="2400" />
+							<node name="standby" limit="300" faceTarget="1" cooltime="15000">
+								<!-- 붓 휘두르기 시도 -->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="31">
+										<!-- 레벨1: 거리 550 -->
+										<node name="skill" faceTarget="1" idx="31">
+											<!-- 붓 휘두르기, 레벨1는 Move 버전 -->
+											<node name="SetValue" key="AttackDelay" value="8" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="target" type="rand" from="10" to="1800">
+											<node name="skill" faceTarget="1" idx="1">
+												<!-- 거대 3개 얼굴 발사, 레벨3은 상태이상 없음 -->
+												<node name="SetValue" key="AttackDelay" value="9" />
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="23000" idx="2">
+								<!-- 사방 발사 바닥 얼굴 폭발, 레벨2은 자동차 탑승 상태 아님 -->
+								<node name="target" type="rand" from="10" to="1980">
+									<node name="SetValue" key="AttackDelay" value="8" />
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" cooltime="21000" idx="1">
+								<!-- 거대 3개 얼굴 발사, 레벨3은 상태이상 없음 -->
+								<node name="SetValue" key="AttackDelay" value="9" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="21000" idx="3">
+								<!-- 브러쉬 거대 투사체, 레벨2가 자동타 탑승 아닌 상태에서 사용하는 스킬임 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="21000" idx="20">
+								<!-- 스프레이 뿌리기 준비 -->
+								<node name="skill" faceTarget="0" idx="24">
+									<!-- 스프레이 뿌리기, 레벨23: 상태이상 없음 제자리 -->
+									<!-- 랜덤 타겟팅 하기-->
+									<node name="target" type="rand" from="10" to="2500" isKeepBattle="true">
+										<node name="say" message="$Blackbean_Spray$" durationTick="8000" />
+										<node name="skill" faceTarget="0" idx="25" />
+										<!-- 스프레이 뿌리기, 레벨24: 상태잇아 없음  거리 400 이돋하며 뿌리기 -->
+										<!-- 랜덤 타겟팅 하기 -->
+										<node name="target" type="rand" from="10" to="2500" />
+										<node name="skill" faceTarget="1" idx="24" />
+										<!-- 스프레이 뿌리기, 레벨23: 상태이상 없음 제자리 -->
+										<node name="skill" faceTarget="0" idx="25" />
+										<!-- 스프레이 뿌리기, 레벨24: 상태잇아 없음  거리 400 이돋하며 뿌리기 -->
+										<node name="skill" faceTarget="0" idx="22" />
+										<node name="SetValue" key="AttackDelay" value="8" />
+									</node>
+								</node>
+							</node>
+							<node name="skill" faceTarget="1" idx="1">
+								<!-- 쿨타임 걸리면 이거 실행:  거대 3개 얼굴 발사, 레벨3은 상태이상 없음 -->
+								<node name="SetValue" key="AttackDelay" value="7" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="target" type="near" from="5" to="2400">
+							<node name="trace" limit="4700" skillIdx="1" />
+							<!-- 거리 1400 이내로 -->
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalAttackPattern_Final">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="9999,14,15,18,16,17,13,1">
+						<!-- 거리 1400 -->
+						<node name="target" type="rand" from="10" to="1800" cooltime="2400" />
+						<node name="standby" limit="300" faceTarget="1" cooltime="22000">
+							<!-- 붓 휘두르기 시도 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="32">
+									<node name="skill" faceTarget="1" idx="32">
+										<!-- 붓 휘두르기, 레벨2는 Move 없는 버전 -->
+										<node name="SetValue" key="AttackDelay" value="4" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="target" type="rand" from="10" to="1800">
+										<node name="skill" faceTarget="1" idx="1">
+											<!-- 거대 3개 얼굴 발사, 레벨3은 상태이상 없음-->
+											<node name="SetValue" key="AttackDelay" value="5" />
+										</node>
+									</node>
+								</condition>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" cooltime="28000" idx="2">
+							<!-- 사방 발사 바닥 얼굴 폭발, 레벨2은 자동차 탑승 상태 아님 -->
+							<node name="target" type="rand" from="10" to="1980">
+								<node name="SetValue" key="AttackDelay" value="5" />
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" cooltime="26000" idx="1">
+							<!-- 거대 3개 얼굴 발사,  레벨3은 상태이상 없음 -->
+							<node name="SetValue" key="AttackDelay" value="4" />
+						</node>
+						<node name="skill" faceTarget="1" cooltime="24000" idx="3">
+							<!-- 브러쉬 거대 투사체, 레벨2가 자동타 탑승 아닌 상태에서 사용하는 스킬임 -->
+							<node name="SetValue" key="AttackDelay" value="5" />
+						</node>
+						<node name="standby" limit="300" faceTarget="1" cooltime="45000">
+							<node name="select" prob="20,20,20,20,20">
+								<!-- 물풍선 페이트 다수 투척, 레벨1~5는 10인 난이도 전용 -->
+								<node name="skill" faceTarget="1" cooltime="115000" idx="26" />
+								<node name="skill" faceTarget="1" cooltime="115000" idx="27" />
+								<node name="skill" faceTarget="1" cooltime="115000" idx="28" />
+								<node name="skill" faceTarget="1" cooltime="115000" idx="29" />
+								<node name="skill" faceTarget="1" idx="30" />
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" cooltime="15000" idx="20">
+							<!-- 스프레이 뿌리기 준비 -->
+							<node name="skill" faceTarget="0" idx="23">
+								<node name="select" prob="33,33,0">
+									<!-- 스프레이 뿌리기, 레벨4가 마지막 페이즈 전용 -->
+									<!-- 랜덤 타겟팅 하기-->
+									<node name="target" type="rand" from="10" to="1800" isKeepBattle="true">
+										<node name="say" message="$Blackbean_Spray$" durationTick="8000" />
+										<node name="skill" faceTarget="1" idx="23" />
+										<!-- 스프레이 뿌리기, 레벨4가 마지막 페이즈 전용 -->
+										<!-- 랜덤 타겟팅 하기 -->
+										<node name="target" type="rand" from="10" to="1800" />
+										<node name="skill" faceTarget="1" idx="23" />
+										<!-- 스프레이 뿌리기, 레벨4가 마지막 페이즈 전용 -->
+										<node name="skill" faceTarget="0" idx="22" />
+										<node name="SetValue" key="AttackDelay" value="6" />
+									</node>
+									<!-- 빨간색 페인트의 플레이어 타겟팅 하기 -->
+									<node name="target" type="hasAdditional" additionalId="50005320" additionalLevel="1" target="hostile" isKeepBattle="true">
+										<node name="skill" faceTarget="1" idx="23" />
+										<!-- 스프레이 뿌리기, 레벨4가 마지막 페이즈 전용 -->
+										<!-- 파란색 페인트의 플레이어 타겟팅 하기 -->
+										<node name="target" type="hasAdditional" additionalId="50005322" additionalLevel="1" target="hostile" />
+										<node name="skill" faceTarget="1" idx="23" />
+										<!-- 스프레이 뿌리기, 레벨4가 마지막 페이즈 전용 -->
+										<node name="skill" faceTarget="0" idx="22" />
+										<node name="SetValue" key="AttackDelay" value="5" />
+									</node>
+									<!-- 파란색 페인트의 플레이어 타겟팅 하기 -->
+									<node name="target" type="hasAdditional" additionalId="50005322" additionalLevel="1" target="hostile" rob="34" isKeepBattle="true">
+										<node name="skill" faceTarget="1" idx="23" />
+										<!-- 스프레이 뿌리기, 레벨4가 마지막 페이즈 전용 -->
+										<!-- 랜덤 타겟팅 하기 -->
+										<node name="say" message="$Blackbean_Spray$" durationTick="8000" />
+										<node name="target" type="rand" from="10" to="1800" />
+										<node name="skill" faceTarget="1" idx="23" />
+										<!-- 스프레이 뿌리기, 레벨4가 마지막 페이즈 전용 -->
+										<node name="skill" faceTarget="0" idx="22" />
+										<node name="SetValue" key="AttackDelay" value="7" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" faceTarget="1" idx="1">
+							<!-- 쿨타임 걸리면 이거 실행:  거대 3개 얼굴 발사, 레벨3은 상태이상 없음 -->
+							<node name="SetValue" key="AttackDelay" value="5" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="500" faceTarget="1">
+						<node name="select" prob="99,1">
+							<node name="target" type="near" from="5" to="2400" cooltime="2100" />
+							<node name="SetValue" key="Temp" value="0" />
+							<!-- 아무것도 안한다는 뜻 -->
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

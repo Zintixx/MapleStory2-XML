@@ -1,0 +1,948 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	[근접]
+	1,38,39,48 : 평타(오른손)
+	2,40,41,49 : 평타(왼손)
+	3,42,43,50 : 평타(양손)
+	6 : 양손치기(삭제)
+	
+	4 : 8방향 장판,	5 : 8방향 장판 강화
+	14,46,47 : 근접유저 체크스킬
+	
+	[원거리]
+	7 : 블루스톰,	8 : 블루스톰 강화
+	36 : 블루스톰 반대방향,	37 : 블루스톰 강화 반대방향
+	9 : 블루페일,	10 : 블루페일 강화
+	
+	17~25 : 블루플로우,	26~34 : 블루플로우 강화
+	
+	[전멸기]
+	11 : 전멸기 첫타,	12 : 전멸기 여러번,	13 : 전멸기 마무리
+	15 : 뭉치기, 16 : 흩어지기
+	
+	[기타]
+	35 : 페이즈모션
+	44 : 주니어블루루크 징표(트리거로 옮겨 사용안함), 45 : 주니어그린루크 징표 (트리거로 옮겨 사용안함)
+	51 : 지형파괴
+	
+	[맵 중심위치]
+	800,-1150, 1651
+	
+	1페이즈 : 일반공격, 8방향, 블루스톰(레이저)
+	2페이즈 전환 : 오브젝트 소환 & 블루플로우
+	2페이즈 : 일반공격 대미지강화, 모든 쫄몹 1차례씩 소환, 블루페일(몸통날리기) 추가
+	3페이즈전환 : 오브젝트 소환 & 흩어지기
+	3페이즈 : 8방향 강화, 블루스톰 강화, 흩어지기뭉치기 패턴
+	4페이즈전환 : 오브젝트소환 & 블루플로우강화
+	4페이즈 : 일반공격 추가스플, 블루페일강화, 쫄봅 2개씩 소환 (RR ,BB, YY, G), 흩어지기 뭉치기 패턴이 2회 연속 시전
+	5페이즈전환 : 오브젝트 소환 & 흩어지기-뭉치기-흩어지기 또는 뭉치기-흩어지기-뭉치기 시전
+	5페이즈 : 근접패턴 감소, 8방향장판 패턴 감소, 보스공격속도증가, 쫄몹소환(RR, RB, RG, BB, BG, YG)
+-->
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="101">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="soloUser" value="0" />
+				<node name="SetValue" key="nextSummonIdx" value="1" />
+				<!-- 1인 입장 유저 체크-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="90">
+			<!-- 2페이즈 -->
+			<node name="buff" type="remove" id="40600052" level="1"/>
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="TriggerSetUserValue" triggerID="99999996" key="AddBallCount" value="5" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<!-- <node name="TriggerSetUserValue" triggerID="99999997" key="CamRotate" value="1" /> -->
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="buff" type="add" id="40600051" level="1"/>
+			<node name="skill" idx="35" level="1" faceTarget="0" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<!-- <node name="TriggerSetUserValue" triggerID="99999997" key="CamRotate" value="0" /> -->
+			<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true" />
+		</condition>
+		<condition name="hpLess" value="80">
+			<aiPreset name="BlueFlow" />
+		</condition>
+		<condition name="hpLess" value="70">
+			<!-- 3페이즈 -->
+			<node name="buff" type="remove" id="40600051" level="1"/>
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="TriggerSetUserValue" triggerID="99999996" key="AddBallCount" value="5" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<!--<node name="TriggerSetUserValue" triggerID="99999997" key="CamRotate" value="1" />-->
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="buff" type="add" id="40600051" level="1"/>
+			<node name="skill" idx="35" level="1" faceTarget="0" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<!--<node name="TriggerSetUserValue" triggerID="99999997" key="CamRotate" value="0" />-->
+			<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true" />
+		</condition>
+		<condition name="hpLess" value="60">
+			<aiPreset name="BlueFlow" />
+		</condition>
+		<condition name="hpLess" value="50">
+			<aiPreset name="BlueFlow" />
+		</condition>
+		<condition name="hpLess" value="45">
+			<!-- 4페이즈 -->
+			<node name="buff" type="remove" id="40600051" level="1"/>
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="TriggerSetUserValue" triggerID="99999996" key="AddBallCount" value="6" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<!--<node name="TriggerSetUserValue" triggerID="99999997" key="CamRotate" value="1" />-->
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="buff" type="add" id="40600051" level="1"/>
+			<node name="skill" idx="35" level="1" faceTarget="0" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<!--<node name="TriggerSetUserValue" triggerID="99999997" key="CamRotate" value="0" />-->
+			<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true" />
+		</condition>
+		<condition name="hpLess" value="35">
+			<aiPreset name="BlueFlow_Enforced" />
+		</condition>
+		<condition name="hpLess" value="15">
+			<!-- 5페이즈 -->
+			<node name="buff" type="remove" id="40600051" level="1"/>
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="TriggerSetUserValue" triggerID="99999996" key="AddBallCount" value="7" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="TriggerSetUserValue" triggerID="99999997" key="CamRotate" value="1" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="buff" type="add" id="40600051" level="1"/>
+			<node name="skill" idx="35" level="1" faceTarget="0" />
+			<aiPreset name="LargeBlueAge_CubeBreak" />
+			<node name="standby" limit="500" faceTarget="0" isKeepBattle="true" />
+			<node name="TriggerSetUserValue" triggerID="99999997" key="CamRotate" value="0" />
+			<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true" />
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9000">
+				<node name="target" type="near" from="5" to="2100" />
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			</node>
+			<node name="conditions">
+				<!--
+				<condition name="hpOver" value="90">
+					<aiPreset name="Summon_1" />
+					<aiPreset name="Summon_4" />
+					<node name="standby" limit="100" />
+				</condition>
+				-->
+				<condition name="hpOver" value="90">
+					<node name="conditions">
+						<condition name="additional" id="40600084" overlapCount="1">
+							<node name="buff" type="remove" id="40600084" />
+							<aiPreset name="LargeBlueAge_01" />
+						</condition>
+						<condition name="skillRange" skillIdx="14">
+							<node name="select" prob="60,40">
+								<aiPreset name="NormalAttack1" />
+								<node name="standby" limit="10" faceTarget="0" isKeepBattle="true">
+									<select prob="1,1">
+										<node name="target" type="far" from="10" to="2100" />
+										<node name="target" type="random" />
+									</select>
+									<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+									<aiPreset name="FarAttack_Phase1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="target" type="far" from="10" to="2100">
+								<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+								<aiPreset name="FarAttack_Phase1" />
+							</node>
+						</condition>
+					</node>
+					<node name="standby" limit="2000" faceTarget="1" isKeepBattle="true"/>
+				</condition>
+				<condition name="hpOver" value="70">
+					<node name="select" prob="990,10">
+						<node name="standby" limit="100" cooltime="22000" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="extraData" key="nextSummonIdx" value="1">
+									<aiPreset name="Summon_1" />
+									<node name="SetValue" key="nextSummonIdx" value="2" />
+								</condition>
+								<condition name="true">
+									<aiPreset name="Summon_2" />
+									<node name="SetValue" key="nextSummonIdx" value="1" />
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="10" faceTarget="0" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="additional" id="40600084" overlapCount="1">
+									<node name="buff" type="remove" id="40600084" />
+									<aiPreset name="LargeBlueAge_02" />
+								</condition>
+								<condition name="skillRange" skillIdx="46">
+									<node name="select" prob="60,40">
+										<aiPreset name="NormalAttack2" />
+										<node name="standby" limit="10" faceTarget="0" isKeepBattle="true">
+											<select prob="1,1">
+												<node name="target" type="far" from="10" to="2100" />
+												<node name="target" type="random" />
+											</select>
+											<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+											<aiPreset name="FarAttack_Phase2" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="target" type="far" from="10" to="2100">
+										<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+										<aiPreset name="FarAttack_Phase2" />
+									</node>
+								</condition>
+							</node>
+							<node name="standby" limit="2300" faceTarget="1" isKeepBattle="true"/>
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="45">
+					<node name="select" prob="9999,99,1">
+						<node name="standby" limit="100" cooltime="50000" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="extraData" key="soloUser" value="1">
+									<node name="standby" limit="10" faceTarget="0" isKeepBattle="true" />
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99999,35,65">
+										<node name="skill" idx="16" level="1" faceTarget="0" cooltime="9999000"/>
+										<node name="skill" idx="15" level="1" faceTarget="0" />
+										<node name="skill" idx="16" level="1" faceTarget="0" />
+									</node>
+									<node name="standby" limit="2500" faceTarget="1" isKeepBattle="true" />
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="100" cooltime="22000" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="extraData" key="nextSummonIdx" value="1">
+									<aiPreset name="Summon_1" />
+									<node name="SetValue" key="nextSummonIdx" value="2" />
+								</condition>
+								<condition name="extraData" key="nextSummonIdx" value="2">
+									<aiPreset name="Summon_2" />
+									<node name="SetValue" key="nextSummonIdx" value="3" />
+								</condition>
+								<condition name="extraData" key="nextSummonIdx" value="3">
+									<aiPreset name="Summon_3" />
+									<node name="SetValue" key="nextSummonIdx" value="4" />
+								</condition>
+								<condition name="true">
+									<aiPreset name="Summon_4" />
+									<node name="SetValue" key="nextSummonIdx" value="1" />
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="additional" id="40600084" overlapCount="1">
+									<node name="buff" type="remove" id="40600084" />
+									<aiPreset name="LargeBlueAge_03" />
+								</condition>
+								<condition name="skillRange" skillIdx="47">
+									<node name="select" prob="60,40">
+										<aiPreset name="NormalAttack3" />
+										<node name="standby" limit="10" faceTarget="0" isKeepBattle="true">
+											<select prob="1,1">
+												<node name="target" type="far" from="10" to="2100" />
+												<node name="target" type="random" />
+											</select>
+											<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+											<node name="select" prob="100,100,100">
+												<!-- FarAttack_Phase3 -->
+												<node name="skill" idx="5" level="1" faceTarget="1" />
+												<node name="skill" idx="9" level="1" faceTarget="1" />
+												<node name="standby" limit="100" isKeepBattle="true" cooltime="60000">
+													<node name="select" prob="100,100">
+														<node name="skill" idx="8" level="1" faceTarget="1" />
+														<node name="skill" idx="37" level="1" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="target" type="far" from="10" to="2100">
+										<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+										<node name="select" prob="100,100,100">
+											<!-- FarAttack_Phase3 -->
+											<node name="skill" idx="5" level="1" faceTarget="1" />
+											<node name="skill" idx="9" level="1" faceTarget="1" />
+											<node name="standby" limit="100" isKeepBattle="true" cooltime="60000">
+													<node name="select" prob="100,100">
+														<node name="skill" idx="8" level="1" faceTarget="1" />
+														<node name="skill" idx="37" level="1" faceTarget="1" />
+													</node>
+												</node>
+										</node>
+									</node>
+								</condition>
+							</node>
+							<node name="standby" limit="2300" faceTarget="1" isKeepBattle="true" />
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="15">
+					<node name="select" prob="9999,10,10">
+						<node name="standby" limit="100" cooltime="20000" isKeepBattle="true">
+							<node name="conditions">
+								<!-- RB, YY, G -->
+								<condition name="extraData" key="nextSummonIdx" value="1">
+									<aiPreset name="Summon_1" />
+									<aiPreset name="Summon_2" />
+									<node name="SetValue" key="nextSummonIdx" value="2" />
+								</condition>
+								<condition name="extraData" key="nextSummonIdx" value="2">
+									<aiPreset name="Summon_3" />
+									<aiPreset name="Summon_3" />
+									<node name="SetValue" key="nextSummonIdx" value="3" />
+								</condition>
+								<condition name="true">
+									<aiPreset name="Summon_4" />
+									<node name="SetValue" key="nextSummonIdx" value="1" />
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="100" cooltime="65000" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="extraData" key="soloUser" value="1">
+									<node name="standby" limit="10" faceTarget="0" isKeepBattle="true" />
+								</condition>
+								<condition name="true">
+									<node name="select" prob="35,65">
+										<node name="skill" idx="15" level="1" faceTarget="0">
+											<node name="select" prob="35,65">
+												<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true">
+													<node name="skill" idx="15" level="1" faceTarget="0"/>
+												</node>
+												<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true">
+													<node name="skill" idx="16" level="1" faceTarget="0"/>
+												</node>
+											</node>
+										</node>
+										<node name="skill" idx="16" level="1" faceTarget="0">
+											<node name="select" prob="65,35">
+												<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true">
+													<node name="skill" idx="15" level="1" faceTarget="0"/>
+												</node>
+												<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true">
+													<node name="skill" idx="16" level="1" faceTarget="0"/>
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="1700" faceTarget="1" isKeepBattle="true"/>
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="additional" id="40600084" overlapCount="1">
+									<node name="buff" type="remove" id="40600084" />
+									<aiPreset name="LargeBlueAge_03" />
+								</condition>
+								<condition name="skillRange" skillIdx="47">
+									<node name="select" prob="60,40">
+										<aiPreset name="NormalAttack4" />
+										<node name="standby" limit="10" faceTarget="0" isKeepBattle="true">
+											<select prob="1,1">
+												<node name="target" type="far" from="10" to="2100" />
+												<node name="target" type="random" />
+											</select>
+											<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+											<node name="select" prob="100,100,100">
+												<!-- FarAttack_Phase4 -->
+												<node name="skill" idx="5" level="1" faceTarget="1" />
+												<node name="skill" idx="10" level="1" faceTarget="1" />
+												<node name="standby" limit="100" isKeepBattle="true" cooltime="60000">
+													<node name="select" prob="100,100">
+														<node name="skill" idx="8" level="1" faceTarget="1" />
+														<node name="skill" idx="37" level="1" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="target" type="far" from="10" to="2100">
+										<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+										<node name="select" prob="100,100,100">
+											<!-- FarAttack_Phase4 -->
+											<node name="skill" idx="5" level="1" faceTarget="1" />
+											<node name="skill" idx="10" level="1" faceTarget="1" />
+											<node name="standby" limit="100" isKeepBattle="true" cooltime="60000">
+												<node name="select" prob="100,100">
+													<node name="skill" idx="8" level="1" faceTarget="1" />
+													<node name="skill" idx="37" level="1" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</condition>
+							</node>
+							<node name="standby" limit="2300" faceTarget="1" isKeepBattle="true"/>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,99,2,8">
+						<node name="standby" limit="100" cooltime="65000" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="extraData" key="soloUser" value="1">
+									<node name="standby" limit="10" faceTarget="0" isKeepBattle="true" />
+								</condition>
+								<condition name="true">
+									<node name="select" prob="99999,3,6">
+										<node name="skill" idx="16" level="1" faceTarget="0" cooltime="99990000">
+											<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true"/>
+											<node name="skill" idx="15" level="1" faceTarget="0"/>
+											<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true"/>
+											<node name="skill" idx="16" level="1" faceTarget="0"/>
+										</node>
+										<node name="skill" idx="15" level="1" faceTarget="0">
+											<node name="select" prob="35,65">
+												<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+													<node name="skill" idx="15" level="1" faceTarget="0"/>
+												</node>
+												<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+													<node name="skill" idx="16" level="1" faceTarget="0"/>
+												</node>
+											</node>
+										</node>
+										<node name="skill" idx="16" level="1" faceTarget="0">
+											<node name="select" prob="65,35">
+												<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+													<node name="skill" idx="15" level="1" faceTarget="0"/>
+												</node>
+												<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+													<node name="skill" idx="16" level="1" faceTarget="0"/>
+												</node>
+											</node>
+										</node>
+									</node>
+									<node name="standby" limit="1500" faceTarget="1" isKeepBattle="true"/>
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="100" cooltime="20000" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="extraData" key="nextSummonIdx" value="1">
+									<aiPreset name="Summon_1" />
+									<aiPreset name="Summon_1" />
+									<node name="SetValue" key="nextSummonIdx" value="2" />
+								</condition>
+								<condition name="extraData" key="nextSummonIdx" value="2">
+									<aiPreset name="Summon_2" />
+									<aiPreset name="Summon_2" />
+									<node name="SetValue" key="nextSummonIdx" value="3" />
+								</condition>
+								<condition name="extraData" key="nextSummonIdx" value="3">
+									<aiPreset name="Summon_1" />
+									<aiPreset name="Summon_4" />
+									<node name="SetValue" key="nextSummonIdx" value="4" />
+								</condition>
+								<condition name="extraData" key="nextSummonIdx" value="4">
+									<aiPreset name="Summon_2" />
+									<aiPreset name="Summon_4" />
+									<node name="SetValue" key="nextSummonIdx" value="5" />
+								</condition>
+								<condition name="extraData" key="nextSummonIdx" value="5">
+									<aiPreset name="Summon_1" />
+									<aiPreset name="Summon_2" />
+									<node name="SetValue" key="nextSummonIdx" value="6" />
+								</condition>
+								<condition name="true">
+									<aiPreset name="Summon_3" />
+									<aiPreset name="Summon_4" />
+									<node name="SetValue" key="nextSummonIdx" value="1" />
+								</condition>
+							</node>
+						</node>
+						<node name="standby" limit="100" cooltime="75000" isKeepBattle="true">
+							<aiPreset name="BlueFlow_Enforced" />
+							<node name="standby" limit="1000" faceTarget="0" isKeepBattle="true" />
+						</node>
+						<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+							<node name="conditions">
+								<condition name="additional" id="40600084" overlapCount="1">
+									<node name="buff" type="remove" id="40600084" />
+									<aiPreset name="LargeBlueAge_04" />
+								</condition>
+								<condition name="skillRange" skillIdx="47">
+									<node name="select" prob="50,50">
+										<aiPreset name="NormalAttack5" />
+										<node name="standby" limit="10" faceTarget="0" isKeepBattle="true">
+											<select prob="1,1">
+												<node name="target" type="far" from="10" to="2100" />
+												<node name="target" type="random" />
+											</select>
+											<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+											<node name="select" prob="100,100,100">
+												<!-- FarAttack_Phase5 -->
+												<node name="skill" idx="5" level="1" faceTarget="1" />
+												<node name="skill" idx="10" level="1" faceTarget="1" />
+												<node name="standby" limit="100" isKeepBattle="true" cooltime="60000">
+													<node name="select" prob="100,100">
+														<node name="skill" idx="8" level="1" faceTarget="1" />
+														<node name="skill" idx="37" level="1" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="target" type="far" from="10" to="2100">
+										<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+										<node name="select" prob="100,100,100">
+											<!-- FarAttack_Phase5 -->
+											<node name="skill" idx="5" level="1" faceTarget="1" />
+											<node name="skill" idx="10" level="1" faceTarget="1" />
+											<node name="standby" limit="100" isKeepBattle="true" cooltime="60000">
+												<node name="select" prob="100,100">
+													<node name="skill" idx="8" level="1" faceTarget="1" />
+													<node name="skill" idx="37" level="1" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+									</node>
+								</condition>
+							</node>
+							<node name="standby" limit="2000" faceTarget="1" isKeepBattle="true"/>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="BlueFlow">
+			<node name="select" prob="1,1,1,1,1,1,1,1,1">
+				<node name="skill" idx="17" level="1" faceTarget="1" />
+				<node name="skill" idx="18" level="1" faceTarget="1" />
+				<node name="skill" idx="19" level="1" faceTarget="1" />
+				<node name="skill" idx="20" level="1" faceTarget="1" />
+				<node name="skill" idx="21" level="1" faceTarget="1" />
+				<node name="skill" idx="22" level="1" faceTarget="1" />
+				<node name="skill" idx="23" level="1" faceTarget="1" />
+				<node name="skill" idx="24" level="1" faceTarget="1" />
+				<node name="skill" idx="25" level="1" faceTarget="1" />
+			</node>
+		</aiPreset>
+		<aiPreset name="BlueFlow_Enforced">
+			<node name="select" prob="1,1,1,1,1,1,1,1,1">
+				<node name="skill" idx="26" level="1" faceTarget="1" />
+				<node name="skill" idx="27" level="1" faceTarget="1" />
+				<node name="skill" idx="28" level="1" faceTarget="1" />
+				<node name="skill" idx="29" level="1" faceTarget="1" />
+				<node name="skill" idx="30" level="1" faceTarget="1" />
+				<node name="skill" idx="31" level="1" faceTarget="1" />
+				<node name="skill" idx="32" level="1" faceTarget="1" />
+				<node name="skill" idx="33" level="1" faceTarget="1" />
+				<node name="skill" idx="34" level="1" faceTarget="1" />
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalAttack1">
+			<node name="target" type="random" from="5" to="400">
+				<node name="standby" limit="300" faceTarget="1" isKeepBattle="true" />
+				<node name="select" prob="1,1,1">
+					<node name="skill" idx="1" level="1" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="14">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="2" level="1" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="2" level="1" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="14">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="1" level="1" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="3" level="1" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalAttack2">
+			<node name="target" type="random" from="5" to="700">
+				<node name="standby" limit="300" faceTarget="1" isKeepBattle="true" />
+				<node name="select" prob="1,1,1,1,1">
+					<node name="skill" idx="38" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="46">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="40" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="40" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="46">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="38" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="38" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="46">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="42" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="40" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="46">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="42" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="42" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="46">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="42" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalAttack3">
+			<node name="target" type="random" from="5" to="1000">
+				<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+				<node name="select" prob="1,1,1,1,1">
+					<node name="skill" idx="39" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="41" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="41" faceTarget="1">
+						<node name="standby" limit="200" faceTarget="1" />
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="skill" idx="39" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="39" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="43" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="41" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="43" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="43" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="43" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalAttack4">
+			<node name="target" type="random" from="5" to="1000">
+				<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+				<node name="select" prob="1,1,1,1,1">
+					<node name="skill" idx="39" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="41" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="41" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="39" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="39" faceTarget="1">
+						<node name="standby" limit="200" faceTarget="1" />
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="43" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="41" faceTarget="1">
+						<node name="standby" limit="200" faceTarget="1" />
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="43" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="43" faceTarget="1">
+						<node name="standby" limit="200" faceTarget="1" />
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="200" faceTarget="1" />
+								<node name="skill" idx="43" faceTarget="1" />
+							</condition>
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="NormalAttack5">
+			<node name="target" type="random" from="5" to="1000">
+				<node name="standby" limit="500" faceTarget="1" isKeepBattle="true" />
+				<node name="select" prob="1,1,1,1,1">
+					<node name="skill" idx="48" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="10" faceTarget="1" />
+								<node name="skill" idx="49" faceTarget="1" />
+								<node name="standby" limit="10" faceTarget="0" />
+								<node name="skill" idx="50" faceTarget="0" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="49" faceTarget="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="10" faceTarget="1" />
+								<node name="skill" idx="48" faceTarget="1" />
+								<node name="standby" limit="10" faceTarget="0" />
+								<node name="skill" idx="50" faceTarget="0" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="48" faceTarget="1">
+						<node name="standby" limit="200" faceTarget="1" />
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="10" faceTarget="1" />
+								<node name="skill" idx="50" faceTarget="1" />
+								<node name="standby" limit="10" faceTarget="0" />
+								<node name="skill" idx="50" faceTarget="0" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="49" faceTarget="1">
+						<node name="standby" limit="200" faceTarget="1" />
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="10" faceTarget="1" />
+								<node name="skill" idx="50" faceTarget="1" />
+								<node name="standby" limit="10" faceTarget="0" />
+								<node name="skill" idx="50" faceTarget="0" />
+							</condition>
+						</node>
+					</node>
+					<node name="skill" idx="50" faceTarget="1">
+						<node name="standby" limit="200" faceTarget="1" />
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="47">
+								<node name="target" type="random" from="5" to="1000"/>
+								<node name="standby" limit="10" faceTarget="1" />
+								<node name="skill" idx="50" faceTarget="1" />
+								<node name="standby" limit="10" faceTarget="0" />
+								<node name="skill" idx="50" faceTarget="0" />
+							</condition>
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FarAttack_Phase1">
+			<node name="select" prob="100,100">
+				<node name="skill" idx="4" level="1" faceTarget="1" />
+				<node name="standby" limit="100" isKeepBattle="true" cooltime="50000">
+					<node name="select" prob="100,100">
+						<node name="skill" idx="7" level="1" faceTarget="1" />
+						<node name="skill" idx="36" level="1" faceTarget="1" />
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="FarAttack_Phase2">
+			<node name="select" prob="100,100,100">
+				<node name="skill" idx="4" level="1" faceTarget="1" />
+				<node name="skill" idx="9" level="1" faceTarget="1" />
+				<node name="standby" limit="100" isKeepBattle="true" cooltime="50000">
+					<node name="select" prob="100,100">
+						<node name="skill" idx="7" level="1" faceTarget="1" />
+						<node name="skill" idx="36" level="1" faceTarget="1" />
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="LargeBlueAge_01">
+			<node name="TriggerSetUserValue" triggerID="99999997" key="UseBlueAge" value="1" />
+			<node name="standby" limit="100" isKeepBattle="true">
+				<node name="skill" idx="11" level="1" faceTarget="0" />
+				<node name="skill" idx="13" level="1" faceTarget="0" />
+			</node>
+		</aiPreset>
+		<aiPreset name="LargeBlueAge_02">
+			<node name="standby" limit="100" isKeepBattle="true">
+				<node name="TriggerSetUserValue" triggerID="99999997" key="UseBlueAge" value="1" />
+				<node name="skill" idx="11" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="13" level="1" faceTarget="0" />
+			</node>
+		</aiPreset>
+		<aiPreset name="LargeBlueAge_03">
+			<node name="standby" limit="100" isKeepBattle="true">
+				<node name="TriggerSetUserValue" triggerID="99999997" key="UseBlueAge" value="1" />
+				<node name="skill" idx="11" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="13" level="1" faceTarget="0" />
+			</node>
+		</aiPreset>
+		<aiPreset name="LargeBlueAge_04">
+			<node name="standby" limit="100" isKeepBattle="true">
+				<node name="TriggerSetUserValue" triggerID="99999997" key="UseBlueAge" value="1" />
+				<node name="skill" idx="11" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="13" level="1" faceTarget="0" />
+			</node>
+		</aiPreset>
+		<aiPreset name="LargeBlueAge_04">
+			<node name="standby" limit="100" isKeepBattle="true">
+				<node name="TriggerSetUserValue" triggerID="99999997" key="UseBlueAge" value="1" />
+				<node name="skill" idx="11" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="12" level="1" faceTarget="0" />
+				<node name="skill" idx="13" level="1" faceTarget="0" />
+			</node>
+		</aiPreset>
+		<aiPreset name="LargeBlueAge_CubeBreak">
+			<node name="standby" limit="10" isKeepBattle="true">
+				<node name="skill" idx="11" level="1" faceTarget="0" />
+				<node name="skill" idx="51" level="1" faceTarget="0" />
+			</node>
+		</aiPreset>
+		<aiPreset name="Summon_1">
+			<node name="select" prob="10,10,10,10,10,10,10,10">
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" summonPos="0,-1950,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" summonPos="-300,-1125,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" summonPos="0,-300,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" summonPos="825,0,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" summonPos="1650,-300,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" summonPos="1950,-1125,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" summonPos="1650,-1950,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="2" group="101" summonPos="825,-2250,1651" summonRot="0,0,-50" />
+			</node>
+		</aiPreset>
+		<aiPreset name="Summon_2">
+			<node name="select" prob="10,10,10,10,10,10,10,10">
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="201" summonPos="0,-1950,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="201" summonPos="-300,-1125,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="201" summonPos="0,-300,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="201" summonPos="825,0,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="201" summonPos="1650,-300,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="201" summonPos="1950,-1125,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="201" summonPos="1650,-1950,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="201" summonPos="825,-2250,1651" summonRot="0,0,-50" />
+			</node>
+		</aiPreset>
+		<aiPreset name="Summon_3">
+			<node name="select" prob="10,10,10,10,10,10,10,10">
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="301" summonPos="0,-1950,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="301" summonPos="-300,-1125,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="301" summonPos="0,-300,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="301" summonPos="825,0,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="301" summonPos="1650,-300,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="301" summonPos="1950,-1125,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="301" summonPos="1650,-1950,1651" summonRot="0,0,-50" />
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="301" summonPos="825,-2250,1651" summonRot="0,0,-50" />
+			</node>
+		</aiPreset>
+		<aiPreset name="Summon_4">
+			<node name="select" prob="10,10,10,10,10,10,10,10">
+				<node name="standby" limit="100" isKeepBattle="true">
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="0,-1950,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="0,-300,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1650,-300,1651" summonRot="0,0,-50" />
+					<node name="standby" limit="500" isKeepBattle="true" />
+				</node>
+				<node name="standby" limit="100" isKeepBattle="true">
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="-300,-1125,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="825,0,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1950,-1125,1651" summonRot="0,0,-50" />
+				</node>
+				<node name="standby" limit="100" isKeepBattle="true">
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="0,-300,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1650,-300,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1650,-1950,1651" summonRot="0,0,-50" />
+				</node>
+				<node name="standby" limit="100" isKeepBattle="true">
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="825,0,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1950,-1125,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="825,-2250,1651" summonRot="0,0,-50" />
+				</node>
+				<node name="standby" limit="100" isKeepBattle="true">
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1650,-300,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1650,-1950,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="0,-1950,1651" summonRot="0,0,-50" />
+				</node>
+				<node name="standby" limit="100" isKeepBattle="true">
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1950,-1125,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="825,-2250,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="-300,-1125,1651" summonRot="0,0,-50" />
+				</node>
+				<node name="standby" limit="100" isKeepBattle="true">
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="1650,-1950,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="0,-1950,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="0,-300,1651" summonRot="0,0,-50" />
+				</node>
+				<node name="standby" limit="100" isKeepBattle="true">
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="825,-2250,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="-300,-1125,1651" summonRot="0,0,-50" />
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="3" group="401" summonPos="825,0,1651" summonRot="0,0,-50" />
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

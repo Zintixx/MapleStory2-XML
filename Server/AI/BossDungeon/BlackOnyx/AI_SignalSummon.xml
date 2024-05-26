@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 소환몹을 지속적으로 소환하는 역할을 하는 페이크 몬스터임 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="BeetleBigBlueDeath" value="0" />
+				<!--   이 변수 0으로 초기, 이 변수가 2가 되면, 같이 등장하는 중간보스 2마리 다 죽었다는 뜻임, AI_BeetleBigBlue_TypeA.xml, AI_BeetleBigBlue_TypeB.xml 부터 신호 받기 -->
+				<node name="SetValue" key="SummonCount" value="0" />
+				<!-- 소환 행위 총 턴 이루어 졌는지 체크하기 위한 변수-->
+				<node name="SetValue" key="SummonStopOk" value="0" />
+				<!-- 소환 행위 멈출때 사용하는 변수-->
+				<!-- 이 2마리 중간보스가 죽으면 죽음 신호 받아야 하기 때문에 마스터-슬레이브 설정 해야해서 이 몬스터가 소환하도록 함  -->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="901" summonPos="1950, 0, 3310" summonRot="0,0,0" />
+				<!-- 왼쪽지점 비틀 중간보스  -->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="902" summonPos="2250, -750, 3310" summonRot="0,0,0" />
+				<!-- 오른쪽지점 비틀 중간보스   -->
+				<node name="standby" limit="300" faceTarget="1" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="SummonCount" value="70" op="greaterEqual">
+				<!-- "$#%&" 이 부분 70번 실행하면, SummonStopOk 수 2 셋팅하여 바로 소환 행위 멈추도록 함-->
+				<node name="SetValue" key="SummonStopOk" value="2" />
+				<!-- 이 변수 2 만들어 소환 행위 완전 멈추가 함-->
+			</condition>
+			<condition name="extraData" key="SummonStopOk" value="2" op="greaterEqual">
+				<node name="standby" limit="1200" faceTarget="1" />
+			</condition>
+			<condition name="extraData" key="BeetleBigBlueDeath" value="1" op="lessEqual">
+				<!-- "$#%&" 평상시에 이 부분 실행함 "$#%&"-->
+				<node name="SetValue" key="SummonCount" value="1" isModify="1">
+					<!-- 비틀 중간보스가 살아있는 동안에 소환 행위가 총 몇턴 이루어 졌는지 체크하기 위해 변수 +1 씩 하기 -->
+					<aiPreset name="SummonCall" />
+				</node>
+			</condition>
+			<condition name="true">
+				<!-- 같이 등장하면 중간보스 2마리 다 죽으면 BeetleBigBlueDeath 변수 2가 되어서 이 부분 실행함 -->
+				<node name="SetValue" key="SummonStopOk" value="2" />
+				<!-- 이 변수 2 만들어 소환 행위 완전 멈추가 함-->
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="SummonCall">
+			<node name="standby" limit="150" faceTarget="1" isKeepBattle="true">
+				<!-- 왼쪽 지점 소환하기 -->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="10" group="101" summonPos="4500, 1650, 3310" summonRot="0,0,0" />
+				<!--  표창  -->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="10" group="102" summonPos="4500, 1500, 3310" summonRot="0,0,0" />
+				<!-- 주먹   -->
+				<!-- 오른쪽 지점 소환하기 -->
+				<node name="summon" npcId="5" npcCount="1" npcCountMax="10" group="103" summonPos="4500, -1350, 3310" summonRot="0,0,0" />
+				<!-- 주먹   -->
+				<node name="summon" npcId="6" npcCount="1" npcCountMax="10" group="104" summonPos="4500, -1500, 3310" summonRot="0,0,0" />
+				<!-- 표창   -->
+				<node name="standby" limit="1850" faceTarget="1" />
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

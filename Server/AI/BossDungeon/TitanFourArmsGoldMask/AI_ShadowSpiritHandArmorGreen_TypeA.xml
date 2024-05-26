@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<!--잡기 공격 전용 몬스터-->
+		<node name="conditions">
+			<condition name="state" targetState="grabTarget">
+				<!-- 타겟팅 된 대상이 잡혀있으면-->
+				<node name="skill" facePos="200, -750, 1650" idx="3">
+					<!-- 던지는 위치는 맵 중앙으로 해서 낮은 확률로 전투판 밖으로 떨어지는 상황을 막는다.-->
+					<node name="standby" limit="1200" faceTarget="0">
+						<node name="target" type="near" from="20" to="2000" />
+					</node>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,9999,0">
+					<node name="standby" limit="10" faceTarget="1" cooltime="5000" initialCooltime="1">
+						<node name="target" type="near" from="20" to="2000" />
+					</node>
+					<!-- 건너편 지형 소환, 공격력 저하 몬스터 소환하기-->
+					<node name="standby" limit="10" faceTarget="1" cooltime="14000" initialCooltime="9000" isKeepBattle="true">
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" lifeTime="600" summonPos="75, -1800, 1700" />
+						<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" lifeTime="600" summonPos="375, -1950, 1700" />
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="select" prob="9999,55,45">
+								<!--거리 550 이내에 있으면-->
+								<node name="skill" cooltime="16000" initialCooltime="10000" idx="1">
+									<node name="standby" limit="100" faceTarget="0">
+										<node name="target" type="near" from="10" to="1000">
+											<node name="conditions">
+												<condition name="state" targetState="grabTarget">
+													<!-- 타겟팅 된 대상이 잡혀있으면-->
+													<node name="skill" facePos="200, -750, 1650" idx="3">
+														<!-- 던지는 위치는 맵 중앙으로 해서 낮은 확률로 전투판 밖으로 떨어지는 상황을 막는다.-->
+														<node name="standby" limit="1800" faceTarget="0">
+															<node name="target" type="near" from="20" to="2000" />
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="skill" faceTarget="0" idx="2">
+														<node name="target" type="near" from="20" to="2000" />
+													</node>
+												</condition>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" idx="7">
+									<!--일반 주먹 휘두르기-->
+									<node name="standby" limit="2200" faceTarget="1" />
+								</node>
+								<node name="skill" idx="4">
+									<!--강럭주먹 1타-->
+									<node name="skill" faceTarget="0" idx="5">
+										<!--강럭주먹 2타-->
+										<node name="standby" limit="2700" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="55,45,5">
+								<node name="move" destination="200, -900, 1850" limit="2000" cooltime="7000">
+									<node name="target" type="near" from="20" to="2000" />
+								</node>
+								<node name="skill" cooltime="9000" idx="6">
+									<!--양손 지속 레이저-->
+									<node name="standby" limit="2300" faceTarget="1">
+										<node name="target" type="near" from="10" to="2000" />
+									</node>
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

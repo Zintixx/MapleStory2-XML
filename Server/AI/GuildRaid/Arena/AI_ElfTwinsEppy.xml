@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,1000,0">
+			<!--최초 1회-->
+			<node name="standby" limit="10" faceTarget="0" cooltime="999999999">
+				<node name="jump" pos="-150, 150, 1850" speed="800" heightMultiplier="0.8" />
+				<node name="standby" limit="1000" faceTarget="1" />
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--주기적인 타겟 전환-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<!--#1페이즈 -->
+			<node name="conditions">
+				<condition name="hpOver" value="50">
+					<node name="select" prob="100,100,100,100,100,1,1">
+						<!--빠른 공격 -->
+						<node name="skill" cooltime="3000" idx="4">
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<!--강공격 -->
+						<node name="skill" cooltime="3000" idx="3">
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<!--넘어뜨리기 -->
+						<node name="skill" cooltime="8000" idx="1">
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<!--자기 중심 큐브 스킬  -->
+						<node name="skill" cooltime="5000" idx="5">
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<!--상대 중심 큐브 스킬  -->
+						<node name="skill" cooltime="5000" idx="6">
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="trace" limit="1500" skillIdx="7" />
+						<node name="standby" limit="1500" faceTarget="1" />
+					</node>
+				</condition>
+				<!--#2페이즈 -->
+				<condition name="true">
+					<node name="select" prob="100,100,100,100,100,1,1">
+						<!--칼날 폭풍 -->
+						<node name="skill" cooltime="10000" idx="2">
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<!--강공격 -->
+						<node name="skill" cooltime="3000" idx="3">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!--넘어뜨리기 -->
+						<node name="skill" cooltime="8000" idx="1">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!--자기 중심 큐브 스킬  -->
+						<node name="skill" cooltime="5000" idx="5">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<!--상대 중심 큐브 스킬  -->
+						<node name="skill" cooltime="5000" idx="6">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="trace" limit="500" skillIdx="7" />
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="999991" key="RoundEnd" value="1" />
+	</battleEnd>
+</npcAi>

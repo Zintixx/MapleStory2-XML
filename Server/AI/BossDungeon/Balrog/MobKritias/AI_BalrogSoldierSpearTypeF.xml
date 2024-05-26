@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 마지막 페이지 전투판 아래쪽 지점에 있음, 즉 엑스트라 몬스터임 -->
+	<battle>
+		<node name="select" prob="9999,0">
+			<node name="standby" limit="200" faceTarget="0" cooltime="5000">
+				<node name="target" type="near" from="2" to="2400" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="BattleEnd" value="1">
+					<!--  전투가 완전 끝났음을 발록AI에게 부터 신호 받음-->
+					<node name="skill" idx="3" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!-- 2페이지 기준 같은 높이의 전투판에 있으면, 평상시 공격 행동 함 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="2">
+									<node name="select" prob="60,30">
+										<!--창 찌르기 사정거리 이내이면, 레벨2 같은 높이의 전투판 대상만 포함-->
+										<node name="skill" idx="2">
+											<!--창 찌르기 -->
+											<node name="target" type="near" from="2" to="1800">
+												<node name="select" prob="33,34,33">
+													<node name="standby" limit="200" faceTarget="1" />
+													<node name="standby" limit="700" faceTarget="1" />
+													<node name="standby" limit="1200" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="runaway" till="295" limit="5000" cooltime="9000" />
+										<!-- 이 till="295" 숫자 중요!  같이 싸우는 캐논 레이저포 설치하는 경호운 창병 거리 벌리가가 300인데, 이 보다 약간 작은 295로 설정해야 두 몬스터가 적당히 거리 벌리면서 제자리 전투를 할 것임 -->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="2500" skillIdx="1" />
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="target" type="near" from="10" to="2500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

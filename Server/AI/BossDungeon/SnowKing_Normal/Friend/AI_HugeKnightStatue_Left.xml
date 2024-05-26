@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,0">
+			<!--말풍선 대사와 시스템 메시지 출력 그리고 각종 변수 초기화 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="announce" message="$HugeKnightStatue_Purify$" durationTick="5000" />
+				<!--시스템 메시지로 설콩이에 의해 우호적 신전의 석상이 등장했음을 알려줌-->
+				<node name="say" message="$HugeKnightStatue_PurifyThankyou$" durationTick="8000" delayTick="1000" />
+				<!--타락해 풀어줘서 설콩이한테 고맘다고 하는 말 -->
+				<node name="SetValue" key="BossZone" value="0" />
+				<!-- 이 변수를 1로 받아 보스 전투판에서 싸우고 있다는 것을 알림-->
+				<node name="SetValue" key="PowerDownAttack" value="0" />
+				<!-- 방어력 저하 디버프 공격을 행하는데 사용되는 변수-->
+				<node name="SetValue" key="Boss3Phase" value="0" />
+				<!-- 보스 3페이즈때 특별한 행동을 하도록 설정하기 위해 사용되는 변수-->
+				<node name="SetValue" key="Boss4Phase" value="0" />
+				<!-- 보스 4페이즈때 특별한 행동을 하도록 설정하기 위해 사용되는 변수-->
+				<node name="SetValue" key="SnowKingDead" value="0" />
+				<!-- 보스가 죽으면 공격 행위 멈추게 하기 위해 사용되는 변수-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="Boss4Phase" value="1">
+					<aiPreset name="Boss4PhaseBattle" />
+					<!-- 보스 4페이즈 전투 패턴-->
+				</condition>
+				<condition name="extraData" key="Boss3Phase" value="1">
+					<aiPreset name="Boss3PhaseBattle" />
+					<!-- 보스 3페이즈 전투 패턴-->
+				</condition>
+				<condition name="extraData" key="BossZone" value="1">
+					<aiPreset name="BossZoneBattle" />
+					<!-- 보스 전투 초반 페이즈에서의 전투 패턴-->
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="extraData" key="NextStageGo" value="3">
+							<node name="standby" limit="3500" faceTarget="1" isKeepBattle="true">
+								<!--너무 바로 위층으로 올라가면 몬스터가 아직 점프뛰오 오지 않았는데 도착하게 되어 타겟이티 건너편 몬스터한테 가버리는 상황이 오기 때문에 3초 정도 있다가 이동하도록 함-->
+								<node name="buff" type="add" id="50001104" />
+								<!-- 타겟팅 예외 처리 에디셔널 붙이기, 설콩이가 신전의 기사단한테 타겟팅 갔을 경우를 대비해 이 단계에서 타겟팅 hide 어디셔널을 붙임-->
+								<node name="move" destination="-250, 2950, 3050" limit="15900" />
+								<node name="SetValue" key="NextStageGo" value="0" />
+								<!--이 변수 초기화 하여 이 단계 벗어나서 평상시 공격 행동 하도록 함-->
+								<node name="target" type="rand" from="10" to="1000" />
+								<node name="trace" limit="1300" skillIdx="2" />
+								<!--거리 600  이내로 추적-->
+							</node>
+						</condition>
+						<condition name="extraData" key="NextStageGo" value="4">
+							<node name="standby" limit="3500" faceTarget="1" isKeepBattle="true">
+								<node name="buff" type="add" id="50001104" />
+								<!-- 타겟팅 예외 처리 에디셔널 붙이기, 설콩이가 신전의 기사단한테 타겟팅 갔을 경우를 대비해 이 단계에서 타겟팅 hide 어디셔널을 붙임-->
+								<node name="move" destination="650, 3850, 3650" limit="15900" />
+								<node name="SetValue" key="NextStageGo" value="0" />
+								<!--이 변수 초기화 하여 이 단계 벗어나서 평상시 공격 행동 하도록 함-->
+								<node name="target" type="rand" from="10" to="1000" />
+								<node name="trace" limit="1300" skillIdx="2" />
+								<!--거리 600  이내로 추적-->
+							</node>
+						</condition>
+						<condition name="extraData" key="NextStageGo" value="5">
+							<node name="standby" limit="3500" faceTarget="1" isKeepBattle="true">
+								<node name="buff" type="add" id="50001104" />
+								<!-- 타겟팅 예외 처리 에디셔널 붙이기, 설콩이가 신전의 기사단한테 타겟팅 갔을 경우를 대비해 이 단계에서 타겟팅 hide 어디셔널을 붙임-->
+								<node name="move" destination="1550, 4750, 4250" limit="15900" />
+								<node name="SetValue" key="NextStageGo" value="0" />
+								<!--이 변수 초기화 하여 이 단계 벗어나서 평상시 공격 행동 하도록 함-->
+								<node name="target" type="rand" from="10" to="1000" />
+								<node name="trace" limit="1300" skillIdx="2" />
+								<!--거리 600  이내로 추적-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- NextStageGo = 0 인 경우-->
+							<aiPreset name="MainBattle" />
+							<!-- 졸구간에서의 전투 패턴-->
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="select" prob="50,50">
+			<node name="say" message="$HugeKnightStatue_Dead01$" durationTick="8000" />
+			<node name="say" message="$HugeKnightStatue_Dead02$" durationTick="8000" />
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="MainBattle">
+			<node name="select" prob="99999,9999,0">
+				<!--졸구간 주 전투 행위-->
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+				<node name="target" type="rand" from="10" to="900" cooltime="6000" />
+				<node name="buff" type="remove" id="50001104" cooltime="10000" />
+				<!--주기적으로  타겟팅 예외 버프 제거하기-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="65,28,7">
+							<!--거리 170 이내 -->
+							<node name="skill" idx="1">
+								<node name="select" prob="99,1">
+									<!--근접 검 휘두르기 -->
+									<node name="standby" limit="200" faceTarget="1" cooltime="15000" initialCooltime="8000">
+										<node name="say" message="$HugeKnightStatue_Anger$" durationTick="8000">
+											<node name="standby" limit="3000" faceTarget="0" />
+										</node>
+									</node>
+									<node name="standby" limit="800" faceTarget="1" />
+								</node>
+							</node>
+							<node name="skill" cooltime="27000" idx="2">
+								<!--돌진 찌르기-->
+								<node name="standby" limit="1100" faceTarget="1">
+									<node name="target" type="rand" from="10" to="1000" />
+								</node>
+							</node>
+							<node name="skill" cooltime="150000" idx="7">
+								<!--버프 부여 스킬 낮은 확률로 사용함-->
+								<node name="standby" limit="2100" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="select" prob="45,55">
+									<!--거리 600 이내 -->
+									<node name="trace" limit="3000" skillIdx="1" />
+									<!--거리 170  이내 -->
+									<node name="skill" cooltime="16000" idx="2">
+										<!--돌진 찌르기-->
+										<node name="standby" limit="1400" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="1000" faceTarget="1" isKeepBattle="true">
+									<!-- 해당층 클리어 하면 다음 층으로 점프 이동 하도록 보스가 신호 보낼것 이기 때문에 가만히 서있어도 괜찮음-->
+									<node name="buff" type="add" id="50001104" />
+									<!-- 타겟팅 예외 처리 에디셔널 붙이기, 설콩이가 신전의 기사단한테 타겟팅 갔을 경우를 대비해 이 단계에서 타겟팅 hide 어디셔널을 붙임-->
+									<node name="target" type="near" from="10" to="1000" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BossZoneBattle">
+			<node name="select" prob="99999,100,9999,0">
+				<!--보스전  전투 행위, 보스 전투판으로 점프 뛰 다음 이후 공격 행동을 함-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="999999">
+					<node name="select" prob="10,10,10,10,10,10,10,10,10,10">
+						<!--보스 전투판  왼쪽 하단 지점-->
+						<node name="skill" facePos="3750, 5700, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="3750, 5700, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="3750, 5550, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="3750, 5550, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="3900, 5850, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="3900, 5850, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="3900, 5700, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="3900, 5700, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="3900, 5550, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="3900, 5550, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="3900, 5400, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="3900, 5400, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="4050, 5850, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="4050, 5850, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="4050, 5700, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="4050, 5700, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="4050, 5550, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="4050, 5550, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+						<node name="skill" facePos="4050, 5400, 5300" isKeepBattle="true" idx="8">
+							<!--점프 도약 -->
+							<node name="jump" pos="4050, 5400, 5300" speed="1500" heightMultiplier="0.7" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지 -->
+						</node>
+					</node>
+				</node>
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 10시쪽 전투판의 대상을 최우선함, 무조건 가까운 타겟팅 설정하면 건너편에 있는 대기중인 소환몹을 타겟팅 잡는 문제가 있음-->
+				<node name="target" type="near" center="4425, 5625, 5300" cooltime="4000" />
+				<!--10 시 전투판 정중앙-->
+				<node name="buff" type="remove" id="50001104" cooltime="999999" />
+				<!--혹시 몰라 여기서 다시  타겟팅 예외 버프 제거하기-->
+				<node name="conditions">
+					<condition name="extraData" key="PowerDownAttack" value="1">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="4">
+								<!--거리 450 이내로 들어오면-->
+								<node name="skill" idx="6">
+									<!--저주 공격 멈추기-->
+									<node name="SetValue" key="PowerDownAttack" value="0" />
+								</node>
+							</condition>
+							<condition name="skillRange" skillIdx="5">
+								<!--거리 3200 이내, 높이 200 이하 안에 들어와야 저주 공격 지속 발동-->
+								<node name="skill" idx="5" />
+								<!--저주 공격 발동-->
+							</condition>
+							<condition name="true">
+								<node name="skill" idx="6">
+									<!--저주 공격 멈추기-->
+									<node name="SetValue" key="PowerDownAttack" value="0" />
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="10">
+						<!--거리 900~1000 이내 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="1">
+								<node name="select" prob="63,30,7">
+									<!--거리 170 이내 -->
+									<node name="skill" idx="1">
+										<!--근접 검 휘두르기 -->
+										<node name="standby" limit="1800" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="27000" idx="2">
+										<!--돌진 찌르기-->
+										<node name="standby" limit="2400" faceTarget="1" />
+									</node>
+									<node name="skill" cooltime="150000" idx="7">
+										<!--버프 부여 스킬 낮은 확률로 사용함-->
+										<node name="standby" limit="2600" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="2">
+										<node name="select" prob="45,55">
+											<!--거리 600 이내 -->
+											<node name="trace" limit="5000" skillIdx="1" />
+											<!--거리 170  이내 -->
+											<node name="skill" cooltime="16000" idx="2">
+												<!--돌진 찌르기-->
+												<node name="standby" limit="2500" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="80,20">
+											<node name="skill" idx="3">
+												<!--저주 디버프 걸기-->
+												<node name="SetValue" key="PowerDownAttack" value="1" />
+											</node>
+											<node name="trace" limit="3000" cooltime="4000" skillIdx="2" />
+											<!--거리 600  이내 -->
+										</node>
+									</condition>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="5">
+								<!--거리 3200 이내, 높이 200 이하 안에 들어와야 저주 공격 지속 발동, 큐브 2칸 높이 있는 보스를 헛공격 하는 상황을 막기 위한 설정-->
+								<node name="move" destination="4425, 5625, 5300" limit="1000">
+									<!--10시 전투판 중앙쪽으로 약간 이동 후 디버프 스킬 사용함-->
+									<node name="skill" faceTarget="1" idx="4">
+										<!--저주 디버프 걸기-->
+										<node name="SetValue" key="PowerDownAttack" value="1" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="500" faceTarget="1" />
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Boss3PhaseBattle">
+			<node name="select" prob="100,99999,0">
+				<!--보스 3페이지 때의 공격 행동-->
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 10시쪽 전투판의 대상을 최우선함, 무조건 가까운 타겟팅 설정하면 건너편에 있는 대기중인 소환몹을 타겟팅 잡는 문제가 있음-->
+				<node name="target" type="near" center="4425, 5625, 5300" cooltime="4000" />
+				<!--10 시 전투판 정중앙-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="999999">
+					<node name="select" prob="10,10,10,10,10,10,10,10,10,10,10,10">
+						<node name="move" destination="4750, 6100, 5300" limit="3000" />
+						<node name="move" destination="4900, 5850, 5300" limit="3000" />
+						<node name="move" destination="4680, 5890, 5300" limit="3000" />
+						<node name="move" destination="4870, 5340, 5300" limit="3000" />
+						<node name="move" destination="4600, 5140, 5300" limit="3000" />
+						<node name="move" destination="4675, 5330, 5300" limit="3000" />
+						<node name="move" destination="4135, 5343, 5300" limit="3000" />
+						<node name="move" destination="4190, 5120, 5300" limit="3000" />
+						<node name="move" destination="3950, 5820, 5300" limit="3000" />
+						<node name="move" destination="4180, 6100, 5300" limit="3000" />
+						<node name="move" destination="4110, 5930, 5300" limit="3000" />
+						<node name="move" destination="3881, 5460, 5300" limit="3000" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="PowerDownAttack" value="1">
+						<node name="skill" idx="5" />
+						<!--저주 공격 발동-->
+					</condition>
+					<condition name="true">
+						<node name="skill" faceTarget="1" idx="4">
+							<!--저주 디버프 걸기-->
+							<node name="SetValue" key="PowerDownAttack" value="1" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="Boss4PhaseBattle">
+			<node name="select" prob="99999,0">
+				<!--보스 4페이지 때의 공격 행동-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="999999" isKeepBattle="true">
+					<node name="SetValue" key="PowerDownAttack" value="0" />
+					<!--디버스 스킬 사용 관련 변수 초기화 하기-->
+					<node name="buff" type="add" id="50001104" />
+					<!-- 마지막페이즈에서는 타겟팅 예외 처리 에디셔널 붙이는 것이 좋을 거 같음-->
+				</node>
+				<node name="conditions">
+					<condition name="extraData" key="PowerDownAttack" value="0">
+						<node name="move" destination="5100, 5550, 5300" limit="2000">
+							<!--10-2시 다리 연결된 곳으로 그처로 이동 후  디버프 스킬 사용함-->
+							<node name="skill" faceTarget="1" idx="4">
+								<!--저주 디버프 걸기 시작 동작-->
+								<node name="SetValue" key="PowerDownAttack" value="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="PowerDownAttack" value="1">
+						<node name="skill" faceTarget="1" idx="5">
+							<!--저주 디버프 걸기-->
+							<node name="SetValue" key="PowerDownAttack" value="1" />
+						</node>
+					</condition>
+					<condition name="extraData" key="SnowKingDead" value="1">
+						<!--SnowKingDead = 1 은 보스 죽을 때 신호 보낼 것임-->
+						<node name="skill" faceTarget="1" idx="6">
+							<!--저주 디버프  멈추기-->
+							<node name="SetValue" key="PowerDownAttack" value="99" />
+						</node>
+					</condition>
+					<condition name="true">
+						<!--보스 죽으면   SnowKingDead = 1    이거에 의해 위에것 실행하고 최종 여기서 머무름-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

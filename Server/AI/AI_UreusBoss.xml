@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+		<!--중심 포지셔닝 : 6070,-75,2100-->
+		<!--북쪽 포지셔닝 : 6825,675,2100 -->
+		<!--남쪽 포지셔닝 : 5325,-825,2100 -->
+		<!--서쪽 포지셔닝 : 5325,675,2100 -->
+		<!--북쪽 포지셔닝 : 6825,-825,2100 -->
+		<!--7시 와드 : 5300,-95,2100 -->
+		<!--5시 와드 : 6070,-830,2100 -->
+		<!--1시 와드 : 6820,-80,2100 -->
+		<!--11시 와드 : 6070,660,2100 -->
+		<node name="conditions">
+			<condition name="hpOver" value="50">
+				<node name="select" prob="9999,99999,9999,100">
+					<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+						<node name="target" type="rand" from="10" to="1300" />
+					</node>
+					<node name="skill" faceTarget="0" cooltime="60000" initialCooltime="25000" idx="7">
+						<node name="select" prob="0,0,0,0">
+							<!--토템 소환 쿨타임 조절이 난이도의 핵심-->
+							<!--번개토템 소환-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="6820,-80,2100" cooltime="121000">
+								<node name="move" destination="6670,510,2100" />
+							</node>
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="6070,660,2100" cooltime="121000">
+								<node name="move" destination="6670,510,2100" />
+							</node>
+							<!--치유토템 소환-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="5300,-95,2100" cooltime="300000">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<!--바람토템 소환-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="6070,-830,2100" cooltime="121000">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="IsBuff" value="0">
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="target" type="rand" from="400" to="1500" />
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="skill" idx="2" />
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,100,100">
+								<node name="skill" faceTarget="0" cooltime="25000" initialCooltime="35000" idx="5">
+									<node name="select" prob="100,100">
+										<node name="teleport" pos="6070,-75,2100" cooltime="20000">
+											<node name="skill" facePos="5325,-825,2100" idx="6">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="teleport" pos="6070,-75,2100" cooltime="20000">
+											<node name="skill" facePos="5325,-825,2100" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="40,30,30,200,200,200,200">
+											<!-- 돌진 찌르기-->
+											<node name="skill" idx="1">
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<!--돌진찌르기 2연속-->
+											<node name="skill" idx="1">
+												<node name="skill" idx="3">
+													<node name="select" prob="100,99">
+														<node name="standby" limit="2000" faceTarget="1" />
+														<node name="trace" limit="2500" skillIdx="9" />
+													</node>
+												</node>
+											</node>
+											<!--돌진찌르기 3연속-->
+											<node name="skill" idx="3">
+												<node name="skill" idx="3">
+													<node name="skill" idx="4">
+														<node name="select" prob="100,99">
+															<node name="standby" limit="4000" faceTarget="1" />
+															<node name="trace" limit="2500" skillIdx="9" />
+														</node>
+													</node>
+												</node>
+											</node>
+											<node name="move" destination="5400,450,2100" cooltime="60000" initialCooltime="15000">
+												<node name="skill" idx="3" />
+											</node>
+											<node name="move" destination="6600,-600,2100" cooltime="90000" initialCooltime="8000">
+												<node name="skill" idx="3" />
+											</node>
+											<node name="move" destination="5450,-680,2100" cooltime="45000" initialCooltime="25000">
+												<node name="skill" idx="3" />
+											</node>
+											<node name="move" destination="6670,510,2100" cooltime="70000" initialCooltime="36000">
+												<node name="skill" idx="3" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,99999,9999,100">
+					<node name="standby" limit="10" faceTarget="1" cooltime="9000" initialCooltime="1">
+						<node name="target" type="rand" from="10" to="1300" />
+					</node>
+					<node name="skill" faceTarget="0" cooltime="60000" initialCooltime="25000" idx="7">
+						<node name="select" prob="0,0,0,0">
+							<!--토템 소환 쿨타임 조절이 난이도의 핵심-->
+							<!--번개토템 소환-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="6820,-80,2100" cooltime="121000">
+								<node name="move" destination="6670,510,2100" />
+							</node>
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="6070,660,2100" cooltime="121000">
+								<node name="move" destination="6670,510,2100" />
+							</node>
+							<!--치유토템 소환-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="5300,-95,2100" cooltime="300000">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<!--바람토템 소환-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="6070,-830,2100" cooltime="121000">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="IsBuff" value="0">
+							<node name="standby" limit="10" faceTarget="1">
+								<node name="target" type="rand" from="400" to="1500" />
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="skill" idx="2" />
+								<node name="target" type="rand" from="10" to="1300" />
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="9999,9999,100,100">
+								<node name="skill" faceTarget="0" cooltime="20000" initialCooltime="35000" idx="8" />
+								<node name="skill" faceTarget="0" cooltime="25000" initialCooltime="35000" idx="5">
+									<node name="select" prob="100,100">
+										<node name="teleport" pos="6070,-75,2100" cooltime="20000">
+											<node name="skill" facePos="5325,-825,2100" idx="6">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+										<node name="teleport" pos="6070,-75,2100" cooltime="20000">
+											<node name="skill" facePos="5325,-825,2100" idx="10">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="1">
+										<node name="select" prob="40,30,30,200,200,200,200">
+											<!-- 돌진 찌르기-->
+											<node name="skill" idx="1">
+												<node name="standby" limit="500" faceTarget="1" />
+											</node>
+											<!--돌진찌르기 2연속-->
+											<node name="skill" idx="1">
+												<node name="skill" idx="3">
+													<node name="select" prob="100,99">
+														<node name="standby" limit="2000" faceTarget="1" />
+														<node name="trace" limit="2500" skillIdx="9" />
+													</node>
+												</node>
+											</node>
+											<!--돌진찌르기 3연속-->
+											<node name="skill" idx="3">
+												<node name="skill" idx="3">
+													<node name="skill" idx="4">
+														<node name="select" prob="100,99">
+															<node name="standby" limit="4000" faceTarget="1" />
+															<node name="trace" limit="2500" skillIdx="9" />
+														</node>
+													</node>
+												</node>
+											</node>
+											<node name="move" destination="5400,450,2100" cooltime="60000" initialCooltime="15000">
+												<node name="skill" idx="3" />
+											</node>
+											<node name="move" destination="6600,-600,2100" cooltime="90000" initialCooltime="8000">
+												<node name="skill" idx="3" />
+											</node>
+											<node name="move" destination="5450,-680,2100" cooltime="45000" initialCooltime="25000">
+												<node name="skill" idx="3" />
+											</node>
+											<node name="move" destination="6670,510,2100" cooltime="70000" initialCooltime="36000">
+												<node name="skill" idx="3" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99,1">
+											<node name="trace" limit="2500" skillIdx="1" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+					<node name="standby" limit="1000" faceTarget="1" />
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

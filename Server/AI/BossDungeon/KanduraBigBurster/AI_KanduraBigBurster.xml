@@ -1,0 +1,1864 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--AI에서 사용하는 각정 설정 변수 최초 선언하는 부분-->
+			<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+				<node name="SetValue" key="SecondPhaseStart" value="0" />
+				<!-- 변신 연출 다 보여주고 본격 두번째 페이즈 전투 시작을 알리때 사용하는 변수, #중요!: 만약 이 변수가 계속 0이면 페이즈 건너뛰기로 변신 연출 안했다는 뜻임 -->
+				<node name="SetValue" key="ThirdPhaseStart" value="0" />
+				<!--플레이어가 3페이즈 전투판에 들어서면 본격 세번째 페이즈 전투 시작을 알리때 사용하는 변수-->
+				<node name="SetValue" key="ClosePlayerCheck" value="0" />
+				<!-- 가까이 붙은 플레이어가 얼마나 많이 있는 지를 체크하기 위해 사용하는 변수-->
+				<node name="SetValue" key="DarkSoulAbsorb" value="0" />
+				<!-- 암흑 정령의 소울을 몇개 흡수했는지 체크하는 변수, 암흑정령 소환몹한테 신호를 받아서 1씩 더해지는 변수임-->
+				<node name="SetValue" key="RoomJumpReady" value="0" />
+				<!--칸두라가 2페이즈에서 방에서 소환몹 나와 점프 뛸때 바로 점프 뛰지 말고 2~3번 공격후 점프 뛰도록 함-->
+				<node name="SetValue" key="MonsterPosition" value="0" />
+				<!--칸두라가 2페이즈에서 몇시 방에 있고 3페이즈에서 몇시 전투판에 있는지 알기 위한 변수, 2 3페이즈때 사용-->
+				<!-- 칸두라가 방에 있는 상태인지 알리는 변수, 방에 있는 상태라면 이 변수에 1을 넣어 광역 투사체 공격 사용하지 않도록 함-->
+				<node name="SetValue" key="PlayerAbsorb" value="0" />
+				<!--플레이어를 흡수 했고 몇회 흡수 했는지를 알기 위한 변수, 최대 2회 까지만 가능하도록 설정, 마지막 3페이즈때 사용-->
+				<node name="SetValue" key="PlayerAbsorb12" value="0" />
+				<!--플레이어를 흡수할 경우 12시에서 흡수했는지를 알기 위한 변수, 마지막 3페이즈때 사용-->
+				<node name="SetValue" key="FirstBottomHoleCube" value="0" />
+				<!--칸두라가 플레이어 흡수 후 점프 이동 후 전투를 할때 제일 먼저 바닥 구멍 큐브 설치를 해야하는데, 그것을 하기 위한 변수, 마지막 3페이즈때 사용-->
+				<node name="SetValue" key="PlayerAbsorbBattleReady" value="0" />
+				<!--플레이어를 흡수 후 점프 이동한 다음에 공격 개시 유무를 정하는 변수, 마지막 3페이즈때 사용-->
+				<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="0" />
+				<!--지친 상태에서 플레이어 흡수 공격을 언제 사용하는지 결정하는 변수, 마지막 3페이즈때 사용-->
+				<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+				<!--구멍에 빠진  플레이어 흡수 공격을 언제 사용하는지 결정하는 변수, 마지막 3페이즈때 사용-->
+				<node name="SetValue" key="PlayerVomitReady" value="0" />
+				<!--^o^ 흡수한 플레이어를 언제 뱉어내는지 결정하는 변수, 마지막 3페이즈때 사용-->
+				<node name="SetValue" key="BeforeVomit" value="0" />
+				<!--  이미 한번 플레이어 흡수하고 토했는지를 알리는데 사용하는 변수,    이 변수가 1이 되면 다음 단계에서 하게 될 행동   ThirdPhase_ExhaustedBattle 에 영할을 끼침-->
+				<!--  이 변수가 1이 된면 이후 절대 초기화 하면 안됨-->
+				<node name="SetValue" key="FatalWideBursterCounter" value="0" />
+				<!-- 암흑 정령의 소울을 다 모으면 발동하는 광역 스킬을 언제 발동시킬지 절정하는데 사용하는 변수-->
+				<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+				<!-- 카두라 보스가 어디 지점 점프이동해서  공격해야하는지 결정하는데 사용하는 변수, 이 변수는 소환몹이 어디서 등장하는 지에 따라 결정됨  0: 평범한 공격,  1: 중앙지형 체크,  2: 11시 방향  방 체크,  3: 5시 방향 방 체크,  4: 7시 방향 방 체크-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="75">
+			<!--  #중요!: 변신전 칸두라때 HP 극감되어 100~75% 구간 건너뛰기로 변신동작 연출 & 보스 BGM 변경 실행 안했으면, 여기서 실행되도록 함, 이 SecondPhaseStart 변수가 0이냐 1이냐에 따라 실행 여부 결정함 -->
+			<node name="conditions">
+				<condition name="extraData" key="SecondPhaseStart" value="0">
+					<!-- 이 변수가 0이라는 것은 변신전 칸두라때 HP 극감 되어서 페이지 건너뛰기 되어서 변신연출 안나왔다는 뜻이기 때문에 이것 관련 별도 설정을 꼭 해야함 -->
+					<node name="standby" limit="130" faceTarget="1" isKeepBattle="true">
+						<node name="teleport" pos="450, 450, 3760" />
+						<!--  변신연출 없이 바로 2페이즈 바닥 전투판으로 내려오기-->
+						<node name="TriggerSetUserValue" triggerID="1122000" key="ChangeBGM" value="1" />
+						<!-- 이 타이밍에 보스 BGM이 나오게 설정함-->
+						<node name="SetValue" key="SecondPhaseStart" value="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!--  SecondPhaseStart 변수가 1이라는 뜻으로 이미 페이지 건너뛰기 없이 정상적으로 변신연출& BGM 교체 작업이 이루어 졌다는 뜻으로 아무런 일 없이 그냥 넘어감 -->
+					<node name="standby" limit="130" faceTarget="1" />
+				</condition>
+			</node>
+		</condition>
+		<condition name="hpLess" value="43">
+			<!--2페이즈 끝날때 발동되는 부분 정의함-->
+			<!--***reserved**** -->
+			<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+				<node name="buff" type="add" id="50001036" level="1" />
+				<!--칸두라 몸에 붙은 버프 이펙트 제거-->
+				<node name="SetSlaveValue" key="DeathSummon" value="1" />
+				<!--소환몹에게 자살 명령 내리기 -->
+				<node name="SetValue" key="MonsterPosition" value="12" />
+				<!--3페이즈 전투판 12시 방향에 위치하기 때문에 12를 넣음-->
+				<node name="SetValue" key="DarkSoulAbsorb" value="0" />
+				<!--소울 에너지 & 광역공격 로직 관련 변수 0으로 초기화 하기 -->
+				<node name="SetValue" key="FatalWideBursterCounter" value="0" />
+				<!--소울 에너지 & 광역공격 로직 관련 변수 0으로 초기화 하기 -->
+				<node name="skill" faceTarget="0" idx="43" />
+				<!--지친 동작을 취하면서 성우 대사, 레벨2, 3페이즈 전투판 점프 이동 후 다시 같은 대사 말함 -->
+				<node name="skill" facePos="8175, 2775, 6180" idx="44" />
+				<!--3페이즈 전투판으로 점프 이동함 -->
+				<node name="TriggerSetUserValue" triggerID="1123000" key="SecondPhaseEnd" value="1" />
+				<!-- 2페이지 종료 후 맵 트리거 설정 정의 부분 -->
+				<node name="jump" pos="8175, 2775, 6180" speed="1800" heightMultiplier="0.3" />
+				<!--점프중 -->
+				<node name="skill" faceTarget="0" idx="46" />
+				<!--점프 착지, 레벨3: 큐브파괴 -->
+				<node name="standby" limit="1500" faceTarget="1" animation="Attack_Idle_B" />
+				<node name="SetValue" key="ThirdPhaseStart" value="1" />
+				<!-- 이 변수에 1을 넣어 3페이즈 시작을 구분하는 표시를 넣음-->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="hpOver" value="75">
+				<node name="select" prob="999999,0">
+					<!--2-1페이즈, 칸두라 변신전 1페이지에서 대미지 받아서 페이지 전환되었을 경우 HP가 대략 90~87%에서 시작할 것임 -->
+					<!-- 2-1페이즈 시작할때만 변신 막 시작하는 동작 딱 1회 실행하기 -->
+					<node name="skill" cooltime="9999999" idx="37" />
+					<node name="conditions">
+						<condition name="extraData" key="SecondPhaseStart" value="0">
+							<!--2페이즈 본격 전투 전 변신 연출 나오는 장면 -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="37">
+									<node name="skill" facePos="-970, -970, 3800" isKeepBattle="true" idx="38">
+										<!--대기 동작-->
+										<node name="TriggerSetUserValue" triggerID="1122000" key="ChangeBGM" value="1" />
+										<!-- 이 타이밍에 보스 BGM이 나오게 설정함-->
+										<node name="skill" faceTarget="0" idx="38" />
+										<!--대기 동작 -->
+										<node name="skill" faceTarget="0" idx="38" />
+										<!--대기 동작 -->
+										<node name="skill" faceTarget="0" idx="38" />
+										<!--대기 동작 -->
+										<node name="skill" faceTarget="0" idx="38" />
+										<!--대기 동작, 버그 때문에 성우 목소리 일단 빼자, 레벨22: 성우 목소리   이 성우 효과음을 위쪽에 설정하면 보스 BGM 트리거 설정과 충돌되어서 BGM이 안나오는 문제가 있는데, TriggerEvent 보다 뒤에서 나오는 형태로 설정하면 위험함  -->
+										<node name="skill" faceTarget="0" idx="38" />
+										<!--대기 동작 -->
+										<node name="skill" faceTarget="0" idx="39" />
+										<!--변신 시작 동작  -->
+										<node name="standby" limit="2000" faceTarget="0" />
+										<node name="SetValue" key="SecondPhaseStart" value="1" />
+										<!-- 이 변수에 0이 아닌 다른 숫자를 넣어 본격 2페이즈 전투 시작을 알림-->
+										<!-- 소환몹 등자하여 소울 흡수 -->
+										<node name="skill" facePos="-970, -970, 3800" idx="44" />
+										<node name="jump" pos="-970, -970, 3800" speed="1800" heightMultiplier="0.3" />
+										<!--점프중 -->
+										<node name="skill" faceTarget="0" idx="49" />
+										<!--점프 착지, 레벨6 , 성우 음성 -->
+										<node name="standby" limit="1500" faceTarget="1" />
+										<!--점프 착지 후 광역 공격 발동  맛보기 형태로-->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="skill" facePos="-970, -970, 3800" idx="38">
+										<node name="target" type="near" from="10" to="1300" />
+										<!--제일 가까운 대상 타겟팅 잡기, 이거 없으면 모든 파티원이 900 이내로 가까아 와야하는 버그성 문제가 있음-->
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99999,99999,99999,299,299,0">
+								<!--2페이즈 본격 전투 설정 부분 -->
+								<!--##플레이어가 너무 가까이 몰려있을때 견제하기 위한 체크   &   소울 흡수 몇번 했는지 체크 & 시간이 다 되거나 Max가 되면 광역폭주 공격 발동함## -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="3000">
+									<aiPreset name="ClosePlayer_Check" />
+									<!--   #ClosePlayer_Check,   여기서 타겟팅 체크 자주 이루어 짐-->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="3000">
+									<!-- 이 쿨타임  FatalWideBursterCounter 변수 크게 연관있음, 이 쿨타임 숫자 변경할 경우 아래 "@^@" 부분도 꼭 같이 변경해줘야 함, 이 부분이 코드 분석 복잡한편-->
+									<aiPreset name="DarkSoulCount_Check" />
+									<!--소울 에너지 얼만큼 흡수했는시 횟수 체크 하고, 광역공격 사용하기 위한 카운트다운을 세는 부분, 즉 이곳이 실질적인 광역공격 쿨타임임-->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="3000">
+									<!-- 이 쿨타임  FatalWideBursterCounter 변수 크게 연관있음, 이 쿨타임 숫자 변경할 경우 아래 "@^@" 부분도 꼭 같이 변경해줘야 함, 이 부분이 코드 분석 복잡한편-->
+									<aiPreset name="FatalWideBurster_Check" />
+									<!--광역공격 발동시키는 부분, 소울 에너지 흡수 수량에 따라 1~3 단계 광역공격을 선택해서 발동시킴-->
+								</node>
+								<!--##플레이어가 너무 가까이 몰려있을때 견제하기 위한 체크   &   소울 흡수 몇번 했는지 체크 & 시간이 다 되거나 Max가 되면 광역폭주 공격 발동함## -->
+								<!--저주 곡사 발사, ##일반 난이도는 쿨타임 비교적 길게 함 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="56000" initialCooltime="35000">
+									<node name="skill" idx="20" />
+									<!--저주 곡사 2발, 레벨 11: 4인 레이드 난이도 -->
+								</node>
+								<!--암흑 몬스터 소환, 2-1 페이즈 패턴, ##일반 난이도는 소환주기 비교적 길게 함 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="35000">
+									<aiPreset name="DarkSpiritSummon21_Check" />
+									<!--   #DarkSpiritSummon21_Check -->
+								</node>
+								<aiPreset name="SecondPhase_MainBattle" />
+								<!--#2페이즈때의 주 공격 행동-->
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="43">
+				<node name="select" prob="99999,99999,99999,299,299,0">
+					<!--2-2페이즈, 암흑정령 소환몹이 더 다양한 장소에서 등장, 여기 HP관련 숫자 변경했으면 맨 위  reserved  부분도 같이 변경해 줘야암-->
+					<!--##플레이어가 너무 가까이 몰려있을때 견제하기 위한 체크   &   소울 흡수 몇번 했는지 체크 & 시간이 다 되거나 Max가 되면 광역폭주 공격 발동함## -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="3000">
+						<aiPreset name="ClosePlayer_Check" />
+						<!--   #ClosePlayer_Check -->
+					</node>
+					<node name="standby" limit="100" faceTarget="1" cooltime="3000">
+						<!--   이 쿨타임  FatalWideBursterCounter 변수 크게 연관있음, 이 쿨타임 숫자 변경할 경우 아래 "@^@" 부분도 꼭 같이 변경해줘야 함-->
+						<aiPreset name="DarkSoulCount_Check" />
+						<!--소울 에너지 얼만큼 흡수했는시 횟수 체크 하고, 광역공격 사용하기 위한 카운트다운을 세는 부분, 즉 이곳이 실질적인 광역공격 쿨타임임-->
+					</node>
+					<node name="standby" limit="100" faceTarget="1" cooltime="3000">
+						<!--   이 쿨타임  FatalWideBursterCounter 변수 크게 연관있음, 이 쿨타임 숫자 변경할 경우 아래 "@^@" 부분도 꼭 같이 변경해줘야 함-->
+						<aiPreset name="FatalWideBurster_Check" />
+						<!--광역공격 발동시키는 부분, 소울 에너지 흡수 수량에 따라 1~3 단계 광역공격을 선택해서 발동시킴-->
+					</node>
+					<!--##플레이어가 너무 가까이 몰려있을때 견제하기 위한 체크   &   소울 흡수 몇번 했는지 체크 & 시간이 다 되거나 Max가 되면 광역폭주 공격 발동함## -->
+					<!--저주 곡사 발사, ##일반 난이도는 쿨타임 비교적 길게 함 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="56000">
+						<node name="skill" idx="20" />
+						<!--저주 곡사 2발, 레벨 11: 4인 레이드 난이도 -->
+					</node>
+					<!--암흑 몬스터 소환, 2-2 페이즈에서 이 부분이 가장 핵심일 수 있음, ##일반 난이도는 소환주기 비교적 길게 함 -->
+					<node name="standby" limit="100" faceTarget="1" cooltime="48000">
+						<aiPreset name="DarkSpiritSummon22_Check" />
+						<!--   #DarkSpiritSummon22_Check -->
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="WhereIsSummonCheck" value="0">
+							<!--평상시 상태일때 -->
+							<aiPreset name="SecondPhase_MainBattle" />
+							<!--#2페이즈때의 주 공격 행동-->
+						</condition>
+						<condition name="true">
+							<!--방금 소환몹이 등장한 상태-->
+							<node name="conditions">
+								<condition name="extraData" key="RoomJumpReady" value="1" op="greaterEqual">
+									<!--소환 몹 등장후 바로 점프 뛰면 이상하니 공격 한번 하고 이후  이 변수가 1이상 되는데 이때 점프뛸지말지를 판단하는 로직으로 들어감-->
+									<aiPreset name="RoomJumpOk_Check" />
+								</condition>
+								<condition name="true">
+									<node name="SetValue" key="RoomJumpReady" value="1" isModify="1">
+										<!--방에서 소환몹이 나올때 바로 점프 뛰지 말고 2번 공격 후 점프 뛰게 하기 위해 1씩 더함-->
+										<!--이 변수 초기화는 2-2 소환몹 등장할때 이루어 짐-->
+										<aiPreset name="SecondPhase_MainBattle" />
+										<!--#2페이즈때의 주 공격 행동-->
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="35">
+				<!--3-1페이즈, 지친 상태,   이 구간에서 극딜당하면 이 부분 금방 넘어갈 수 있음-->
+				<node name="conditions">
+					<condition name="extraData" key="ThirdPhaseStart" value="1">
+						<!--3페이즈 본격 전투 전 최초 딱 1회 성우 대사 나오도록 하기 위한 설정 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="42">
+								<!--같은 높이의 전투판 1100 이내로 들어서면 -->
+								<node name="skill" facePos="-970, -970, 1900" isKeepBattle="true" idx="43">
+									<!--지친 동작을 취하면서 성우 대사, 레벨2 -->
+									<node name="standby" limit="800" faceTarget="0" />
+									<node name="SetValue" key="ThirdPhaseStart" value="0" />
+									<!-- 이 변수에 초기화 하여 3페이즈 본격 전투를 시작을 알림-->
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="skill" facePos="-970, -970, 1900" idx="42">
+									<!--지친 동작의 Attack_Idle -->
+									<node name="target" type="rand" from="1" to="2500" />
+									<!--이부분 타겟팅 near 하면, 사다리 아래 대샹 고정 타겟팅 하여 보스가 바보 되는 현상이 있어서 꼭  rand 타겟팅 설정 해야 함 -->
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<aiPreset name="ThirdPhase_ExhaustedBattle" />
+						<!--#3페이즈 지친 상태의 공격 행동-->
+					</condition>
+				</node>
+			</condition>
+			<condition name="hpOver" value="10">
+				<!--3-2페이즈, 플레이어 흡수, 매달린 대상을 타겟팅 잡을 때 최우선으러 이 처리 꼭 해야함-->
+				<node name="conditions">
+					<condition name="extraData" key="PlayerVomitReady" value="9" op="greaterEqual">
+						<!--보스 플레이어 흡수 상태에서 공격 9회 이상 하도록 유도하면 플레이어 전부 뱉어냄, 그리고 모든 것이 초기화 되어 다시 시작함,        !!!!!흡수 혹은 뱉기 행위 수치 조절 중요-->
+						<!--흡수한 플레이어 뱉는 행동 정의 하는 부분-->
+						<node name="skill" faceTarget="0" idx="40">
+							<!--흡수하여 몸에 붙어있는 플레이어 다 뱉어내고, 다시 지친 상태 즉 <aiPreset name="ThirdPhase_ExhaustedBattle">  상태로 돌아오기 -->
+							<node name="SetValue" key="BeforeVomit" value="1" />
+							<!-- 이 변수에 1을 넣어 이미 한번 플레이어 흡수하고 토했는지를 알림, 이 변수가 1이 되면 다음에 하게 될 행동   ThirdPhase_ExhaustedBattle 에 영할을 끼침-->
+							<!-- 이 변수가 1이 된면 이후 절대 초기화 하면 안됨 -->
+							<!--각종 변수 다 초기화 하고 보스는 12시 방향 전투판으로 이동시켜 지친 상태로 만듦 -->
+							<node name="SetValue" key="PlayerAbsorb" value="0" />
+							<!--플레이어를 흡수 했고 몇회 흡수 했는지를 알기 위한 변수 초기화 하기-->
+							<node name="SetValue" key="PlayerVomitReady" value="0" />
+							<!--^o^ 흡수한 플레이어를 언제 뱉어내는지 결정하는 변수 초기화 하기, 기력흡수 1단계에서의 공격은 1씩 증가시키는데 기력흡수 2단계에서의 공격은 2~3씩 증가시킴-->
+							<node name="SetValue" key="PlayerAbsorb12" value="0" />
+							<!--플레이어를 흡수할 경우 12시에서 흡수했는지를 알기 위한 변수 초기화-->
+							<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="0" />
+							<!--지친 상태에서 플레이어 흡수 공격을 언제 사용하는지 결정하는 변수 초기화, 전에 이미 초기화 되어있지만 혹시 몰라서 여기서도 초기화 함-->
+							<node name="SetValue" key="PlayerAbsorbBattleReady" value="0" />
+							<!--"ThirdPhase_PlayerAbsorbBattle"에서만 사용하는 변수, 지친 상태에서 플레이어 흡수 후 점프 이동을 한 다음 1을 넣어 다음 단계 행위를 하도록 결정할 때 사용하는 변수임-->
+							<node name="SetValue" key="FirstBottomHoleCube" value="0" />
+							<!--"ThirdPhase_PlayerAbsorbBattle"에서만 사용하는 변수, 점프 이동 한 다음에 처음에 바닥 구멍 큐브 스킬 사용하고 1을 넣어 다음 단계 행위를 하도록 결정할 때 사용하는 변수임-->
+							<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+							<!--<aiPreset name="ThirdPhase_MorePlayerAbsorb"> 실행하는 조건 변수임, 이 변수 초기화 하여, 구멍에 빠진 플레이어 흡수 해위 하지 말고 통상적인 공격 행동 하도록 함, 이거 초기화 안하면 계속 <aiPreset name="ThirdPhase_MorePlayerAbsorb">  단계 반복할 것임-->
+							<!--  이 변수 칸두라가 플레이어 한번 흡수한 다음에 여러 다양한 상황을 커버하기 위해 <aiPreset name="ThirdPhase_MorePlayerAbsorb">  내에서 자주 사용되는 범용성이 높은 변수임, 가독성 난이도가 제일 높은 변수임 -->
+							<node name="SetValue" key="MonsterPosition" value="12" />
+							<!--12시 전투판으로 이동시키기 때문에 12를 넣음-->
+							<node name="skill" facePos="9020, 3620, 6180" idx="44" />
+							<!--3페이즈 전투판으로 점프 이동함 -->
+							<node name="jump" pos="9020, 3620, 6180" speed="1800" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="47" />
+							<!--점프 착지, 레벨4: 디폴트 -->
+							<node name="skill" facePos="-970, -970, 1900" idx="42" />
+							<!-- 지친동작 -->
+							<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+						</node>
+					</condition>
+					<condition name="extraData" key="PlayerAbsorb" value="1">
+						<!--플레이어를 1회 흡수 상태면-->
+						<node name="conditions">
+							<condition name="extraData" key="PlayerAbsorbHoleAttackReady" value="13" op="lessEqual">
+								<!--이 변수가 13보다 많으면, 이 상황은 3페이즈  전투판의 플레이어가 없거나 전투 의지 없이 구석에 짱박힌 경우임-->
+								<!--혹은 한번 플레이어 흡수 후 건너편 전투판으로 점프 했는데 같은 전투판에 플레이어가 없다는 건데, 이런 경우 한번 흡수했을 때 플레이어 전원 흡수 되었다는 뜻이 됨-->
+								<aiPreset name="ThirdPhase_PlayerAbsorbBattle" />
+								<!--플레이어를 한번 흡수한 상태의 공격 행동, 여기서 PlayerVomitReady 변수를 계속 1씩 더해서 이 변수가 너무 커지면 흡수한 플레이어 뱉어내는 행동 하도록 유도함-->
+							</condition>
+							<condition name="true">
+								<!--PlayerAbsorbHoleAttackReady 변수가 13 이상이 되어서, 이 상황은 3페이즈  전투판의 플레이어가 없거나 전투 의지 없이 구석에 짱박힌 경우임-->
+								<aiPreset name="ThirdPhase_MorePlayerAbsorb" />
+								<!--같은 전투판의 모든 플레이어가 구멍에 빠졌는지 세부 체크하여 다시 흡수 공격하거나, 혹은 해당 전투판에 플레이어 없는 경우 이미 흡수한 플레이어 죽여서 기력흡수 2단계로 만듦-->
+							</condition>
+						</node>
+					</condition>
+					<condition name="extraData" key="PlayerAbsorb" value="2" op="greaterEqual">
+						<!--플레이어를 2회 흡수 상태면, 3회는 흡수 안함, 칸두라가 플레이어 기력 흡수 2단계 되는 경우는 플레이어 흡수 공격 성공 행위를 두번 하던가 아니면 한번 흡수 성공 하고 이후 매달린 대상을 죽여서 다시 흡수 하는 것임-->
+						<aiPreset name="ThirdPhase_PlayerAbsorbBattle_Laser" />
+						<!-- 기력흡수 2단계가 되면 거대 레이저 발사 공격만 함-->
+					</condition>
+					<condition name="true">
+						<!--플레이어를 흡수하지 않은 지친상태 -->
+						<node name="conditions">
+							<condition name="extraData" key="PlayerAbsorbExhaustedAttack" value="7" op="greaterEqual">
+								<!-- PlayerAbsorbExhaustedAttack 변수가 7 이상이면 플레이어 흡수 공격 사용함, aiPreset name="ThirdPhase_ExhaustedBattle" 이곳에서 이 변수에 1씩 더함,       !!!!!흡수 혹은 뱉기 행위 수치 조절 중요-->
+								<aiPreset name="ThirdPhase_ExhaustedPlayerAbsorb" />
+								<!--지친 상태에서 3개 전투판 중 한곳으로 순간이동하여 흡수 공격 발동함, 즉 12시  5시  7시 흡수대상 랜덤 선택함 -->
+								<!-- 플레이어 흡수 성공하면  PlayerAbsorbExhaustedAttack 변수 0으로 초기화 하나, 흡수 실패하면 PlayerAbsorbExhaustedAttack 변수 초기화함-->
+							</condition>
+							<condition name="true">
+								<aiPreset name="ThirdPhase_ExhaustedBattle" />
+								<!--#3페이즈 지친 상태의 공격 행동(흡수 공격 했는데 흡수한 플레이어가 없을때도 이 부분 실행함)-->
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="true">
+				<!-- 4페이즈 - 최후 마지막 페이즈 12시 전투판 맵 구석에 짱박혀 발악 -->
+				<aiPreset name="FourthPhase_MainBattle" />
+				<!--#4페이즈때의 주 공격 행동-->
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--죽을 때 선언하는 부분-->
+		<node name="TriggerSetUserValue" triggerID="1130000" key="ThirdPhaseEnd" value="1" />
+		<!-- 3페이지 종료 후 맵 트리거 설정 정의 부분 -->
+	</battleEnd>
+	<aiPresets>
+		<!--플레이어가 너무 가까이 몰려있을때 견제하기 위한 체크-->
+		<aiPreset name="ClosePlayer_Check">
+			<!--#ClosePlayer_Check: 많은 플레이어가 거리 310 이내로 많이 붙어있으면, 근접공격 위주로 사용하게 하기 위해 매 시간마다 체크함 -->
+			<node name="target" type="rand" from="10" to="1150">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="16">
+						<!--거리 310 이내에 있으면 -->
+						<node name="SetValue" key="ClosePlayerCheck" value="1" isModify="1" />
+					</condition>
+					<condition name="true">
+						<node name="conditions">
+							<condition name="extraData" key="ClosePlayerCheck" value="0" op="lessEqual">
+								<!--ClosePlayerCheck 변수가 마이너스 값 이하로 내려가지 않도록 설정함 -->
+								<node name="SetValue" key="ClosePlayerCheck" value="0" />
+							</condition>
+							<condition name="true">
+								<node name="SetValue" key="ClosePlayerCheck" value="-1" isModify="1" />
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<!--소울 에너지 얼만큼 흡수했는시 횟수 체크 하고, 광역 공격 사용하기 위한 카운트다운을 세는 부분-->
+		<aiPreset name="DarkSoulCount_Check">
+			<node name="conditions">
+				<condition name="extraData" key="DarkSoulAbsorb" value="0" op="lessEqual">
+					<!--소울 에너지 흡수 없음-->
+					<node name="standby" limit="10" faceTarget="1" />
+					<!--아무일도 일어나지 않음-->
+					<!--소울 에너지 흡수가 1개도 없으면,  FatalWideBursterCounter 이 변수가 계속 0 이기 때문에 아래 정의된 "FatalWideBurster_Check" 통해 광역 공격이 발동 되지 않는 구조임  -->
+				</condition>
+				<condition name="extraData" key="DarkSoulAbsorb" value="1">
+					<!--소울 에너지 흡수 1개 -->
+					<node name="buff" type="add" id="50001031" level="1">
+						<!--1단계 버프 아이콘 띄우기, 레벨1: 소울 에너지 1개 흡수 -->
+						<node name="SetValue" key="FatalWideBursterCounter" value="1" isModify="1" />
+						<!--FatalWideBursterCounter 변수 1씩 더함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="DarkSoulAbsorb" value="2">
+					<!--소울 에너지 흡수 2개 -->
+					<node name="buff" type="add" id="50001031" level="2">
+						<!--1단계 버프 아이콘 띄우기, 레벨2: 소울 에너지 2개 흡수 -->
+						<node name="SetValue" key="FatalWideBursterCounter" value="1" isModify="1" />
+						<!--FatalWideBursterCounter 변수 1씩 더함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="DarkSoulAbsorb" value="3">
+					<!--소울 에너지 흡수 3개 -->
+					<node name="buff" type="add" id="50001031" level="3">
+						<!--1단계 버프 아이콘 띄우기, 레벨3: 소울 에너지 3개 흡수 -->
+						<node name="SetValue" key="FatalWideBursterCounter" value="1" isModify="1" />
+						<!--FatalWideBursterCounter 변수 1씩 더함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="DarkSoulAbsorb" value="4">
+					<!--소울 에너지 흡수 4개 -->
+					<node name="buff" type="add" id="50001032" level="1">
+						<!--2단계 버프 아이콘 띄우기, 레벨1: 소울 에너지 4개 흡수 -->
+						<node name="SetValue" key="FatalWideBursterCounter" value="1" isModify="1" />
+						<!--FatalWideBursterCounter 변수 1씩 더함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="DarkSoulAbsorb" value="5">
+					<!--소울 에너지 흡수 5개 -->
+					<node name="buff" type="add" id="50001032" level="2">
+						<!--2단계 버프 아이콘 띄우기, 레벨2: 소울 에너지 5개 흡수 -->
+						<node name="SetValue" key="FatalWideBursterCounter" value="1" isModify="1" />
+						<!--FatalWideBursterCounter 변수 1씩 더함 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="DarkSoulAbsorb" value="6">
+					<!--소울 에너지 흡수 6개 -->
+					<node name="buff" type="add" id="50001032" level="3">
+						<!--2단계 버프 아이콘 띄우기, 레벨3: 소울 에너지 6개 흡수 -->
+						<node name="SetValue" key="FatalWideBursterCounter" value="1" isModify="1" />
+						<!--FatalWideBursterCounter 변수 1씩 더함 -->
+					</node>
+				</condition>
+				<condition name="true">
+					<!--소울 에너지 흡수 7개 이상 -->
+					<node name="buff" type="add" id="50001033" level="1">
+						<!--소울 에너지 흡수 3단계 버프 아이콘 띄우기 -->
+						<node name="SetValue" key="FatalWideBursterCounter" value="99" />
+						<!--FatalWideBursterCounter 변수 99로  셋팅해서 바로 "#광역 공격 3단계 발동#" 하도록 하기 -->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--광역 공격 발동시키는 부분, 소울 에너지 흡수 수량에 따라 1~3 단계 광역공격을 선택해서 발동시킴-->
+		<aiPreset name="FatalWideBurster_Check">
+			<node name="conditions">
+				<condition name="extraData" key="FatalWideBursterCounter" value="9" op="lessEqual">
+					<!--소울 에너지 흡수 없거나 아직 시간이 안되었음-->
+					<!--"@^@"시간조절하는부분 - 시간이 다 되어서 광역스킬 사용함, 쿨타임 3초 x 10번 즉 이론적으로 최소 30초 인데 실제 55~70초 정도 될듯, 만약 lowerEqual="15" 이렇게 넣으면 쿨타임 4초 x 16번  최소 64초 마다가 되는 것임-->
+					<node name="standby" limit="10" faceTarget="1" />
+					<!--아무런 일 발생하지 않음, 소울 에너지 흡수가 없으면 광역 공격 사용하지 못하고 계속 이단계를 거칠 것임-->
+					<!--소울 에너지 흡수가 1개도 없으면,  FatalWideBursterCounter 이 변수가 계속 0 이기 때문에 아래 정의된 "FatalWideBurster_Check" 통해 광역 공격이 발동 되지 않는 것임-->
+				</condition>
+				<condition name="true">
+					<!--레이드 난이도는 힐러 없이 물약으로 버터야 하기 때문에 공격력이 낮은 버전을 사용함 -->
+					<node name="conditions">
+						<condition name="extraData" key="FatalWideBursterCounter" value="99" op="greaterEqual">
+							<!--소울 에너지 흡수 3단계가 되면 바로 광역 공격 사용함 -->
+							<!--"#광역 공격 3단계 발동#" -->
+							<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+								<node name="SetSlaveValue" key="DeathSummon" value="1" />
+								<!--소환몹에게 자살 명령 내리기 -->
+								<node name="target" type="near" from="450" to="2500" />
+								<!--광역공격 사용사 바라보는 방향 지정 -->
+								<node name="skill" faceTarget="1" idx="66" />
+								<node name="skill" faceTarget="0" idx="67" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="72" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="72" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="72" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="72" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="68" />
+								<node name="skill" faceTarget="0" idx="69" />
+								<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+								<!--변수 초기화 하여 광역 공격 후 가끔 방으로 점프 이동하는 상황을 막음 -->
+								<node name="SetValue" key="DarkSoulAbsorb" value="0" />
+								<!--소울 에너지 & 광역공격 로직 관련 변수 0으로 초기화 하기 -->
+								<node name="SetValue" key="FatalWideBursterCounter" value="0" />
+								<!--소울 에너지 & 광역공격 로직 관련 변수 0으로 초기화 하기 -->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!--시간이 다 되면 광역 공격 1단계 혹은 2단계 발동 -->
+							<node name="conditions">
+								<condition name="extraData" key="DarkSoulAbsorb" value="3" op="lessEqual">
+									<!--광역 공격 1단계 발동 -->
+									<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+										<node name="SetSlaveValue" key="DeathSummon" value="1" />
+										<!--소환몹에게 자살 명령 내리기 -->
+										<node name="target" type="near" from="450" to="2500" />
+										<!--광역공격 사용사 바라보는 방향 지정 -->
+										<node name="skill" faceTarget="1" idx="58" />
+										<node name="skill" faceTarget="0" idx="59" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="70" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="70" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="70" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="60" />
+										<node name="skill" faceTarget="0" idx="61" />
+										<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+										<!--변수 초기화 하여 광역 공격 후 가끔 방으로 점프 이동하는 상황을 막음 -->
+										<node name="SetValue" key="DarkSoulAbsorb" value="0" />
+										<!--소울 에너지 & 광역공격 로직 관련 변수 0으로 초기화 하기 -->
+										<node name="SetValue" key="FatalWideBursterCounter" value="0" />
+										<!--소울 에너지 & 광역공격 로직 관련 변수 0으로 초기화 하기 -->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--광역 공격 2단계 발동 -->
+									<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+										<node name="SetSlaveValue" key="DeathSummon" value="1" />
+										<!--소환몹에게 자살 명령 내리기 -->
+										<node name="target" type="near" from="450" to="2500" />
+										<!--광역공격 사용사 바라보는 방향 지정 -->
+										<node name="skill" faceTarget="1" idx="62" />
+										<node name="skill" faceTarget="0" idx="63" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="71" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="71" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="71" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="64" />
+										<node name="skill" faceTarget="0" idx="65" />
+										<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+										<!--변수 초기화 하여 광역 공격 후 가끔 방으로 점프 이동하는 상황을 막음 -->
+										<node name="SetValue" key="DarkSoulAbsorb" value="0" />
+										<!--소울 에너지 & 광역공격 로직 관련 변수 0으로 초기화 하기 -->
+										<node name="SetValue" key="FatalWideBursterCounter" value="0" />
+										<!--소울 에너지 & 광역공격 로직 관련 변수 0으로 초기화 하기 -->
+										<node name="standby" limit="2000" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--2페이즈때의 주 공격 행동-->
+		<aiPreset name="SecondPhase_MainBattle">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<!--거리 580 이내에 있으면 -->
+					<node name="conditions">
+						<condition name="extraData" key="ClosePlayerCheck" value="3" op="greaterEqual">
+							<!--#ClosePlayer_Check 로직을 통해 많은 플레이어가 가까이 붙어 있으면 이 스킬 계속 사용하도록 함 -->
+							<node name="skill" idx="16">
+								<!--왼손 휘둘러서 마법 뿌리기 공격, 상태이상 걸기 -->
+								<node name="standby" limit="1200" faceTarget="1">
+									<node name="SetValue" key="ClosePlayerCheck" value="-1" isModify="1" />
+									<!--	 여기서 ClosePlayerCheck 값 -1 하지 않으면 가까이 붙은 플레이어가 없는데 계속 사용하는 경우가 있어서 꼭 -1을 함,  이건 테스트용	<event eventName="SetExtra" target="Me" param1="ClosePlayerCheck" param2="3" prob="100" />	-->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="199,99,38,38,24">
+								<node name="standby" limit="100" faceTarget="1" cooltime="30000" initialCooltime="25000">
+									<!--칸두라의 위치에 따라 거대 투사체 발사할지 말지를 결정 -->
+									<node name="conditions">
+										<condition name="extraData" key="MonsterPosition" value="1" op="greaterEqual">
+											<!--MonsterPosition  변수가 0보다 크다는 것은 방에 있다는 뜻임 -->
+											<node name="standby" limit="100" faceTarget="1" />
+											<!--칸두라가 방에 있다면 거대 투사체 발사 안함-->
+										</condition>
+										<condition name="true">
+											<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+												<node name="target" type="far" from="300" to="900" />
+												<!--멀리있는 대상 우선 타겟팅 하기 -->
+												<node name="skill" idx="17" />
+												<!--칸두라가 넓은 중앙 전투판에 있다면 거대 투사체 발사함 -->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+										</condition>
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="33000" initialCooltime="30000" isKeepBattle="true" idx="8">
+									<node name="skill" faceTarget="0" idx="9" />
+									<!--할퀴기 공격 -->
+									<node name="skill" faceTarget="1" idx="10" />
+									<!--다음 공격 준비 자세 -->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!--할퀴기 공격 -->
+									<node name="skill" faceTarget="1" idx="10" />
+									<!--다음 공격 준비 자세 -->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!--할퀴기 공격 -->
+									<node name="skill" faceTarget="1" idx="10" />
+									<!--다음 공격 준비 자세 -->
+									<node name="skill" faceTarget="0" idx="9" />
+									<!--할퀴기 공격 -->
+									<node name="skill" faceTarget="0" idx="11" />
+									<!--할퀴기 마무리   -->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+									<node name="target" type="near" from="200" to="580" />
+									<!--가까운 대상 우선 타겟팅 하기 -->
+									<node name="skill" idx="4" />
+									<!--돌진 2연타 휘두르기, 근거리 주력-->
+									<node name="standby" limit="2000" faceTarget="1" />
+									<node name="target" type="far" from="300" to="900" />
+									<!--멀리있는 대상 우선 타겟팅 하기 -->
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="11000" isKeepBattle="true">
+									<node name="target" type="far" from="300" to="900" />
+									<!--멀리있는 대상 우선 타겟팅 하기 -->
+									<node name="skill" idx="1" />
+									<!--내려찍기, 이 스킬은 근거리 원거리 다 커버 -->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<!--사정거리 이내 까지 쫓아가서 왼손 휘둘러서 마법 뿌리기 공격, 상태이상 걸기, 여기서는 가끔 사용함 -->
+								<node name="standby" limit="100" faceTarget="1" cooltime="23000" isKeepBattle="true">
+									<node name="target" type="far" from="300" to="900" />
+									<!--멀리있는 대상 우선 타겟팅 하기 -->
+									<node name="trace" limit="2000" skillIdx="16" />
+									<node name="skill" idx="16" />
+									<node name="standby" limit="1200" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="39,30,30,1">
+								<!--거리 950 이내에 있으면 (2페이즈에서 사용하는 거리체크) -->
+								<node name="skill" idx="6">
+									<!--돌진 찌르기 후 휘두르기, 원거리 주력-->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="11000" idx="1">
+									<!--내려찍기, 이 스킬은 근거리 원거리 다 커버 -->
+									<node name="standby" limit="2000" faceTarget="1" />
+								</node>
+								<node name="trace" limit="2500" cooltime="11000" skillIdx="4" />
+								<!--거리 580까지 쫓아가기-->
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="21">
+									<!--지하에 있으면 -->
+									<node name="skill" idx="21">
+										<!--지하 방향 쪽으로 투사체 발사-->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="skillRange" skillIdx="22">
+									<!--큐브 3칸 2층 지형에 있으면-->
+									<node name="trace" till="1050" limit="3000">
+										<!--1050 거리까지 다가가기-->
+										<node name="skill" idx="22">
+											<!--지하 방향 쪽으로 투사체 발사-->
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="44">
+											<node name="select" prob="50,50">
+												<!--사정거리 1200 이내에 있으면,                     이 스킬코드는 점프 도약 준비 스킬임 -->
+												<node name="standby" limit="800" faceTarget="1" />
+												<node name="trace" limit="5000" cooltime="8000" skillIdx="4" />
+												<!--거리 950까지 쫓아가기-->
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="standby" limit="800" faceTarget="1">
+												<node name="target" type="near" from="5" to="1300" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--2-1페이즈때의 소환몹 등장 패턴-->
+		<aiPreset name="DarkSpiritSummon21_Check">
+			<node name="select" prob="15,15,15,15,15,15,15">
+				<!--2층 왼쪽-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="70000">
+					<!--2층 왼쪽-->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-1350, 1200, 4200" summonRot="0,0,-50" />
+					<!--빨리 땅으로 내려옴(순간이동) & 빨리 죽음-->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="-1950, 600, 4200" summonRot="0,0,-50" />
+					<!--빨리 땅으로 내려옴(순간이동)-->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="-1650, 1200, 4200" summonRot="0,0,-50" />
+					<!--빨리 땅으로 내려옴(순간이동)-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="-1350, 900,, 4200" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="105" summonPos="-1650, 600, 4200" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="106" summonPos="-1950, 900, 4200" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="107" summonPos="-1650, 900, 4200" summonRot="0,0,-50" />
+					<!--만트라-->
+				</node>
+				<!--2층 오른쪽-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="70000">
+					<!--2층 오른쪽-->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="111" summonPos="1200, -1350, 4200" summonRot="0,0,-50" />
+					<!--빨리 땅으로 내려옴(순간이동)-->
+					<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="112" summonPos="750, -1800, 4200" summonRot="0,0,-50" />
+					<!--빨리 땅으로 내려옴(순간이동)-->
+					<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="113" summonPos="1200, -1650, 4200" summonRot="0,0,-50" />
+					<!--빨리 땅으로 내려옴 & 빨리 죽음-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="114" summonPos="900, -1950, 4200" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="115" summonPos="1050, -1350,  4200" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="116" summonPos="600, -1650, 4200" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="117" summonPos="900, -1650, 4200" summonRot="0,0,-50" />
+					<!--만트라-->
+				</node>
+				<!--중앙 지하, 순간이동 좌표때문에 코드 전부 따로 사용함, 이 페이지에서 딱 한번만 발동-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="120000">
+					<!--지하 가운데 -->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="201" summonPos="-600, 0, 3450" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="202" summonPos="-150, 0, 3450" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="203" summonPos="-600, -750,, 3450" summonRot="0,0,-50" />
+					<!--빨리 지상으로  올라옴(순간이동)-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="204" summonPos="-150, -750,  3450" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="205" summonPos="-600, -300, 3450" summonRot="0,0,-50" />
+					<!--빨리 지상으로  올라옴(순간이동)-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="206" summonPos="-300, -150, 3450" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="207" summonPos="-150, -450, 3450" summonRot="0,0,-50" />
+					<!--빨리 지상으로  올라옴(순간이동) & 빨리 죽음-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="208" summonPos="-450, -600, 3450" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+				</node>
+				<!--중앙 지하, 순간이동 좌표때문에 코드 전부 따로 사용함, 이 페이지에서 딱 한번만 발동-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="120000">
+					<!--지하 왼쪽-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="211" summonPos="-1050, 900, 3450" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="212" summonPos="-1050, 600, 3450" summonRot="0,0,-50" />
+					<!--빨리 지상으로  올라옴(순간이동)-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="213" summonPos="-1350, 600, 3450" summonRot="0,0,-50" />
+					<!--빨리 지상으로  올라옴(순간이동)-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="214" summonPos="-1350, 300, 3450" summonRot="0,0,-50" />
+					<!--느린 순간이동Type-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="215" summonPos="-1650, 150, 3450" summonRot="0,0,-50" />
+					<!--빨리 지상으로  올라(순간이동) & 빨리 죽음-->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="408" summonPos="300, 300, 3750" summonRot="0,0,-50" />
+					<!--12시 만트라 등장-->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="409" summonPos="300, -1050, 3750" summonRot="0,0,-50" />
+					<!--3시 만트라 등장-->
+					<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="411" summonPos="-1050, 300, 3750" summonRot="0,0,-50" />
+					<!--9시 만트라 등장-->
+				</node>
+				<!--5시  7시 방향쪽 TypeA -->
+				<node name="standby" limit="10" faceTarget="1" cooltime="90000">
+					<!--5시 -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="301" summonPos="-150, -1950, 3750" summonRot="0,0,-50" />
+					<!--일반Type -->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="303" summonPos="-450, -2100, 3750" summonRot="0,0,-50" />
+					<!--빨리 중앙 이동(순간이동) -->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="305" summonPos="-600, -2250, 3750" summonRot="0,0,-50" />
+					<!--빨리 중앙 이동(순간이동) & 빨리 죽음 -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="307" summonPos="-450, -2400, 3750" summonRot="0,0,-50" />
+					<!--일반Type-->
+					<!--7시 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="312" summonPos="-1950, -450, 3750" summonRot="0,0,-50" />
+					<!--일반Type 빨리 죽음 -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="314" summonPos="-2250, -300, 3750" summonRot="0,0,-50" />
+					<!--일반Type -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="316" summonPos="-2400, -150, 3750" summonRot="0,0,-50" />
+					<!--일반Type  -->
+				</node>
+				<!--5시  7시 방향쪽 TypeB -->
+				<node name="standby" limit="10" faceTarget="1" cooltime="90000">
+					<!--5시 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="302" summonPos="-450, -1950, 3750" summonRot="0,0,-50" />
+					<!--빨리 죽음 -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="304" summonPos="-300, -2250, 3750" summonRot="0,0,-50" />
+					<!--일반Type -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="306" summonPos="-150, -2400, 3750" summonRot="0,0,-50" />
+					<!--일반Type  -->
+					<!--7시 -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="311" summonPos="-1950, -150, 3750" summonRot="0,0,-50" />
+					<!--일반Type-->
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="313" summonPos="-2100, -450, 3750" summonRot="0,0,-50" />
+					<!--빨리 중앙 이동(순간이동) -->
+					<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="315" summonPos="-2250, -600, 3750" summonRot="0,0,-50" />
+					<!--빨리 중앙 이동(순간이동) & 빨리 죽음 -->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="317" summonPos="-2400, -450, 3750" summonRot="0,0,-50" />
+					<!--일반Type -->
+				</node>
+				<!--중앙   돌진 + 두더지, 이 페이지에서 딱 한번만 발동-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="160000">
+					<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="401" summonPos="-1500, -450, 3750" summonRot="0,0,-50" />
+					<!--7시 등장 돌진Type-->
+					<node name="summon" npcId="15" npcCount="1" npcCountMax="1" group="402" summonPos="-300, -1500, 3750" summonRot="0,0,-50" />
+					<!--4시 등장 돌진Type(빨리 죽음)-->
+					<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="403" summonPos="750, -300, 3750" summonRot="0,0,-50" />
+					<!--1시 등장  돌진Type-->
+					<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="404" summonPos="-600, 1200, 3750" summonRot="0,0,-50" />
+					<!--11시 등장  돌진Type-->
+					<node name="summon" npcId="16" npcCount="1" npcCountMax="1" group="405" summonPos="600, -750, 3750" summonRot="0,0,-50" />
+					<!--두더지Type-->
+					<node name="summon" npcId="17" npcCount="1" npcCountMax="1" group="406" summonPos="-150, 750, 3750" summonRot="0,0,-50" />
+					<!--두더지Type & 빨리 죽음-->
+					<node name="summon" npcId="18" npcCount="1" npcCountMax="1" group="407" summonPos="-750, -1350, 3750" summonRot="0,0,-50" />
+					<!--두더지Type-->
+				</node>
+			</node>
+		</aiPreset>
+		<!--2-2페이즈때의 소환몹 등장 패턴-->
+		<aiPreset name="DarkSpiritSummon22_Check">
+			<node name="select" prob="999,2">
+				<!--2-2페이즈에서 보스 이동 형태가 중앙 -> 방 -> 중앙 -> 중앙 -> 방 이런 형태가 되어야 하는데, 그러기 위해서는 각 소완몹 등장 패턴의 확률과 쿨타임 조절이 정말 중요함-->
+				<!--각 방에 나오는거 랜덤 선택, 방에 나오는 거 우선임-->
+				<node name="standby" limit="10" faceTarget="1" cooltime="65000">
+					<node name="select" prob="33,33,33">
+						<!--5시 방향 방에서 등장-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="130000">
+							<node name="SetValue" key="WhereIsSummonCheck" value="5" />
+							<node name="SetValue" key="RoomJumpReady" value="0" />
+							<!--초기화 하기: 이 변수에 의해 칸두라가 2페이즈에서 방에서 소환몹 나와 점프 뛸때 바로 점프 뛰지 말고 1번 공격후 점프 뛰도록 함-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="501" summonPos="150, -3300, 3750" summonRot="0,0,-50" />
+							<!--일반Type 방-->
+							<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="502" summonPos="150, -3600, 3750" summonRot="0,0,-50" />
+							<!--돌진Type-->
+							<node name="summon" npcId="20" npcCount="1" npcCountMax="1" group="503" summonPos="150, -3900, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type & 빨리 죽음-->
+							<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="504" summonPos="-1050, -3300, 3750" summonRot="0,0,-50" />
+							<!--돌진Type-->
+							<node name="summon" npcId="14" npcCount="1" npcCountMax="1" group="505" summonPos="-1050, -3600, 3750" summonRot="0,0,-50" />
+							<!--돌진Type-->
+							<node name="summon" npcId="21" npcCount="1" npcCountMax="1" group="506" summonPos="-1050, -3900, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type & 빨리 죽음-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="507" summonPos="-150, -4050, 3750" summonRot="0,0,-50" />
+							<!--일반Type 방 -->
+							<node name="summon" npcId="15" npcCount="1" npcCountMax="1" group="508" summonPos="-450, -4050, 3750" summonRot="0,0,-50" />
+							<!--돌진Type 빨리 죽음-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="509" summonPos="-750, -4050, 3750" summonRot="0,0,-50" />
+							<!--일반Type 방 -->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="510" summonPos="-450, -3600, 3750" summonRot="0,0,-50" />
+							<!--방 중앙  만트라 등장-->
+						</node>
+						<!--7시 방향 방-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="130000">
+							<node name="SetValue" key="WhereIsSummonCheck" value="7" />
+							<node name="SetValue" key="RoomJumpReady" value="0" />
+							<!--초기화 하기: 이 변수에 의해 칸두라가 2페이즈에서 방에서 소환몹 나와 점프 뛸때 바로 점프 뛰지 말고 1번 공격후 점프 뛰도록 함-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="601" summonPos="-3300, 150, 3750" summonRot="0,0,-50" />
+							<!--일반Type 방  -->
+							<node name="summon" npcId="22" npcCount="1" npcCountMax="1" group="602" summonPos="-3600, 150, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type & 빨리 죽음-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="603" summonPos="-3900, 150, 3750" summonRot="0,0,-50" />
+							<!--일반Type 방 -->
+							<node name="summon" npcId="23" npcCount="1" npcCountMax="1" group="604" summonPos="-3300, -1050, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type -->
+							<node name="summon" npcId="24" npcCount="1" npcCountMax="1" group="605" summonPos="-3600, -1050, 3750" summonRot="0,0,-50" />
+							<!--일반Type 빨리 죽음-->
+							<node name="summon" npcId="25" npcCount="1" npcCountMax="1" group="606" summonPos="-3900, -1050, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type -->
+							<node name="summon" npcId="26" npcCount="1" npcCountMax="1" group="607" summonPos="-4050, -150, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type & 빨리 죽음-->
+							<node name="summon" npcId="27" npcCount="1" npcCountMax="1" group="608" summonPos="-4050, -450, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type -->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="609" summonPos="-4050, -750, 3750" summonRot="0,0,-50" />
+							<!--일반Type 방 -->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="610" summonPos="-3600, -450, 3750" summonRot="0,0,-50" />
+							<!--방 중앙  만트라 등장-->
+						</node>
+						<!--11시 방향 방, 이 페이즈에서 딱 한번만 발생-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="330000">
+							<node name="SetValue" key="WhereIsSummonCheck" value="11" />
+							<node name="SetValue" key="RoomJumpReady" value="0" />
+							<!--초기화 하기: 이 변수에 의해 칸두라가 2페이즈에서 방에서 소환몹 나와 점프 뛸때 바로 점프 뛰지 말고 1번 공격후 점프 뛰도록 함-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="701" summonPos="150, 3150, 3750" summonRot="0,0,-50" />
+							<!--일반Type 방-->
+							<node name="summon" npcId="28" npcCount="1" npcCountMax="1" group="702" summonPos="150, 2850, 3750" summonRot="0,0,-50" />
+							<!--두더지Type-->
+							<node name="summon" npcId="29" npcCount="1" npcCountMax="1" group="703" summonPos="150, 2550, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type-->
+							<node name="summon" npcId="30" npcCount="1" npcCountMax="1" group="704" summonPos="-1050, 3150, 3750" summonRot="0,0,-50" />
+							<!--두더지Type & 빨리 죽음-->
+							<node name="summon" npcId="31" npcCount="1" npcCountMax="1" group="705" summonPos="-1050, 2850, 3750" summonRot="0,0,-50" />
+							<!--순간이동Type & 빨리 죽음-->
+							<node name="summon" npcId="19" npcCount="1" npcCountMax="1" group="706" summonPos="-1050, 2550, 3750" summonRot="0,0,-50" />
+							<!--일반Type 방-->
+							<node name="summon" npcId="32" npcCount="1" npcCountMax="1" group="707" summonPos="-150, 3450, 3750" summonRot="0,0,-50" />
+							<!--두더지Type & 빨리 죽음-->
+							<node name="summon" npcId="33" npcCount="1" npcCountMax="1" group="708" summonPos="-450, 3450, 3750" summonRot="0,0,-50" />
+							<!--두더지Type-->
+							<node name="summon" npcId="34" npcCount="1" npcCountMax="1" group="709" summonPos="-750, 3450, 3750" summonRot="0,0,-50" />
+							<!--두더지Type-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="710" summonPos="-300, 2850, 3750" summonRot="0,0,-50" />
+							<!--방 중앙  만트라 등장-->
+						</node>
+					</node>
+				</node>
+				<!--중앙 2층에서 나오거나 혹은 중앙 지하에서 나오거나 둘중 하나 랜덤 선택-->
+				<node name="standby" limit="10" faceTarget="1">
+					<node name="select" prob="33,33,34">
+						<!--중앙 2층-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="100000">
+							<node name="SetValue" key="WhereIsSummonCheck" value="22" />
+							<!--소환몹이 어디서 등장했는지 알림,    21 22: 중앙, 5: 5시 방, 7: 7시 방, 11: 11시 방 에서 소환몹-->
+							<node name="SetValue" key="RoomJumpReady" value="0" />
+							<!--초기화 하기: 이 변수에 의해 칸두라가 2페이즈에서 방에서 소환몹 나와 점프 뛸때 바로 점프 뛰지 말고 1번 공격후 점프 뛰도록 함-->
+							<!--2층 왼쪽-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-1350, 1200, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴(순간이동) & 빨리 죽음-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="-1950, 600, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴(순간이동)-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="-1650, 1200, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴(순간이동)-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="-1350, 900,, 4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="105" summonPos="-1650, 600, 4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="106" summonPos="-1950, 900, 4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="107" summonPos="-1650, 900, 4200" summonRot="0,0,-50" />
+							<!--만트라-->
+							<!--2층 오른쪽-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="111" summonPos="1200, -1350, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴(순간이동)-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="112" summonPos="750, -1800, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴(순간이동)-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="113" summonPos="1200, -1650, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴 & 빨리 죽음-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="114" summonPos="900, -1950, 4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="115" summonPos="1050, -1350,  4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="116" summonPos="600, -1650, 4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="117" summonPos="900, -1650, 4200" summonRot="0,0,-50" />
+							<!--만트라-->
+						</node>
+						<!--중앙 지하, 순간이동 좌표때문에 코드 전부 따로 사용함, 딱 한번만 발생-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="200000">
+							<node name="SetValue" key="WhereIsSummonCheck" value="21" />
+							<node name="SetValue" key="RoomJumpReady" value="0" />
+							<!--초기화 하기: 이 변수에 의해 칸두라가 2페이즈에서 방에서 소환몹 나와 점프 뛸때 바로 점프 뛰지 말고 1번 공격후 점프 뛰도록 함-->
+							<!--2층 왼쪽-->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="-1350, 1200, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴(순간이동) & 빨리 죽음-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="-1950, 600, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴(순간이동)-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="-1650, 1200, 4200" summonRot="0,0,-50" />
+							<!--빨리 땅으로 내려옴(순간이동)-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="-1350, 900,, 4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="105" summonPos="-1650, 600, 4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="106" summonPos="-1950, 900, 4200" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="107" summonPos="-1650, 900, 4200" summonRot="0,0,-50" />
+							<!--만트라-->
+							<!--지하 왼쪽-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="211" summonPos="-1050, 900, 3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="212" summonPos="-1050, 600, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라옴(순간이동)-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="213" summonPos="-1350, 600, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라옴(순간이동)-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="214" summonPos="-1350, 300, 3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="215" summonPos="-1650, 150, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라(순간이동) & 빨리 죽음-->
+						</node>
+						<!--중앙 지하, 순간이동 좌표때문에 코드 전부 따로 사용함, 딱 한번만 발생-->
+						<node name="standby" limit="10" faceTarget="1" cooltime="200000">
+							<node name="SetValue" key="WhereIsSummonCheck" value="21" />
+							<node name="SetValue" key="RoomJumpReady" value="0" />
+							<!--초기화 하기: 이 변수에 의해 칸두라가 2페이즈에서 방에서 소환몹 나와 점프 뛸때 바로 점프 뛰지 말고 1번 공격후 점프 뛰도록 함-->
+							<!--지하 가운데 -->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="201" summonPos="-600, 0, 3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="202" summonPos="-150, 0, 3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="203" summonPos="-600, -750,, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라옴(순간이동)-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="204" summonPos="-150, -750,  3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="205" summonPos="-600, -300, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라옴(순간이동)-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="206" summonPos="-300, -150, 3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="207" summonPos="-150, -450, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라옴(순간이동) & 빨리 죽음-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="208" summonPos="-450, -600, 3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<!--지하 왼쪽-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="211" summonPos="-1050, 900, 3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="212" summonPos="-1050, 600, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라옴(순간이동)-->
+							<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="213" summonPos="-1350, 600, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라옴(순간이동)-->
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="214" summonPos="-1350, 300, 3450" summonRot="0,0,-50" />
+							<!--느린 순간이동Type-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="215" summonPos="-1650, 150, 3450" summonRot="0,0,-50" />
+							<!--빨리 지상으로  올라(순간이동) & 빨리 죽음-->
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<!--2-2페이즈때 소환몹이 방에 등장할 때 해당 방으로 점프 뛰는 행동하는 부분-->
+		<aiPreset name="RoomJumpOk_Check">
+			<node name="conditions">
+				<condition name="extraData" key="WhereIsSummonCheck" value="20" op="greaterEqual">
+					<!-- 중앙 지하 1층 지점이 21,  중앙 2층 지점이 22 -->
+					<node name="conditions">
+						<condition name="extraData" key="MonsterPosition" value="1" op="greaterEqual">
+							<node name="move" destination="-375, -375, 3800" limit="8000">
+								<!-- 중앙으로 걸어서 이동 -->
+								<node name="SetValue" key="MonsterPosition" value="0" />
+								<!--중앙으로 돌아왔으니 이 변수 초기화 함 -->
+								<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+								<!--변수 초기화 하여 이후 통상적인 공격 행동을 하도록 함 -->
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- "MonsterPosition = 0" 이라는 것은 이미 중앙에 있다는 것이기 때문에 특별한 행동 안함 -->
+							<node name="standby" limit="300" faceTarget="1">
+								<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+								<!--변수 초기화 하여 이후 통상적인 공격 행동을 하도록 함 -->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="WhereIsSummonCheck" value="11">
+					<node name="select" prob="53,47">
+						<!-- 11: 11시 방향 방으로 점프 이동 할지 말지 확률 결정함 -->
+						<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+							<node name="skill" facePos="-360, 2330, 3800" idx="44" />
+							<!--11시 방향으로 점프하기 -->
+							<node name="jump" pos="-375, 2775, 3800" speed="1800" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="45" />
+							<!--점프 착지, 레벨2: 이때 성우 대사 출력됨 -->
+							<node name="target" type="near" from="10" to="1200" />
+							<node name="SetSlaveValue" key="MasterCome" value="1" />
+							<!--졸몹한테 자신이 해당 방으로 왔다는 것을 알림 -->
+							<node name="SetValue" key="MonsterPosition" value="11" />
+							<!--자신한테 11시 방에 갔다는 것을 알림-->
+							<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+							<!--변수 초기화 하여 이후 통상적인 공격 행동을 하도록 함 -->
+							<node name="standby" limit="2500" faceTarget="1" />
+							<!--성우 대사 끝날때까지 2~3초 정도 가만히 있음-->
+						</node>
+						<node name="standby" limit="100" faceTarget="1">
+							<!--점프 안함 -->
+							<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+							<!--변수 초기화 하여 이후 통상적인 공격 행동을 하도록 함 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="WhereIsSummonCheck" value="5">
+					<node name="select" prob="53,47">
+						<!-- 5: 5시 방향 방으로 점프 이동 할지 말지 확률 결정함 -->
+						<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+							<node name="skill" facePos="-375, -3525, 3800" idx="44" />
+							<!--5시 방향으로 점프하기 -->
+							<node name="jump" pos="-375, -3525, 3800" speed="1800" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="45" />
+							<!--점프 착지, 레벨2: 이때 성우 대사 출력됨 -->
+							<node name="target" type="near" from="10" to="1200" />
+							<node name="SetSlaveValue" key="MasterCome" value="1" />
+							<!--졸몹한테 자신이 해당 방으로 왔다는 것을 알림 -->
+							<node name="SetValue" key="MonsterPosition" value="5" />
+							<!--자신한테 5시 방에 갔다는 것을 알림-->
+							<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+							<!--변수 초기화 하여 이후 통상적인 공격 행동을 하도록 함 -->
+							<node name="standby" limit="2500" faceTarget="1" />
+							<!--성우 대사 끝날때까지 2~3초 정도 가만히 있음-->
+						</node>
+						<node name="standby" limit="100" faceTarget="1">
+							<!--점프 안함 -->
+							<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+							<!--변수 초기화 하여 이후 통상적인 공격 행동을 하도록 함 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="WhereIsSummonCheck" value="7">
+					<node name="select" prob="53,47">
+						<!-- 7: 7시 방향 방으로 점프 이동 할지 말지 확률 결정함 -->
+						<node name="standby" limit="10" faceTarget="1" isKeepBattle="true">
+							<node name="skill" facePos="-3525, -375, 3800" idx="44" />
+							<!--7시 방향으로 점프하기 -->
+							<node name="jump" pos="-3525, -375, 3800" speed="1800" heightMultiplier="0.3" />
+							<!--점프중 -->
+							<node name="skill" faceTarget="0" idx="45" />
+							<!--점프 착지, 레벨2: 이때 성우 대사 출력됨 -->
+							<node name="target" type="near" from="10" to="1200" />
+							<node name="SetSlaveValue" key="MasterCome" value="1" />
+							<!--졸몹한테 자신이 해당 방으로 왔다는 것을 알림 -->
+							<node name="SetValue" key="MonsterPosition" value="7" />
+							<!--자신한테 7시 방에 갔다는 것을 알림-->
+							<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+							<!--변수 초기화 하여 이후 통상적인 공격 행동을 하도록 함 -->
+							<node name="standby" limit="2500" faceTarget="1" />
+							<!--성우 대사 끝날때까지 2~3초 정도 가만히 있음-->
+						</node>
+						<node name="standby" limit="100" faceTarget="1">
+							<!--점프 안함 -->
+							<node name="SetValue" key="WhereIsSummonCheck" value="0" />
+							<!--변수 초기화 하여 이후 통상적인 공격 행동을 하도록 함 -->
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--이론적으로 이 단계 올일 없는데 혹시 몰라 임시 설정함 -->
+					<node name="standby" limit="100" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<!--3페이즈때 지친 상태의 공격 행동-->
+		<aiPreset name="ThirdPhase_ExhaustedBattle">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="4">
+					<node name="select" prob="999999,38,39">
+						<!--거리 580 이내에 있으면 -->
+						<!--CenterMoveLogic: 3개 전투판의 중앙 지점으로 자주 오도록 하여 건너편 원거리가 수훨하게 공격할 수 있도록 해줌   혹은 한번 플레이어 흡수 후 토한다음에 이후 지친 상태에서 여기저기 점프 이동하면서 도망가도록 설정함-->
+						<node name="standby" limit="100" faceTarget="1" cooltime="8000">
+							<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="1" isModify="1">
+								<!--공격 행위를 할때 마다 이 변수를 더하여, 일정 이상의 수가 되면 플레이어 흡수 공격을 하도록 함 -->
+								<node name="conditions">
+									<condition name="extraData" key="BeforeVomit" value="0">
+										<node name="select" prob="50,50">
+											<!--최초로 이  3페이즈때 지친 상태 로 왔으면, 즉 플레이어 흡수 후 토하는 행위를 한번도 안했다면-->
+											<node name="move" destination="8150, 2750, 6180" limit="6000">
+												<node name="target" type="rand" from="10" to="1130" />
+												<!-- if skillId="50000562" skillLev="1"  이 거리 1150 보다 약간 작게-->
+											</node>
+											<node name="move" destination="7755, 2370, 6180" limit="6000">
+												<node name="target" type="far" from="10" to="1130" />
+												<!-- if skillId="50000562" skillLev="1"  이 거리 1150 보다 약간 작게-->
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="99999,100,100,1">
+											<!--전에 플레이어 흡수 후 토하는 행위를 한번 이상 했다면, 점프로 여기저기 도망 행동을 하도록 함-->
+											<node name="move" destination="7730, 2327, 6180" limit="3500" cooltime="20000">
+												<node name="target" type="far" from="10" to="1130" />
+												<!-- if skillId="50000562" skillLev="1" 이 거리 1150 보다 약간 작게-->
+											</node>
+											<!--공격 행위 후 5시 전투판 구석 점프 이동 도망(이 행위가 8초 넘어야 함), 여기서 몇시 전투판으로 이동했는지 MonsterPosition 변수를 통해 알릴 필요 없음, 어차피 공 3개 전투판 중앙으로 이동할 것이기 때문에, (이 행위가 8초 넘어야 하는데 그렇지 않으면 쫓아가도 중앙으로 바로 오지 않아 건너편 전투판 파티원이 공격을 못함)-->
+											<node name="skill" cooltime="42000" isKeepBattle="true" idx="2">
+												<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+												<node name="skill" faceTarget="1" idx="2" />
+												<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_A" />
+												<node name="skill" facePos="8475, 810, 6180" idx="44" />
+												<node name="jump" pos="8475, 810, 6180" speed="1800" heightMultiplier="0.3" />
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="47" />
+												<!--점프 착지, 레벨4: 디폴트 점프 착지 -->
+												<node name="target" type="near" from="30" to="2000" />
+												<!--매달린 대상이 아닌 다른 대상을 타겟팅 하기 위한 설정 -->
+												<node name="standby" limit="800" faceTarget="0" animation="Attack_Idle_B" />
+												<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+											</node>
+											<!--공격 행위 후 7시 전투판 구석 점프 이동 도망(이 행위가 8초 넘어야 함), 여기서 몇시 전투판으로 이동했는지 MonsterPosition 변수를 통해 알릴 필요 없음, 어차피 공 3개 전투판 중앙으로 이동할 것이기 때문에, (이 행위가 8초 넘어야 하는데 그렇지 않으면 쫓아가도 중앙으로 바로 오지 않아 건너편 전투판 파티원이 공격을 못함)-->
+											<node name="skill" cooltime="42000" isKeepBattle="true" idx="2">
+												<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+												<node name="skill" faceTarget="1" idx="5" />
+												<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_A" />
+												<node name="skill" facePos="6225, 3050, 6180" idx="44" />
+												<node name="jump" pos="6225, 3050, 6180" speed="1800" heightMultiplier="0.3" />
+												<!--점프중 -->
+												<node name="skill" faceTarget="0" idx="47" />
+												<!--점프 착지, 레벨4: 디폴트 점프 착지 -->
+												<node name="target" type="near" from="30" to="2000" />
+												<!--매달린 대상이 아닌 다른 대상을 타겟팅 하기 위한 설정 -->
+												<node name="standby" limit="800" faceTarget="0" animation="Attack_Idle_B" />
+												<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+											</node>
+											<!-- 다 쿨타임 걸렸을 때 만약을 위한 장치 -->
+											<node name="move" destination="7205, 1722, 6180" limit="3500">
+												<node name="target" type="far" from="10" to="1130" />
+												<!-- if skillId="50000562" skillLev="1" 이 거리 1150 보다 약간 작게-->
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+						<!--CenterMoveLogic-->
+						<node name="skill" idx="5">
+							<!--돌진 2연타 휘두르기, 근거리 주력-->
+							<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_A" />
+							<node name="move" destination="8150, 2750, 6180" limit="5000" />
+							<node name="target" type="rand" from="10" to="1130" />
+							<!-- if skillId="50000562" skillLev="1"  이 거리 1150 보다 약간 작게-->
+							<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="1" isModify="1" />
+							<!--공격 행위를 할때 마다 이 변수를 더하여, 일정 이상의 수가 되면 플레이어 흡수 공격을 하도록 함 -->
+						</node>
+						<node name="skill" cooltime="11000" idx="2">
+							<!--내려찍기, 이 스킬은 근거리 원거리 다 커버 -->
+							<node name="standby" limit="1000" faceTarget="1" animation="Attack_Idle_B">
+								<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="1" isModify="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<node name="select" prob="98,1,1">
+								<!--거리 1150 이내에 있으면, (3페이즈 지친상태에서 사용하는 거리체크) -->
+								<node name="trace" limit="2500" cooltime="9000" skillIdx="4" />
+								<!--거리 580까지 쫓아가기-->
+								<node name="skill" idx="7">
+									<!--돌진 찌르기 후 휘두르기, 원거리 주력-->
+									<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_A" />
+									<node name="move" destination="7755, 2370, 6180" limit="5000" />
+									<node name="target" type="rand" from="10" to="1130" />
+									<!--   if skillId="50000562" skillLev="1"    이 거리 1150 보다 약간 작게-->
+									<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="1" isModify="1" />
+								</node>
+								<node name="skill" cooltime="11000" idx="2">
+									<!--내려찍기, 이 스킬은 근거리 원거리 다 커버 -->
+									<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+									<node name="target" type="rand" from="10" to="1130" />
+									<!--    if skillId="50000562" skillLev="1"  이 거리 1150 보다 약간 작게-->
+									<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="1" isModify="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--모든 플레이어가 거리 1150  밖에 있거나 혹은 가까이 있는데 사다리 아래쪽에 있으면-->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="57">
+									<!-- 플레이어가 사다리 아래쪽에 짱박혀 있으면-->
+									<node name="skill" faceTarget="1" idx="57">
+										<node name="target" type="near" from="10" to="1130" />
+										<!-- if skillId="50000562" skillLev="1"  이 거리 1150 보다 약간 작게, 꼭 제일 가까운 대상 타겟팅 하도록 하기, 어거 때문에 지치기 동작 바보현상 있음-->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="800" faceTarget="1" animation="Attack_Idle_B">
+										<!--3페이즈에서는 공격 대상이 거리 1150 밖에 있으면 무조건 standby 상태로 있도록 함-->
+										<node name="target" type="near" from="10" to="1130" />
+										<!-- if skillId="50000562" skillLev="1"  이 거리 1150 보다 약간 작게, 꼭 제일 가까운 대상 타겟팅 하도록 하기, 어거 때문에 지치기 동작 바보현상 있음-->
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!--3페이즈때 지친 상태에서 처음 플레이어를 흡수할때, 지친 상태에서의 흡수는 몬스터가 몇시에서 흡수했는지를 알려주는 변수 설정이 있음-->
+		<aiPreset name="ThirdPhase_ExhaustedPlayerAbsorb">
+			<!--12시에서  흡수 행동을 함 -->
+			<!-- 변경 기록 남기기: 원래 최초 흡수는 12시 지점에서 에서 흡수하도록 했는데, 이 던전이 4인으로 변경되면서 너무 근거리만 흡수되는 상황이 생기게 되어서 무조건 3개 전투판 정 중앙에서 흡수 하도록 설정함 -->
+			<!-- 흡수는 3개 전투판 정 중앙에서 사용함 -->
+			<node name="skill" facePos="7650, 2250, 6280" idx="50">
+				<!-- 3개 전투판 정 중앙에서 흡수하도록 함-->
+				<node name="teleport" pos="7650, 2250, 6280">
+					<node name="SetValue" key="MonsterPosition" value="0">
+						<!--이 변수에 0을 3개 전투판 정 중앙에서 흡수했음을 알림 -->
+						<!-- 여기서는 사정거리 상관없이 무조건 사용함-->
+						<node name="skill" facePos="-7800, -7800, 2750" idx="26">
+							<!--바람, 딱 한명 기절, 일반 난이도는 50000569  카오스 난이도는 50000582  이거 사용 -->
+							<node name="skill" faceTarget="0" idx="27">
+								<!--레벨12: 바람만 일으키기-->
+								<node name="skill" faceTarget="0" idx="28">
+									<!--레벨13: 바람 + 딱 한명 추가 기절시키기-->
+									<node name="skill" faceTarget="0" idx="29">
+										<!--흡수,   여기서는 기절 시키는 기능 없음(레벨 13이 기절임)-->
+										<node name="skill" faceTarget="0" idx="30">
+											<!--흡수 못한 대상 여기서 뒤로 밀치지 -->
+											<node name="target" type="near" from="5" to="450">
+												<!--제일 가까운 대상 우선 타겟팅 잡기, 모든 플레이어를 흡수하는 것이 아니기 때문에 여기서 최대 타겟팅 범위 작게 설정함 -->
+												<node name="conditions">
+													<condition name="state" targetState="grabTarget">
+														<!--타겟 대상이 매달려 있는지 체크 -->
+														<node name="skill" faceTarget="0" idx="32">
+															<!--플레이어 흡수 성공했으니 괴성 지르기 -->
+															<node name="SetValue" key="PlayerAbsorb" value="1" />
+															<!-- #$#$# 이 변수를 1로 설정해 1회 흡수했음을 알림 -->
+															<node name="SetValue" key="PlayerVomitReady" value="0" />
+															<!--^o^ 플레이어를  흡수했으니 흡수한 플레이어를 언제 뱉어내는지 결정하는 변수 초기화 하기, 안해도 되는데 혹시 몰라 초기화 함-->
+															<node name="target" type="rand" from="5" to="1500" />
+															<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="0" />
+															<!--흡수 성공해도  이 변수를 0으로 초기화 해야함-->
+															<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_A" />
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B">
+															<!--  흡수 실패했으면 3개 전투판  중앙에서  가만히 있기-->
+															<node name="SetValue" key="PlayerAbsorbExhaustedAttack" value="2" />
+															<!--흡수 실패했으면 이 변수를 0로 하여 다시 지친 상태가 되도록 함, 즉 aiPreset name="ThirdPhase_ExhaustedBattle" 으로 다시 돌아감-->
+														</node>
+														<!--  "&%&%&"  흡수 실패시 여기서는 2로 설정-->
+													</condition>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<!--3페이즈때 플레이어 한번 흡수한 다음의 행동 패턴-->
+		<aiPreset name="ThirdPhase_PlayerAbsorbBattle">
+			<!--1. 제일 먼저 점프 이동함, 흡수 했으면 무조건 5시 전투판으로 점프 이동하도록 함, 이유는 너무 여기저기 이동하면 근거리 클래스가 스트레스이기 때문에 무조건 5시 전투판 고정으로 함 -->
+			<node name="conditions">
+				<condition name="extraData" key="PlayerAbsorbBattleReady" value="0">
+					<!--이 변수가 0 이면 제일 먼저 점프 이동함-->
+					<node name="conditions">
+						<condition name="extraData" key="MonsterPosition" value="12">
+							<!--12시 전투판에서 흡수한 경우, 흡수 후 3개 전투판 정 중앙으로 점프 뛰기-->
+							<!--3개 전투판 정 중앙으로 점프 뛰기 -->
+							<node name="skill" facePos="7650, 2250, 6180" idx="44">
+								<node name="jump" pos="7650, 2250, 6180" speed="1800" heightMultiplier="0.3" />
+								<!--점프중 -->
+								<node name="skill" faceTarget="0" idx="47" />
+								<!--점프 착지, 레벨4: 디폴트 점프 착지 -->
+								<node name="target" type="far" from="30" to="2000" />
+								<!--매달린 대상이 아닌 다른 대상을 타겟팅 하기 위한 설정 -->
+								<node name="standby" limit="1000" faceTarget="0" />
+								<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+								<node name="SetValue" key="FirstBottomHoleCube" value="0" />
+								<!--점프 이동 후 바닥 구멍 큐브스킬 사용하도록 하기 위헤 초기화 함-->
+								<node name="SetValue" key="MonsterPosition" value="5" />
+								<!--칸두라가 현재 5시 전투판에 있음을 알림-->
+								<node name="SetValue" key="PlayerAbsorbBattleReady" value="1" />
+								<!--이 변수에 1을 넣어 점프를 했으니 다음 행위를 하도록 함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--여기는 3개 전투판 중앙에서 흡수했다는 뜻이기 때문에,제자리 대기-->
+							<!--3개 전투판 정 중앙에서 대기  -->
+							<node name="standby" limit="300" faceTarget="0">
+								<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+								<node name="target" type="far" from="30" to="2000" />
+								<!--매달린 대상이 아닌 다른 대상을 타겟팅 하기 위한 설정 -->
+								<node name="standby" limit="1000" faceTarget="0" />
+								<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+								<node name="SetValue" key="FirstBottomHoleCube" value="0" />
+								<!--점프 이동 후 바닥 구멍 큐브스킬 사용하도록 하기 위헤 초기화 함-->
+								<node name="SetValue" key="MonsterPosition" value="5" />
+								<!--칸두라가 현재 5시 전투판에 있음을 알림-->
+								<node name="SetValue" key="PlayerAbsorbBattleReady" value="1" />
+								<!--이 변수에 1을 넣어 점프를 했으니 다음 행위를 하도록 함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--2. 두번째 행동이 괴성지르는 행동 하면서 바닥 구멍 큐브 스킬 사용하기-->
+					<node name="conditions">
+						<condition name="extraData" key="FirstBottomHoleCube" value="0">
+							<!--플레이어 흡수한 상태에서 제일 먼저 괴성질러 바닥 파괴 큐브 스킬 사용해야 함-->
+							<node name="skill" facePos="8007, 543, 6180" idx="36">
+								<!--레벨2가 5시 전투판 구멍에 큐브 스킬 설치, 레벨2는 일반 난이도용 레벨22용 카오스 난이도용-->
+								<node name="standby" limit="1000" faceTarget="0" />
+								<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+								<node name="SetValue" key="FirstBottomHoleCube" value="1" />
+								<!--이 변수에 1을 넣어 바닥 구멍 큐브 스킬 딱 한번만 사용 하고, 다음 행동 하도록 함-->
+								<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" isModify="1" />
+								<!--  @@@ 아래 else 단계에 몇번 있다가 이곳 if 단계로 오는 경우가 있기 때문에 이 변수 초기화 함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--3. 세번째 행동이 통상적 공격 행동, 수시로 타겟팅 하여 대상이 구멍에 안빠졌는지 계속 점검함-->
+							<node name="conditions">
+								<condition name="state" targetState="grabTarget">
+									<!-- 타겟팅 된 대상이 흡수된 플레이어라면,  이부분 엄청 중요: 플레이어를 흡수한 이후 매달린 대상을 자꾸 타겟팅 하여 이상한 움직임 하거나 계속 가만히 서있는 것을 막기 위한 중요한 부분임 -->
+									<node name="standby" limit="300" faceTarget="0">
+										<node name="move" destination="7500, 1950, 6180" limit="2000" />
+										<!--플레이어가 칸두라한테 아주 가까이 붙어서 공격하면, 매달린 대상을 타겟팅 확률이 무척 높아지는데, 매달린 대상을 타겟팅 하면, 바닥이 없는 지점으로 강제 이동해서 플레이어가 칸두라한테 가까이 붙는 일이 없도록 함-->
+										<node name="target" type="far" from="230" to="3000" />
+										<!-- from="230" 값을 넣어 중심 부분을 비워야  매달린 대상 타겟팅 잘 안함-->
+										<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="1" isModify="1" />
+										<!-- !!$$$!!  계속 타겟이 안잡히면 1씩 더해서 이 숫자가 일정 이상 넘으면 흡수 공격 하도록 함, 즉 aiPreset name="ThirdPhase_MorePlayerAbsorb"이 실행하는 조건임-->
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="51">
+											<!--타겟 대상이 구멍에 빠지지 않았으면, 공격 행위 함,         레벨1: 50000578 스킬 Distance는 1000  높이는 바닥으로 부터 80 떠있음-->
+											<node name="conditions">
+												<condition name="skillRange" skillIdx="35">
+													<node name="select" prob="99999,99,27,27,36,10">
+														<!--사정거리 900 이내에 있으면-->
+														<!--CenterMoveLogic: 5시 7시 전투판에 분산 배치 되어야 할 명분을 제공하는 행동임-->
+														<node name="standby" limit="100" faceTarget="0" cooltime="14000">
+															<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0">
+																<node name="select" prob="9999,20,20,20,20,20">
+																	<!--타겟이 잡혀  공격 했기 때문에 초기화 함 -->
+																	<node name="skill" facePos="7450, 1950, 6280" cooltime="32000" isKeepBattle="true" idx="50">
+																		<!--5시 7시 전투판 공간 사이-->
+																		<node name="teleport" pos="7450, 1950, 6280" />
+																		<node name="skill" faceTarget="1" idx="18" />
+																		<!--레벨2: 투사체 높이 가 낮은거, 몸속에 잡힌 플레이어 공격하지 않도록 하기 위해, 그리고 칸두라의 저주 애디셔널도 없음 -->
+																		<node name="standby" limit="500" faceTarget="0" />
+																		<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+																		<node name="skill" faceTarget="1" idx="53" />
+																		<!--거대 레이저 발사-->
+																		<node name="skill" faceTarget="0" idx="54" />
+																		<!--기모으기-->
+																		<node name="skill" faceTarget="1" idx="54" />
+																		<node name="skill" faceTarget="1" idx="56" />
+																		<!--기모으기, 한텀 더 길게-->
+																		<node name="skill" faceTarget="0" idx="55" />
+																		<!--발사-->
+																		<node name="standby" limit="800" faceTarget="0" />
+																		<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+																		<node name="SetValue" key="PlayerVomitReady" value="1" isModify="1" />
+																		<!--^o^ 플레이어가 흡수 안당하고 계속 공격 하도록 유도하면 이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함 -->
+																	</node>
+																	<node name="move" destination="7865, 1890, 6280" limit="9000" cooltime="38000">
+																		<!--12시에 가까운 방향-->
+																		<node name="target" type="near" center="8025,1250, 6200" />
+																		<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+																	</node>
+																	<node name="move" destination="7305, 1383, 6280" limit="9000" cooltime="38000">
+																		<!--6시에 가까운 방향-->
+																		<node name="target" type="near" center="8025,1250, 6200" />
+																		<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+																	</node>
+																	<node name="skill" facePos="7950, 1790, 6280" cooltime="38000" isKeepBattle="true" idx="50">
+																		<!--5시 7시 전투판에 분산 배치 되어야 할 명분을 제공하는 행동임-->
+																		<node name="teleport" pos="7950, 1790, 6280" />
+																		<!--순간이동 후-->
+																		<node name="target" type="near" center="6670, 2600, 6280" />
+																		<!-- 이때만 건너편 7시 전투판 대상을 우선 타겟팅 함-->
+																		<node name="skill" idx="7" />
+																		<!--찌르기 공격 후 휘두르기-->
+																		<node name="move" destination="7370, 1630, 6180" limit="5000" />
+																		<node name="standby" limit="800" faceTarget="0" />
+																		<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+																		<node name="target" type="near" center="8025,1250, 6200" />
+																		<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+																	</node>
+																	<node name="move" destination="7635, 1645, 6280" limit="9000" cooltime="38000" isKeepBattle="true">
+																		<!--5시 전투판 에서  7시 전투판 쪽에 가까운 끝부분-->
+																		<node name="skill" faceTarget="1" idx="18" />
+																		<!--레벨2: 투사체 높이 가 낮은거, 몸속에 잡힌 플레이어 공격하지 않도록 하기 위해, 그리고 칸두라의 저주 애디셔널도 없음 -->
+																		<node name="standby" limit="800" faceTarget="0" />
+																		<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+																		<node name="SetValue" key="PlayerVomitReady" value="1" isModify="1" />
+																		<!--^o^ 플레이어가 흡수 안당하고 계속 공격 하도록 유도하면 이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함 -->
+																	</node>
+																	<node name="skill" facePos="7122, 1870, 6280" cooltime="38000" idx="50">
+																		<!--5시 7시 전투판에 분산 배치 되어야 할 명분을 제공하는 행동임-->
+																		<node name="teleport" pos="7122, 1870, 6280">
+																			<node name="skill" faceTarget="1" idx="18">
+																				<!--레벨2: 투사체 높이 가 낮은거, 몸속에 잡힌 플레이어 공격하지 않도록 하기 위해, 그리고 칸두라의 저주 애디셔널도 없음 -->
+																				<node name="standby" limit="800" faceTarget="0" />
+																				<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+																			</node>
+																		</node>
+																	</node>
+																</node>
+															</node>
+														</node>
+														<!--CenterMoveLogic-->
+														<!--할퀴기 공격 주력 사용 -->
+														<node name="skill" faceTarget="1" cooltime="46000" isKeepBattle="true" idx="12">
+															<node name="skill" faceTarget="0" idx="13" />
+															<!--할퀴기 공격, 꼭 히트박스 높이가 낮은 레벨 12~14를 사용해야 함 -->
+															<node name="skill" faceTarget="1" idx="14" />
+															<!--다음 공격 준비 자세 -->
+															<node name="skill" faceTarget="0" idx="13" />
+															<!--할퀴기 공격 -->
+															<node name="skill" faceTarget="1" idx="14" />
+															<!--다음 공격 준비 자세 -->
+															<node name="skill" faceTarget="0" idx="13" />
+															<!--할퀴기 공격 -->
+															<node name="skill" faceTarget="0" idx="15" />
+															<!--할퀴기 마무리   -->
+															<node name="move" destination="7550, 1550, 6280" limit="5000" />
+															<node name="target" type="near" center="8025,1250, 6200" />
+															<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+															<node name="standby" limit="2000" faceTarget="0" />
+															<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+															<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+															<!--타겟이 잡혀  공격 했기 때문에 초기화 함 -->
+															<node name="SetValue" key="PlayerVomitReady" value="1" isModify="1" />
+															<!-- ^o^ 플레이어가 흡수 안당하고 계속 공격 하도록 유도하면 이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함 -->
+														</node>
+														<node name="skill" idx="5">
+															<!--돌진 2연타 휘두르기, 근거리 주력, 꼭 히트박스 높이가 낮은 레벨2를 사용해야 함-->
+															<node name="move" destination="7730, 1730, 6280" limit="5000" />
+															<node name="standby" limit="500" faceTarget="0" />
+															<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+															<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+															<!--타겟이 잡혀  공격 했기 때문에 초기화 함 -->
+															<node name="SetValue" key="PlayerVomitReady" value="1" isModify="1" />
+															<!--^o^ 플레이어가 흡수 안당하고 계속 공격 하도록 유도하면 이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함 -->
+														</node>
+														<node name="standby" limit="100" faceTarget="1" cooltime="9000">
+															<node name="skill" idx="7" />
+															<!--그냥 찌르기 공격 후 휘두르기-->
+															<node name="move" destination="7450, 1500, 6280" limit="5000" />
+															<node name="target" type="near" center="8025,1250, 6200" />
+															<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+															<node name="standby" limit="500" faceTarget="0" />
+															<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+															<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+															<!--타겟이 잡혀  공격 했기 때문에 초기화 함 -->
+															<node name="SetValue" key="PlayerVomitReady" value="1" isModify="1" />
+															<!--^o^ 플레이어가 흡수 안당하고 계속 공격 하도록 유도하면 이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함 -->
+														</node>
+														<node name="standby" limit="100" faceTarget="0" cooltime="9000">
+															<node name="target" type="near" center="6950, 2470, 6180" />
+															<!--이때만 7시 전투판을 기준으로 제일 가까운 대상 타겟팅 하기-->
+															<node name="skill" idx="5" />
+															<!--돌진 2연타 휘두르기, 근거리 주력, 꼭 히트박스 높이가 낮은 레벨2를 사용해야 함-->
+															<node name="move" destination="7450, 1500, 6280" limit="5000" />
+															<node name="standby" limit="500" faceTarget="0" />
+															<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+															<node name="target" type="near" center="8025,1250, 6200" />
+															<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+															<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+															<!--타겟이 잡혀  공격 했기 때문에 초기화 함 -->
+															<node name="SetValue" key="PlayerVomitReady" value="1" isModify="1" />
+															<!--^o^ 플레이어가 흡수 안당하고 계속 공격 하도록 유도하면 이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함 -->
+														</node>
+														<node name="skill" cooltime="12000" idx="18">
+															<!-- 꼭 레벨2 사용해야 매달린 대상이 공격 받지 않음, 거대 마법 투사체 발사, 이 스킬을 사용한다는 것은 최소한 같은 높이에 사정거리 1000 에 있다는 뜻임 -->
+															<node name="standby" limit="800" faceTarget="0" />
+															<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+															<node name="target" type="near" center="8025,1250, 6200" />
+															<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+															<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+															<!--타겟이 잡혀  공격 했기 때문에 초기화 함 -->
+															<node name="SetValue" key="PlayerVomitReady" value="1" isModify="1" />
+															<!--^o^ 플레이어가 흡수 안당하고 계속 공격 하도록 유도하면 이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함 -->
+														</node>
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="select" prob="99,1">
+														<node name="skill" cooltime="5000" idx="18">
+															<!-- 꼭 레벨2 사용해야 매달린 대상이 공격 받지 않음, 거대 마법 투사체 발사, 이 스킬을 사용한다는 것은 최소한 같은 높이에 사정거리 1000 에 있다는 뜻임 -->
+															<node name="standby" limit="800" faceTarget="0" />
+															<!--흡수해서 매달린 플레이어를 타겟팅 하면 빙빙 돌기 때문에  faceTarget="0" 설정함 -->
+															<node name="target" type="near" center="8025,1250, 6200" />
+															<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+															<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+															<!--타겟이 잡혀  공격 했기 때문에 초기화 함 -->
+															<node name="SetValue" key="PlayerVomitReady" value="1" isModify="1" />
+															<!--^o^ 플레이어가 흡수 안당하고 계속 공격 하도록 유도하면 이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함 -->
+														</node>
+														<node name="standby" limit="1000" faceTarget="0">
+															<node name="target" type="near" center="8025,1250, 6200" />
+															<!-- 02000375  3페이즈의 5시 전투판 중심에서 제일 가까운 대상을 타겟팅함-->
+														</node>
+													</node>
+												</condition>
+											</node>
+										</condition>
+										<condition name="true">
+											<!--5시 대상이 구멍에 빠져 숨어있거나, 아니면 모조리 전투판 아래쪽 떨어져 올라오지 않거나, 건너편의 12시 5시  전투판 대상은 멀리서 짱박혀 있다면-->
+											<node name="standby" limit="500" faceTarget="0">
+												<!--$$$-->
+												<node name="target" type="rand" from="230" to="3000" />
+												<!--만약 플레이어가 계속 멀리 짱박혀 있다면, 여기서 타겟팅 설정해봤자 계속 매달린 대상 타겟팅 잡고 있을 것임, 그러면  위의 !!$$$!! 에서 계속 이것에 머무를는 것을 막기 위한 어떤 조취를 해줘야 함-->
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!-- 3페이즈때 두번째 흡수 상황, 두번째  흡수할때 몬스터가 몇시에서 흡수했는지를 알려주는 변수가 없어서, ** PlayerAbsorbHoleAttackReady 이 변수에 의해 작동되는 부분임, 세번쨰 흡수까지 하기에는 로직 짜기가 너무 어려워 포기함-->
+		<aiPreset name="ThirdPhase_MorePlayerAbsorb">
+			<!--이 부분의 실행 목적은 두가지인데, 이미 플레이어를 흡수한 상태에서 전투중 모든 플레이어가 없거나 전투판 아래나 구석에 짱박혀 있는 경우, 흡수한 플레이어 죽이면서 기력흡수 2단계 상태가 되도록 함 -->
+			<!--그리고 또 한가지는 칸두라가 막 플레이어를 흡수하고 점프 이동 했는데, 해당 전투판에 플레이어가 없을 때 이때는 이미 흡수되어 몸에 매달린 플레이어 죽이면서 기력흡수 2단계 상태를 만듦 -->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="23">
+					<!--($$$이전 앞 단계에서 이미 중앙이동과 타겟팅 했고   900 이내에 플레이어가 있으면, 일반 난이도는 50000569  카오스 난이도는 50000582  이거 사용 -->
+					<node name="skill" facePos="-7800, -7800, 2750" idx="23">
+						<!--최초 동작 -->
+						<node name="skill" faceTarget="0" idx="24">
+							<!--기절시키면서 바람 끌어당기기 -->
+							<node name="skill" faceTarget="0" idx="24">
+								<!--기절시키면서 바람 끌어당기기 -->
+								<node name="skill" faceTarget="0" idx="31">
+									<!--흡수하기 -->
+									<node name="skill" faceTarget="0" idx="25">
+										<!--흡수완료 -->
+										<node name="target" type="near" from="5" to="1250">
+											<!--제일 가까운 대상 우선 타겟팅 잡기 -->
+											<node name="conditions">
+												<condition name="state" targetState="grabTarget">
+													<!--타겟 대상이 매달려 있는지 체크 -->
+													<node name="skill" faceTarget="0" idx="33">
+														<!--레벨2:  두번쨰로 플레이어 흡수 성공했으니 괴성 지르기고  기력 흡수 2단계 상승 -->
+														<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+														<!--이 변수 초기화 하여, 구멍에 빠진 플레이어 흡수 행위 하지 말고 통상적인 공격 행동 하도록 함, 이거 초기화 안하면 계속 이 단계 반복할 것임, 즉 aiPreset name="ThirdPhase_MorePlayerAbsorb"이 실행하는 조건이 이 변수임-->
+														<node name="standby" limit="2000" faceTarget="0" animation="Attack_Idle_A" />
+														<node name="SetValue" key="PlayerAbsorb" value="2" />
+														<!-- #$#$# 이 변수를 2로 설정해 2회 흡수했음을 알림, 칸두라가 플레이어 기력 흡수 2단계 되는 경우는 플레이어 흡수 공격 성공 행위를 두번 하던가 아니면 한번 흡수 성공 하고 이후 매달린 대상을 죽여서 다시 흡수 하는 것임 -->
+														<node name="SetValue" key="PlayerVomitReady" value="0" />
+														<!--^o^ 플레이어를 다시 흡수했으니 흡수한 플레이어를 언제 뱉어내는지 결정하는 변수 초기화 하기-->
+														<!--각종 변수 다 초기화 함 -->
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="standby" limit="2000" faceTarget="0" animation="Attack_Idle_A">
+														<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+														<!--이 변수 초기화 하여, 구멍에 빠진 플레이어 흡수 행위 하지 말고 통상적인 공격 행동 하도록 함, 이거 초기화 안하면 계속 이 단계 반복할 것임, 즉 aiPreset name="ThirdPhase_MorePlayerAbsorb"이 실행하는 조건이 이 변수임-->
+														<!--이 단계에 게속 온다는 것은 몬스터가 두번째 흡수 공격 후 흡수 못하고 해당 전투판에 아무도 없어서 계속 가만히 서있는 경우인데, 이때  매달린 플레이어 죽이면서 기력흡수 2단계 상승시킴  -->
+														<node name="skill" faceTarget="0" idx="34" />
+														<!-- 레벨3: 괴성 지르며 기력 흡수 2단계 상승  -->
+														<node name="SetValue" key="PlayerAbsorb" value="2" />
+														<!-- #$#$# 이 변수를 2로 설정해 2회 흡수했음을 알림, 칸두라가 플레이어 기력 흡수 2단계 되는 경우는 플레이어 흡수 공격 성공 행위를 두번 하던가 아니면 한번 흡수 성공 하고 이후 매달린 대상을 죽여서 다시 흡수 하는 것임 -->
+														<node name="SetValue" key="PlayerVomitReady" value="0" />
+														<!--^o^ 플레이어를 다시 흡수했으니 흡수한 플레이어를 언제 뱉어내는지 결정하는 변수 초기화 하기-->
+														<node name="standby" limit="3000" faceTarget="1" />
+													</node>
+												</condition>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="2000" faceTarget="0" animation="Attack_Idle_A">
+						<node name="SetValue" key="PlayerAbsorbHoleAttackReady" value="0" />
+						<!--이 변수 초기화 하여, 구멍에 빠진 플레이어 흡수 행위 하지 말고 통상적인 공격 행동 하도록 함, 이거 초기화 안하면 계속 이 단계 반복할 것임-->
+						<node name="standby" limit="2000" faceTarget="0" />
+						<!--이 단계에 온다는 것은 몬스터가 첫번째 흡수 후 점프 이동 후에 해당 전투판에 아무도 없어서 계속 가만히 서있는 경우인데, 이때  매달린 플레이어 죽이면서 기력흡수 2단계 상승시킴  -->
+						<node name="skill" faceTarget="0" idx="34" />
+						<!-- 레벨3: 괴성 지르며 기력 흡수 2단계 상승  -->
+						<node name="SetValue" key="PlayerAbsorb" value="2" />
+						<!-- #$#$# 이 변수를 2로 설정해 2회 흡수했음을 알림, 칸두라가 플레이어 기력 흡수 2단계 되는 경우는 플레이어 흡수 공격 성공 행위를 두번 하던가 아니면 한번 흡수 성공 하고 이후 매달린 대상을 죽여서 다시 흡수 하는 것임 -->
+						<node name="SetValue" key="PlayerVomitReady" value="0" />
+						<!--^o^ 플레이어를 다시 흡수했으니 흡수한 플레이어를 언제 뱉어내는지 결정하는 변수 초기화 하기-->
+						<node name="standby" limit="3000" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!-- 3페이즈때 플레이어 기력 흡수 2단계가 되면 거대 레이저 발사 공격만 함-->
+		<aiPreset name="ThirdPhase_PlayerAbsorbBattle_Laser">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="54">
+					<node name="select" prob="9999,33,33,34">
+						<!--레벨2: 같은 높이 전투판 기준으로  아래방향 200까지 체크, 큐브 구멍에 빠진 대상도 포함 -->
+						<node name="trace" limit="4000" cooltime="15000" skillIdx="53" />
+						<!--거리 9000까지 추적-->
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="53">
+							<!--거대 레이저 발사-->
+							<node name="skill" faceTarget="0" idx="54" />
+							<!--기모으기-->
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="target" type="rand" from="5" to="2000" />
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="target" type="rand" from="5" to="2000" />
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="skill" faceTarget="0" idx="55" />
+							<!--발사-->
+							<node name="target" type="near" from="5" to="2000" />
+							<!-- 플레이어가 초강력 레이저 공격 계속 피하고, 보스는 이 공격 계속 사용하면 몸에 무리가 가서 흡수한 플레이어를 뱉어낸다는 설정임 -->
+							<node name="SetValue" key="PlayerVomitReady" value="2" isModify="1" />
+							<!--^o^  이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함, 여기서는  2씩 증가시킴 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="53">
+							<!--거대 레이저 발사-->
+							<node name="skill" faceTarget="0" idx="54" />
+							<!--기모으기-->
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="target" type="rand" from="5" to="2000" />
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="target" type="rand" from="5" to="2000" />
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="skill" faceTarget="0" idx="55" />
+							<!--발사-->
+							<node name="target" type="near" from="5" to="2000" />
+							<!-- 플레이어가 초강력 레이저 공격 계속 피하고, 보스는 이 공격 계속 사용하면 몸에 무리가 가서 흡수한 플레이어를 뱉어낸다는 설정임 -->
+							<node name="SetValue" key="PlayerVomitReady" value="3" isModify="1" />
+							<!--^o^  이 변수가 커져서 이미 흡수한 플레이어를 뱉어내게 함, 여기서는  3씩 증가시킴 -->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="53">
+							<!--거대 레이저 발사-->
+							<node name="skill" faceTarget="0" idx="54" />
+							<!--기모으기-->
+							<node name="target" type="rand" from="5" to="2000" />
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="target" type="rand" from="5" to="2000" />
+							<node name="skill" faceTarget="1" idx="54" />
+							<node name="skill" faceTarget="0" idx="55" />
+							<!--발사-->
+							<node name="target" type="near" from="5" to="2000" />
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="57">
+							<!-- 플레이어가 사다리 아래쪽에 짱박혀 있으면-->
+							<node name="skill" faceTarget="1" idx="57">
+								<node name="target" type="near" from="10" to="1130" />
+								<!-- if skillId="50000562" skillLev="1"  이 거리 1150 보다 약간 작게, 꼭 제일 가까운 대상 타겟팅 하도록 하기, 어거 때문에 지치기 동작 바보현상 있음-->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="800" faceTarget="1" animation="Attack_Idle_A">
+								<!--3페이즈에서는 공격 대상이 거리 1150 밖에 있으면 무조건 standby 상태로 있도록 함-->
+								<node name="target" type="near" from="10" to="3000" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<!-- 4페이즈 때의 전투 행동 -->
+		<aiPreset name="FourthPhase_MainBattle">
+			<node name="select" prob="999999,99999,0">
+				<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<node name="SetValue" key="MonsterPosition" value="12" />
+					<!--3페이즈 전투판 12시 방향에 위치하기 때문에 12를 넣음-->
+					<node name="skill" facePos="9000, 3600, 6180" idx="44" />
+					<!--12시 전투맨 맨 구석으로 점프 이동 -->
+					<node name="jump" pos="8980, 3580, 6180" speed="1800" heightMultiplier="0.3" />
+					<!--점프중 -->
+					<node name="skill" faceTarget="0" idx="48" />
+					<!--점프 착지, 레벨5: 12시지 지점의 바닥 영역만의 큐브파괴 -->
+				</node>
+				<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, standby 넣으면  Attack_Idle_B 동작 나올때 꼬일 수 있어서 여기 타겟팅은 이렇게 설정함-->
+				<node name="target" type="rand" from="10" to="1150" cooltime="11000" />
+				<!-- if skillId="50000578" skillLev="2"   레벨2: 거리 1200 에 맞추자 -->
+				<node name="conditions">
+					<condition name="extraData" key="PlayerAbsorb" value="1" op="greaterEqual">
+						<!--칸두라 몸에 흡수한 플레이어가 있거나, 플레이어 흡수 후 죽여서 기력흡수 2단계이거나 할때 뱉어내는 행동을 먼저 한후 다음 행동을 하도록 설정함 -->
+						<node name="skill" facePos="7950, 2525, 6180" idx="41">
+							<!--착지후에 대미지 동작을 취해 흡수한 플레이어 다 뱉어내고, 다시 지친 상태, 레벨2: 성우 음성 없는 설정	-->
+							<node name="SetValue" key="PlayerAbsorb" value="0" />
+							<!--플레이어를 흡수 했고 몇회 흡수 했는지를 알기 위한 변수 초기화 하기-->
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="52">
+								<node name="select" prob="199,199,25,25,25,25">
+									<!--레벨2: 거리 1200 이내에 같은 높이 전투판에 있으면, 큐브 구멍에 빠진 대상도 포함 -->
+									<node name="skill" cooltime="15000" isKeepBattle="true" idx="3">
+										<!--바닥 쾅치기 , 거대 투사체 3개 , 바닥 쾅 -->
+										<node name="standby" limit="500" faceTarget="1" animation="Attack_Idle_A" />
+										<node name="skill" faceTarget="1" idx="19" />
+										<!--거대 투사체 3개 발사 -->
+										<node name="target" type="rand" from="5" to="1150" />
+										<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+										<node name="standby" limit="500" faceTarget="1" animation="Attack_Idle_A" />
+										<node name="standby" limit="800" faceTarget="0" animation="Attack_Idle_B" />
+										<node name="skill" faceTarget="1" idx="3" />
+										<node name="target" type="rand" from="5" to="1150" />
+										<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+									</node>
+									<node name="skill" cooltime="21000" isKeepBattle="true" idx="19">
+										<!--거대 투사체 3개 발사 -->
+										<node name="standby" limit="500" faceTarget="3" animation="Attack_Idle_A" />
+										<node name="target" type="rand" from="5" to="1150" />
+										<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+										<node name="skill" idx="19" />
+										<!--거대 투사체 3개 발사 -->
+										<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+									</node>
+									<node name="skill" faceTarget="1" cooltime="7000" isKeepBattle="true" idx="3">
+										<!--바닥 쾅치기 -->
+										<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_A">
+											<node name="target" type="rand" from="5" to="1150" />
+											<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+										</node>
+									</node>
+									<node name="skill" faceTarget="1" cooltime="7000" isKeepBattle="true" idx="19">
+										<!--거대 투사체 3개 발사 후 바닥 쾅치기 -->
+										<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_A" />
+									</node>
+									<node name="skill" faceTarget="1" cooltime="9000" isKeepBattle="true" idx="3">
+										<!--바닥 쾅치기 2연타 -->
+										<node name="skill" faceTarget="1" idx="1" />
+										<node name="target" type="rand" from="5" to="1150" />
+										<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+										<node name="standby" limit="400" faceTarget="1" animation="Attack_Idle_A" />
+									</node>
+									<node name="skill" faceTarget="1" cooltime="13000" isKeepBattle="true" idx="1">
+										<!--바닥 쾅치기 후 거대 투사체 3개 발사-->
+										<node name="skill" faceTarget="1" idx="1" />
+										<node name="standby" limit="300" faceTarget="1" animation="Attack_Idle_A" />
+										<node name="skill" faceTarget="1" idx="19" />
+										<node name="target" type="rand" from="5" to="1150" />
+										<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+										<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B" />
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<node name="standby" limit="1000" faceTarget="0" animation="Attack_Idle_B">
+									<node name="standby" limit="600" faceTarget="0" animation="Attack_Idle_A" />
+									<node name="target" type="near" from="5" to="1150" />
+									<!--if skillId="50000578" skillLev="2" 레벨2: 거리 1200 에 맞추자 -->
+								</node>
+							</condition>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

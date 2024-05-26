@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="110">
+			<!-- 1페이즈로 시작 -->
+			<node name="buff" type="add" id="49289096" level="1" />
+			<!-- 빛의굴절 및 타겟팅을 위해 고유 버프 패시브 추가 -->
+			<node name="target" type="rand" />
+			<node name="SetValue" key="Rphase" value="1" />
+			<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPosOffset="100, 0, 0" />
+			<!-- 루체 더미 소환 -->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="additional" id="49289092" overlapCount="1">
+				<!-- 미엘의 빛의굴절 적중 시 루체도 빛의굴절을 사용. 최우선 순위 -->
+				<node name="skill" idx="1" />
+				<node name="buff" type="remove" id="49289092" level="1" />
+				<!-- 빛의굴절 이후 체크하는 버프 삭제 -->
+			</condition>
+			<condition name="extraData" key="Rphase" value="2">
+				<node name="select" prob="30,40,20,10">
+					<!-- 2페이즈, 미엘 체력이 50%되었을 때 미엘이 이벤트키를 설정함 -->
+					<node name="standby" limit="10" faceTarget="1" cooltime="2900" initialCooltime="1000">
+						<!-- 루체가 플레이어 쫓을 때 더미가 루체 위치에 별꽃 소환  -->
+						<node name="SetSlaveValue" key="Dphase" value="2" />
+						<node name="trace" till="150" limit="3000" />
+						<node name="SetSlaveValue" key="Dphase" value="1" />
+					</node>
+					<node name="standby" limit="3467" animation="Bore_A" cooltime="5000" initialCooltime="1000">
+						<!-- 지루함 행동을 하면 이후 주위에 별꽃 소환  -->
+						<node name="summon" npcId="2" npcCount="7" npcCountMax="200" group="101" summonPosOffset="0, 0, 0" summonRadius="400, 400, 0" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="7000" initialCooltime="1000">
+						<!-- 하울링 사용 패턴 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="2">
+								<node name="skill" idx="2" />
+							</condition>
+							<condition name="true">
+								<!-- 사거리 내에 없으면 추적, 추적할때 더미가 루체 위치에 별꽃 소환 -->
+								<node name="SetSlaveValue" key="Dphase" value="2" />
+								<node name="trace" till="150" limit="1500" />
+								<node name="SetSlaveValue" key="Dphase" value="1" />
+								<node name="skill" idx="2" />
+							</condition>
+						</node>
+					</node>
+					<node name="standby" limit="1500" faceTarget="1" />
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="25,40,35">
+					<!-- 1페이즈 -->
+					<node name="standby" limit="2000" faceTarget="1" />
+					<node name="standby" limit="3467" animation="Bore_A" cooltime="6000" initialCooltime="1000">
+						<!-- 지루함 행동 후 별꽃 소환 -->
+						<node name="summon" npcId="2" npcCount="6" npcCountMax="200" group="101" summonPosOffset="0, 0, 0" summonRadius="400, 400, 0" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" cooltime="2900" initialCooltime="1000">
+						<!-- 추적할 때 더미가 루체 위치에 별꽃 소환 -->
+						<node name="SetSlaveValue" key="Dphase" value="2" />
+						<node name="trace" till="150" limit="3000" />
+						<node name="SetSlaveValue" key="Dphase" value="1" />
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

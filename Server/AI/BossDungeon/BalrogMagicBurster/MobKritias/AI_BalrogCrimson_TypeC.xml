@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--평상시에 트리스탄 공격하다가, 플레이어가 일정 거리 다가오면 플레이어 유도탄 공격 2발 발사함 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="StageSummonMany" value="1" isModify="1" />
+				<!--전투 상태가 되면 소환몹 마리수 체크 +1 신호 보냄-->
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="9999,0">
+			<!-- 인페르녹 보스 전투 1페이지 전투판의 메인 전투판 좌표 기준으로 타겟팅 함-->
+			<node name="standby" limit="200" faceTarget="0" cooltime="3200">
+				<!--이 몬스터한테 거리 700 이내로 가까이 붙으면 플레이어 타겟팅하고, 멀리 있으면 트리스탄 타겟팅함-->
+				<node name="target" type="near" from="10" to="2200">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!--거리 700, 레벨3 거리체크는 700임-->
+							<node name="target" type="near" from="10" to="2200" />
+						</condition>
+						<condition name="true">
+							<node name="target" type="hasAdditional" additionalId="50001118" additionalLevel="1" target="hostile" />
+							<!--50001118 애디셔널은 트리스탄이 기본적으로 달고 나오는 것임-->
+						</condition>
+					</node>
+				</node>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 보스한테 받는 자살 명령 신호 변수-->
+					<node name="skill" idx="3" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="standby" limit="100" faceTarget="1">
+						<node name="SetValue" key="AttackDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<aiPreset name="Normal_Attack" />
+					<!-- 평상시 공격 행동을 정의한 부분 -->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="StageSummonMany" value="-1" isModify="1" />
+				<!--죽으면  소환몹 마리수 체크 -1 신호 보냄-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Normal_Attack">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="99999,100">
+						<!--거리 700, 레벨3 거리체크는 700임, 플레이어가 이 범위 안에 들어와야 트리스탄 공격하는 행동을 안함-->
+						<node name="say" message="$BalrogCrimsonKritias_InfernoGuard02$" durationTick="9000" cooltime="3200" />
+						<node name="skill" idx="1">
+							<node name="select" prob="100,100,100">
+								<!--레벨3은 유도탄 2발 발사,   2발 이상 맞으면 기절시키는  공격 부여, 플레이어가 한 전투판에 3명 이상 있어야 하는 이유를 부여하기 위한 장치임-->
+								<node name="SetValue" key="AttackDelay" value="15" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="17" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="19" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="99999,100">
+						<!--거리 4500-->
+						<node name="say" message="$BalrogCrimsonKritias_TristanAttack$" durationTick="9000" cooltime="3200" />
+						<node name="skill" idx="2">
+							<node name="select" prob="100,100,100">
+								<!-- 트리스탄을 기절시기큰 유도탄 발사 -->
+								<node name="SetValue" key="AttackDelay" value="23" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="24" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+								<node name="SetValue" key="AttackDelay" value="26" />
+								<!--	공격 후  얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="800" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

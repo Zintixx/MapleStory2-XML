@@ -1,0 +1,1242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<!--#1페이즈-->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="1">
+				<node name="buff" type="add" id="50001070" />
+				<!--#4페이즈 때 졸한테 힐 계속 받아도 HP 72%를 넘어가면 회복 되지 않도록 힐 면역 에디셔녈을 사전에 미리 부여함, 이 애디셔널은 HP 72% 이하로 내려가면 작동 안하도록 되어있음-->
+				<node name="buff" type="add" id="50001071" />
+				<!--#6페이즈 때 졸한테 힐 계속 받아도 HP 45%를 넘어가면 회복 되지 않도록 힐 면역 에디셔녈을 사전에 미리 부여함, 이 애디셔널은 HP 45% 이하로 내려가면 작동 안하도록 되어있음-->
+				<node name="buff" type="add" id="50001072" />
+				<!--#8페이즈 때 졸한테 힐 계속 받아도 HP 18%를 넘어가면 회복 되지 않도록 힐 면역 에디셔녈을 사전에 미리 부여함, 이 애디셔널은 HP 18% 이하로 내려가면 작동 안하도록 되어있음-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="90">
+			<!--#2페이즈-->
+			<node name="SetValue" key="Phase" value="2" />
+		</condition>
+		<condition name="hpLess" value="76">
+			<!--#3페이즈, 잠깐 쉬어가는 구간, 페이즈 넘어갈 때 바닥 불판 대미지 필드가 겹치는 상황을 피하기 위해 약간 버퍼 쉬는 구간을 넣음-->
+			<node name="SetValue" key="Phase" value="3" />
+		</condition>
+		<condition name="hpLess" value="72">
+			<!--#4페이즈-->
+			<node name="SetValue" key="Phase" value="4" />
+		</condition>
+		<condition name="hpLess" value="50">
+			<!--#5페이즈, 잠깐 쉬어가는 구간, 페이즈 넘어갈 때 바닥 불판 대미지 필드가 겹치는 상황을 피하기 위해 약간 버퍼 쉬는 구간을 넣음-->
+			<node name="SetValue" key="Phase" value="5">
+				<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+				<!--초보 유저를 위해 페이즈 넘어가면  4페이즈 때의 힐졸 자살명령 해서  제거하기-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="45">
+			<!--#6페이즈-->
+			<node name="SetValue" isKeepBattle="true" key="Phase" value="6">
+				<node name="ShowVibrate" groupID="1" />
+			</node>
+		</condition>
+		<condition name="hpLess" value="22">
+			<!--#7페이즈, 잠깐 쉬어가는 구간, 페이즈 넘어갈 때 바닥 불판 대미지 필드가 겹치는 상황을 피하기 위해 약간 버퍼 쉬는 구간을 넣음-->
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="Phase" value="7" />
+				<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+				<!--이 페이즈에 들어서면 바로 소환몹 제거하기, 큐브가 제거되었는데 회복해주는 소환몹은 계속 남아있으면 이 몬스터를 잡을 수 없기 때문에 자살 명령으로 제거하도록 함-->
+				<node name="skill" idx="23" />
+				<!--꼭!~ 레벨2: 맵 중앙으로 순간이동 하면서 Hide큐브 파괴하기 -->
+				<node name="teleport" pos="4950, 2500, 950" />
+				<!--중앙 12시쪽 근처-->
+				<node name="standby" limit="3000" faceTarget="0" />
+				<node name="HideVibrateAll" />
+				<!--Hide큐브 파괴하고 다시 리젠되는 것을 막기 위해 HideAllCube 설정하기 -->
+				<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+				<!--혹시 몰라서 죽음 신호 자주 보내도록 설정: 힐졸이 전투 상태가 아닌 상태에서 신호를 보낼 수도 있기 때문에 죽음 신호 보내기 자주 설정함-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="18">
+			<!--#8페이즈-->
+			<node name="SetValue" key="Phase" value="8">
+				<node name="SetValue" key="CheckSummonMany" value="-99">
+					<!--이 페이즈가 시작되면 꼭 이 변수 0보다 작은 숫자로 꼭 설정하기 -->
+					<node name="SetSlaveValue" key="DeathSummonMob" value="1" />
+					<!--만약을 대비하여 치명적인 버그를 막기위한 중요한 설정: 이전 페이즈에서 소환몹이 전투 상태로 넘어가기 전에 죽음 신호를 보내서 상황이 꼬여서 죽지 않는 경우가 아주 가끔 나올 수 있기 때문에 이 페이즈에서 주기적으로 죽음 신호를 보내도록 설정함-->
+				</node>
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="Phase" value="1">
+				<node name="select" prob="9999,9999,99,0">
+					<!--#1페이즈:  회오리 기둥 +  강공격 점프쾅 + 찌르기 강공격 순간이동     -->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="standby" limit="10" faceTarget="1" cooltime="12000">
+						<node name="target" type="rand" from="10" to="2600" />
+					</node>
+					<node name="skill" cooltime="35000" initialCooltime="12000" idx="16">
+						<!-- 회오리 기둥 4개  -->
+						<node name="standby" limit="1500" faceTarget="0" />
+					</node>
+					<node name="standby" limit="100" faceTarget="1" cooltime="20000">
+						<!-- 전투판 들어서자마자 거의 이거 사용하도록 함  -->
+						<node name="target" type="rand" from="10" to="1800">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="8">
+									<!-- 공격 대상이 800 이내 있으면  -->
+									<node name="skill" idx="8">
+										<!-- 제자리 점프쾅 강공격  -->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!-- 공격 대상이 800 밖에 있으면  -->
+									<node name="skill" idx="9">
+										<!-- 원거리 점프쾅 강공격  -->
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="55,54,1">
+								<node name="skill" idx="1">
+									<!-- 약공격 1타  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="12000" idx="2">
+									<!-- 약공격 2연타  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="1,99">
+								<node name="trace" limit="2000" skillIdx="1" />
+								<node name="skill" cooltime="12000" idx="3">
+									<!-- 강공격 찌르기 순간이동  -->
+									<node name="skill" faceTarget="0" idx="4">
+										<node name="select" prob="20,20,20,20,20">
+											<node name="skill" faceTarget="0" idx="5">
+												<node name="standby" limit="1500" faceTarget="1" />
+											</node>
+											<node name="teleport" pos="4800, 3000, 950">
+												<node name="skill" faceTarget="1" idx="6">
+													<node name="skill" faceTarget="0" idx="5">
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="teleport" pos="5400, 1950, 950">
+												<node name="skill" faceTarget="1" idx="6">
+													<node name="skill" faceTarget="0" idx="5">
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="teleport" pos="4350, 1350, 950">
+												<node name="skill" faceTarget="1" idx="6">
+													<node name="skill" faceTarget="0" idx="5">
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="teleport" pos="3750, 2400, 950">
+												<node name="skill" faceTarget="1" idx="6">
+													<node name="skill" faceTarget="0" idx="5">
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="2">
+				<node name="select" prob="9999,9999,999,0">
+					<!--#2페이즈:  바닥 불판 약 + 순간이동 에너지파 + 약 에너지파-->
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="standby" limit="200" faceTarget="1" cooltime="12000">
+						<node name="target" type="rand" from="10" to="2600" />
+					</node>
+					<node name="standby" limit="200" faceTarget="1" cooltime="35000">
+						<node name="select" prob="98,1,1">
+							<node name="skill" cooltime="90000" idx="21">
+								<!-- 바닥 불판 전체, 부분구멍, 레벨 33: 이곳에만 성우 음성 설정  -->
+								<node name="standby" limit="2000" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="45000" idx="17">
+								<!-- 바닥 불판 A타입  -->
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+							<node name="skill" cooltime="45000" idx="18">
+								<!-- 바닥 불판 B타입  -->
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+					<node name="skill" cooltime="21000" idx="11">
+						<!-- 순간이동 강 에너지파  -->
+						<node name="skill" faceTarget="0" idx="12">
+							<node name="select" prob="20,20,20,20">
+								<node name="teleport" pos="4350, 3000, 950">
+									<node name="skill" faceTarget="1" idx="14">
+										<node name="skill" faceTarget="0" idx="13">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="teleport" pos="5400, 2400, 950">
+									<node name="skill" faceTarget="1" idx="14">
+										<node name="skill" faceTarget="0" idx="13">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="teleport" pos="4800, 1350, 950">
+									<node name="skill" faceTarget="1" idx="14">
+										<node name="skill" faceTarget="0" idx="13">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="teleport" pos="3750, 1950, 950">
+									<node name="skill" faceTarget="1" idx="14">
+										<node name="skill" faceTarget="0" idx="13">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="55,54,1">
+								<node name="skill" idx="1">
+									<!-- 약공격 1타  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="12000" idx="2">
+									<!-- 약공격 2연타  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="30,70">
+								<node name="trace" limit="2000" skillIdx="1" />
+								<node name="skill" cooltime="10000" idx="10">
+									<!-- 약 에너지파  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="3">
+				<!--#3페이즈: (잠깐 쉬어가는 구간) 회오리 기둥 + 순간이동 찌르기 + 순간이동 에너지파-->
+				<aiPreset name="BattlePatternA" />
+			</condition>
+			<condition name="extraData" key="Phase" value="4">
+				<node name="select" prob="99999,999,0">
+					<!--#4페이즈: 바닥 불판 강 + 졸 3군데 1마리씩 소환, 제일 가까운 대상 우선 타겟팅 잡음     -->
+					<!--순간이동 + 졸병 소환 패턴 부분 -->
+					<node name="standby" limit="200" faceTarget="1" cooltime="52000">
+						<node name="select" prob="25,25,25,25">
+							<node name="skill" cooltime="180000" idx="22">
+								<!--순간이동 + 졸병 소환 -->
+								<node name="teleport" pos="5250, 2850, 950" isKeepBattle="true">
+									<!--12시-->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="103" summonPos="5250, 1500, 950" />
+									<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" summonPos="3900, 1500, 950" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="101" summonPos="3900, 2850, 950" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="target" type="near" from="10" to="2600" />
+									<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+								</node>
+							</node>
+							<node name="skill" cooltime="180000" idx="22">
+								<!--순간이동 + 졸병 소환 -->
+								<node name="teleport" pos="5250, 1500, 950" isKeepBattle="true">
+									<!--3시-->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="102" summonPos="3900, 1500, 950" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" summonPos="3900, 2850, 950" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="104" summonPos="5250, 2850, 950" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="target" type="near" from="10" to="2600" />
+									<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+								</node>
+							</node>
+							<node name="skill" cooltime="180000" idx="22">
+								<!--순간이동 + 졸병 소환 -->
+								<node name="teleport" pos="3900, 1500, 950" isKeepBattle="true">
+									<!--6시-->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" summonPos="3900, 2850, 950" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="104" summonPos="5250, 2850, 950" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="103" summonPos="5250, 1500, 950" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="target" type="near" from="10" to="2600" />
+									<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+								</node>
+							</node>
+							<node name="skill" cooltime="180000" idx="22">
+								<!--순간이동 + 졸병 소환 -->
+								<node name="teleport" pos="3900, 2850, 950" isKeepBattle="true">
+									<!--9시-->
+									<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="104" summonPos="5250, 2850, 950" />
+									<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="103" summonPos="5250, 1500, 950" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="102" summonPos="3900, 1500, 950" />
+									<node name="standby" limit="1000" faceTarget="1" />
+									<node name="target" type="near" from="10" to="2600" />
+									<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+								</node>
+							</node>
+						</node>
+					</node>
+					<node name="standby" limit="200" faceTarget="1" cooltime="37000">
+						<node name="select" prob="55,45">
+							<node name="skill" idx="20">
+								<!-- 바닥 불판 전체 -->
+								<node name="standby" limit="2000" faceTarget="1">
+									<node name="target" type="near" from="10" to="2600" />
+								</node>
+							</node>
+							<node name="skill" cooltime="135000" idx="19">
+								<!-- 바닥 불판 전체, 부분구멍  -->
+								<node name="standby" limit="2000" faceTarget="1">
+									<node name="target" type="near" from="10" to="2600" />
+								</node>
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="99,54,54,1">
+								<node name="skill" cooltime="24000" idx="8">
+									<!-- 제자리 점프쾅 강공격  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="1">
+									<!-- 약공격 1타  -->
+									<node name="standby" limit="2000" faceTarget="1">
+										<node name="target" type="near" from="10" to="2600" />
+									</node>
+								</node>
+								<node name="skill" cooltime="12000" idx="2">
+									<!-- 약공격 2연타  -->
+									<node name="standby" limit="2000" faceTarget="1">
+										<node name="target" type="near" from="10" to="2600" />
+									</node>
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="85,15">
+								<node name="skill" cooltime="10000" idx="10">
+									<!-- 약 에너지l파  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="trace" limit="1500" skillIdx="1" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="5">
+				<node name="select" prob="9999,0">
+					<!--#5페이즈: (잠깐 쉬어가는 구간) 회오리 기둥 + 순간이동 찌르기 + 순간이동 에너지파-->
+					<!--앞 페이즈에서 소환몹이 전투 상태로 넘어가기 전에 죽음 신호를 보내서 상황이 꼬여서 죽지 않는 경우가 아주 가끔 나올 수 있기 때문에 이 페이즈에서 주기적으로 죽음 신호를 보내도록 설정함-->
+					<node name="SetSlaveValue" cooltime="14000" key="DeathSummonMob" value="1" />
+					<aiPreset name="BattlePatternA" />
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="6">
+				<node name="select" prob="9999,99999,0">
+					<!--#6페이즈: 바닥 불판 강 + 졸 2군데 3마리씩 소환, 제일 가까운 대상 우선 타겟팅 잡음     -->
+					<node name="skill" cooltime="48000" idx="20">
+						<!-- 바닥 불판 전체  -->
+						<node name="target" type="near" from="10" to="2400">
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</node>
+					<!--순간이동 + 졸병 소환 패턴 부분 -->
+					<node name="standby" limit="200" faceTarget="1" cooltime="65000">
+						<node name="select" prob="25,25,25,25">
+							<node name="skill" cooltime="180000" idx="22">
+								<!--순간이동 + 졸병 소환 -->
+								<node name="teleport" pos="5250, 2850, 950">
+									<!--12시-->
+									<node name="SetValue" key="TeleportPosition" value="12">
+										<node name="select" prob="75,25">
+											<!--자신이 12시 방향으로 순간이동 했음을 이 변수를 통해서 알 수 있도록 함-->
+											<node name="SetValue" key="CheckSummonType" value="1">
+												<!--이 변수가 1이면 근접 클래스용 소환몹 배치 구성으로 등장 -->
+												<aiPreset name="SummonCallPhase6" />
+											</node>
+											<node name="SetValue" key="CheckSummonType" value="2">
+												<!--이 변수가 2면 원거리 관통 클래스용 소환몹 배치 구성으로 등장 -->
+												<aiPreset name="SummonCallPhase6" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="180000" idx="22">
+								<!--순간이동 + 졸병 소환 -->
+								<node name="teleport" pos="5250, 1500, 950">
+									<!--3시-->
+									<node name="SetValue" key="TeleportPosition" value="3">
+										<node name="select" prob="75,25">
+											<!--자신이 3시 방향으로 순간이동 했음을 이 변수를 통해서 알 수 있도록 함-->
+											<node name="SetValue" key="CheckSummonType" value="1">
+												<!--이 변수가 1이면 근접 클래스용 소환몹 배치 구성으로 등장 -->
+												<aiPreset name="SummonCallPhase6" />
+											</node>
+											<node name="SetValue" key="CheckSummonType" value="2">
+												<!--이 변수가 2면 원거리 관통 클래스용 소환몹 배치 구성으로 등장 -->
+												<aiPreset name="SummonCallPhase6" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="180000" idx="22">
+								<!--순간이동 + 졸병 소환 -->
+								<node name="teleport" pos="3900, 1500, 950">
+									<!--6시-->
+									<node name="SetValue" key="TeleportPosition" value="6">
+										<node name="select" prob="75,25">
+											<!--자신이 6시 방향으로 순간이동 했음을 이 변수를 통해서 알 수 있도록 함-->
+											<node name="SetValue" key="CheckSummonType" value="1">
+												<!--이 변수가 1이면 근접 클래스용 소환몹 배치 구성으로 등장 -->
+												<aiPreset name="SummonCallPhase6" />
+											</node>
+											<node name="SetValue" key="CheckSummonType" value="2">
+												<!--이 변수가 2면 원거리 관통 클래스용 소환몹 배치 구성으로 등장 -->
+												<aiPreset name="SummonCallPhase6" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="skill" cooltime="180000" idx="22">
+								<!--순간이동 + 졸병 소환 -->
+								<node name="teleport" pos="3900, 2850, 950">
+									<!--9시-->
+									<node name="SetValue" key="TeleportPosition" value="9">
+										<node name="select" prob="75,25">
+											<!--자신이 9시 방향으로 순간이동 했음을 이 변수를 통해서 알 수 있도록 함-->
+											<node name="SetValue" key="CheckSummonType" value="1">
+												<!--이 변수가 1이면 근접 클래스용 소환몹 배치 구성으로 등장 -->
+												<aiPreset name="SummonCallPhase6" />
+											</node>
+											<node name="SetValue" key="CheckSummonType" value="2">
+												<!--이 변수가 2면 원거리 관통 클래스용 소환몹 배치 구성으로 등장 -->
+												<aiPreset name="SummonCallPhase6" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="99,50,49,1">
+								<node name="skill" cooltime="21000" idx="8">
+									<!-- 제자리 점프쾅 강공격  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="1">
+									<!-- 약공격 1타  -->
+									<node name="standby" limit="2000" faceTarget="1">
+										<node name="target" type="near" from="10" to="2600" />
+									</node>
+								</node>
+								<node name="skill" cooltime="12000" idx="2">
+									<!-- 약공격 2연타  -->
+									<node name="standby" limit="2000" faceTarget="1">
+										<node name="target" type="near" from="10" to="2600" />
+									</node>
+								</node>
+								<node name="standby" limit="500" faceTarget="0" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="85,15">
+								<node name="skill" cooltime="10000" idx="10">
+									<!-- 약 에너지l파  -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="trace" limit="1500" skillIdx="1" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<condition name="extraData" key="Phase" value="7">
+				<node name="select" prob="9999,0">
+					<!--#7페이즈: (잠깐 쉬어가는 구간) 회오리 기둥 + 순간이동 찌르기 + 순간이동 에너지파-->
+					<!--만약을 대비하여 치명적인 버그를 막기위한 중요한 설정: 앞 페이즈에서 소환몹이 전투 상태로 넘어가기 전에 죽음 신호를 보내서 상황이 꼬여서 죽지 않는 경우가 아주 가끔 나올 수 있기 때문에 이 페이즈에서 주기적으로 죽음 신호를 보내도록 설정함-->
+					<node name="SetSlaveValue" cooltime="14000" key="DeathSummonMob" value="1" />
+					<aiPreset name="BattlePatternA" />
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="select" prob="99999,0">
+					<!--#8페이즈: 바닥불판 생성 + 초 강력 내려치기 + 순간이동 에너지파   -->
+					<node name="skill" cooltime="38000" idx="20">
+						<!-- 바닥 불판 전체  -->
+						<node name="target" type="rand" from="10" to="2400">
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+					</node>
+					<node name="conditions">
+						<condition name="extraData" key="CheckSummonMany" value="0">
+							<!--소환몹이 다 처리되어 없는 경우, NormalAttackMode 변수에 숫자를 셋팅하여 일반적인 공격 행동을 얼만큼하고 다시 소환몹 호출하도록 할지 정도를 정하도록 함  -->
+							<node name="SetValue" key="NormalAttackMode" value="10">
+								<!--이 변수의 숫자가 작으면 소환몹 다 죽이고 바로 다시 소환할 빈도가 높을 것임 , 체감상 6이 제일 적당한데 무지 쉽게 하라고 해서 10 이상 설정함-->
+								<node name="SetValue" key="CheckSummonMany" value="-99" />
+								<!--이 변수 0보다 작은 숫자로 꼭 설정해야기 그렇지 않으면 이곳에 무한루프에 빠질 것임 -->
+							</node>
+						</condition>
+						<condition name="extraData" key="NormalAttackMode" value="1" op="greaterEqual">
+							<!--소환몹이 다 처리되어 없는 경우, 일반적인 공격 행동을 함  -->
+							<aiPreset name="BattlePatternB" />
+							<!-- 일반적인 공격 행동, 여기서 공격 행동을 할 때마다   NormalAttackMode 변수에 마이너스가 되도록 함-->
+						</condition>
+						<condition name="extraData" key="CheckSummonMany" value="1" op="greaterEqual">
+							<!--소환몹이 한마리라도 남아있는 경우, 소환몹 주변에서 견제 공격 행동 진행  -->
+							<node name="conditions">
+								<condition name="extraData" key="CheckSummonRightLeft" value="1">
+									<!--이 변수가 1은 오른쪽 지점에 소환몹 등장-->
+									<aiPreset name="BattlePatternC_Right" />
+									<!-- 견제 공격 행동_오른쪽 지점에서 소환몹이 나왔을 경우 -->
+								</condition>
+								<condition name="true">
+									<!-- CheckSummonRightLeft = 2 인 경우,  이 변수가 2은 오른쪽 지점에 소환몹 등장-->
+									<aiPreset name="BattlePatternC_Left" />
+									<!-- 견제 공격 행동_왼쪽 지점에서 소환몹이 나왔을 경우 -->
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--이 페이즈 시작하면 무조건 이 부분 부터 실행함  -->
+							<node name="standby" limit="200" faceTarget="1">
+								<node name="select" prob="50,50">
+									<node name="skill" idx="22">
+										<!--오른쪽으로 순간이동 하기 -->
+										<node name="teleport" pos="5400, 1500, 950">
+											<!--3시 오른쪽 지점, HideCube 있는 곳으로 순간이동 도착 하지 않도록 좌표 설정 잘해야 함-->
+											<node name="SetValue" key="CheckSummonRightLeft" value="1">
+												<!--이 변수가 1이면 오른쪽 지점에 소환몹 등장 -->
+												<aiPreset name="SummonCallPhase8" />
+												<!--이곳에서 CheckSummonMany 변수를 등장 소환몹 수 만큼 숫자를 셋팅할 것임-->
+											</node>
+										</node>
+									</node>
+									<node name="skill" idx="22">
+										<!--왼쪽으로 순간이동 하기 -->
+										<node name="teleport" pos="3900, 3000, 950">
+											<!--9시 왼쪽 지점, HideCube 있는 곳으로 순간이동 도착 하지 않도록 좌표 설정 잘해야 함-->
+											<node name="SetValue" key="CheckSummonRightLeft" value="2">
+												<!--이 변수가 이 변수가 2면 왼쪽 지점에 소환몹 등장 -->
+												<aiPreset name="SummonCallPhase8" />
+												<!--이곳에서 CheckSummonMany 변수를 등장 소환몹 수 만큼 숫자를 셋팅할 것임-->
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="SummonCallPhase6">
+			<node name="conditions">
+				<condition name="extraData" key="TeleportPosition" value="12">
+					<node name="conditions">
+						<condition name="extraData" key="CheckSummonType" value="1">
+							<!--이 변수가 1이면 근접 클래스용 소환몹 배치 구성으로 등장 -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<!--3시쪽 소환, 근거리용   21400446  이 코드는 AI에 자살 처리 부분 있음-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="201" summonPos="5550, 1165, 1060" />
+								<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="202" summonPos="5590, 1495, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="203" summonPos="5220, 1050, 1060" />
+								<!--9시쪽 소환, 근거리용   21400446  이 코드는 AI에 자살 처리 부분 있음-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="204" summonPos="3600, 3190, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="205" summonPos="3860, 3150, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="206" summonPos="3460, 2815, 1060" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2600" />
+								<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--CheckSummonType = 2 인 경우, 이 변수가 2면 원거리 관통 클래스용 소환몹 배치 구성으로 등장  -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<!--3시쪽 소환, 원거리용 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="201" summonPos="4950, 1800, 950" />
+								<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="202" summonPos="4650, 2100, 950" />
+								<!--9시쪽 소환, 원거리용 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="203" summonPos="4125, 2325, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="204" summonPos="4275, 2175, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="205" summonPos="4365, 2825, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="206" summonPos="4575, 2625, 950" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2600" />
+								<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="TeleportPosition" value="3">
+					<node name="conditions">
+						<condition name="extraData" key="CheckSummonType" value="1">
+							<!--이 변수가 1이면 근접 클래스용 소환몹 배치 구성으로 등장 -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<!--12시쪽 소환, 근거리용   21400446  이 코드는 AI에 자살 처리 부분 있음-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="201" summonPos="5670, 3150, 1060" />
+								<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="202" summonPos="5685, 2820, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="203" summonPos="5210, 3160, 1060" />
+								<!--6시쪽 소환, 근거리용   21400446  이 코드는 AI에 자살 처리 부분 있음-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="204" summonPos="3490, 1200, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="205" summonPos="3900, 1165, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="206" summonPos="3600, 1610, 1060" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2600" />
+								<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--CheckSummonType = 2 인 경우, 이 변수가 2면 원거리 관통 클래스용 소환몹 배치 구성으로 등장  -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<!--12시쪽 소환, 원거리용 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="201" summonPos="4950, 2400, 950" />
+								<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="202" summonPos="4720, 2400, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="203" summonPos="4500, 2400, 950" />
+								<!--6시쪽 소환, 원거리용 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="204" summonPos="4200, 1800, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="205" summonPos="4350, 1950, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="206" summonPos="4500, 2100, 950" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2600" />
+								<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="TeleportPosition" value="6">
+					<node name="conditions">
+						<condition name="extraData" key="CheckSummonType" value="1">
+							<!--이 변수가 1이면 근접 클래스용 소환몹 배치 구성으로 등장 -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<!--3시쪽 소환, 근거리용   21400446  이 코드는 AI에 자살 처리 부분 있음-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="201" summonPos="5550, 1165, 1060" />
+								<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="202" summonPos="5590, 1495, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="203" summonPos="5220, 1050, 1060" />
+								<!--9시쪽 소환, 근거리용   21400446  이 코드는 AI에 자살 처리 부분 있음-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="204" summonPos="3600, 3190, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="205" summonPos="3860, 3150, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="206" summonPos="3460, 2815, 1060" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2600" />
+								<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--CheckSummonType = 2 인 경우, 이 변수가 2면 원거리 관통 클래스용 소환몹 배치 구성으로 등장  -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<!--3시쪽 소환, 원거리용 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="201" summonPos="4950, 1800, 950" />
+								<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="202" summonPos="4650, 2100, 950" />
+								<!--9시쪽 소환, 원거리용 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="203" summonPos="4125, 2325, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="204" summonPos="4275, 2175, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="205" summonPos="4365, 2825, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="206" summonPos="4575, 2625, 950" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2600" />
+								<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--TeleportPosition = 9 인 경우 -->
+					<node name="conditions">
+						<condition name="extraData" key="CheckSummonType" value="1">
+							<!--이 변수가 1이면 근접 클래스용 소환몹 배치 구성으로 등장 -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<!--12시쪽 소환, 근거리용   21400446  이 코드는 AI에 자살 처리 부분 있음-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="201" summonPos="5670, 3150, 1060" />
+								<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="202" summonPos="5685, 2820, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="203" summonPos="5210, 3160, 1060" />
+								<!--6시쪽 소환, 근거리용   21400446  이 코드는 AI에 자살 처리 부분 있음-->
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="204" summonPos="3490, 1200, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="205" summonPos="3900, 1165, 1060" />
+								<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="206" summonPos="3600, 1610, 1060" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2600" />
+								<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--CheckSummonType = 2 인 경우, 이 변수가 2면 원거리 관통 클래스용 소환몹 배치 구성으로 등장  -->
+							<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+								<!--12시쪽 소환, 원거리용 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="201" summonPos="4950, 2400, 950" />
+								<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="202" summonPos="4720, 2400, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="203" summonPos="4500, 2400, 950" />
+								<!--6시쪽 소환, 원거리용 -->
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="204" summonPos="4200, 1800, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="205" summonPos="4350, 1950, 950" />
+								<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="206" summonPos="4500, 2100, 950" />
+								<node name="standby" limit="1500" faceTarget="1" />
+								<node name="target" type="near" from="10" to="2600" />
+								<!--힐쫄을 공격하러 가는 플레이어에게 타겟팅 가는 것을 최소화 하기 위해 맨 마지막 부분에 제일 가까운 대상 타겟팅 하도록 설정함-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="SummonCallPhase8">
+			<node name="conditions">
+				<condition name="extraData" key="CheckSummonRightLeft" value="1">
+					<!--이 변수가 1이면 오른쪽 지점에 소환몹 등장 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--오른쪽 지점에 소환몹 생성-->
+						<node name="SetValue" key="CheckSummonMany" value="4" />
+						<!--소환몹 4마리 생성하기 때문에 4 셋팅, 소환몹이 죽을때 마다 -1 할것임 -->
+						<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="901" summonPos="5850, 1200, 800" />
+						<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+						<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="902" summonPos="6000, 900, 800" />
+						<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="903" summonPos="5700, 450, 800" />
+						<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="904" summonPos="5250, 450, 800" />
+						<!--몬스터 코드 21400546 는 소환몹 중 HP가 제일 많음-->
+						<node name="target" type="near" center="5650, 717, 760" />
+						<!--소환몹 등장 지점에 제일 가까운 플레이어를 타겟팅 함-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- CheckSummonRightLeft = 2 인 경우,  이 변수가 2면 왼쪽 지점에 소환몹 등장 -->
+					<node name="standby" limit="300" faceTarget="1" isKeepBattle="true">
+						<!--왼쪽 지점에 소환몹 생성-->
+						<node name="SetValue" key="CheckSummonMany" value="4" />
+						<!--소환몹 4마리 생성하기 때문에 4 셋팅, 소환몹이 죽을때 마다 -1 할것임 -->
+						<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="901" summonPos="3600, 3450, 800" />
+						<!--그룹 넘버링을 맵 좌표를 기준으로 함, 한 지점에 한마리만 나오도록 하기 위해서 -->
+						<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="902" summonPos="3300, 3600, 800" />
+						<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="903" summonPos="2850, 3150, 800" />
+						<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="904" summonPos="2850, 2700, 800" />
+						<!--몬스터 코드 21400546 는 소환몹 중 HP가 제일 많음-->
+						<node name="target" type="near" center="3150, 3150, 760" />
+						<!--소환몹 등장 지점에 제일 가까운 플레이어를 타겟팅 함-->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="BattlePatternA">
+			<node name="select" prob="99999,999,199,0">
+				<node name="skill" cooltime="31000" idx="16">
+					<!-- 회오리 기둥 4개  -->
+					<node name="standby" limit="1500" faceTarget="1" />
+				</node>
+				<node name="skill" cooltime="12000" idx="3">
+					<!-- 강공격 찌르기 순간이동  -->
+					<node name="skill" faceTarget="0" idx="4">
+						<node name="select" prob="10,15,15,15,15,10,10">
+							<node name="skill" faceTarget="0" idx="5">
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="teleport" pos="3750, 2400, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="7" />
+								<node name="teleport" pos="4800, 3000, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="6" />
+								<node name="skill" faceTarget="0" idx="5" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="teleport" pos="4350, 1350, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="7" />
+								<node name="teleport" pos="5400, 1950, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="6" />
+								<node name="skill" faceTarget="0" idx="5" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="teleport" pos="4350, 3000, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="7" />
+								<node name="teleport" pos="3750, 1950, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="6" />
+								<node name="skill" faceTarget="0" idx="5" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="teleport" pos="4500, 900, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="7" />
+								<node name="teleport" pos="3900, 2850, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="6" />
+								<node name="skill" faceTarget="0" idx="5" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="teleport" pos="4350, 1350, 950">
+								<node name="skill" faceTarget="1" idx="6">
+									<node name="skill" faceTarget="0" idx="5">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="teleport" pos="4350, 3000, 950">
+								<node name="skill" faceTarget="1" idx="6">
+									<node name="skill" faceTarget="0" idx="5">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="skill" cooltime="21000" idx="11">
+					<!-- 순간이동 강 에너지파  -->
+					<node name="skill" faceTarget="0" idx="12">
+						<node name="select" prob="15,23,15,24,23">
+							<node name="teleport" pos="5250, 2850, 950">
+								<!-- 이 스킬의 순간이동 위치가 너무 구석에 있으면 회오리 기둥 생성이 잘 안될 수 있기 때문에 적당히 중앙 근처로 한다  -->
+								<node name="skill" faceTarget="1" idx="14">
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="teleport" pos="4350, 3000, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="15" />
+								<node name="teleport" pos="5250, 1500, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="14" />
+								<node name="skill" faceTarget="0" idx="13" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="teleport" pos="5400, 2400, 950">
+								<node name="skill" faceTarget="1" idx="14">
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="teleport" pos="5400, 1950, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="15" />
+								<node name="teleport" pos="3900, 1500, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="14" />
+								<node name="skill" faceTarget="0" idx="13" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+							<node name="teleport" pos="4350, 1350, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="15" />
+								<node name="teleport" pos="4350, 3000, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="14" />
+								<node name="skill" faceTarget="0" idx="13" />
+								<node name="standby" limit="1000" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="90,10">
+							<node name="skill" idx="1">
+								<!-- 약공격 1타  -->
+								<node name="standby" limit="1000" faceTarget="0" />
+							</node>
+							<node name="standby" limit="500" faceTarget="0" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="2000" skillIdx="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BattlePatternB">
+			<node name="select" prob="999,999,0">
+				<node name="standby" limit="100" faceTarget="1" cooltime="21000">
+					<node name="target" type="rand" from="10" to="1800">
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="8">
+								<!-- 공격 대상이 800 이내 있으면  -->
+								<node name="skill" idx="8">
+									<!-- 제자리 점프쾅 강공격  -->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+										<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+									</node>
+								</node>
+							</condition>
+							<condition name="true">
+								<!-- 공격 대상이 800 밖에 있으면  -->
+								<node name="skill" idx="9">
+									<!-- 원거리 점프쾅 강공격  -->
+									<node name="standby" limit="500" faceTarget="1">
+										<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+										<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+									</node>
+								</node>
+							</condition>
+						</node>
+					</node>
+				</node>
+				<node name="skill" cooltime="16000" idx="11">
+					<!-- 순간이동 강 에너지파  -->
+					<node name="skill" faceTarget="0" idx="12">
+						<node name="select" prob="10,20,20,10,20,20">
+							<node name="teleport" pos="4050, 3300, 950">
+								<!--이 페이즈에서는 회오리를 사용하지 않기 때문에 구석에 있어도 됨  -->
+								<node name="skill" faceTarget="1" idx="14">
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="1000" faceTarget="1">
+											<node name="select" prob="50,50">
+												<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+												<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+												<node name="SetValue" key="NormalAttackMode" value="-2" isModify="1" />
+												<!-- 이 변수 -2씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="teleport" pos="4500, 3450, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="15" />
+								<node name="teleport" pos="3450, 2700, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="14" />
+								<node name="skill" faceTarget="0" idx="13" />
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+								<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+							</node>
+							<node name="teleport" pos="4350, 1350, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="15" />
+								<node name="teleport" pos="5850, 2100, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="14" />
+								<node name="skill" faceTarget="0" idx="13" />
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+								<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+							</node>
+							<node name="teleport" pos="5250, 2850, 950">
+								<node name="skill" faceTarget="1" idx="14">
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="1000" faceTarget="1">
+											<node name="select" prob="50,50">
+												<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+												<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+												<node name="SetValue" key="NormalAttackMode" value="-2" isModify="1" />
+												<!-- 이 변수 -2씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+							<node name="teleport" pos="3900, 2850, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="15" />
+								<node name="teleport" pos="4500, 900, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="14" />
+								<node name="skill" faceTarget="0" idx="13" />
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+								<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+							</node>
+							<node name="teleport" pos="5400, 1950, 950" isKeepBattle="true">
+								<node name="skill" faceTarget="1" idx="15" />
+								<node name="teleport" pos="3300, 2100, 950" />
+								<node name="target" type="rand" from="10" to="2600" />
+								<node name="skill" faceTarget="1" idx="14" />
+								<node name="skill" faceTarget="0" idx="13" />
+								<node name="standby" limit="1000" faceTarget="1" />
+								<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+								<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="999,90,10">
+							<node name="skill" cooltime="15000" idx="8">
+								<!-- 제자리 점프쾅 강공격  -->
+								<node name="standby" limit="500" faceTarget="1">
+									<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+									<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+								</node>
+							</node>
+							<node name="skill" idx="1">
+								<!-- 약공격 1타  -->
+								<node name="standby" limit="500" faceTarget="1">
+									<node name="SetValue" key="NormalAttackMode" value="-1" isModify="1" />
+									<!-- 이 변수 -1씩 하여 최종 0이 되면 소환몹 공격 패턴 행동을 하도록 함  -->
+								</node>
+							</node>
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="2000" skillIdx="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BattlePatternC_Right">
+			<node name="select" prob="999,999,99,0">
+				<!-- ##타겟킹 변경 로직_중요## , 제일 가까운 대상 타겟팅할지 아니면 소환몹 있는 곳 타겟팅할지 결정하는 부분 -->
+				<node name="standby" limit="200" faceTarget="1" cooltime="9000">
+					<node name="select" prob="34,33,33">
+						<node name="target" type="rand" from="10" to="2600">
+							<!-- 우선 랜덤 대상 타겟팅 하고, 아래 추가 거리 체크 하여 타겟팅을 다시 설정함 -->
+							<node name="standby" limit="900" faceTarget="1">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="22">
+										<!--사정거리 200~300 이내 가까이 붙어 있으면, 순간이동 스킬의 Distance 값을 사정거리로 체크함 -->
+										<node name="target" type="rand" from="10" to="2600">
+											<!-- 랜덤 대상 타겟팅 하기 -->
+											<node name="standby" limit="900" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="target" type="near" center="5650, 717, 760">
+											<!-- 오른쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+											<node name="standby" limit="800" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="target" type="near" center="5650, 717, 760" />
+						<!-- 오른쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+						<node name="target" type="rand" from="10" to="2600" />
+						<!-- 랜덤 대상 타겟팅 하기 -->
+					</node>
+				</node>
+				<!-- 강 에너지파  -->
+				<node name="skill" cooltime="23000" idx="11">
+					<node name="skill" faceTarget="1" idx="12">
+						<node name="select" prob="55,45">
+							<node name="target" type="near" center="5650, 717, 760">
+								<!--오른쪽 지점 좌표 우선 타겟팅 하기 -->
+								<node name="skill" faceTarget="1" idx="12">
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="target" type="rand" from="10" to="2600">
+								<!--랜덤 대상 우선 타겟팅 하기 -->
+								<node name="skill" faceTarget="1" idx="12">
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+				<!--제자리 점프쾅 강공격 -->
+				<node name="standby" limit="300" faceTarget="1" cooltime="28000">
+					<node name="target" type="near" from="10" to="2600">
+						<!--제일 가까운 대상 우선 타겟팅 하기 -->
+						<node name="standby" limit="300" faceTarget="1">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="8">
+									<!--제자리 점프쾅 강공격 사정거리에 있으면 -->
+									<node name="skill" isKeepBattle="true" idx="8">
+										<!-- 제자리 점프쾅 강공격  -->
+										<node name="standby" limit="300" faceTarget="1" />
+										<node name="move" destination="5400, 1500, 950" limit="3000" />
+										<!-- 보스가 너무 구석에 있는 것을 막기 위해 오른쪽의 중간 지점으로 이동하도록 함 -->
+										<node name="target" type="near" center="5650, 717, 760" />
+										<!-- 오른쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+										<node name="standby" limit="800" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--그렇지 않으면 걸어간 다음에 휘두르기 공격하도록 하기-->
+									<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="near" center="5650, 717, 760" />
+										<!-- 오른쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+										<node name="trace" limit="1500" skillIdx="2" />
+										<node name="skill" idx="2" />
+										<!-- 약공격 2타  -->
+										<node name="standby" limit="300" faceTarget="1" />
+										<node name="move" destination="5400, 1500, 950" limit="3000" />
+										<!-- 보스가 너무 구석에 있는 것을 막기 위해 오른쪽의 중간 지점으로 이동하도록 함 -->
+										<node name="standby" limit="800" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="99,1">
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<node name="target" type="near" center="5650, 717, 760" />
+								<!-- 오른쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+								<node name="trace" limit="1500" skillIdx="2" />
+								<node name="skill" idx="2" />
+								<!-- 약공격 2타  -->
+								<node name="standby" limit="2400" faceTarget="1" />
+							</node>
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="3000" skillIdx="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BattlePatternC_Left">
+			<node name="select" prob="999,999,99,0">
+				<!-- ##타겟킹 변경 로직_중요## , 제일 가까운 대상 타겟팅할지 아니면 소환몹 있는 곳 타겟팅할지 결정하는 부분 -->
+				<node name="standby" limit="200" faceTarget="1" cooltime="9000">
+					<node name="select" prob="34,33,33">
+						<node name="target" type="rand" from="10" to="2600">
+							<!-- 우선 랜덤 대상 타겟팅 하고, 아래 추가 거리 체크 하여 타겟팅을 다시 설정함 -->
+							<node name="standby" limit="900" faceTarget="1">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="22">
+										<!--사정거리 200~300 이내 가까이 붙어 있으면, 순간이동 스킬의 Distance 값을 사정거리로 체크함 -->
+										<node name="target" type="rand" from="10" to="2600">
+											<!-- 랜덤 대상 타겟팅 하기 -->
+											<node name="standby" limit="900" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="target" type="near" center="3150, 3150, 760">
+											<!-- 왼쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+											<node name="standby" limit="800" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+						<node name="target" type="near" center="3150, 3150, 760" />
+						<!-- 왼쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+						<node name="target" type="rand" from="10" to="2600" />
+						<!-- 랜덤 대상 타겟팅 하기 -->
+					</node>
+				</node>
+				<!-- 강 에너지파  -->
+				<node name="skill" cooltime="23000" idx="11">
+					<node name="skill" faceTarget="1" idx="12">
+						<node name="select" prob="55,45">
+							<node name="target" type="near" center="3150, 3150, 760">
+								<!--왼쪽 지점 좌표 우선 타겟팅 하기, BattlePatternC_Left 전용 -->
+								<node name="skill" faceTarget="1" idx="12">
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+							<node name="target" type="rand" from="10" to="2600">
+								<!--랜덤 대상 우선 타겟팅 하기 -->
+								<node name="skill" faceTarget="1" idx="12">
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="1500" faceTarget="1" />
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+				<!--제자리 점프쾅 강공격 -->
+				<node name="standby" limit="200" faceTarget="1" cooltime="28000">
+					<node name="target" type="near" from="5" to="2600">
+						<!--제일 가까운 대상 우선 타겟팅 하기 -->
+						<node name="standby" limit="300" faceTarget="1">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="8">
+									<!--제자리 점프쾅 강공격 사정거리에 있으면 -->
+									<node name="skill" isKeepBattle="true" idx="8">
+										<!-- 제자리 점프쾅 강공격  -->
+										<node name="standby" limit="300" faceTarget="1" />
+										<node name="move" destination="3900, 3000, 950" limit="3000" />
+										<!-- 보스가 너무 구석에 있는 것을 막기 위해 왼쪽의 중간 지점으로 이동하도록 함 -->
+										<node name="target" type="near" center="3150, 3150, 760" />
+										<!-- 왼쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+										<node name="standby" limit="800" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<!--그렇지 않으면 걸어간 다음에 휘두르기 공격하도록 하기-->
+									<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+										<node name="target" type="near" center="3150, 3150, 760" />
+										<!-- 왼쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+										<node name="trace" limit="1500" skillIdx="2" />
+										<node name="skill" idx="2" />
+										<!-- 약공격 2타  -->
+										<node name="standby" limit="300" faceTarget="1" />
+										<node name="move" destination="3900, 3000, 950" limit="3000" />
+										<!-- 보스가 너무 구석에 있는 것을 막기 위해 왼쪽의 중간 지점으로 이동하도록 함 -->
+										<node name="standby" limit="800" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</node>
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="99,1">
+							<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+								<node name="target" type="near" center="3150, 3150, 760" />
+								<!-- 왼쪽 지점의 소환몹 있는 곳 대상 타겟팅 하기 -->
+								<node name="trace" limit="1500" skillIdx="2" />
+								<node name="skill" idx="2" />
+								<!-- 약공격 2타  -->
+								<node name="standby" limit="2400" faceTarget="1" />
+							</node>
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="trace" limit="3000" skillIdx="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

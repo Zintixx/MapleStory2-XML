@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투, 잊혀진 바야르-->
+	<battle>
+		<node name="select" prob="999999,999,0">
+			<!--보스 AI 로직을 위해 필요한 변수를 여기서 전부 선언함-->
+			<node name="standby" limit="10" faceTarget="0" cooltime="999999" isKeepBattle="true">
+				<node name="SetValue" key="Position" value="2" />
+				<!--바야르가 어디 전투판에 있는지 판단하는 변수, 최초 2시에서 시작하기 때문에 2로 변수 초기화 함-->
+				<node name="SetValue" key="CheckSummonMany" value="0" />
+				<!--CheckSummonMany  소환몹이 죽음 여무를 판단하는 변수-->
+				<node name="SetValue" key="SummonDeath" value="0" />
+				<!--CheckSummonMany  소환몹이 죽이기 위한 변수 설정-->
+				<node name="SetValue" key="BuffOnOff" value="0" />
+				<!--소환몹이 등장하거 전부 죽을때 특수 행동 처리하기 위한 변수-->
+				<node name="SetValue" key="PatternStep" value="0" />
+				<!--6시 전투판에서 점프쾅 매달려서 회피 패턴때 사용하는 변수, 이 패턴을 한번에 선언하면 소환몹을 죽여도 바로 보호막 버프를  제거하지 않는 문제가 있어서 이 변수를 이용해 사용하도록 함-->
+			</node>
+			<!--소환몹 유무에 따라 버프 사용 혹은 제거 처리를 하는 부분 -->
+			<node name="standby" limit="10" faceTarget="0" cooltime="8000">
+				<node name="conditions">
+					<condition name="extraData" key="Position" value="2">
+						<!--바야르가 2시 전투판에 있으면, 소환몹이 없어 버프 생길이이 없기 때문에 타겟팅 renew만 해줌 -->
+						<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+						<node name="target" type="rand" from="10" to="1200" />
+					</condition>
+					<condition name="extraData" key="CheckSummonMany" value="0" op="lessEqual">
+						<node name="buff" type="remove" id="50000305">
+							<!--물방업 버프 제거-->
+							<node name="buff" type="remove" id="50000306">
+								<!--마방업 버프 제거-->
+								<node name="buff" type="remove" id="50000304">
+									<node name="select" prob="99,1">
+										<!--공업 버프 제거-->
+										<!--initialCooltime  쿨타임을 넣은 이유는 최초 소환몹 잡으면 무조건 두번째 소환몹이 나오는 것이 어색해서 이것을 넣었음-->
+										<node name="SetValue" cooltime="35000" initialCooltime="54000" key="CheckSummonMany" value="12" />
+										<!--쿨타임 넣은 이유는 소환몹을 다 죽이면 바로 다시 등장하게 하는 것을 어느정도 막기 위해 쿨타임 30초 이상 정도 설정함-->
+										<node name="target" type="rand" from="10" to="1200" />
+										<!--#*&# 이 변수를 10 이상으로 만들어 아래 메인 정의하는 부분에서 소환몹을 다시 등장히도록 함-->
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+						<node name="target" type="rand" from="10" to="1200" />
+					</condition>
+				</node>
+			</node>
+			<!-- 여기서 부터 주요 메인 행동 정의하는 부분임 -->
+			<node name="conditions">
+				<condition name="extraData" key="BuffOnOff" value="1">
+					<node name="select" prob="27,27,27,19">
+						<!-- 이 변수가 1이면 방금 소환몹이 등장했기 때문에 버프 사용 행위를 하라는 것임 -->
+						<node name="skill" faceTarget="0" idx="21">
+							<!-- 마법방어 상승 물리방어 하락, 레벨4: 잊혀진 바야르 전용 -->
+							<node name="standby" limit="2500" faceTarget="0">
+								<!-- 음성 나올 동안 가만히 있기 -->
+								<node name="SetValue" key="BuffOnOff" value="0" />
+								<!--이 변수 초기화 하여 버프 행동 하지 않도록 함-->
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" idx="22">
+							<!-- 물리방어 상승,마법방어 하락 레벨5: 잊혀진 바야르 전용 -->
+							<node name="standby" limit="2500" faceTarget="0">
+								<!-- 음성 나올 동안 가만히 있기 -->
+								<node name="SetValue" key="BuffOnOff" value="0" />
+								<!--이 변수 초기화 하여 버프 행동 하지 않도록 함-->
+							</node>
+						</node>
+						<node name="skill" faceTarget="0" idx="20">
+							<!--공격력 상승-->
+							<node name="standby" limit="2500" faceTarget="0">
+								<!-- 음성 나올 동안 가만히 있기 -->
+								<node name="SetValue" key="BuffOnOff" value="0" />
+								<!--이 변수 초기화 하여 버프 행동 하지 않도록 함-->
+							</node>
+						</node>
+						<node name="standby" limit="10" faceTarget="0" cooltime="90000">
+							<!--가끔 버프 사용  안하고 그냥 넘어가게 하도록 함-->
+							<node name="SetValue" key="BuffOnOff" value="0" />
+							<!--이 변수 초기화 하여 버프 행동 하지 않도록 함-->
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="CheckSummonMany" value="10" op="greaterEqual">
+					<!--#*&# 이 변수가 10 이상이라는 것은, 소환몹이 다 죽어 이 변수가 일단 0 이하가 된 다음에, 맨 위쪽의 조건에 의해 10 이상을 만들면, 여기서 10 이상인지 체크하여 소환몹을 다시 등장시키도록 하는 것임 -->
+					<node name="conditions">
+						<condition name="extraData" key="Position" value="6">
+							<!--바야르가 6시 전투판에 있으면 -->
+							<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+								<!--아래 MainBattle에서 소환하는 그룹과 다른 번호로 설정해야 함, 그룹이 같으면 시체 남아서 소환이 안되는 문제가 있기 때문에-->
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="3" group="111" summonPos="-4650, -150, 1300" />
+								<!--시체 남아서 소환이 안되는 문제 때문에 npcCountMax 수치도 넉넉하게 3마리 설정함-->
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="3" group="112" summonPos="-5450, -300, 1300" />
+								<node name="SetValue" key="CheckSummonMany" value="2" />
+								<!--이 변수에 2를 넣어서 소환몹 현재 2마리 있음을 인지시킴-->
+								<node name="SetValue" key="BuffOnOff" value="1" />
+								<!--이 변수 1을 넣어 버프 사용 행위 하도록 함-->
+							</node>
+						</condition>
+						<condition name="extraData" key="Position" value="9">
+							<!--바야르가 9시 전투판에 있으면 -->
+							<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+								<node name="summon" npcId="1" npcCount="1" npcCountMax="3" group="113" summonPos="-6600, 1200, 3450" />
+								<node name="summon" npcId="2" npcCount="1" npcCountMax="3" group="114" summonPos="-7650, 1200, 3450" />
+								<node name="SetValue" key="CheckSummonMany" value="2" />
+								<!--이 변수에 2를 넣어서 소환몹 현재 2마리 있음을 인지시킴-->
+								<node name="SetValue" key="BuffOnOff" value="1" />
+								<!--이 변수 1을 넣어 버프 사용 행위 하도록 함-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--바야르가 2시 전투판에 있으면 소환몹 나올 필요 없음-->
+							<node name="SetValue" key="CheckSummonMany" value="0" />
+							<!--이 변수에 0를 소환몹 호출 안했음을 알림-->
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<aiPreset name="MainBattle" />
+					<!--본격 공격 행동 정의하는 부분-->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="MainBattle">
+			<node name="conditions">
+				<condition name="combatTime" battleTimeBegin="0" battleTimeEnd="30000" battleTimeLoop="270000">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="25">
+							<!-- ### 같은 높이의 전투판에 있으면-->
+							<node name="conditions">
+								<condition name="state" targetState="holdme">
+									<!-- 타겟팅 된 대상이 매달려 있다면 돌진 할퀴기 공격을 하여 무조건 떨구게 함-->
+									<node name="skill" idx="19" />
+									<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="select" prob="33,33,33,9999,1">
+												<node name="skill" idx="2" />
+												<!-- 휘두르기-->
+												<node name="skill" idx="2">
+													<!-- 휘두르기-->
+													<node name="target" type="rand" from="10" to="550">
+														<node name="skill" idx="3">
+															<node name="standby" limit="500" faceTarget="0" />
+														</node>
+													</node>
+												</node>
+												<node name="skill" idx="1" />
+												<!-- 땅울림-->
+												<node name="skill" cooltime="8000" initialCooltime="8000" idx="4" />
+												<!-- 바야르의 일격  강공격 공격력 후덜덜-->
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="99,1">
+												<node name="trace" limit="2500" skillIdx="2" />
+												<node name="standby" limit="500" faceTarget="0" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- ###  다른 전투판에 있으면-->
+							<node name="skill" idx="25">
+								<!-- Attack_Idle_A 로 가만히 서있기-->
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="combatTime" battleTimeBegin="30000" battleTimeEnd="120000" battleTimeLoop="270000">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="100" faceTarget="0" cooltime="120000" isKeepBattle="true">
+							<!--6시 전투판으로 뛰기-->
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--소환몹 자살하라고 하는 신호 보내기, 이 단계에서 소환몹 없으나 혹시 몰라서 넣음-->
+							<!--건너편 점프 뛰기 직전 버프 전부 제거함-->
+							<node name="buff" type="remove" id="50000305" />
+							<!--물방업 버프 제거-->
+							<node name="buff" type="remove" id="50000306" />
+							<!--마방업 버프 제거-->
+							<node name="buff" type="remove" id="50000304" />
+							<!--공업 버프 제거-->
+							<node name="skill" facePos="-5100, 150, 1200" idx="6" />
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--가끔 소환몹 호출 타이밍이 꼬여서 자살 명령 안먹힐 수 있어 두번 실행함-->
+							<node name="jump" pos="-5100, 150, 1200" speed="1800" heightMultiplier="1.3" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="3" group="101" summonPos="-4650, -150, 1300" />
+							<!--시체 남아서 소환이 안되는 문제 때문에 npcCountMax 수치 넉넉하게 3마리 설정함-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="3" group="102" summonPos="-5450, -300, 1300" />
+							<node name="setData" key="aiBattleTime" value="36000" />
+							<!-- 앞 단계의 행동이 길어서 시간이 다소 어긋나는 상황을 보정하기 위한 설청-->
+							<node name="skill" faceTarget="0" idx="8" />
+							<!--착지와 동시에 전투판 파괴, 그리고 고드름이 천장에서 떨어지면서 공격함-->
+							<node name="standby" limit="2000" faceTarget="0" />
+							<node name="SetValue" key="Position" value="6" />
+							<!--바야르가 6시 전투판으로 점프 뛰었기 때문에 변수에 6을 넣음-->
+							<node name="SetValue" key="CheckSummonMany" value="2" />
+							<!--이 변수에 2를 넣어서 소환몹 현재 2마리 있음을 인지시킴-->
+							<node name="SetValue" key="BuffOnOff" value="1" />
+							<!--이 변수에 1을 넣어서 다음 행동에 버프 사용하도록 함-->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="25">
+								<!-- ### 같은 높이의 전투판에 있으면-->
+								<node name="conditions">
+									<condition name="extraData" key="PatternStep" value="14">
+										<node name="select" prob="45,29,26">
+											<!--  "A루트, B루트, C루트 3개 랜덤 선택할 것임 -->
+											<!-- A루트-->
+											<node name="skill" idx="17">
+												<!-- 대지 파괴, 제자리 점프 쾅!  바로 Kill할 정도의 공격력(초필살기)-->
+												<node name="SetValue" key="PatternStep" value="13" />
+												<!--이 변수를 1씩 줄여서 휘두르기 공격 후 순차적으로 패턴 공격을 사용하도록 함-->
+											</node>
+											<!-- B루트-->
+											<node name="skill" cooltime="70000" idx="17">
+												<!-- 대지 파괴, 제자리 점프 쾅!  바로 Kill할 정도의 공격력(초필살기)-->
+												<node name="SetValue" key="PatternStep" value="2" />
+												<!--이 변수를 한번에 2로 만들어 휘두르기 공격 없이 패턴 공겨격 사용하도 신속히 끝내도록 함-->
+											</node>
+											<!-- C루트-->
+											<node name="skill" cooltime="70000" idx="17">
+												<!-- 대지 파괴, 제자리 점프 쾅!  바로 Kill할 정도의 공격력(초필살기)-->
+												<node name="SetValue" key="PatternStep" value="1" />
+												<!--이 변수를 한번에 1로 만들어 휘두르기 공격 없이 패턴 공겨격 사용하도 신속히 끝내도록 함-->
+											</node>
+										</node>
+									</condition>
+									<condition name="extraData" key="PatternStep" value="13">
+										<!-- A루트-->
+										<node name="skill" idx="2">
+											<!-- 첫번째 휘두르기-->
+											<node name="target" type="rand" from="10" to="550">
+												<node name="SetValue" key="PatternStep" value="12" />
+											</node>
+										</node>
+									</condition>
+									<condition name="extraData" key="PatternStep" value="12">
+										<!-- A루트-->
+										<node name="skill" idx="3">
+											<!-- 두번째 휘두르기-->
+											<node name="SetValue" key="PatternStep" value="11" />
+										</node>
+									</condition>
+									<condition name="extraData" key="PatternStep" value="11">
+										<node name="select" prob="50,50">
+											<!-- A루트 마지막-->
+											<node name="skill" cooltime="55000" idx="17">
+												<node name="SetValue" key="PatternStep" value="0" />
+												<!-- 이 변수를 0으로 만들어 패턴공격 끝내고 평소 상태가 되도록 함-->
+											</node>
+											<node name="skill" idx="18">
+												<!-- 속이기 동작, 매달리는 플레이어 처리-->
+												<node name="SetValue" key="PatternStep" value="0" />
+												<!-- 이 변수를 0으로 만들어 패턴공격 끝내고 평소 상태가 되도록 함-->
+											</node>
+										</node>
+									</condition>
+									<condition name="extraData" key="PatternStep" value="2">
+										<!-- B루트 마지막-->
+										<node name="skill" idx="18">
+											<!-- 속이기 동작, 매달리는 플레이어 처리-->
+											<node name="SetValue" key="PatternStep" value="0" />
+											<!-- 이 변수를 0으로 만들어 패턴공격 끝내고 평소 상태가 되도록 함-->
+										</node>
+									</condition>
+									<condition name="extraData" key="PatternStep" value="1">
+										<!-- C루트 마지막-->
+										<node name="skill" idx="17">
+											<!-- 점프 쾅 공격-->
+											<node name="SetValue" key="PatternStep" value="0" />
+											<!-- 이 변수를 0으로 만들어 패턴공격 끝내고 평소 상태가 되도록 함-->
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="state" targetState="holdme">
+												<!-- 타겟팅 된 대상이 매달려 있다면 돌진 할퀴기 공격을 하여 무조건 떨구게 함-->
+												<node name="skill" idx="19" />
+												<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+											</condition>
+											<condition name="true">
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="2">
+														<node name="select" prob="50,50,50,300,1">
+															<node name="skill" idx="2">
+																<!-- 2연속 휘두르기-->
+																<node name="target" type="rand" from="10" to="550">
+																	<node name="skill" idx="3">
+																		<node name="standby" limit="500" faceTarget="0" />
+																	</node>
+																</node>
+															</node>
+															<node name="skill" idx="1">
+																<!-- 땅울림 후 휘두르기 -->
+																<node name="target" type="rand" from="10" to="550">
+																	<node name="skill" idx="3">
+																		<node name="standby" limit="500" faceTarget="0" />
+																	</node>
+																</node>
+															</node>
+															<node name="skill" cooltime="30000" idx="23">
+																<!-- 바야르의 공격명령-->
+																<node name="standby" limit="1500" faceTarget="0" />
+															</node>
+															<!-- 패턴 강공격-->
+															<node name="standby" limit="500" faceTarget="0" cooltime="24000" initialCooltime="48000">
+																<!-- 앞의 페이즈 시간까지 더해야 하기 때문에 48000 로 설정함-->
+																<node name="SetValue" key="PatternStep" value="14" />
+																<!-- 이 변수에 14을 넣어, 점프쾅 매달려서 회피 패턴 행동 시작 하도록 함 "A루트, B루트, C루트 3개 랜덤 선택할 것임"-->
+															</node>
+															<node name="standby" limit="500" faceTarget="0" />
+														</node>
+													</condition>
+													<condition name="true">
+														<node name="select" prob="99,1">
+															<node name="trace" limit="2500" skillIdx="2" />
+															<node name="standby" limit="1000" faceTarget="0" />
+														</node>
+													</condition>
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<!-- ###  다른 전투판에 있으면-->
+								<node name="skill" idx="25">
+									<!-- Attack_Idle_A 로 가만히 서있기-->
+									<node name="target" type="near" from="10" to="1200" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="combatTime" battleTimeBegin="120000" battleTimeEnd="210000" battleTimeLoop="270000">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="100" faceTarget="0" cooltime="120000" isKeepBattle="true">
+							<!--9시 전투판으로 뛰기-->
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--소환몹 자살하라고 하는 신호 보내기-->
+							<!--건너편 점프 뛰기 직전 버프 전부 제거함-->
+							<node name="buff" type="remove" id="50000305" />
+							<!--물방업 버프 제거-->
+							<node name="buff" type="remove" id="50000306" />
+							<!--마방업 버프 제거-->
+							<node name="buff" type="remove" id="50000304" />
+							<!--공업 버프 제거-->
+							<node name="skill" facePos="-7050, 1650, 3300" idx="6" />
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--가끔 소환몹 호출 타이밍이 꼬여서 자살 명령 안먹힐 수 있어 두번 실행함-->
+							<node name="jump" pos="-7050, 1650, 3300" speed="1800" heightMultiplier="1.3" />
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="3" group="103" summonPos="-6600, 1200, 3450" />
+							<!--시체 남아서 소환이 안되는 문제 때문에 npcCountMax 수치 넉넉하게 3마리 설정함-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="3" group="104" summonPos="-7650, 1200, 3450" />
+							<node name="setData" key="aiBattleTime" value="126000" />
+							<!-- 앞 단계의 행동이 길어서 시간이 다소 어긋나는 상황을 보정하기 위한 설정-->
+							<node name="skill" faceTarget="0" idx="7" />
+							<!--착지와 동시에 전투판 파괴, 그리고 고드름이 천장에서 떨어지면서 공격함-->
+							<node name="standby" limit="2000" faceTarget="0" />
+							<node name="SetValue" key="Position" value="9" />
+							<!--바야르가 9시 전투판으로 점프 뛰었기 때문에 변수에 9를 넣음-->
+							<node name="SetValue" key="CheckSummonMany" value="2" />
+							<!--이 변수에 2를 넣어서 소환몹 현재 2마리 있음을 인지시킴-->
+							<node name="SetValue" key="BuffOnOff" value="1" />
+							<!--이 변수에 1을 넣어서 다음 행동에 버프 사용하도록 함-->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="25">
+								<!-- ### 같은 높이의 전투판에 있으면-->
+								<node name="conditions">
+									<condition name="state" targetState="holdme">
+										<!-- 타겟팅 된 대상이 매달려 있다면 돌진 할퀴기 공격을 하여 무조건 떨구게 함-->
+										<node name="skill" idx="19" />
+										<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="2">
+												<node name="select" prob="50,50,50,300,1">
+													<node name="skill" idx="2">
+														<!-- 2연속 휘두르기-->
+														<node name="target" type="rand" from="10" to="550">
+															<node name="skill" idx="3">
+																<node name="standby" limit="1500" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<node name="skill" idx="1">
+														<!-- 땅울림 후 휘두르기 -->
+														<node name="target" type="rand" from="10" to="550">
+															<node name="skill" idx="3">
+																<node name="standby" limit="1500" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<node name="skill" cooltime="30000" idx="23">
+														<!-- 바야르의 공격명령-->
+														<node name="standby" limit="1500" faceTarget="0" />
+													</node>
+													<!-- 패턴 강공격-->
+													<node name="skill" faceTarget="0" cooltime="17000" initialCooltime="132000" isKeepBattle="true" idx="10">
+														<!-- 연속 충격파 (초필살기), 앞의 페이즈 돌아가는 시간까지 계산해야 히기 때문에 initialCooltime 시간을 더 길게 설정함-->
+														<node name="skill" faceTarget="0" idx="11" />
+														<node name="skill" faceTarget="0" idx="11" />
+														<node name="skill" faceTarget="0" idx="12" />
+														<node name="standby" limit="500" faceTarget="0" />
+													</node>
+													<node name="standby" limit="1000" faceTarget="0" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="99,1">
+													<node name="trace" limit="2500" skillIdx="2" />
+													<node name="standby" limit="1000" faceTarget="0" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<!-- ###  다른 전투판에 있으면-->
+								<node name="skill" idx="25">
+									<!-- Attack_Idle_A 로 가만히 서있기-->
+									<node name="target" type="near" from="10" to="1200" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="9999,0">
+						<node name="standby" limit="100" faceTarget="0" cooltime="120000" isKeepBattle="true">
+							<!--2시 전투판으로 뛰기-->
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--소환몹 자살하라고 하는 신호 보내기-->
+							<!--건너편 점프 뛰기 직전 버프 전부 제거함-->
+							<node name="buff" type="remove" id="50000305" />
+							<!--물방업 버프 제거-->
+							<node name="buff" type="remove" id="50000306" />
+							<!--마방업 버프 제거-->
+							<node name="buff" type="remove" id="50000304" />
+							<!--공업 버프 제거-->
+							<node name="skill" facePos="-2700, 450, 3150" idx="6" />
+							<node name="SetSlaveValue" key="SummonDeath" value="1" />
+							<!--가끔 소환몹 호출 타이밍이 꼬여서 자살 명령 안먹힐 수 있어 두번 실행함-->
+							<node name="jump" pos="-2700, 450, 3150" speed="1800" heightMultiplier="1.3" />
+							<node name="skill" faceTarget="0" idx="9" />
+							<!--착지와 동시에 전투판 파괴, 그리고 고드름이 천장에서 떨어지면서 공격함-->
+							<node name="standby" limit="500" faceTarget="0" />
+							<node name="standby" limit="2000" faceTarget="1" />
+							<node name="SetValue" key="Position" value="2" />
+							<!--바야르가 2시 전투판으로 점프 뛰었기 때문에 변수에 2를 넣음-->
+							<node name="SetValue" key="CheckSummonMany" value="0" />
+							<!--이 변수에 0를 넣어서 소환몹 없음을 인지시킴-->
+						</node>
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="25">
+								<!-- ### 같은 높이의 전투판에 있으면-->
+								<node name="conditions">
+									<condition name="state" targetState="holdme">
+										<!-- 타겟팅 된 대상이 매달려 있다면 돌진 할퀴기 공격을 하여 무조건 떨구게 함-->
+										<node name="skill" idx="19" />
+										<!-- 매달린 상태 떨구기 위한 점프쾅공격-->
+									</condition>
+									<condition name="true">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="2">
+												<node name="select" prob="30,35,35,100,9999,9999,1">
+													<node name="skill" idx="5" />
+													<!-- 돌진 휘두르기-->
+													<node name="skill" idx="2">
+														<!-- 2~3연속 휘두르기-->
+														<node name="target" type="near" from="10" to="550">
+															<node name="skill" idx="3">
+																<node name="select" prob="60,40">
+																	<node name="target" type="rand" from="10" to="550">
+																		<node name="skill" idx="3">
+																			<node name="standby" limit="500" faceTarget="0" />
+																		</node>
+																	</node>
+																	<node name="standby" limit="500" faceTarget="0" />
+																</node>
+															</node>
+														</node>
+													</node>
+													<node name="skill" idx="4" />
+													<!-- 바야르의 일격  강공격 공격력 후덜덜(보스가 공격력업 버프 상태라서 한방에 Kill할것임)-->
+													<node name="skill" cooltime="12000" initialCooltime="12000" idx="1">
+														<!-- 땅울림 후 휘두르기 -->
+														<node name="target" type="rand" from="10" to="550">
+															<node name="skill" idx="3">
+																<node name="standby" limit="500" faceTarget="0" />
+															</node>
+														</node>
+													</node>
+													<node name="skill" cooltime="40000" initialCooltime="12000" idx="24" />
+													<!-- 바야르의 방어명령-->
+													<!-- 패턴 강공격-->
+													<node name="skill" faceTarget="0" cooltime="35000" initialCooltime="1" isKeepBattle="true" idx="13">
+														<!-- 땅속성큐브 스킬 공격 연속 발동 매달려야 산다 (이럽션)(초필살기)-->
+														<node name="target" type="rand" from="50" to="1300" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="target" type="near" from="300" to="1300" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="target" type="rand" from="50" to="1300" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="target" type="rand" from="50" to="1300" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="target" type="far" from="50" to="1000" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="target" type="rand" from="50" to="1300" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="target" type="rand" from="50" to="1300" />
+														<node name="skill" faceTarget="0" idx="15" />
+														<!-- 매달린 대상 떨구기-->
+														<node name="target" type="rand" from="50" to="1300" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="target" type="near" from="300" to="1300" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="target" type="rand" from="50" to="1300" />
+														<node name="skill" faceTarget="0" idx="14" />
+														<node name="skill" faceTarget="0" idx="16" />
+														<!--공격 마무리 하면서 매달린 대상 떨구기-->
+														<node name="standby" limit="3000" faceTarget="0" />
+													</node>
+													<node name="standby" limit="1000" faceTarget="0" />
+												</node>
+											</condition>
+											<condition name="true">
+												<node name="select" prob="99,1">
+													<node name="trace" limit="2500" skillIdx="2" />
+													<node name="standby" limit="1000" faceTarget="0" />
+												</node>
+											</condition>
+										</node>
+									</condition>
+								</node>
+							</condition>
+							<condition name="true">
+								<!-- ###  다른 전투판에 있으면-->
+								<node name="skill" idx="25">
+									<!-- Attack_Idle_A 로 가만히 서있기-->
+									<node name="target" type="near" from="10" to="1200" />
+								</node>
+							</condition>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

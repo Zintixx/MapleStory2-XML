@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!-- 2페이지 2시 방향 전투판 담당, 이 몬스터는 최초에 미니맵에서 보스 아이콘 자체가 나오지 않는 맵 구석 HiddenCube 지점에 대기하고 있음, 이 몬스터 몸에 붙는 원 대미지 필드 애디셔널 50004569 사용함 -->
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetValue" isKeepBattle="true" key="ActionMode" value="0">
+				<node name="SetValue" key="Number" value="0" />
+				<!-- 공격 횟수 체크하기 위한 변수 -->
+				<node name="SetValue" key="CallSummon02" value="0" />
+				<!-- 이 변수에 의해 본 전투판으로 순간이동으로 오거나, 대기상태로 되거나 등등 중요 행동에 사용하는 변수 -->
+			</node>
+		</condition>
+		<!-- 이 분신은 보스하고 HP 공유하는데, 파티원이 이 분신한테만 몰려서 몰빵할 경우의 어느정도 어뷰징을 막기 위해 각 HP 구간별로 Number = 7 강제 설정하여 퇴장하돌고 함-->
+		<condition name="hpLess" value="80">
+			<node name="SetValue" key="Number" value="7" />
+		</condition>
+		<condition name="hpLess" value="50">
+			<node name="SetValue" key="Number" value="7" />
+		</condition>
+		<condition name="hpLess" value="20">
+			<node name="SetValue" key="Number" value="7" />
+		</condition>
+		<!-- 이 몬스터는 절대 죽지 않게 설정했음, HP 1% 이하가 되면 스스로 사라지게 함, 본체만 공격하고 분신 방치하면 이 분신 사라지지 않는 버그스러운 상황이 생길 수 있어서 스스로 사라지는 설정 넣음  -->
+		<condition name="hpLess" value="1">
+			<node name="RemoveMe" />
+		</condition>
+	</reserved>
+	<battle>
+		<!--  참고로 이 몬스터 타겟팅은 아래 <aiPreset name="Normal_AttackPattern"> 에서 설정함 -->
+		<node name="conditions">
+			<condition name="extraData" key="DeathTurkaSummon" value="1" op="greaterEqual">
+				<!-- 소환한 보스에게 이 변수 1 신호를 받으면, 스스로 사라지도록 함 -->
+				<node name="RemoveMe">
+					<node name="standby" limit="3200" faceTarget="0" />
+				</node>
+			</condition>
+			<condition name="extraData" key="CallSummon02" value="0">
+				<!--  CallSummon02 = 0 이면 HiddenCube 지점에 아무것도 안하고 대기 상태로 있기 -->
+				<node name="skill" idx="1" />
+				<!-- Attack_Idle_A 동작으로 그냥 가만히 서있는 스킬임 -->
+			</condition>
+			<condition name="extraData" key="CallSummon02" value="1">
+				<!-- 보스한테 CallSummon02 = 1 신호 받으면, 2페이지 전투판의 2시 방향으로 순간이동 오도록 하기 -->
+				<node name="teleport" pos="7800, 5850, 2110" isKeepBattle="true">
+					<!--  2시 방향 좌표 순간이동 -->
+					<node name="skill" idx="6" />
+					<!-- 등장모습 비주얼 적인 이유로 이동한 다음 순간이동 이펙트 나오도록 설명, 레벨2가 순간이동 등장 스킬임 -->
+					<node name="SetValue" key="CallSummon02" value="99" />
+					<!-- 이 변수에 "1", "0"  이 아닌 다른 숫자로 설정해서 평상시 공격 상태가 되도록 하기 -->
+					<node name="SetValue" key="Number" value="0" />
+					<!--  전투하러 순간이동 올때도 이 변수 0 초기화 하기, 위  <reserved> 에서 이 변수 셋팅될 경우 전투판 도착하자마자 바로 퇴장하는 어색한 경우가 생기기 때문에 전투하러 올때도 이 변수 0 초기화 하기 -->
+					<node name="buff" type="add" id="50004569" level="1" />
+					<!--원 대미지 필드 몸에 달기-->
+					<node name="standby" limit="3100" faceTarget="1" />
+				</node>
+			</condition>
+			<!--  참고로 이 몬스터는 <elseif extraKey="AttackDelay" greaterEqual="1">   사용 안하고 그냥 단순히 standby 사용함   -->
+			<condition name="extraData" key="Number" value="7" op="greaterEqual">
+				<!-- 공격 횟수가 일정 이상 되면, 미니맵에서 안보이는 12시 방향 맨 구석 HiddenCube 지점으로 순간이동해 대기 상태로 있도록함 -->
+				<!-- 참고로 Number 는 구슬 등장할 때 구슬 AI에서 Number = 0 신호 보내 초기화 시킴 (AI_MarbleTurkaSupport10.xml, AI_MarbleTurkaSupport02.xml, AI_MarbleTurkaSupport04.xml, AI_MarbleTurkaSupport08.xml) -->
+				<node name="conditions">
+					<condition name="extraData" key="ActionMode" value="0">
+						<!-- ActionMode 변수 0 이면 기본 Attack_Idle 동작이기 때문에 그냥 순간이동 퇴장해도 됨-->
+						<node name="buff" type="remove" id="50004569" level="1" isKeepBattle="true">
+							<!--원 대미지 필드 애디셔널 제거하기-->
+							<node name="skill" idx="5" />
+							<node name="teleport" pos="12000, 12000, 4210" />
+							<!-- 미니맵에서 안보이는 12시 방향 맨 구석 HiddenCube 지점으로 순간이동 -->
+							<!-- 각종 변수 0 초기화 -->
+							<node name="SetValue" key="CallSummon02" value="0" />
+							<!-- 이 변수 0 초기화 해서 다시 HiddenCube 지점에 아무것도 안하고 대기 상태 행동 하도록 함 -->
+							<node name="SetValue" key="Number" value="0" />
+							<node name="SetValue" key="AttackDelay" value="0" />
+							<node name="SetValue" key="ActionMode" value="0" />
+						</node>
+					</condition>
+					<condition name="true">
+						<!-- ActionMode 변수가 1 이상이면 소닉붐 공격 자세 취하는 중이기 때문에 소닉붐 발사 하고 순간이동 퇴장하도록 함-->
+						<node name="skill" faceTarget="1" isKeepBattle="true" idx="4">
+							<!-- 소닉붐 발사-->
+							<node name="standby" limit="1700" faceTarget="1" />
+							<node name="buff" type="remove" id="50004569" level="1" />
+							<!--원 대미지 필드 애디셔널 제거하기-->
+							<node name="skill" idx="5" />
+							<node name="teleport" pos="12000, 12000, 4210" />
+							<!-- 미니맵에서 안보이는 12시 방향 맨 구석 HiddenCube 지점으로 순간이동 -->
+							<!-- 각종 변수 0 초기화 -->
+							<node name="SetValue" key="CallSummon02" value="0" />
+							<!-- 이 변수 0 초기화 해서 다시 HiddenCube 지점에 아무것도 안하고 대기 상태 행동 하도록 함 -->
+							<node name="SetValue" key="Number" value="0" />
+							<node name="SetValue" key="AttackDelay" value="0" />
+							<node name="SetValue" key="ActionMode" value="0" />
+						</node>
+					</condition>
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="2">
+						<!-- 같은 높이의 전투판, 즉 2시 지점의 구슬 오브젝트가 있는 곳에 플레이어가 있다면 -->
+						<aiPreset name="Normal_AttackPattern" />
+					</condition>
+					<condition name="true">
+						<node name="select" prob="9999,99,1">
+							<node name="target" type="near" center="7800, 5850, 2110" cooltime="4000" />
+							<!--  2시 북쪽 지점의 좌표에 가까운 플레이어를 최우선 타겟팅함 -->
+							<node name="move" destination="7500, 5450, 2110" limit="4300" cooltime="10700" />
+							<!--  2시 마법 구슬 있는쪽 북쪽 지점으로 이동해서 대기 상태로 있도록 함-->
+							<node name="standby" limit="300" faceTarget="1">
+								<!-- 각종 변수 초기하 하여 대기 상태로 있도록 함-->
+								<node name="buff" type="remove" id="50001096">
+									<!-- 얼굴에 붙는 마법 구슬 애디셔널 제거하기 -->
+									<node name="SetValue" key="ActionMode" value="0">
+										<node name="select" prob="50,50">
+											<!--  대기 상태로  Number 변수 어쩔땐 더했다 안더했다 하면서, 계속 대기 상태로 있을 경우 이 변수 점점 커지는데, 기준 수 이상 되면 스스로 사라지도록 함 -->
+											<node name="SetValue" cooltime="19000" key="Number" value="1" isModify="1" />
+											<node name="SetValue" key="Number" value="0" isModify="1" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="Normal_AttackPattern">
+			<node name="conditions">
+				<condition name="extraData" key="ActionMode" value="0">
+					<node name="skill" faceTarget="1" idx="2">
+						<node name="SetValue" key="ActionMode" value="2" isModify="1" />
+						<!-- ActionMode: 자세 전환 유지를 체크하는데 사용하는 변수 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="5" op="lessEqual">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<node name="select" prob="39,50,1">
+								<!-- 거리 420 이내이면 공격 -->
+								<node name="standby" limit="2100" faceTarget="1" animation="Attack_02_C" cooltime="6000">
+									<node name="SetValue" key="ActionMode" value="1" isModify="1">
+										<node name="target" type="near" center="7800, 5850, 2110" />
+										<!--  2시 북쪽 지점의 좌표에 가까운 플레이어를 최우선 타겟팅함 -->
+									</node>
+								</node>
+								<node name="skill" faceTarget="1" cooltime="3400" isKeepBattle="true" idx="3">
+									<!-- 얼굴발사 -->
+									<node name="SetValue" key="ActionMode" value="1" isModify="1" />
+									<node name="SetValue" key="Number" value="1" isModify="1" />
+									<!-- Number: 이정 이상 공격 한 후 스스로 사라질 때 사용하는 변수 -->
+									<node name="target" type="near" center="7800, 5850, 2110" />
+									<!--  2시 북쪽 지점의 좌표에 가까운 플레이어를 최우선 타겟팅함 -->
+								</node>
+								<node name="standby" limit="1200" faceTarget="1" animation="Attack_02_C">
+									<node name="target" type="near" center="7800, 5850, 2110" />
+									<!--  2시 북쪽 지점의 좌표에 가까운 플레이어를 최우선 타겟팅함 -->
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="2100" animation="Attack_02_C" skillIdx="4">
+								<!-- 거리 420까지 추척 -->
+								<node name="SetValue" key="ActionMode" value="1" isModify="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionMode" value="6">
+					<node name="skill" faceTarget="1" isKeepBattle="true" idx="4">
+						<!-- 소닉붐 발사-->
+						<node name="standby" limit="2300" faceTarget="1" />
+						<node name="SetValue" key="ActionMode" value="0" />
+						<node name="SetValue" key="Number" value="3" isModify="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 이론적으로 이 부분 실생될 일 없음-->
+					<node name="standby" limit="1200" faceTarget="1">
+						<node name="target" type="near" center="7800, 5850, 2110">
+							<node name="select" prob="50,50">
+								<!--  2시 북쪽 지점의 좌표에 가까운 플레이어를 최우선 타겟팅함 -->
+								<node name="SetValue" cooltime="12000" key="Number" value="1" isModify="1" />
+								<node name="SetValue" key="Number" value="0" isModify="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

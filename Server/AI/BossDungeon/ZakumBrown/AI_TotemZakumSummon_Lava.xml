@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+				<node name="SetMasterValue" key="TotemMany" value="1" isModify="1" />
+				<!--전투 상태가 되면 자쿰AI에게 토템소환몹 마리수 체크 +1 신호 보냄-->
+				<node name="buff" type="add" id="50001059" />
+				<!-- 부기의 회복 애디셔널 받지 않도록 예외 처리 넣음 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,0">
+			<!-- 행동패턴 제어하는데 사용하는 변수 셋팅-->
+			<node name="SetValue" cooltime="9999999" key="ActionMode" value="0" />
+			<node name="conditions">
+				<condition name="extraData" key="TotemSummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="3" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="ActionMode" value="0">
+					<!-- 최초에 여기부터 실행-->
+					<node name="skill" idx="1">
+						<!-- 몸체 열리기-->
+						<node name="SetValue" key="ActionMode" value="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="skill" idx="2">
+						<!-- 몸체 열릴 상태로 활성화 하기-->
+						<!-- <event eventName="ModifyExtra" target="Me" param1="ActionMode" param2="1" prob="100"/>  -->
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   battleEnd onlyDead="true"  이거 넣으면 오직 죽었을 때만 처리하게 됨 -->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="SetMasterValue" key="TotemMany" value="-1" isModify="1" />
+				<!--죽으면 자쿰AI에게 토템소환몹 마리수 체크 -1 신호 보냄-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

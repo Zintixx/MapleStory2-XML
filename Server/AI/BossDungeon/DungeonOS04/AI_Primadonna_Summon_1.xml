@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>	
+	<!-- 스킬 별 인덱스
+	부채 공격 	1	8	14
+	소프라노	2	9	15
+	소프라노 근버 유저 체크	180
+	발성연습	3	10	16
+	장미덩굴	4	11	17
+	브라보		5	12	
+	악단 연주	6	
+	아리아		7	13	18	19	20	21
+	아리아 - 아틀리에 디버프 제거	181
+	페이즈 변경	22	23	24
+	부채 던지기 25	26	27
+	아리에타	28, 29(모션)
+		근접		30	31	32	33	/	34	35	36	37	/	38	39	40	41
+		근거리		42	43	44	45	/	46	47	48	49	/	50	51	52	53
+		중거리		54	55	56	57	/	58	59	60	61	/	62	63	64	65
+		원거리		66	67	68	69	/	70	71	72	73	/	74	75	76	77
+		원원거리	78	79	/	82	83	/	86	87
+	브라보 조명
+		모션			179
+		셀프조명		88
+		셀프이펙		89 ~ 96
+		근거리		97 ~ 104	(450 - 45도 - 8개)
+		중거리		105 ~ 120	(750 - 22.5도 - 16개)
+		원거리		121 ~ 144	(1050 - 15도 - 24개)
+		원원거리	145 ~ 176	(1350 - 11.25도 - 32개)
+		광역 디버프	177
+		광역 사망	178
+	동진
+		충전		182
+		직전-직후	(183,184) (185,186) (187,188) (189,190) (191,192) (193,194) (195,196)
+	블링크
+		사라짐		197
+		나타남 직전-직후	(198,199) (200,201) (202,203)
+	분신 거리체크 스킬	204
+	-->
+	
+	<reserved>		
+		<!-- 1페이즈 -->
+		<condition name="hpLess" value="101">
+			<node name="SetValue" key="phase" value="2" />
+			<node name="SetValue" key="Angry" value="0" />
+		</condition>
+	</reserved>
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="Angry" value="1">
+				<node name="SetValue" key="Angry" value="0" />
+				<node name="SetValue" key="phase" value="4" />
+				<node name="standby" limit="500" faceTarget="0" />
+
+				<node name="skill" idx="22" level="1" />
+				<node name="Buff" type="add" id="44190011" level="1" />
+				<node name="standby" limit="500" faceTarget="0" />
+			</condition>
+			
+			
+			<!-- 테스트 AI 명령 -->
+			<!-- <condition name="true" > -->
+				
+				<!-- <aiPreset name="Rush"/> -->
+				<!-- <aiPreset name="Blink"/> -->
+				
+				<!--
+				<node name="SetValue" key="phase" value="4" />
+				<node name="skill" idx="180" level="1" faceTarget="0" />
+				<node name="standby" limit="3000" faceTarget="0"/>
+				-->
+			<!-- </condition> -->
+			
+			<!-- 중간에 보스의 페이즈 이동이 있더라도 문제없는 AI는 이 아래에 작성한다 -->
+			<condition name="true" >
+				<node name="conditions">
+					<condition name="extraData" key="phase" value="2" >
+						<node name="select" prob="9999,1">
+							<!-- 2초마다 타겟 재설정 -->
+							<node name="standby" limit="10" faceTarget="1" cooltime="2000">
+								<node name="target" type="hasAdditional" additionalId="40600091" additionalLevel="1" target="hostile" />
+							</node>							
+							<!-- 근접 유저 체크 -->
+							<node name="standby" limit="10" faceTarget="0">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="180">
+										<node name="select" prob="2,1">
+											<node name="SetValue" key="NearUserPattern" value="1"/>
+											<node name="SetValue" key="NearUserPattern" value="0"/>
+										</node>
+									</condition>
+									<condition name="true" >
+										<node name="SetValue" key="NearUserPattern" value="0"/>
+									</condition>
+								</node>
+								<node name="standby" limit="600" faceTarget="1" />
+								<node name="conditions">
+									<condition name="extraData" key="NearUserPattern" value="1" >
+										<node name="select" prob="1,1,2,2,2">
+											<aiPreset name="Soprano"/>
+											<aiPreset name="FanThrow"/>
+											<aiPreset name="Rush"/>
+											<node name="standby" limit="10" faceTarget="0" cooltime="3000">
+												<aiPreset name="Blink"/>
+											</node>
+											<node name="standby" limit="200" faceTarget="1" >
+												<aiPreset name="RoseVines"/>
+												<node name="select" prob="2,1">
+													<aiPreset name="Rush"/>
+													<aiPreset name="Blink"/>
+												</node>
+											</node>
+										</node>
+									</condition>
+									<condition name="true" >
+										<node name="select" prob="2,8">
+											<!-- trace Soprano 2,9,15 -->
+											<node name="trace" skillIdx="9" limit="3000" >
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="9">
+														<aiPreset name="Soprano"/>
+													</condition>
+													<condition name="true" >
+														<aiPreset name="FanThrow"/>
+													</condition>
+												</node>
+											</node>
+											<node name="select" prob="1,2,2,3">
+												<aiPreset name="FanThrow"/>
+												<aiPreset name="Rush"/>
+												<node name="standby" limit="10" faceTarget="0" cooltime="3000">
+													<aiPreset name="Blink"/>
+												</node>
+												<node name="standby" limit="200" faceTarget="1" >
+													<aiPreset name="RoseVines"/>
+													<node name="select" prob="2,1">
+														<aiPreset name="Rush"/>
+														<aiPreset name="Blink"/>
+													</node>
+												</node>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="extraData" key="phase" value="4" >
+						<node name="select" prob="99999,99999,1,3">
+							<!-- 6초마다 타겟 재설정 -->
+							<node name="standby" limit="10" faceTarget="1" cooltime="6000">
+								<node name="select" prob="1,2,3">
+									<node name="target" type="near" from="5" to="5000" />
+									<node name="target" type="mid" from="5" to="5000" />
+									<node name="target" type="far" from="5" to="5000" />
+								</node>
+							</node>
+							<node name="standby" limit="100" faceTarget="0" cooltime="60000" >
+								<aiPreset name="Performance"/>
+							</node>
+							<node name="standby" limit="100" faceTarget="0" cooltime="45000" >
+								<aiPreset name="BlinkRandom"/>
+							</node>
+							<node name="standby" limit="10" faceTarget="0">
+								<!-- 근접 유저 체크 -->
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="180">
+										<node name="select" prob="2,1">
+											<node name="SetValue" key="NearUserPattern" value="1"/>
+											<node name="SetValue" key="NearUserPattern" value="0"/>
+										</node>
+									</condition>
+									<condition name="true" >
+										<node name="SetValue" key="NearUserPattern" value="0"/>
+									</condition>
+								</node>
+								<node name="standby" limit="300" faceTarget="1" />
+								<node name="conditions">
+									<condition name="extraData" key="NearUserPattern" value="1" >
+										<node name="select" prob="1,9">
+											<aiPreset name="Soprano"/>
+											<node name="select" prob="2,1,1,1">
+												<node name="select" prob="1,1,1,1" >
+													<node name="standby" limit="100" faceTarget="0" >
+														<aiPreset name="Rush"/>
+														<aiPreset name="Blink"/>
+													</node>
+													<node name="standby" limit="100" faceTarget="0" >
+														<aiPreset name="Blink"/>
+														<aiPreset name="Rush"/>
+													</node>
+													<node name="standby" limit="100" faceTarget="0" >
+														<aiPreset name="Rush"/>
+														<aiPreset name="Rush"/>
+													</node>
+													<node name="standby" limit="100" faceTarget="0" cooltime="4000">
+														<aiPreset name="Blink"/>
+														<aiPreset name="Blink"/>
+													</node>
+												</node>
+												<aiPreset name="VocalExercises"/>
+												<node name="standby" limit="200" faceTarget="1" >
+													<aiPreset name="RoseVines"/>
+													<node name="select" prob="1,1">
+														<aiPreset name="VocalExercises"/>
+														<node name="standby" limit="100" faceTarget="0" />
+													</node>
+												</node>
+												
+												<aiPreset name="Bravo"/>
+											</node>
+										</node>
+									</condition>
+									<condition name="true" >
+										<node name="select" prob="3,7">
+											<node name="select" prob="1,1,1,1" >
+												<node name="standby" limit="100" faceTarget="0" >
+													<aiPreset name="Rush"/>
+													<aiPreset name="Blink"/>
+												</node>
+												<node name="standby" limit="100" faceTarget="0" >
+													<aiPreset name="Blink"/>
+													<aiPreset name="Rush"/>
+												</node>
+												<node name="standby" limit="100" faceTarget="0" >
+													<aiPreset name="Rush"/>
+													<aiPreset name="Rush"/>
+												</node>
+												<node name="standby" limit="100" faceTarget="0" cooltime="4000" >
+													<aiPreset name="Blink"/>
+													<aiPreset name="Blink"/>
+												</node>
+											</node>
+											<node name="select" prob="1,1,1">
+												<aiPreset name="VocalExercises"/>
+												<node name="standby" limit="200" faceTarget="1" >
+													<aiPreset name="RoseVines"/>
+													<node name="select" prob="1,1">
+														<aiPreset name="VocalExercises"/>
+														<node name="standby" limit="100" faceTarget="0" />
+													</node>
+												</node>
+												<aiPreset name="Bravo"/>
+											</node>
+										</node>
+									</condition>
+								</node>
+							</node>
+						</node>
+					</condition>
+				</node>		
+			</condition>
+		</node>
+	</battle>
+	<battleEnd>
+	</battleEnd>
+	<aiPresets>
+		<!-- 프리마돈나 일반 공격 -->
+		<aiPreset name="FanSmash">
+			<node name="conditions">
+				<!-- 1페이즈 -->
+				<condition name="extraData" key="phase" value="1">
+					<node name="skill" idx="1" level="1" />
+				</condition>
+				<!-- 2~3페이즈 -->
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="skill" idx="8" level="2" />
+				</condition>
+				<!-- 4페이즈 -->
+				<condition name="true">					
+					<node name="skill" idx="14" level="3" />
+				</condition>
+			</node>
+		</aiPreset>
+		<!-- 프리마돈나 부채 던지기 -->
+		<aiPreset name="FanThrow">
+			<node name="conditions">
+				<!-- 1페이즈 -->
+				<condition name="extraData" key="phase" value="2" op="lessEqual">
+					<node name="skill" idx="27" />
+					<!-- <node name="skill" idx="27" faceTarget="3" faceTargetTick="0.9" /> -->
+					<!--
+					<node name="select" prob="1,1,1">
+						<node name="skill" idx="25" faceTarget="3" faceTargetTick="1.25" />
+						<node name="skill" idx="26" faceTarget="3" faceTargetTick="1.05" />
+						<node name="skill" idx="27" faceTarget="3" faceTargetTick="0.9" />
+					</node>
+					-->
+				</condition>
+				<!-- 2~3페이즈 -->
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="skill" idx="209" />
+					<!-- <node name="skill" idx="209" faceTarget="3" faceTargetTick="0.9" /> -->
+					<!--
+					<node name="select" prob="1,1,1">
+						<node name="skill" idx="207" faceTarget="3" faceTargetTick="1.25" />
+						<node name="skill" idx="208" faceTarget="3" faceTargetTick="1.05" />
+						<node name="skill" idx="209" faceTarget="3" faceTargetTick="0.9" />
+					</node>
+					-->
+				</condition>
+				<!-- 4페이즈 -->
+				<condition name="true">
+					<node name="skill" idx="212" />
+					<!-- <node name="skill" idx="212" faceTarget="3" faceTargetTick="0.9" /> -->
+					<!--
+					<node name="select" prob="1,1,1">
+						<node name="skill" idx="210" faceTarget="3" faceTargetTick="2.0" />
+						<node name="skill" idx="211" faceTarget="3" faceTargetTick="1.05" />
+						<node name="skill" idx="212" faceTarget="3" faceTargetTick="0.9" />
+					</node>
+					-->
+				</condition>
+			</node>
+		</aiPreset>
+		<!-- 소프라노 -->
+		<aiPreset name="Soprano">
+			<node name="conditions">
+				<!-- 1페이즈 -->
+				<condition name="extraData" key="phase" value="1">
+					<node name="skill" idx="2" faceTarget="3" />
+				</condition>
+				<!-- 2~3페이즈 -->
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="skill" idx="9" faceTarget="3" />
+				</condition>
+				<!-- 4페이즈 -->
+				<condition name="true">					
+					<node name="skill" idx="15" faceTarget="3" />
+				</condition>
+			</node>
+		</aiPreset>
+
+		<!-- 발성 연습 -->
+		<aiPreset name="VocalExercises">
+			<node name="conditions">
+				<!-- 1페이즈 -->
+				<condition name="extraData" key="phase" value="2" op="lessEqual">
+					<node name="select" prob="1,1">
+						<node name="skill" idx="213" />
+						<node name="skill" idx="216" />
+					</node>
+				</condition>
+				<!-- 2~3페이즈 -->
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="select" prob="1,1">
+						<node name="skill" idx="214" />
+						<node name="skill" idx="217" />
+					</node>
+				</condition>
+				<!-- 4페이즈 -->
+				<condition name="true">					
+					<node name="select" prob="1,1,1,1">
+						<node name="skill" idx="215" />
+						<node name="skill" idx="218" />
+						<node name="skill" idx="221" />
+						<node name="skill" idx="224" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+
+		<!-- 장미 덩굴 -->
+		<aiPreset name="RoseVines">
+			<node name="conditions">
+				<!-- 1페이즈 -->
+				<condition name="extraData" key="phase" value="1">
+					<node name="skill" idx="4" level="1" faceTarget="3" faceTargetTick="1200" />
+				</condition>
+				<!-- 2~3페이즈 -->
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="skill" idx="11" level="2" faceTarget="3" faceTargetTick="1200" />
+				</condition>
+				<!-- 4페이즈 -->
+				<condition name="true">					
+					<node name="skill" idx="17" level="3" faceTarget="3" faceTargetTick="1200" />
+				</condition>
+			</node>
+		</aiPreset>
+
+		<!-- 브라보 -->
+		<aiPreset name="Bravo">
+			<node name="conditions">
+				<!-- 3페이즈 -->
+				<condition name="extraData" key="phase" value="3">
+					<node name="skill" idx="5" level="1" />
+				</condition>
+				<!-- 4페이즈 -->
+				<condition name="true">
+					<node name="skill" idx="12" level="2" />
+				</condition>
+			</node>			
+		</aiPreset>
+
+		<!-- 악단 연주 -->
+		<!--
+			빨간 드럼롤	1	2	3
+			초록 드럼롤	4	5	6
+		-->
+		<aiPreset name="Performance">
+			<node name="conditions">
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="select" prob="1,1">
+						<node name="standby" limit="10" faceTarget="0">
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="101" delayTick="1337" summonPos="1125,-825,1501" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="2" group="102" delayTick="1437" summonPos="675,-1350,1501" />
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="2" group="103" delayTick="1537" summonPos="75,-1125,1501" />
+						</node>
+						<node name="standby" limit="10" faceTarget="0">
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="2" group="101" delayTick="1337" summonPos="225,-1125,1501" />
+							<node name="summon" npcId="5" npcCount="1" npcCountMax="2" group="102" delayTick="1437" summonPos="600,-1350,1501" />
+							<node name="summon" npcId="10" npcCount="1" npcCountMax="2" group="103" delayTick="1537" summonPos="975,-1125,1501" />
+						</node>
+					</node>
+					<node name="skill" idx="6" level="1" />
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="extraData" key="userCount" value="4" op="lessEqual">
+							<node name="select" prob="1,1">
+								<node name="standby" limit="10" faceTarget="0">
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="101" delayTick="1437" summonPos="8625,-225,2701" />
+									<node name="summon" npcId="6" npcCount="1" npcCountMax="2" group="102" delayTick="1537" summonPos="8625,-1425,2701" />
+									<node name="summon" npcId="10" npcCount="1" npcCountMax="2" group="103" delayTick="1637" summonPos="7125,-225,2701" />
+								</node>
+								<node name="standby" limit="10" faceTarget="0">
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="101" delayTick="1437" summonPos="7125,-225,2701" />
+									<node name="summon" npcId="6" npcCount="1" npcCountMax="2" group="102" delayTick="1537" summonPos="7125,-1425,2701" />
+									<node name="summon" npcId="10" npcCount="1" npcCountMax="2" group="103" delayTick="1637" summonPos="8625,-225,2701" />							
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="1,1">
+								<node name="standby" limit="10" faceTarget="0">
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="101" delayTick="1337" summonPos="8625,-225,2701" />
+									<node name="summon" npcId="6" npcCount="1" npcCountMax="2" group="102" delayTick="1437" summonPos="8625,-1425,2701" />
+									<node name="summon" npcId="10" npcCount="1" npcCountMax="2" group="103" delayTick="1537" summonPos="7790,-1725,2701" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="101" delayTick="1637" summonPos="7790,75,2701" />
+									<node name="summon" npcId="6" npcCount="1" npcCountMax="2" group="102" delayTick="1737" summonPos="7125,-225,2701" />
+									<node name="summon" npcId="10" npcCount="1" npcCountMax="2" group="103" delayTick="1837" summonPos="7125,-1425,2701" />
+								</node>
+								<node name="standby" limit="10" faceTarget="0">
+									<node name="summon" npcId="6" npcCount="1" npcCountMax="2" group="102" delayTick="1337" summonPos="7790,75,2701" />
+									<node name="summon" npcId="10" npcCount="1" npcCountMax="2" group="103" delayTick="1437" summonPos="7125,-225,2701" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="101" delayTick="1537" summonPos="7125,-1425,2701" />
+									<node name="summon" npcId="6" npcCount="1" npcCountMax="2" group="102" delayTick="1637" summonPos="8625,-225,2701" />
+									<node name="summon" npcId="10" npcCount="1" npcCountMax="2" group="103" delayTick="1737" summonPos="8625,-1425,2701" />
+									<node name="summon" npcId="3" npcCount="1" npcCountMax="2" group="101" delayTick="1837" summonPos="7790,-1725,2701" />
+								</node>
+							</node>
+						</condition>
+					</node>					
+					<node name="skill" idx="6" level="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		
+		<!-- Rush -->
+		<aiPreset name="Rush">
+			<node name="skill" idx="182" level="1" faceTarget="3" />
+			<node name="skill" idx="182" level="1" faceTarget="3" />
+			<node name="conditions">
+				<condition name="DistanceLess" value="300">
+					<node name="skill" idx="183" level="1" />
+					<node name="skill" idx="184" level="1" faceTarget="3" />
+				</condition>
+				<condition name="DistanceLess" value="600">
+					<node name="skill" idx="185" level="1" />
+					<node name="skill" idx="186" level="1" faceTarget="3" />
+				</condition>
+				<condition name="DistanceLess" value="900">
+					<node name="skill" idx="187" level="1" />
+					<node name="skill" idx="188" level="1" faceTarget="3" />
+				</condition>
+				<condition name="DistanceLess" value="1200">
+					<node name="skill" idx="189" level="1" />
+					<node name="skill" idx="190" level="1" faceTarget="3" />
+				</condition>
+				<condition name="DistanceLess" value="1500">
+					<node name="skill" idx="191" level="1" />
+					<node name="skill" idx="192" level="1" faceTarget="3" />
+				</condition>
+				<condition name="DistanceLess" value="1800">
+					<node name="skill" idx="193" level="1" />
+					<node name="skill" idx="194" level="1" faceTarget="3" />
+				</condition>
+				<condition name="true">
+					<node name="skill" idx="195" level="1" />
+					<node name="skill" idx="196" level="1" faceTarget="3" />
+				</condition>
+			</node>
+		</aiPreset>
+		
+		<!-- Blink -->
+		<aiPreset name="Blink">
+			<node name="skill" idx="197" level="1" faceTarget="0" />
+			<node name="buff" type="add" id="44190007" level="1" />
+			<node name="select" prob="1,1,1">
+				<node name="standby" limit="200" faceTarget="0"/>
+				<node name="standby" limit="600" faceTarget="0"/>
+				<node name="standby" limit="1000" faceTarget="0"/>
+			</node>
+			<node name="select" prob="1,1,1,1">
+				<node name="trace" limit="1500" till="50" speed="2000" />
+				<node name="trace" limit="1500" till="100" speed="2000" />
+				<node name="trace" limit="1500" till="150" speed="2000" />
+				<node name="trace" limit="1500" till="200" speed="2000" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="phase" value="2" op="lessEqual">
+					<node name="skill" idx="198" level="1" faceTarget="1" />
+					<node name="standby" limit="1500" faceTarget="0"/>
+					<node name="buff" type="remove" id="44190007" level="1" />
+					<node name="skill" idx="199" level="1" faceTarget="0" />
+				</condition>
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="skill" idx="200" level="1" faceTarget="1" />
+					<node name="standby" limit="1300" faceTarget="0"/>
+					<node name="buff" type="remove" id="44190007" level="1" />
+					<node name="skill" idx="201" level="1" faceTarget="0" />
+				</condition>
+				<condition name="true">
+					<node name="skill" idx="202" level="1" faceTarget="1" />
+					<node name="standby" limit="900" faceTarget="0"/>
+					<node name="buff" type="remove" id="44190007" level="1" />
+					<node name="skill" idx="203" level="1" faceTarget="0" />
+				</condition>
+			</node>
+		</aiPreset>
+		
+		<!-- BlinkRandom -->
+		<aiPreset name="BlinkRandom">
+			<node name="skill" idx="197" level="1" faceTarget="0" />
+			<node name="buff" type="add" id="44190007" level="1" />
+			<node name="select" prob="1,1,1">
+				<node name="standby" limit="200" faceTarget="0"/>
+				<node name="standby" limit="600" faceTarget="0"/>
+				<node name="standby" limit="1000" faceTarget="0"/>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="select" prob="1,1,1,1,1,1">
+						<node name="teleport" pos="858,-201,1503" />
+						<node name="teleport" pos="1224,-567,1503" />
+						<node name="teleport" pos="1224,-1083,1503" />
+						<node name="teleport" pos="858,-1449,1503" />
+						<node name="teleport" pos="342,-1449,1503" />
+						<node name="teleport" pos="342,-201,1503" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="1,1,1,1,1,1">
+						<node name="teleport" pos="8134,6,2703" />
+						<node name="teleport" pos="8621,-481,2703" />
+						<node name="teleport" pos="8621,-1169,2703" />
+						<node name="teleport" pos="8134,-1656,2703" />
+						<node name="teleport" pos="7446,-1656,2703" />
+						<node name="teleport" pos="7446,6,2703" />
+					</node>
+				</condition>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="phase" value="2" op="lessEqual">
+					<node name="skill" idx="198" level="1" faceTarget="1" />
+					<node name="standby" limit="1500" faceTarget="0"/>
+					<node name="buff" type="remove" id="44190007" level="1" />
+					<node name="skill" idx="199" level="1" faceTarget="0" />
+				</condition>
+				<condition name="extraData" key="phase" value="3" op="lessEqual">
+					<node name="skill" idx="200" level="1" faceTarget="1" />
+					<node name="standby" limit="1300" faceTarget="0"/>
+					<node name="buff" type="remove" id="44190007" level="1" />
+					<node name="skill" idx="201" level="1" faceTarget="0" />
+				</condition>
+				<condition name="true">
+					<node name="skill" idx="202" level="1" faceTarget="1" />
+					<node name="standby" limit="900" faceTarget="0"/>
+					<node name="buff" type="remove" id="44190007" level="1" />
+					<node name="skill" idx="203" level="1" faceTarget="0" />
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

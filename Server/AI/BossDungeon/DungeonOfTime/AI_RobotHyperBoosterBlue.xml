@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="8000">
+				<node name="target" type="rand" from="10" to="1600" />
+			</node>
+			<!--**** 같은 높이의 전투판에 있으면 ****-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="10">
+					<node name="conditions">
+						<condition name="hpOver" value="92">
+							<node name="select" prob="9999,9999,9999,0">
+								<!--#1페이즈  레이저 공격 주력 + 연속 돌진공격과 지뢰 투척 가끔   -->
+								<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="34000" initialCooltime="28000">
+									<node name="target" type="far" from="10" to="1500">
+										<node name="trace" limit="2000" skillIdx="1" />
+										<!--distance 200짜리 가짜 스킬 데이터-->
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="35000" initialCooltime="18000">
+									<!--연속 돌진 공격 -->
+									<aiPreset name="DashAttackMode" />
+									<!--여기서 돌진 공격을 하는데, 오브젝트 파괴 용으로 할지 말지를 확률 선택함 -->
+								</node>
+								<node name="skill" cooltime="25000" initialCooltime="12000" idx="26">
+									<!--지뢰 5개 투척 (레벨2) -->
+									<node name="standby" limit="1000" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="6">
+										<node name="select" prob="25,25,24,24,1">
+											<node name="skill" cooltime="8000" idx="7">
+												<!--정면 바닥 총쏘기, 레벨2: 바닥파괴-->
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+											<node name="standby" limit="100" faceTarget="1" cooltime="8000">
+												<!--바닥폭발 연속 공격 -->
+												<aiPreset name="BottomAttackMode" />
+												<!--여기서 바닥폭발 정면 양측면 공격할 때 바닥 오브젝트 파괴 할지 말지를 확률 선택함 -->
+											</node>
+											<node name="skill" cooltime="8000" idx="24">
+												<node name="select" prob="53,47">
+													<!--양측면 레이저-->
+													<node name="skill" idx="7">
+														<!--정면 바닥 총쏘기, 레벨2: 바닥파괴-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="skill" idx="21">
+														<!--선긋기 레이저 (약)-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="8000" idx="24">
+												<node name="select" prob="53,47">
+													<!--양측면 레이저-->
+													<node name="skill" idx="23">
+														<!--눈에서 정면 레이저-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+													<node name="skill" idx="21">
+														<!--선긋기 레이저 (약)-->
+														<node name="standby" limit="1000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="20,10">
+											<node name="trace" limit="3000" skillIdx="6" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="hpOver" value="70">
+							<node name="select" prob="9999,9999,0">
+								<!--#2페이즈  거대 레이저 선긋기 진형 분리 + 추적 공격-->
+								<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="38000" initialCooltime="43000">
+									<node name="target" type="far" from="10" to="1500">
+										<node name="trace" limit="2000" skillIdx="1" />
+										<!--distance 200짜리 가짜 스킬 데이터-->
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="0" cooltime="53000" initialCooltime="100">
+									<node name="select" prob="50,50">
+										<node name="skill" facePos="-2250, -150, 2700" cooltime="90000" isKeepBattle="true" idx="27">
+											<!--점프 준비 -->
+											<node name="jump" pos="-2250, -150, 2700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--점프 착지 -->
+											<node name="skill" facePos="-1500, -2400, 2700" idx="22" />
+											<!--거대 레이저 선긋기-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="skill" facePos="-750, -1650, 2700" cooltime="90000" isKeepBattle="true" idx="27">
+											<!--점프 준비 -->
+											<node name="jump" pos="-750, -1650, 2700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--점프 착지 -->
+											<node name="skill" facePos="-3000, -900, 2700" idx="22" />
+											<!--거대 레이저 선긋기-->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="20">
+										<node name="select" prob="25,50,24,1">
+											<!--타겟이 1300  이내에 있으면-->
+											<node name="skill" idx="21">
+												<!--선긋기 레이저 (약)-->
+												<node name="standby" limit="2000" faceTarget="1">
+													<node name="skill" idx="4">
+														<!--정면 레이저 난사-->
+														<node name="standby" limit="2000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="100" faceTarget="1" cooltime="24000">
+												<!--연속 돌진 공격 -->
+												<aiPreset name="DashAttackMode" />
+												<!--여기서 돌진 공격을 하는데, 오브젝트 파괴 용으로 할지 말지를 확률 선택함 -->
+											</node>
+											<node name="trace" limit="6000" skillIdx="31">
+												<node name="select" prob="70,30">
+													<node name="skill" idx="31">
+														<!--가까운 대상의 바닥에 샷건 충격파  -->
+														<node name="standby" limit="1000" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1000" />
+														</node>
+													</node>
+													<node name="skill" idx="32">
+														<!--가까운 대상의 바닥에 샷건 충격파, 바닥 오프젝트 파괴용  -->
+														<node name="standby" limit="1000" faceTarget="1">
+															<node name="target" type="rand" from="10" to="1000" />
+														</node>
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" limit="3000" skillIdx="20" />
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="hpOver" value="50">
+							<!--#3페이즈  감전 공격 패턴-->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="6">
+									<node name="select" prob="999,50,23,23,16,16,22,1">
+										<node name="standby" limit="500" faceTarget="1" cooltime="13500" initialCooltime="100">
+											<node name="select" prob="20,20,20,20">
+												<node name="skill" facePos="-1350, -750, 2700" cooltime="70000" initialCooltime="100" isKeepBattle="true" idx="27">
+													<!--점프 준비 -->
+													<node name="jump" pos="-1350, -750, 2700" speed="2000" heightMultiplier="0.3" />
+													<!--점프중 -->
+													<node name="skill" faceTarget="0" idx="29" />
+													<!--전기 공격 점프 착지 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" facePos="-1350, -1800, 2700" cooltime="70000" initialCooltime="100" isKeepBattle="true" idx="27">
+													<!--점프 준비 -->
+													<node name="jump" pos="-1350, -1800, 2700" speed="2000" heightMultiplier="0.3" />
+													<!--점프중 -->
+													<node name="skill" faceTarget="0" idx="29" />
+													<!--전기 공격 점프 착지 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" facePos="-2400, -1950, 2700" cooltime="70000" initialCooltime="100" isKeepBattle="true" idx="27">
+													<!--점프 준비 -->
+													<node name="jump" pos="-2400, -1950, 2700" speed="2000" heightMultiplier="0.3" />
+													<!--점프중 -->
+													<node name="skill" faceTarget="0" idx="29" />
+													<!--전기 공격 점프 착지 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" facePos="-2400, -750, 2700" cooltime="70000" initialCooltime="100" isKeepBattle="true" idx="27">
+													<!--점프 준비 -->
+													<node name="jump" pos="-2400, -750, 2700" speed="2000" heightMultiplier="0.3" />
+													<!--점프중 -->
+													<node name="skill" faceTarget="0" idx="29" />
+													<!--전기 공격 점프 착지 -->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="100" faceTarget="1" cooltime="23000">
+											<!--연속 돌진 공격 -->
+											<aiPreset name="DashAttackMode" />
+											<!--여기서 돌진 공격을 하는데, 오브젝트 파괴 용으로 할지 말지를 확률 선택함 -->
+										</node>
+										<node name="skill" idx="5">
+											<!--사방 레이저 난사-->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="8000" idx="4">
+											<!--양쪽 방향 레이저 난사-->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" cooltime="12000" idx="2">
+											<!--왼쪽 방향 레이저 난사-->
+											<node name="skill" idx="3">
+												<!--오른쪽 방향 레이저 난사-->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" cooltime="12000" idx="3">
+											<!--오른쪽 방향 레이저 난사-->
+											<node name="skill" idx="2">
+												<!--왼쪽 방향 레이저 난사-->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+										</node>
+										<node name="skill" cooltime="8000" idx="24">
+											<node name="select" prob="60,40">
+												<!--양측면 레이저-->
+												<node name="skill" idx="23">
+													<!--눈에서 정면 레이저-->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+												<node name="skill" idx="21">
+													<!--선긋기 레이저 (약)-->
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+											</node>
+										</node>
+										<node name="standby" limit="1000" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="select" prob="20,10">
+										<node name="trace" limit="3000" skillIdx="6" />
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="hpOver" value="20">
+							<node name="select" prob="9999,0">
+								<!--#4페이즈  거대 레이저 선긋기 2번 진형 분리 + 지뢰 뿌리기 +돌진 공격 -->
+								<node name="standby" limit="100" faceTarget="0" cooltime="62000" initialCooltime="100">
+									<node name="select" prob="50,50">
+										<node name="skill" facePos="-1500, -150, 2700" cooltime="70000" isKeepBattle="true" idx="27">
+											<!--점프 준비 -->
+											<node name="jump" pos="-1500, -150, 2700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--점프 착지 -->
+											<node name="skill" facePos="-2250, -2400, 2700" idx="22" />
+											<!--거대 레이저 선긋기-->
+											<node name="skill" facePos="-750, -1650, 2700" idx="27" />
+											<!--점프 준비 -->
+											<node name="jump" pos="-750, -1650, 2700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--점프 착지 -->
+											<node name="skill" facePos="-3000, -900, 2700" idx="22" />
+											<!--거대 레이저 선긋기-->
+											<node name="skill" facePos="-1800, -1200, 2700" idx="27" />
+											<!--점프 준비  맵 중앙으로 뛰기 -->
+											<node name="jump" pos="-1800, -1200, 2700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 맵 중앙으로 뛰기-->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--점프 착지  맵 중앙으로 뛰기-->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="25" />
+											<!--지뢰 2~3개 뿌리기-->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+										<node name="skill" facePos="-750, -1650, 2700" cooltime="70000" isKeepBattle="true" idx="27">
+											<!--점프 준비 -->
+											<node name="jump" pos="-750, -1650, 2700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--점프 착지 -->
+											<node name="skill" facePos="-3000, -900, 2700" idx="22" />
+											<!--거대 레이저 선긋기-->
+											<node name="skill" facePos="-1500, -150, 2700" idx="27" />
+											<!--점프 준비 -->
+											<node name="jump" pos="-1500, -150, 2700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 -->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--점프 착지 -->
+											<node name="skill" facePos="-2250, -2400, 2700" idx="22" />
+											<!--거대 레이저 선긋기-->
+											<node name="skill" facePos="-1800, -1200, 2700" idx="27" />
+											<!--점프 준비  맵 중앙으로 뛰기 -->
+											<node name="jump" pos="-1800, -1200, 2700" speed="2000" heightMultiplier="0.3" />
+											<!--점프중 맵 중앙으로 뛰기-->
+											<node name="skill" faceTarget="0" idx="28" />
+											<!--점프 착지  맵 중앙으로 뛰기-->
+											<node name="standby" limit="500" faceTarget="1" />
+											<node name="skill" faceTarget="1" idx="25" />
+											<!--지뢰 2~3개 뿌리기-->
+											<node name="standby" limit="3000" faceTarget="1" />
+										</node>
+									</node>
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="30">
+										<node name="select" prob="399,99,33,33,33,1">
+											<node name="standby" limit="100" faceTarget="1" cooltime="35000">
+												<!--연속 돌진 공격 -->
+												<aiPreset name="DashAttackMode" />
+												<!--여기서 돌진 공격을 하는데, 오브젝트 파괴 용으로 할지 말지를 확률 선택함 -->
+											</node>
+											<node name="skill" cooltime="26000" idx="21">
+												<node name="select" prob="35,65">
+													<!--약 레이저 작은 바닥 선 대미지 필드-->
+													<node name="skill" idx="21" />
+													<node name="standby" limit="3000" faceTarget="1" />
+												</node>
+											</node>
+											<node name="standby" limit="100" faceTarget="1">
+												<!--바닥폭발 연속 공격 -->
+												<aiPreset name="BottomAttackMode" />
+												<!--여기서 바닥폭발 정면 양측면 공격할 때 바닥 오브젝트 파괴 할지 말지를 확률 선택함 -->
+											</node>
+											<node name="skill" cooltime="9000" idx="4">
+												<!--양쪽 방향 레이저 난사-->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="skill" cooltime="9000" idx="30">
+												<!--짧은 돌진 팔 휘두르기-->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="90,10">
+											<node name="trace" limit="3000" skillIdx="30" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="hpOver" value="14">
+							<node name="select" prob="9999,9999,0">
+								<!--#5페이즈 잠시 템포 늦추기 1페이즈와 비슷  -->
+								<!--너무 공격만 하는 것을 막기 위해 종종 이동하도록 함 -->
+								<node name="standby" limit="10" faceTarget="1" cooltime="36000" initialCooltime="36000">
+									<node name="target" type="far" from="10" to="1500">
+										<node name="trace" limit="2000" skillIdx="1" />
+										<!--distance 200짜리 가짜 스킬 데이터-->
+									</node>
+								</node>
+								<node name="skill" cooltime="38000" initialCooltime="100" idx="25">
+									<!--지뢰 3개 투척 (레벨1) -->
+									<node name="standby" limit="3000" faceTarget="1" />
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="30">
+										<node name="select" prob="25,25,24,24,1">
+											<!--750 범위 안에 있으면-->
+											<node name="skill" cooltime="8000" idx="21">
+												<!--선긋기 레이저 (약)-->
+												<node name="standby" limit="3000" faceTarget="1" />
+											</node>
+											<node name="standby" limit="100" faceTarget="1" cooltime="8000">
+												<!--바닥폭발 연속 공격 -->
+												<aiPreset name="BottomAttackMode" />
+												<!--여기서 바닥폭발 정면 양측면 공격할 때 바닥 오브젝트 파괴 할지 말지를 확률 선택함 -->
+											</node>
+											<node name="skill" cooltime="8000" idx="24">
+												<node name="select" prob="45,55">
+													<!--양측면 레이저-->
+													<node name="skill" idx="7">
+														<!--정면 바닥 총쏘기, 레벨2: 바닥파괴-->
+														<node name="standby" limit="3000" faceTarget="1" />
+													</node>
+													<node name="skill" idx="21">
+														<!--선긋기 레이저 (약)-->
+														<node name="standby" limit="3000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="skill" cooltime="8000" idx="24">
+												<node name="select" prob="45,55">
+													<!--양측면 레이저-->
+													<node name="skill" idx="23">
+														<!--눈에서 정면 레이저-->
+														<node name="standby" limit="3000" faceTarget="1" />
+													</node>
+													<node name="skill" idx="21">
+														<!--선긋기 레이저 (약)-->
+														<node name="standby" limit="3000" faceTarget="1" />
+													</node>
+												</node>
+											</node>
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="select" prob="20,10">
+											<node name="trace" limit="3000" skillIdx="30" />
+											<node name="standby" limit="1000" faceTarget="1" />
+										</node>
+									</condition>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="99999,999,99,0">
+								<!--#6페이즈   마지막 지뢰 난사-->
+								<node name="skill" cooltime="28000" initialCooltime="100" idx="26">
+									<!--지뢰 5개 투척 (레벨2) -->
+									<node name="target" type="rand" from="10" to="1600">
+										<!--지뢰를 같은 지점에 중첩으로 까는 것을 막기 위해 타겟팅을 변경함-->
+										<node name="standby" limit="1800" faceTarget="1" />
+										<!--성우 목소리 겹치는 것을 막기 위해 standby 1.3초 설정함-->
+									</node>
+								</node>
+								<node name="skill" cooltime="16000" initialCooltime="100" idx="25">
+									<!--지뢰 3개 투척 (레벨1) -->
+									<node name="target" type="rand" from="10" to="1600">
+										<!--지뢰를 같은 지점에 중첩으로 까는 것을 막기 위해 타겟팅을 변경함-->
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</node>
+								<node name="standby" limit="100" faceTarget="1" cooltime="32000">
+									<!--연속 돌진 공격 -->
+									<aiPreset name="DashAttackMode" />
+									<!--여기서 돌진 공격을 하는데, 오브젝트 파괴 용으로 할지 말지를 확률 선택함 -->
+								</node>
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="30">
+										<node name="select" prob="33,33,33,1">
+											<!--750 범위 안에 있으면-->
+											<node name="standby" limit="100" faceTarget="1">
+												<!--바닥폭발 연속 공격 -->
+												<aiPreset name="BottomAttackMode" />
+												<!--여기서 바닥폭발 정면 양측면 공격할 때 바닥 오브젝트 파괴 할지 말지를 확률 선택함 -->
+											</node>
+											<node name="skill" cooltime="4000" idx="5">
+												<!--사방 레이저 난사-->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+											<node name="skill" cooltime="4000" idx="30">
+												<!--짧은 돌진 팔 휘두르기-->
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+											<node name="standby" limit="500" faceTarget="1" />
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="trace" limit="2000" skillIdx="30" />
+									</condition>
+								</node>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!--**** EMP 폭탄 얻으로 다른 곳으로 갔을 경우****-->
+				<condition name="true">
+					<node name="select" prob="80,20">
+						<node name="move" destination="-1500, -900, 2700" limit="5000" cooltime="9000" />
+						<node name="standby" limit="500" faceTarget="1">
+							<node name="target" type="near" from="10" to="1600" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="DashAttackMode">
+			<node name="standby" limit="100" faceTarget="1">
+				<node name="select" prob="68,25,7">
+					<node name="skill" isKeepBattle="true" idx="11">
+						<!--연속 돌진 공격 -->
+						<node name="skill" idx="12" />
+						<!--대기 -->
+						<node name="skill" faceTarget="1" idx="13" />
+						<!--대기 후 돌진 -->
+						<node name="target" type="far" from="10" to="1600" />
+						<node name="skill" idx="12" />
+						<!--대기-->
+						<node name="skill" idx="12" />
+						<!--대기-->
+						<node name="skill" faceTarget="0" idx="14" />
+						<!--돌진 후 마무리-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+					<node name="skill" isKeepBattle="true" idx="15">
+						<!--연속 돌진 공격, 철망 파괴 용도 -->
+						<node name="skill" idx="16" />
+						<!--대기 -->
+						<node name="skill" faceTarget="1" idx="17" />
+						<!--대기 후 돌진, 철망 파괴 -->
+						<node name="target" type="far" from="10" to="1600" />
+						<!--항상 원거리 클래스를 견재할 수 있도록 함, 근거리가 상대적으로 쉬울 수 있도록-->
+						<node name="skill" idx="12" />
+						<!--대기-->
+						<node name="skill" faceTarget="1" idx="13" />
+						<!--대기 후 돌진, 철망 파괴 안함 -->
+						<node name="target" type="far" from="10" to="1600" />
+						<node name="skill" idx="16" />
+						<!--대기-->
+						<node name="skill" idx="16" />
+						<!--대기-->
+						<node name="skill" faceTarget="0" idx="18" />
+						<!--돌진 후 마무리, 철망 파괴 -->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+					<node name="skill" cooltime="95000" initialCooltime="95000" isKeepBattle="true" idx="15">
+						<!--연속 돌진 공격, 이 부분은 아주 가끔 발생해야 하기 때문에 각종 쿨타임 설정 넣음 -->
+						<node name="skill" idx="16" />
+						<!--대기 -->
+						<node name="skill" faceTarget="1" idx="19" />
+						<!--대기 후 돌진, BrokenOffence=93 철망 파괴 용도 -->
+						<node name="target" type="far" from="10" to="1600" />
+						<node name="skill" idx="12" />
+						<!--대기-->
+						<node name="skill" idx="12" />
+						<!--대기-->
+						<node name="skill" faceTarget="0" idx="14" />
+						<!--돌진 후 마무리-->
+						<node name="standby" limit="1000" faceTarget="1" />
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="BottomAttackMode">
+			<node name="standby" limit="100" faceTarget="1">
+				<node name="select" prob="70,30">
+					<node name="skill" idx="6">
+						<!--정면 바닥 총쏘기-->
+						<node name="skill" faceTarget="0" idx="8">
+							<!--양측면  바닥 총쏘기-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+					</node>
+					<node name="skill" idx="7">
+						<!--정면 바닥 총쏘기, 레벨2: 바닥파괴-->
+						<node name="skill" faceTarget="0" idx="9">
+							<!--양측면  바닥 총쏘기, 레벨2: 바닥파괴-->
+							<node name="standby" limit="1000" faceTarget="1" />
+						</node>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

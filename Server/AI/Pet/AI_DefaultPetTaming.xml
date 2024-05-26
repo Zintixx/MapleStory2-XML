@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="default" value="1">
+				<node name="conditions">
+					<condition name="extraData" key="tamingPoint" value="9999" op="greater">
+						<aiPreset name="trace" />
+					</condition>
+					<condition name="extraData" key="tamingPoint" value="8500" op="greater">
+						<aiPreset name="traceAndRun" />
+					</condition>
+					<condition name="extraData" key="tamingPoint" value="3000" op="less">
+						<aiPreset name="idle" />
+					</condition>
+					<condition name="true">
+						<aiPreset name="default" />
+					</condition>
+				</node>
+			</condition>
+			<condition name="extraData" key="idle" value="1">
+				<aiPreset name="idle" />
+			</condition>
+			<condition name="extraData" key="battle" value="1">
+				<aiPreset name="battle" />
+			</condition>
+			<condition name="true">
+				<aiPreset name="runAway" />
+			</condition>
+		</node>
+	</battle>
+	<aiPresets>
+		<aiPreset name="default">
+			<node name="conditions">
+				<condition name="distanceOver" value="1000">
+					<node name="standby" limit="1000" faceTarget="1" />
+				</condition>
+				<condition name="distanceOver" value="300">
+					<node name="select" prob="10,20,20,0">
+						<node name="standby" limit="100" faceTarget="1" />
+						<node name="trace" till="200" limit="1500" />
+						<node name="runaway" till="1200" limit="2000">
+							<node name="standby" limit="100" faceTarget="1" />
+						</node>
+						<node name="runaway" till="600" limit="1500">
+							<node name="standby" limit="100" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="distanceLess" value="100">
+					<node name="select" prob="20,0">
+						<node name="standby" limit="100" faceTarget="1" />
+						<node name="runaway" till="1200" limit="2000">
+							<node name="standby" limit="100" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="50,50,0">
+						<node name="runaway" till="1200" limit="2000">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="trace" till="200" limit="1000" />
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="runAway">
+			<node name="select" prob="0,0,100">
+				<node name="standby" limit="500" faceTarget="1" prop="20" />
+				<node name="standby" limit="300" faceTarget="1" prop="10" />
+				<node name="runaway" till="1200" limit="2000">
+					<node name="standby" limit="500" faceTarget="1" />
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="trace">
+			<node name="conditions">
+				<condition name="distanceOver" value="400">
+					<node name="trace" till="300" limit="2000">
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="100,0">
+						<node name="trace" till="10" limit="2000">
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="traceAndRun">
+			<node name="conditions">
+				<condition name="distanceOver" value="400">
+					<node name="trace" till="300" limit="2000">
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="distanceLess" value="400">
+					<node name="runaway" till="1200" limit="2000">
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="500" faceTarget="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="idle">
+			<node name="select" prob="80,20">
+				<node name="standby" limit="2000" faceTarget="1" />
+				<node name="trace" till="100" limit="2000" />
+			</node>
+		</aiPreset>
+		<aiPreset name="battle">
+			<node name="select" prob="70,70,100">
+				<node name="skill" idx="1">
+					<node name="standby" limit="500" faceTarget="1" />
+				</node>
+				<node name="skill" idx="2">
+					<node name="standby" limit="500" faceTarget="1" />
+				</node>
+				<node name="standby" limit="500" faceTarget="1" />
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

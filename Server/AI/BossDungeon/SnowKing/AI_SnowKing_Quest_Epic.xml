@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--예약-->
+	<reserved>
+		<condition name="hpLess" value="50">
+			<node name="TriggerSetUserValue" triggerID="99999102" key="hp50" value="1" />
+			<node name="say" message="$SnowKing__AI_SNOWKING_QUEST_EPIC__0$" durationTick="1500" delayTick="0" />
+			<node name="standby" limit="1000" faceTarget="1" />
+			<node name="teleport" pos="7350, 7350, 7000" />
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,99999,0">
+			<!--최초 1회-->
+			<node name="standby" limit="10" faceTarget="1" cooltime="999999999">
+				<node name="say" message="$SnowKing__AI_SNOWKING_QUEST_EPIC__1$" durationTick="3000" delayTick="0" />
+				<node name="target" type="rand" from="10" to="2000" />
+				<node name="trace" limit="2000" skillIdx="1" />
+			</node>
+			<!--  타겟팅 다시 하는 부분-->
+			<node name="standby" limit="100" faceTarget="1" cooltime="9000">
+				<node name="target" type="rand" from="10" to="1500" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="getBack" value="1" op="greaterEqual">
+					<node name="standby" limit="10" faceTarget="1">
+						<node name="say" message="$SnowKing__AI_SNOWKING_QUEST_EPIC__2$" durationTick="2000" delayTick="0" />
+						<node name="teleport" pos="4045, 4045, 5300" />
+						<node name="SetValue" key="getBack" value="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="30,40,40">
+						<!--900 사정거리 안에 있으면-->
+						<node name="skill" idx="1">
+							<!-- 3콤보 공격 -->
+							<node name="skill" faceTarget="1" idx="2">
+								<node name="target" type="rand" from="10" to="1500">
+									<node name="skill" faceTarget="1" idx="3">
+										<node name="conditions">
+											<condition name="skillRange" skillIdx="3">
+												<!-- 사정거리 600 이내에 있으면 -->
+												<node name="skill" faceTarget="1" idx="4">
+													<node name="standby" limit="1700" faceTarget="1" />
+												</node>
+											</condition>
+											<condition name="true">
+												<!-- 600 이상  멀리 있으면 -->
+												<node name="skill" faceTarget="1" idx="5">
+													<node name="standby" limit="1700" faceTarget="1" />
+												</node>
+											</condition>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="skill" cooltime="15000" idx="6">
+							<!--돌진 공격 -->
+							<node name="standby" limit="1500" faceTarget="1" />
+						</node>
+						<node name="skill" cooltime="15000" idx="7">
+							<!--검기투척 약 -->
+							<node name="standby" limit="1300" faceTarget="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<node name="select" prob="60,40">
+								<!--1150 사정거리 안에 있으면-->
+								<node name="skill" cooltime="15000" idx="6">
+									<!--돌진 공격 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+								<node name="skill" idx="7">
+									<!--검기투척 약 -->
+									<node name="standby" limit="1500" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1300" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="99999102" key="hp50" value="1" />
+		<node name="say" message="$SnowKing__AI_SNOWKING_QUEST_EPIC__3$" durationTick="3000" delayTick="0" />
+	</battleEnd>
+</npcAi>

@@ -1,0 +1,1237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="1" isKeepBattle="true">
+				<!--param1="999990" 는 MS2TriggerModel 의 TriggerModelID 코드와 동일해야 함-->
+				<node name="TriggerSetUserValue" triggerID="999990" key="ZakumBodyAppearance" value="1" />
+				<!-- 자쿰 몸체가 등장하면 맵트리거 신호 보내서 3층쪽에 바닥 큐브 지형  생성되도록 함-->
+				<node name="buff" type="add" id="50000260" level="1" />
+				<!--무적 버프 걸기, 초반에 잠깐 걸기-->
+				<node name="SetValue" key="TotemLeftRight" value="0" />
+				<!--3페이즈에서 토템이 왼쪽지점 등장인지 오른쪽 지점 등장인지 아니면 양쪽인지를 알 수 있도록 사용되는 변수 , Left: 1   Right: 2    양쪽: 3-->
+				<node name="SetValue" key="LavaflowLeftRight" value="0" />
+				<!--4페이즈 이후 패턴에 용암이 왼쪽에서 올라오는지 오른쪽에서 올라오는지 알 수 있도록 사용되는 변수, Left: 1   Right: 2-->
+				<node name="SetValue" key="PhysicalDefenceMode" value="0" />
+				<!--자쿰 몸통 물리 방어력 극강 상태일 때 사용되는 변수-->
+				<node name="SetValue" key="MagicalDefenceMode" value="0" />
+				<!--자쿰 몸통 물리 방어력 극강 상태일 때 사용되는 변수-->
+				<node name="SetValue" key="BoogieWhiteManyPhysical" value="-1" />
+				<!--물리 버프용 소환한 부기 몬스터가 몇마리 남았는지 알리는데 사용되는 변수, 초기화가 -1임-->
+				<!--이 변수 최기화 수치를 -1로 함, 이 변수가 0이라는 것은 방금 모든 부기 몬스터가 다 죽었으니 방업 버프 제거하라는 뜻임-->
+				<node name="SetValue" key="BoogieWhiteManyMagical" value="-1" />
+				<!--마법 버프용 소환한 부기 몬스터가 몇마리 남았는지 알리는데 사용되는 변수, 초기화가 -1임-->
+				<!--이 변수 최기화 수치를 -1로 함, 이 변수가 0이라는 것은 방금 모든 부기 몬스터가 다 죽었으니 방업 버프 제거하라는 뜻임-->
+				<node name="SetValue" key="TotemMany" value="-1" />
+				<!--계약의 토템이 몇개 남았는지 알리는데 사용되는 변수, 초기화가 -1임-->
+				<!--이 변수 최기화 수치를 -1로 함, 이 변수가 0이라는 것은 방금 모든 계약의 토템이 다 파괴되었으니 플레이어의 저주 디버프 제거하는 스킬 사용하라는 뜻임-->
+				<node name="SetValue" key="ArmSummonMany" value="0" />
+				<!--자쿰팔이 몇개 남았는지 알리는데 사용되는 변수, 초기화가 0임-->
+				<!--이 변수 최기화 수치를 0으로 함, 이 변수가 0이라는 것은 현재 자쿰팔이 없다는 뜻임, 페널티 토템 생성 유무 체크할 때 이 변수 사용함, 즉 이 변수가 1이상이면 얍삽이 장소에 있어도 페널티 토템 생성 안함-->
+				<node name="standby" limit="2000" faceTarget="1" />
+				<!--등장하자마자 바로 공격하는 것이 좀 어색해 보여서 최초에 2초 딜레이를 줌-->
+				<node name="buff" type="add" id="50004506" level="2" />
+				<!--레벨2: 자쿰 몸통과 전투 중 플레이어가 탈것 탑승 버그를 이용해 자쿰 몸속으로 들어가는 상황이 나오는데, 이 어뷰징을 막기 위해 자쿰 몸속으로 들어가면 공격력 저하 상태이상을 부여하도록 함-->
+				<node name="standby" limit="3000" faceTarget="1" />
+				<!--등장하자마자 바로 공격하는 것이 좀 어색해 보여서 최초에 3초 딜레이를 줌-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="35">
+			<node name="standby" limit="160" faceTarget="1" isKeepBattle="true">
+				<!-- 자쿰팔 4개 등장-->
+				<node name="SetSlaveValue" key="TotemSummonDeath" value="1" />
+				<!-- 토템에게 자살 명령을 내림, HP 35% 이하 페이즈로 오면 토템 자살 처리해 초기화 하기 새로운 토템 등장 패턴을 깔끔하게 시작 할 수 있도록 하기 위해서-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="707" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<!--왼쪽 지점에 1번 자쿰팔 생성-->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="708" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<!--왼쪽 지점에 2번 자쿰팔 생성-->
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="709" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<!--오른쪽 지점에 4번 자쿰팔 생성-->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="710" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<!--오른쪽 지점에 5번 자쿰팔 생성-->
+				<node name="TriggerSetUserValue" triggerID="999991" key="SummonZakumArmRegenCheck" value="1" />
+				<!-- 변수 0 초기화, 이 변수는 자쿰손 소환할 때 이 변수 1로 만드는 신호를 999991_ZakumArmSudden.xml 트리거에 보내서, 자쿰 손 마리수 체크 작업 시작하도록 함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="999,9999,0">
+			<!-- !!중요: 원거리 플레이어가 2층 지점에서 계속 머물면서 얍삽이 플레이 하는 것을 막기 위해, 2층 얍삽이 가능 지점 거리 체크하여 이곳에 플레이어가 있으면 2층 지점에 계약의 토템 레이저를 소환시킴-->
+			<node name="standby" limit="160" faceTarget="1" cooltime="29000" initialCooltime="68000">
+				<!-- initialCooltime = "68000"   1페이즈 때 부기 소한 패턴, 토템 소환 패턴 하고 난 다음에 이거 작동되도록 함-->
+				<aiPreset name="PenaltyCheckTotem" />
+				<!-- !!중요: 가끔 저주가 풀리지 않는 치명적인 버그가 있어서, 이 페널티 토템이 체크 로직에서 저주 제거 기능을 넣어 버그로 인한 위험한 상활을 해소시킴 -->
+			</node>
+			<node name="target" type="rand" from="10" to="2300" cooltime="17000" />
+			<node name="conditions">
+				<condition name="extraData" key="BoogieWhiteManyPhysical" value="0">
+					<!-- 이 변수가 0 이라는 것은 방금 물리 버프 담당 모든 부기 몬스터가 다 죽었으니 방업 버프 제거하라는 뜻임-->
+					<node name="buff" type="remove" id="50000316" level="1">
+						<!--  물방상승 버프 제거하기 -->
+						<node name="SetValue" key="BoogieWhiteManyPhysical" value="-1" />
+						<!--    -1로 변수 초기화 하기-->
+					</node>
+				</condition>
+				<condition name="extraData" key="BoogieWhiteManyMagical" value="0">
+					<!-- 이 변수가 0 이라는 것은 방금 마법 버프 담당 모든 부기 몬스터가 다 죽었으니 방업 버프 제거하라는 뜻임-->
+					<node name="buff" type="remove" id="50000317" level="1">
+						<!--  마방상승 버프 제거하기 -->
+						<node name="SetValue" key="BoogieWhiteManyMagical" value="-1" />
+						<!--    -1로 변수 초기화 하기-->
+					</node>
+				</condition>
+				<condition name="extraData" key="TotemMany" value="0">
+					<!-- 이 변수가 0 이라는 것은 방금 모든 계약의 토템이 다 파괴되었으니 플레이어의 저주 디버프 제거하는 스킬 사용하라는 뜻임  -->
+					<node name="skill" faceTarget="0" isKeepBattle="true" idx="21">
+						<!--레벨31:   이 스킬을 사용하며 모든 플레이어의 저주 디버프를 제거함  -->
+						<node name="SetValue" key="TotemMany" value="-1" />
+						<!--    -1로 변수 초기화 하기  -->
+						<!-- 토템에 의해 용암이 올라왔을 경우도 맵트리거에 아래 신호를 보내서 용암 제거하도록 함, ### 이 맵트리거로 보낼때 사용하는 이 두개 변수는 용암이 활성화 되지 않아도 이 부분 실행할 때마다 1로 셋팅하는 신호를 보내기 때문에 맵트리거 쪽이세 이 변수 사용 이전 단계에서 꼭 0으로 초기화 해줘야 함  -->
+						<node name="TriggerSetUserValue" triggerID="999108" key="LavaflowLeftStop" value="1" />
+						<!--왼쪽 지점에 올라온 용암 제거하기-->
+						<node name="TriggerSetUserValue" triggerID="999109" key="LavaflowRightStop" value="1" />
+						<!--오른쪽 지점에 올라온 용암 제거하기-->
+						<node name="SetValue" key="TotemLeftRight" value="0" />
+						<!--3페이즈에서 토템이 왼쪽지점 등장인지 오른쪽 지점 등장인지 아니면 양쪽인지를 알 수 있도록 사용되는 변수 , Left: 1   Right: 2    양쪽: 3-->
+						<node name="SetValue" key="LavaflowLeftRight" value="0" />
+						<!--4페이즈 이후 패턴에 용암이 왼쪽에서 올라오는지 오른쪽에서 올라오는지 알 수 있도록 사용되는 변수 0으로 초기화 하기, Left: 1   Right: 2-->
+						<node name="skill" faceTarget="0" idx="21" />
+						<!--혹시 모를 버그 때문에 위에 설정한 "저주 디버프 제거" 작동 안할 수 있어서 다시 한번 사용 -->
+					</node>
+				</condition>
+				<condition name="extraData" key="AttackDelay" value="1" op="greaterEqual">
+					<node name="SetValue" key="AttackDelay" value="-1" isModify="1">
+						<node name="standby" limit="100" faceTarget="0" />
+					</node>
+				</condition>
+				<!-- 여기서부터 통상적인 공격 행동 정의  -->
+				<condition name="hpOver" value="75">
+					<node name="select" prob="70,599,30,30,30">
+						<!--1페이즈  25%  -->
+						<node name="standby" limit="200" faceTarget="0" cooltime="66000" initialCooltime="55000">
+							<node name="conditions">
+								<condition name="extraData" key="TotemMany" value="-1">
+									<node name="select" prob="50,50">
+										<!--이 변수가 -1 이라는 것은 맵에 계약의 토템이 하나도 없다는 뜻임-->
+										<!--불기둥 & 계약의 토템 레이저 소환 패턴A: 왼쪽 1층 1개  오른쪽 3층 2개-->
+										<node name="skill" faceTarget="0" cooltime="135000" isKeepBattle="true" idx="13">
+											<node name="skill" faceTarget="0" idx="14" />
+											<!--양쪽 지점에 저주걸기-->
+											<node name="SetValue" key="TotemMany" value="0" />
+											<!--이 변수 0을로 셋팅하여 계약의 토템 소환됨에 따른 개수 체크 할 수 있도록 하기-->
+											<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="501" summonPos="900, -1650, 1980" summonRot="0,0,-90" />
+											<!--왼쪽 방향으로 레이저 발사, 왼쪽 뱡향 발사는 summonRot="0,0,-90" 설정해야 함-->
+											<!--21410122  이 토템은 스킬은 레벨22 4연타 스킬임-->
+											<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="502" summonPos="2400, -1650, 2880" summonRot="0,0,90" />
+											<!--오른쪽 3층 지점에 아래 방향 레이저 발사-->
+											<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="503" summonPos="2850, -1650, 2880" summonRot="0,0,90" />
+											<!--오른쪽 3층 지점에 아래 방향 레이저 발사, 이 토템과 용암활성화 레이저 토템과 좌표 지점이 겹치는데 어쩔수 없어 이런 경우만 허용함-->
+											<node name="standby" limit="5200" faceTarget="0" />
+											<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 4~5초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+										</node>
+										<!--불기둥 & 계약의 토템 레이저 소환 패턴B: 오른쪽 1층 1개  왼쪽 3층 2개-->
+										<node name="skill" faceTarget="0" cooltime="135000" isKeepBattle="true" idx="13">
+											<node name="skill" faceTarget="0" idx="14" />
+											<!--양쪽 지점에 저주걸기-->
+											<node name="SetValue" key="TotemMany" value="0" />
+											<!--이 변수 0을로 셋팅하여 계약의 토템 소환됨에 따른 개수 체크 할 수 있도록 하기-->
+											<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="505" summonPos="2550, -1650, 1980" summonRot="0,0,90" />
+											<!--오른쪽 방향으로 레이저 발사-->
+											<!--21410122  이 토템은 스킬은 레벨22 4연타 스킬임-->
+											<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="506" summonPos="600, -1650, 2880" summonRot="0,0,90" />
+											<!--왼쪽 3층 지점에 아래 방향 레이저 발사-->
+											<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="507" summonPos="1050, -1650, 2880" summonRot="0,0,90" />
+											<!--왼쪽 3층 지점에 아래 방향 레이저 발사-->
+											<node name="standby" limit="5200" faceTarget="0" />
+											<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 4~5초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<!--이 변수가 -1 이 아니라는 것은 맵에 계약의 토템이 하나 이상이 있다는 것으로, 이때는 토템 생성 행위 하지 않도록 함-->
+									<!--불기둥 드랍 공격만 하고 토템 생성 안함, 이미 배치된 토템이 있기 때문에 또 생성할 필요 없음-->
+									<node name="skill" faceTarget="0" idx="13">
+										<node name="standby" limit="3000" faceTarget="0" />
+									</node>
+								</condition>
+							</node>
+						</node>
+						<!--자쿰 몸에 물방 극강, 마방 극강 버프 스킬 사용하는 부분임-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="60000" initialCooltime="35000">
+							<aiPreset name="DefenceBoogieWhiteMode" />
+						</node>
+						<!--불기둥 공격-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="13000">
+							<node name="select" prob="33,34,33">
+								<node name="skill" faceTarget="0" idx="8">
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="9">
+									<node name="standby" limit="1800" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="10" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" idx="10">
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+							</node>
+						</node>
+						<!--번개 공격-->
+						<node name="skill" faceTarget="0" cooltime="13000" idx="6">
+							<node name="select" prob="40,40,20">
+								<node name="standby" limit="2500" faceTarget="0" />
+								<node name="standby" limit="1800" faceTarget="0">
+									<node name="skill" faceTarget="0" idx="7">
+										<!--레벨2는 1과 다르게 바로 옆쪽 번개 발동-->
+										<node name="SetValue" key="AttackDelay" value="25" />
+									</node>
+								</node>
+								<node name="standby" limit="1800" faceTarget="0" cooltime="54000">
+									<!--자쿰 몸통과 토템 사이에 갇혔을 때 이 스킬 발동되면 대략난감이기 때문에 쿨타임 설정을 넣어 가끔 발동하도록 함-->
+									<node name="skill" faceTarget="0" idx="5">
+										<!--번개 웨이브 공격-->
+										<node name="SetValue" key="AttackDelay" value="25" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--HP SP 1 로 만들기, 이 스킬 사용후 거의 딜레이 없이 바로 다음 스킬 사용하도록 함-->
+						<node name="skill" faceTarget="0" cooltime="51000" idx="1">
+							<node name="standby" limit="1000" faceTarget="0" />
+						</node>
+					</node>
+				</condition>
+				<condition name="hpOver" value="65">
+					<node name="select" prob="99999,399,20,20,20,1">
+						<!-- 2페이즈 10%  약간 휴식 구간, 물방 극강, 마방 극강 버프 패턴 잠시 정지,  용암패턴 두번 한번만 발생함, 자쿰팔 등장-->
+						<node name="standby" limit="190" faceTarget="1" cooltime="45000">
+							<node name="select" prob="9999,9999,1">
+								<!--용암이 45초 간격으로 연달아 두번만 올라오고 끝-->
+								<node name="standby" limit="210" faceTarget="1" cooltime="9999999">
+									<aiPreset name="LavaUpAttackArmsMode" />
+									<!--계약의 토템으로 용암이 올라오는 상황 그리고 반대쪽의 자쿰팔 2개 등장에 대한 정의-->
+								</node>
+								<node name="standby" limit="220" faceTarget="1" cooltime="9999999">
+									<aiPreset name="LavaUpAttackArmsMode" />
+									<!--계약의 토템으로 용암이 올라오는 상황 그리고 반대쪽의 자쿰팔 2개 등장에 대한 정의-->
+								</node>
+								<node name="standby" limit="130" faceTarget="1" />
+								<!--위 두개 항목 실행하면 세번째 이후는 무조건 여기 실해되게 해서 용암이 딱 두번만 발동 되도록 하는 것임-->
+							</node>
+						</node>
+						<!--번개 웨이브 공격-->
+						<node name="skill" faceTarget="0" cooltime="65000" idx="5">
+							<node name="SetValue" key="AttackDelay" value="25" />
+						</node>
+						<!--HP SP 1 로 만들기-->
+						<node name="skill" faceTarget="0" cooltime="42000" idx="1">
+							<node name="select" prob="47,53">
+								<node name="standby" limit="1000" faceTarget="0" />
+								<node name="standby" limit="1000" faceTarget="0">
+									<node name="skill" faceTarget="0" idx="1">
+										<node name="standby" limit="1000" faceTarget="0" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--번개 공격-->
+						<node name="skill" faceTarget="0" idx="6">
+							<node name="select" prob="52,48">
+								<node name="standby" limit="1500" faceTarget="0" cooltime="15000">
+									<node name="skill" faceTarget="0" idx="7">
+										<node name="SetValue" key="AttackDelay" value="25" />
+									</node>
+								</node>
+								<node name="SetValue" key="AttackDelay" value="21" />
+							</node>
+						</node>
+						<!--불기둥 공격-->
+						<node name="standby" limit="300" faceTarget="1">
+							<node name="select" prob="33,34,33">
+								<node name="skill" faceTarget="0" idx="8">
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" idx="9">
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" idx="10">
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="15" />
+					</node>
+				</condition>
+				<condition name="hpOver" value="35">
+					<node name="select" prob="599,24,11,11,10,10,11,11,11,1">
+						<!--3페이즈 30%  자쿰팔 등장  -->
+						<!--불기둥 공격 후 계약의 토템 소환 등장-->
+						<node name="standby" limit="200" faceTarget="0" cooltime="62000">
+							<node name="conditions">
+								<condition name="extraData" key="TotemMany" value="-1">
+									<!--이 변수가 -1 이라는 것은 맵에 계약의 토템이 하나도 없다는 뜻임-->
+									<!--불기둥 공격 후 계약의 토템  소환 -->
+									<node name="skill" faceTarget="0" idx="13">
+										<!--불기둥 드랍 -->
+										<node name="SetValue" key="TotemMany" value="0">
+											<!--이 변수 0을로 셋팅하여 계약의 토템 소환됨에 따른 개수 체크 할 수 있도록 하기-->
+											<aiPreset name="TotemAppearancePattern" />
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<!--이 변수가 -1 이 아니라는 것은 맵에 계약의 토템이 하나 이상이 있다는 것으로, 이때는 TotemMany 변수 절대 건들지 않음-->
+									<!--불기둥 드랍 공격만 하고 토템 생성 안함, 이미 배치된 토템이 있기 때문에 또 생성할 필요 없음-->
+									<node name="skill" faceTarget="0" idx="13">
+										<!--불기둥 드랍 -->
+										<aiPreset name="TotemAppearancePattern" />
+									</node>
+								</condition>
+							</node>
+						</node>
+						<!--자쿰 몸에 물방 극강, 마방 극강 버프 스킬과 레이저 사용하는 부분임, 2페이지를 빨리 넘어왔을 경우 용암파도가 있는 곳에서 부기가 등장할 수 있는데, 이때는 용암이 있는 곳에 부기가 등장하면 대미지 받는 부분 제거했음-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="64000">
+							<node name="conditions">
+								<condition name="extraData" key="TotemMany" value="-1">
+									<!--이 변수가 -1 이라는 것은 맵에 계약의 토템이 하나도 없다는 뜻임-->
+									<node name="SetValue" key="TotemMany" value="0">
+										<!--이 변수 0으로 셋팅하여 계약의 토템 소환됨에 따른 개수 체크 할 수 있도록 하기-->
+										<aiPreset name="DefenceBoogieWhiteLaserMode" />
+										<!--자쿰 몸에 물방 극강, 마방 극강 버프 스킬과 레이저 사용하는 부분임, 3페이즈 전용-->
+										<!--위  <aiPreset name="TotemAppearancePattern"/>  이것에 의해 다수 토템이 이미 존재하는 상태에서  <aiPreset name="DefenceBoogieWhiteLaserMode"/>  에 의해 너무 많은 몬스터가 추가 소환되면 너무 복잡하는 문제가 있어서, 이미 배치된 계약의 토템 수에 따라 추가 소환 할지말지를 결정라는 로직이 들어가 있음-->
+									</node>
+								</condition>
+								<condition name="true">
+									<!--이 변수가 -1 이 아니라는 것은 맵에 계약의 토템이 하나 이상이 있다는 것으로, 이때는 TotemMany 변수 절대 건들지 않음-->
+									<aiPreset name="DefenceBoogieWhiteLaserMode" />
+									<!--자쿰 몸에 물방 극강, 마방 극강 버프 스킬과 레이저 사용하는 부분임, 3페이즈 전용-->
+								</condition>
+							</node>
+						</node>
+						<!--2번 5번 자쿰팔 즉 가운데 지점에 자쿰팔 2개 생성-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="65000" isKeepBattle="true">
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="708" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+							<!--왼쪽 지점에 2번 자쿰팔 생성-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="710" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+							<!--오른쪽 지점에 5번 자쿰팔 생성-->
+							<node name="TriggerSetUserValue" triggerID="999991" key="SummonZakumArmRegenCheck" value="1" />
+							<!-- 변수 0 초기화, 이 변수는 자쿰손 소환할 때 이 변수 1로 만드는 신호를 999991_ZakumArmSudden.xml 트리거에 보내서, 자쿰 손 마리수 체크 작업 시작하도록 함 -->
+						</node>
+						<!--HP SP 1 로 만들기-->
+						<node name="skill" faceTarget="0" cooltime="39000" idx="1">
+							<node name="select" prob="47,53">
+								<node name="standby" limit="300" faceTarget="0" />
+								<node name="standby" limit="1000" faceTarget="0">
+									<node name="skill" faceTarget="0" idx="1">
+										<node name="SetValue" key="AttackDelay" value="15" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--HP SP 1 로 만들기-->
+						<node name="skill" faceTarget="0" cooltime="27000" idx="1">
+							<node name="SetValue" key="AttackDelay" value="10" />
+						</node>
+						<!--번개 공격-->
+						<node name="skill" faceTarget="0" cooltime="15000" idx="6">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="2500" faceTarget="0" />
+								<node name="standby" limit="1200" faceTarget="0">
+									<node name="skill" faceTarget="0" idx="5">
+										<!--번개 웨이브 공격-->
+										<node name="SetValue" key="AttackDelay" value="25" />
+									</node>
+								</node>
+							</node>
+						</node>
+						<!--불기둥 공격-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="18000">
+							<node name="select" prob="33,34,33">
+								<node name="skill" faceTarget="0" idx="8">
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="9">
+									<node name="standby" limit="1200" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="10">
+									<node name="skill" faceTarget="0" idx="9" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+							</node>
+						</node>
+						<!--번개 웨이브 공격-->
+						<node name="skill" faceTarget="0" cooltime="18000" idx="5">
+							<node name="SetValue" key="AttackDelay" value="25" />
+						</node>
+						<!--불기둥 공격_조금 드랍-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="18000">
+							<node name="select" prob="33,34,33">
+								<node name="skill" faceTarget="0" idx="11">
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="12">
+									<node name="standby" limit="1200" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="11" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="11">
+									<node name="skill" faceTarget="0" idx="12" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="1500" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="hpOver" value="30">
+					<node name="select" prob="999,25,24,25,25,1">
+						<!-- 4페이즈  5% 약간 휴식 구간, 토템 소환 잠시 정지, 자쿰팔 4개 한꺼번에 딱 한번 등장 위  reserved 설정 HP 35%에서 자쿰팔 4개 등장 설정했음, HP극감 되는거 상관없이 무조건 자쿰팔 등장하게 하기 위해-->
+						<!--번개 웨이브 공격 2연타-->
+						<node name="skill" faceTarget="0" cooltime="42000" isKeepBattle="true" idx="5">
+							<node name="standby" limit="1500" faceTarget="0" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<node name="SetValue" key="AttackDelay" value="25" />
+						</node>
+						<!--HP SP 1 로 만들기-->
+						<node name="skill" faceTarget="0" cooltime="32000" idx="1">
+							<node name="SetValue" key="AttackDelay" value="12" />
+						</node>
+						<!--불기둥 공격_조금 드랍-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="12000">
+							<node name="select" prob="33,34,33">
+								<node name="skill" faceTarget="0" idx="11">
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="12">
+									<node name="standby" limit="1200" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="11" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="11">
+									<node name="skill" faceTarget="0" idx="12" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+							</node>
+						</node>
+						<!--번개 공격-->
+						<node name="skill" faceTarget="0" cooltime="12000" isKeepBattle="true" idx="6">
+							<node name="standby" limit="1300" faceTarget="0" />
+							<node name="skill" faceTarget="0" idx="5" />
+							<!--번개 웨이브 공격 2연타-->
+							<node name="SetValue" key="AttackDelay" value="21" />
+						</node>
+						<!--불기둥 공격-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="15000">
+							<node name="select" prob="33,34,33">
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="8">
+									<node name="standby" limit="1800" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="10" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="9">
+									<node name="standby" limit="1300" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="SetValue" key="AttackDelay" value="21" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="10">
+									<node name="standby" limit="1300" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<node name="SetValue" key="AttackDelay" value="20" />
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="1300" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99999,9999,299,54,15,15,15,1">
+						<!--5페이즈  18%,    6페이즈  12%-->
+						<!--5페이즈 : 토템 & 용암 조합 패턴  ,   6페이즈 : 토템 & 부기 조합 패턴   -->
+						<node name="standby" limit="200" faceTarget="0" cooltime="60000">
+							<node name="conditions">
+								<condition name="hpOver" value="12">
+									<!--토템 & 용암 조합 패턴-->
+									<node name="conditions">
+										<condition name="extraData" key="TotemMany" value="-1">
+											<!--이 변수가 -1 이라는 것은 맵에 계약의 토템이 하나도 없다는 뜻임-->
+											<!--불기둥 공격 후 계약의 토템  소환 -->
+											<node name="SetValue" key="TotemMany" value="0">
+												<!--이 변수 0을로 셋팅하여 계약의 토템 소환됨에 따른 개수 체크 할 수 있도록 하기-->
+												<aiPreset name="TotemLavaComboPattern" />
+											</node>
+										</condition>
+										<condition name="true">
+											<!--이 변수가 -1 이 아니라는 것은 맵에 계약의 토템이 하나 이상이 있다는 것으로, 이때는 TotemMany 변수 절대 건들지 않음-->
+											<!--TotemMany 변수 초기화 없이 그냥 토템 & 용암 조합 패턴 실행함 -->
+											<aiPreset name="TotemLavaComboPattern" />
+										</condition>
+									</node>
+								</condition>
+								<condition name="true">
+									<!--토템 & 부기 조합 패턴-->
+									<node name="conditions">
+										<condition name="extraData" key="TotemMany" value="-1">
+											<!--이 변수가 -1 이라는 것은 맵에 계약의 토템이 하나도 없다는 뜻임-->
+											<node name="SetValue" key="TotemMany" value="0">
+												<!--이 변수 0을로 셋팅하여 계약의 토템 소환됨에 따른 개수 체크 할 수 있도록 하기-->
+												<aiPreset name="DefenceBoogieWhiteLaserMode_LastPhase" />
+												<!--마지막 페이즈에서는 계약의 토템이 나온 지점의 플레이어 전원  토템의 저주를 걸어 부기 나온쪽에서 건너가야 하는 상황을 부여함-->
+											</node>
+										</condition>
+										<condition name="true">
+											<!--이 변수가 -1 이 아니라는 것은 맵에 계약의 토템이 하나 이상이 있다는 것으로, 이때는 TotemMany 변수 절대 건들지 않음-->
+											<!--TotemMany 변수 초기화 없이 그냥 토템 & 용암 조합 패턴 실행함 -->
+											<aiPreset name="DefenceBoogieWhiteLaserMode_LastPhase" />
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</node>
+						<!-- ** HP 20% 이하부터 죽음의 저주 사용 ** -->
+						<node name="standby" limit="300" faceTarget="1" cooltime="12000">
+							<node name="conditions">
+								<condition name="hpOver" value="20">
+									<node name="standby" limit="200" faceTarget="0" />
+								</condition>
+								<condition name="true">
+									<!--죽음의 저주 공격-->
+									<node name="skill" faceTarget="0" idx="4">
+										<node name="SetValue" key="AttackDelay" value="12" />
+									</node>
+								</condition>
+							</node>
+						</node>
+						<!--번개 웨이브 공격 1 혹은 2연타-->
+						<node name="skill" faceTarget="0" cooltime="43000" idx="5">
+							<node name="select" prob="51,49">
+								<node name="standby" limit="1300" faceTarget="0" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="5" />
+									<node name="SetValue" key="AttackDelay" value="25" />
+								</node>
+								<node name="standby" limit="1500" faceTarget="0" />
+							</node>
+						</node>
+						<!--자쿰팔 등장, HP 6% 이하면 등장 안함-->
+						<node name="standby" limit="100" faceTarget="0" cooltime="62000">
+							<node name="conditions">
+								<condition name="hpOver" value="6">
+									<node name="select" prob="50,50">
+										<node name="standby" limit="80" faceTarget="0" isKeepBattle="true">
+											<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="709" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+											<!--왼쪽 지점에 1번 자쿰팔 생성-->
+											<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="710" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+											<!--왼쪽 지점에 2번 자쿰팔 생성-->
+											<node name="TriggerSetUserValue" triggerID="999991" key="SummonZakumArmRegenCheck" value="1" />
+											<!-- 변수 0 초기화, 이 변수는 자쿰손 소환할 때 이 변수 1로 만드는 신호를 999991_ZakumArmSudden.xml 트리거에 보내서, 자쿰 손 마리수 체크 작업 시작하도록 함 -->
+										</node>
+										<node name="standby" limit="80" faceTarget="0" isKeepBattle="true">
+											<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="707" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+											<!--왼쪽 지점에 1번 자쿰팔 생성-->
+											<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="708" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+											<!--왼쪽 지점에 2번 자쿰팔 생성-->
+											<node name="TriggerSetUserValue" triggerID="999991" key="SummonZakumArmRegenCheck" value="1" />
+											<!-- 변수 0 초기화, 이 변수는 자쿰손 소환할 때 이 변수 1로 만드는 신호를 999991_ZakumArmSudden.xml 트리거에 보내서, 자쿰 손 마리수 체크 작업 시작하도록 함 -->
+										</node>
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="50" faceTarget="0" />
+								</condition>
+							</node>
+						</node>
+						<!--HP SP 1 로 만들기-->
+						<node name="skill" faceTarget="0" cooltime="38000" idx="1">
+							<node name="select" prob="33,33,34">
+								<node name="standby" limit="1100" faceTarget="0">
+									<node name="skill" faceTarget="0" idx="5">
+										<!--번개 웨이브 공격-->
+										<node name="SetValue" key="AttackDelay" value="25" />
+									</node>
+								</node>
+								<node name="standby" limit="1100" faceTarget="0">
+									<node name="skill" faceTarget="0" idx="1">
+										<node name="SetValue" key="AttackDelay" value="25" />
+									</node>
+								</node>
+								<node name="standby" limit="1100" faceTarget="0" isKeepBattle="true">
+									<node name="skill" faceTarget="0" idx="1" />
+									<node name="standby" limit="1000" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="7" />
+									<!--번개 공격-->
+									<node name="SetValue" key="AttackDelay" value="19" />
+								</node>
+							</node>
+						</node>
+						<!--번개 공격-->
+						<node name="skill" faceTarget="0" cooltime="13000" idx="6">
+							<node name="standby" limit="1000" faceTarget="0">
+								<node name="skill" faceTarget="0" idx="7">
+									<node name="SetValue" key="AttackDelay" value="15" />
+								</node>
+							</node>
+						</node>
+						<!--불기둥 공격  연속 발동-->
+						<node name="standby" limit="300" faceTarget="1" cooltime="15000">
+							<node name="select" prob="33,34,33">
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="8">
+									<node name="standby" limit="1000" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="10" />
+									<node name="SetValue" key="AttackDelay" value="15" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="9">
+									<node name="standby" limit="1000" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="SetValue" key="AttackDelay" value="18" />
+								</node>
+								<node name="skill" faceTarget="0" isKeepBattle="true" idx="10">
+									<node name="standby" limit="1000" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="8" />
+									<node name="standby" limit="1000" faceTarget="0" />
+									<node name="skill" faceTarget="0" idx="9" />
+									<node name="SetValue" key="AttackDelay" value="20" />
+								</node>
+							</node>
+						</node>
+						<node name="SetValue" key="AttackDelay" value="15" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="TriggerSetUserValue" triggerID="999101" key="ZakumDungeonEnd" value="1" />
+		<!-- 자쿰 몸체가 죽으면 맵 중앙의 트리거 박스 제거하고 나가기 포탈 생성 -->
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="LavaUpAttackArmsMode">
+			<!--계약의 토템으로 용암이 올라오는 상황과 반대쪽에 자쿰팔 생성에 대한 정의-->
+			<node name="conditions">
+				<condition name="extraData" key="TotemMany" value="-1">
+					<node name="select" prob="49,50,1">
+						<!--TotemMany 변수가  -1 이라는 것은 맵에 계약의 토템이 하나도 없다는 뜻임-->
+						<!--레벨2:   왼쪽 지점의 플레이어만 저주 걸기, 왼쪽 용암 올라오게 하기-->
+						<node name="skill" faceTarget="0" cooltime="9999999" isKeepBattle="true" idx="15">
+							<node name="SetValue" key="TotemMany" value="0" />
+							<!--TotemMany 변수 0으로 셋팅하여, 이 변수로 토템 개수 체크 사용하도록 함-->
+							<node name="TriggerSetUserValue" triggerID="999108" key="LavaflowLeft" value="1" />
+							<!--맵 트리거에 신호보내 왼쪽 용암 올라오도록 함-->
+							<node name="SetValue" key="LavaflowLeftRight" value="1" />
+							<!--용암이 왼쪽에서 올라오는지 오른쪽에서 올라오는지 알 수 있도록 사용되는 변수, Left: 1   Right: 2-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="511" summonPos="750, -1650, 2860" summonRot="0,0,-90" />
+							<!--왼쪽 3층 지점에 용암 활성화 레이저 토템 생성, 참고로 왼쪽 방향으로 레이저 발사할 때 꼭 summonRot="0,0,-90" 이렇게 해야함-->
+							<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="507" summonPos="1050, -1650, 2860" summonRot="0,0,90" />
+							<!--왼쪽 3층 지점에 용암 활성화 토템 생성-->
+							<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="513" summonPos="1350, -1650, 2860" summonRot="0,0,90" />
+							<!--왼쪽 3층 지점에 용암 활성화 토템 생성-->
+							<node name="TriggerSetUserValue" triggerID="999991" key="SummonZakumArmRegenCheck" value="1" />
+							<!-- 변수 0 초기화, 이 변수는 자쿰손 소환할 때 이 변수 1로 만드는 신호를 999991_ZakumArmSudden.xml 트리거에 보내서, 자쿰 손 마리수 체크 작업 시작하도록 함 -->
+							<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="709" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+							<!--오른쪽 지점에 4번 자쿰팔 생성-->
+							<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="710" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+							<!--오른쪽 지점에 5번 자쿰팔 생성-->
+							<node name="standby" limit="3800" faceTarget="0" />
+							<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 3~4초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+						</node>
+						<!--레벨3:   오른쪽 지점의 플레이어만 저주 걸기,  오른쪽 용암 올라오게 하기-->
+						<node name="skill" faceTarget="0" cooltime="9999999" isKeepBattle="true" idx="16">
+							<node name="SetValue" key="TotemMany" value="0" />
+							<!--TotemMany 변수 0으로 셋팅하여, 이 변수로 토템 개수 체크 사용하도록 함-->
+							<node name="TriggerSetUserValue" triggerID="999109" key="LavaflowRight" value="1" />
+							<!--맵 트리거에 신호보내 오른쪽 용암 올라오도록 함-->
+							<node name="SetValue" key="LavaflowLeftRight" value="2" />
+							<!--용암이 왼쪽에서 올라오는지 오른쪽에서 올라오는지 알 수 있도록 사용되는 변수, Left: 1   Right: 2-->
+							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="514" summonPos="2850, -1650, 2860" summonRot="0,0,90" />
+							<!--오른쪽 3층 지점에 용암 활성화 레이저 토템 생성, 이 토템과 아래 방향 발사 토템과 죄표가 같아 겹쳐서 소환될 수 있이는데 어쩔수 없이 허용함-->
+							<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="515" summonPos="2550, -1650, 2860" summonRot="0,0,90" />
+							<!--오른쪽 3층 지점에 용암 활성화 토템 생성-->
+							<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="516" summonPos="2250, -1650, 2860" summonRot="0,0,90" />
+							<!--오른쪽 3층 지점에 용암 활성화 토템 생성-->
+							<node name="TriggerSetUserValue" triggerID="999991" key="SummonZakumArmRegenCheck" value="1" />
+							<!-- 변수 0 초기화, 이 변수는 자쿰손 소환할 때 이 변수 1로 만드는 신호를 999991_ZakumArmSudden.xml 트리거에 보내서, 자쿰 손 마리수 체크 작업 시작하도록 함 -->
+							<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="707" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+							<!--왼쪽 지점에 1번 자쿰팔 생성-->
+							<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="708" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+							<!--왼쪽 지점에 2번 자쿰팔 생성-->
+							<node name="standby" limit="3800" faceTarget="0" />
+							<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 3~4초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+						</node>
+						<node name="standby" limit="300" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!--TotemMany 변수가 -1 아니라는 것은 이미 맵에 토템이 있어서 이 변수를  토템 개수 체크로 사용하고 있다는 뜻이기 때문에, TotemMany 변수 절대 건들면 안됨, 이때는 자쿰팔 생성 안함-->
+					<node name="conditions">
+						<condition name="extraData" key="LavaflowLeftRight" value="2">
+							<!--현재 오른쪽에 용암이 올라와 있다면-->
+							<!--레벨2:   왼쪽 지점의 플레이어만 저주 걸기  -->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="15">
+								<!--여기서는 TotemMany 변수 절대 건들면 안됨, 왼쪽 용암 올라오게 하기-->
+								<node name="TriggerSetUserValue" triggerID="999108" key="LavaflowLeft" value="1" />
+								<!--맵 트리거에 신호보내 용암 올라오도록 함-->
+								<node name="SetValue" key="LavaflowLeftRight" value="1" />
+								<!--용암이 왼쪽에서 올라오는지 오른쪽에서 올라오는지 알 수 있도록 사용되는 변수, Left: 1   Right: 2-->
+								<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="511" summonPos="750, -1650, 2860" summonRot="0,0,-90" />
+								<!--왼쪽 3층 지점에 용암 활성화 레이저 토템 생성, 참고로 왼쪽 방향으로 레이저 발사할 때 꼭 summonRot="0,0,-90" 이렇게 해야함-->
+								<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="507" summonPos="1050, -1650, 2860" summonRot="0,0,90" />
+								<!--왼쪽 3층 지점에 용암 활성화 토템 생성-->
+								<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="513" summonPos="1350, -1650, 2860" summonRot="0,0,90" />
+								<!--왼쪽 3층 지점에 용암 활성화 토템 생성-->
+								<node name="standby" limit="3800" faceTarget="0" />
+								<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 3~4초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+							</node>
+						</condition>
+						<condition name="true">
+							<!--LavaflowLeftRight = 1  현재 왼쪽에 용암이 올라와 있다면, 오른쪽 용암 올라오게 하기-->
+							<!--레벨3:   오른쪽 지점의 플레이어만 저주 걸기  -->
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="16">
+								<!--여기서는 TotemMany 변수 절대 건들면 안됨,  오른쪽 용암 올라오게 하기-->
+								<node name="TriggerSetUserValue" triggerID="999109" key="LavaflowRight" value="1" />
+								<!--맵 트리거에 신호보내 용암 올라오도록 함-->
+								<node name="SetValue" key="LavaflowLeftRight" value="2" />
+								<!--용암이 왼쪽에서 올라오는지 오른쪽에서 올라오는지 알 수 있도록 사용되는 변수, Left: 1   Right: 2-->
+								<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="514" summonPos="2850, -1650, 2860" summonRot="0,0,90" />
+								<!--오른쪽 3층 지점에 용암 활성화 레이저 토템 생성, 이 토템과 아래 방향 발사 토템과 죄표가 같아 겹쳐서 소환될 수 있이는데 어쩔수 없이 허용함-->
+								<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="515" summonPos="2550, -1650, 2860" summonRot="0,0,90" />
+								<!--오른쪽 3층 지점에 용암 활성화 토템 생성-->
+								<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="516" summonPos="2250, -1650, 2860" summonRot="0,0,90" />
+								<!--오른쪽 3층 지점에 용암 활성화 토템 생성-->
+								<node name="standby" limit="3800" faceTarget="0" />
+								<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 3~4초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="TotemAppearancePattern">
+			<node name="select" prob="40,40,20">
+				<!--전투판 여기저기서 계약의 토템 등장할 때의 여러 형태의 등장 패턴 정의-->
+				<!--왼쪽 지점만 등장-->
+				<node name="skill" faceTarget="0" cooltime="167000" isKeepBattle="true" idx="15">
+					<!--왼쪽 지점만 저주 걸기-->
+					<node name="SetValue" key="TotemLeftRight" value="1" />
+					<!--이 변수에 1을 넣어 왼쪽에 토템이 등장했음을 알림-->
+					<!--summonPos="1050, -1650, 2880  이 좌표러 여러 타입의 계약의 토템이 생성되는되 겹쳐서 소환되면 어색해 보여서, 이 좌표는 group="507" 으로 고정함 -->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="507" summonPos="1050, -1650, 2880" summonRot="0,0,90" />
+					<!--왼쪽 3층 지점에 레이저 토템 아래쪽 발사-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="532" summonPos="900, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="533" summonPos="600, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<node name="standby" limit="6500" faceTarget="0" />
+					<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 5~7초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+				</node>
+				<!--오른쪽 지점만 등장-->
+				<node name="skill" faceTarget="0" cooltime="167000" isKeepBattle="true" idx="16">
+					<!--오른쪽 지점만 저주 걸기-->
+					<node name="SetValue" key="TotemLeftRight" value="2" />
+					<!--이 변수에 2을 넣어 오른쪽에 토템이 등장했음을 알림-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="541" summonPos="2400, -1650, 2880" summonRot="0,0,90" />
+					<!--왼쪽 3층 지점에 레이저 토템 아래쪽 발사-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="542" summonPos="2700, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="543" summonPos="3000, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<node name="standby" limit="6500" faceTarget="0" />
+					<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 5~7초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+				</node>
+				<!--양쪽 지점 등장-->
+				<node name="skill" faceTarget="0" cooltime="167000" isKeepBattle="true" idx="14">
+					<!--양쪽 지점에 저주 걸기-->
+					<node name="SetValue" key="TotemLeftRight" value="3" />
+					<!--이 변수에 3을 넣어 양쪽에 토템이 등장했음을 알림-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="507" summonPos="1050, -1650, 2880" summonRot="0,0,90" />
+					<!--왼쪽 3층 지점에 레이저 토템 아래쪽 발사-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="532" summonPos="900, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="533" summonPos="600, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="541" summonPos="2400, -1650, 2880" summonRot="0,0,90" />
+					<!--왼쪽 3층 지점에 레이저 토템 아래쪽 발사-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="542" summonPos="2700, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="543" summonPos="3000, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<node name="standby" limit="6500" faceTarget="0" />
+					<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 5~7초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="TotemLavaComboPattern">
+			<node name="select" prob="50,50">
+				<!--토템과 용암 조합 패턴 정의, 마지막 페이즈에서 사용-->
+				<!--왼쪽 토템 & 오른쪽 용암-->
+				<node name="standby" limit="200" faceTarget="0" cooltime="95000" isKeepBattle="true">
+					<!-- !중요: 꼭 레벨21 설정해야함, 만약 용암이 올라오는 지형에 토템의 저주 걸리는 플레이어가 있으면 이 플레이어는 잉여가 됨-->
+					<node name="skill" faceTarget="0" idx="19" />
+					<!--레벨21: 왼쪽 지점은 자쿰의 저주 토템의 저주 골고루 걸리게 하고, 용암이 올라오는 오른쪽 지점은 오직 자쿰의 저주만 걸리게 설정함, 왜냐하면 오른쪽 지점의 플레이어가 왼쪽으로 건너가 토템 제거 해줄 수 있도록 하기 위해-->
+					<!--왼쪽 토템, 21410122  이 토템은 스킬은 레벨22 4연타 스킬임-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="501" summonPos="900, -1650, 1980" summonRot="0,0,-90" />
+					<!--왼쪽 방향으로 레이저 발사, 왼쪽 뱡향 발사는 summonRot="0,0,-90" 설정해야 함-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="532" summonPos="900, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<!--오른쪽 용암-->
+					<node name="TriggerSetUserValue" triggerID="999109" key="LavaflowRight" value="1" />
+					<!--맵 트리거에 신호보내 오른쪽 용암 올라오도록 함-->
+					<node name="SetValue" key="LavaflowLeftRight" value="2" />
+					<!--용암이 왼쪽에서 올라오는지 오른쪽에서 올라오는지 알 수 있도록 사용되는 변수, Left: 1   Right: 2-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="514" summonPos="3000, -1650, 2860" summonRot="0,0,90" />
+					<!--오른쪽 3층 지점에 용암 활성화 레이저 토템 생성, 이 토템과 아래 방향 발사 토템과 죄표가 같아 겹쳐서 소환될 수 있이는데 어쩔수 없이 허용함-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="515" summonPos="2700, -1650, 2860" summonRot="0,0,90" />
+					<!--오른쪽 3층 지점에 용암 활성화 토템 생성-->
+					<node name="standby" limit="9500" faceTarget="0" />
+					<!--일부러 유독 길게 설정, 토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 4~5초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+				</node>
+				<!--오른쪽 토템 & 왼쪽 용암-->
+				<node name="standby" limit="200" faceTarget="0" cooltime="95000" isKeepBattle="true">
+					<!-- !중요: 꼭 레벨22 설정해야함, 만약 용암이 올라오는 지형에 토템의 저주 걸리는 플레이어가 있으면 이 플레이어는 잉여가 됨-->
+					<node name="skill" faceTarget="0" idx="20" />
+					<!--레벨22: 오른쪽 지점은 자쿰의 저주 토템의 저주 골고루 걸리게 하고, 용암이 올라오는 왼쪽 지점은 오직 자쿰의 저주만 걸리게 설정함, 왜냐하면 왼쪽 지점의 플레이어가 오른쪽으로 건너가 토템 제거 해줄 수 있도록 하기 위해-->
+					<!--오른쪽 토템, 21410122  이 토템은 스킬은 레벨22 4연타 스킬임-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="505" summonPos="2550, -1650, 1980" summonRot="0,0,90" />
+					<!--오른쪽 방향으로 레이저 발사-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="542" summonPos="2700, -1650, 2450" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 디버프 투사체 토템 생성-->
+					<!--왼쪽 용암-->
+					<node name="TriggerSetUserValue" triggerID="999108" key="LavaflowLeft" value="1" />
+					<!--맵 트리거에 신호보내 왼쪽 용암 올라오도록 함-->
+					<node name="SetValue" key="LavaflowLeftRight" value="1" />
+					<!--용암이 왼쪽에서 올라오는지 오른쪽에서 올라오는지 알 수 있도록 사용되는 변수, Left: 1   Right: 2-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="511" summonPos="600, -1650, 2860" summonRot="0,0,-90" />
+					<!--왼쪽 3층 지점에 용암 활성화 레이저 토템 생성, 참고로 왼쪽 방향으로 레이저 발사할 때 꼭 summonRot="0,0,-90" 이렇게 해야함-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="507" summonPos="900, -1650, 2860" summonRot="0,0,90" />
+					<!--왼쪽 3층 지점에 용암 활성화 토템 생성-->
+					<node name="standby" limit="9500" faceTarget="0" />
+					<!--일부러 유독 길게 설정, 토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지 꼭  standby 4~5초 정도 머물고 있어야 함, 그렇지 않고 바로 다음 턴으로 가면 상위에 선언된 elseif extraKey="TotemMany" equal="0" 조건에 의해 로직이 꼬임-->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="DefenceBoogieWhiteMode">
+			<node name="select" prob="49,51,1">
+				<!--물방상승-->
+				<node name="standby" limit="200" faceTarget="0" cooltime="95000" isKeepBattle="true">
+					<!--혹시 마법 버프 상태와 소환몹이 계속 있는 상황을 대비해서, 무조건 마법 버프  제거 초기화 한 다음에 물리 버프 부여함-->
+					<node name="SetSlaveValue" key="SummonDeathMagical" value="1" />
+					<!--우선 제일 먼저 마법 버프용 소환몹 제거하기-->
+					<node name="buff" type="remove" id="50000317" level="1" />
+					<!--  마방상승 버프 제거하기 -->
+					<node name="SetValue" key="BoogieWhiteManyMagical" value="-1" />
+					<!--    -1로 변수 초기화 하기-->
+					<node name="skill" faceTarget="0" idx="2" />
+					<!--물방상승 버프 스킬 사용하기-->
+					<node name="announce" message="$ZakumBody_BoogieWhite$" durationTick="7000" />
+					<!-- 부기를 죽여야 보호막이 없어지는 걸을 메시지로 알려줌-->
+					<node name="SetValue" key="BoogieWhiteManyPhysical" value="0" />
+					<!--이 변수 0으로 셋팅해서 물리저항용 부기 몇마리 남았는지 개수체크 할 수 있도록 함-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="101" summonPos="150, -1650, 1960" summonRot="0,0,90" />
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="102" summonPos="750, -1650, 1960" summonRot="0,0,90" />
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="103" summonPos="300, -1650, 2410" summonRot="0,0,90" />
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="104" summonPos="900, -1650, 2860" summonRot="0,0,90" />
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="201" summonPos="450, -1650, 1960" summonRot="0,0,90" />
+					<!--자쿰 몸체 회복시켜 주는 부기임 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="202" summonPos="750, -1650, 2410" summonRot="0,0,90" />
+					<!--자쿰 몸체 회복시켜 주는 부기임 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="203" summonPos="1200, -1650, 2860" summonRot="0,0,90" />
+					<!--자쿰 몸체 회복시켜 주는 부기임 -->
+					<node name="standby" limit="4300" faceTarget="0" />
+				</node>
+				<!--마방상승-->
+				<node name="standby" limit="200" faceTarget="0" cooltime="95000" isKeepBattle="true">
+					<!--혹시 물리 버프 상태와 소환몹이 계속 있는 상황을 대비해서, 무조건 물리 버프  제거 초기화 한 다음에 마법 버프 부여함-->
+					<node name="SetSlaveValue" key="SummonDeathPhysical" value="1" />
+					<!--우선 제일 먼저 물리 버프용 소환몹 제거하기-->
+					<node name="buff" type="remove" id="50000316" level="1" />
+					<!--  물방상승 버프 제거하기 -->
+					<node name="SetValue" key="BoogieWhiteManyPhysical" value="-1" />
+					<!--    -1로 변수 초기화 하기-->
+					<node name="skill" faceTarget="0" idx="3" />
+					<!--마방상승 버프 스킬 사용하기-->
+					<node name="announce" message="$ZakumBody_BoogieWhite$" durationTick="7000" />
+					<!-- 부기를 죽여야 보호막이 없어지는 걸을 메시지로 알려줌-->
+					<node name="SetValue" key="BoogieWhiteManyMagical" value="0" />
+					<!--이 변수 0으로 셋팅해서 마법저항용 부기 몇마리 남았는지 개수체크 할 수 있도록 함-->
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="111" summonPos="2850, -1650, 1960" summonRot="0,0,-90" />
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="112" summonPos="3600, -1650, 1960" summonRot="0,0,-90" />
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="113" summonPos="3150, -1650, 2410" summonRot="0,0,-90" />
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="114" summonPos="3000, -1650, 2860" summonRot="0,0,-90" />
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="211" summonPos="3150, -1650, 1960" summonRot="0,0,-90" />
+					<!--자쿰 몸체 회복시켜 주는 부기임 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="212" summonPos="2850, -1650, 2410" summonRot="0,0,-90" />
+					<!--자쿰 몸체 회복시켜 주는 부기임 -->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="213" summonPos="2700, -1650, 2860" summonRot="0,0,-90" />
+					<!--자쿰 몸체 회복시켜 주는 부기임 -->
+					<node name="standby" limit="4300" faceTarget="0" />
+				</node>
+				<node name="standby" limit="100" faceTarget="0" />
+			</node>
+		</aiPreset>
+		<aiPreset name="DefenceBoogieWhiteLaserMode">
+			<node name="conditions">
+				<condition name="extraData" key="TotemLeftRight" value="3">
+					<!--이 변수에 3이면 이미 양쪽에 토템이 등장했다는 뜻이기 때문에 부기 소환 안함-->
+					<node name="standby" limit="1000" faceTarget="0" />
+				</condition>
+				<condition name="extraData" key="TotemLeftRight" value="1">
+					<!--이 변수에 1이면  왼쪽에 토템이 등장했다는 뜻이기 때문에 오른쪽에 부기 왼쪽에 토템 소환 시킴-->
+					<!-- !!여기 매우중요-->
+					<node name="SetSlaveValue" key="SummonDeathMagical" value="1">
+						<!-- !!매우중요: 왼쪽 지점 토템을 계속 방치할 경우, 마법저항용 소환몹만 계속 등장하는데, 이때 BoogieWhiteManyMagical 남아있는 마리수 체크가 꼬일 수 있기 때문에, 이 부분 실행시 꼭 마법저항용 부기 제거 자살 명령 처리함-->
+						<node name="standby" limit="1800" faceTarget="0">
+							<!-- 부기가 자살하여 죽음 신호 보낼때까지 1~2초 정도 기다림-->
+							<!--혹시 물리 버프 상태와 소환몹이 계속 있는 상황을 대비해서, 무조건 물리 버프  제거 초기화 한 다음에 마법 버프 부여함-->
+							<node name="SetSlaveValue" key="SummonDeathPhysical" value="1">
+								<!--우선 제일 먼저 물리 버프용 소환몹 제거하기-->
+								<node name="buff" type="remove" id="50000316" level="1">
+									<!--  물방상승 버프 제거하기 -->
+									<node name="SetValue" key="BoogieWhiteManyPhysical" value="-1">
+										<!--    -1로 변수 초기화 하기-->
+										<!--마방상승, 오른쪽지점 부기 등장-->
+										<node name="skill" faceTarget="0" idx="3">
+											<node name="announce" message="$ZakumBody_BoogieWhite$" durationTick="7000">
+												<!-- 부기를 죽여야 보호막이 없어지는 걸을 메시지로 알려줌-->
+												<node name="SetValue" key="BoogieWhiteManyMagical" value="0">
+													<!--이 변수 0으로 셋팅해서 마법저항용 부기 몇마리 남았는지 개수체크 할 수 있도록 함-->
+													<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="111" summonPos="2850, -1650, 1960" summonRot="0,0,-90">
+														<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="112" summonPos="3600, -1650, 1960" summonRot="0,0,-90">
+															<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="113" summonPos="3150, -1650, 2410" summonRot="0,0,-90">
+																<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="114" summonPos="3000, -1650, 2860" summonRot="0,0,-90">
+																	<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="211" summonPos="3150, -1650, 1960" summonRot="0,0,-90">
+																		<!--전에는 회복 부기 있었는데, 마방상승 부기로 교체하였음 -->
+																		<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="212" summonPos="2850, -1650, 2410" summonRot="0,0,-90">
+																			<!--전에는 회복 부기 있었는데, 마방상승 부기로 교체하였음 -->
+																			<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="213" summonPos="2700, -1650, 2860" summonRot="0,0,-90">
+																				<!--전에는 회복 부기 있었는데, 마방상승 부기로 교체하였음 -->
+																				<node name="conditions">
+																					<condition name="extraData" key="TotemMany" value="3" op="lessEqual">
+																						<!--계약의 토템 수가 3개 이하면, 계약의 토템 추가 소환 함-->
+																						<node name="skill" faceTarget="0" isKeepBattle="true" idx="15">
+																							<!--레벨2: 왼쪽 지점 플레이어 저주 걸기-->
+																							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="555" summonPos="450, -1650, 2430" summonRot="0,0,90" />
+																							<!--왼쪽 2층 지점에 레이저 발사하여 부기를 공격하는 플레이어 견제, 오른쪽 방향으로 발사-->
+																							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="556" summonPos="450, -1650, 2880" summonRot="0,0,90" />
+																							<!--왼쪽 3층 지점에 레이저 발사하여 부기를 공격하는 플레이어 견제, 오른쪽 방향으로 발사-->
+																							<node name="standby" limit="5200" faceTarget="0" />
+																							<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지   standby 4~5초 정도 머무는 것이 좋음-->
+																						</node>
+																					</condition>
+																					<condition name="true">
+																						<!--계약의 토템을 너무 방치해서, 계약의 토템 수가 4개 이상이면 너무 복잡해 져서 토템 추가 소환 안함-->
+																						<node name="standby" limit="4800" faceTarget="0" />
+																					</condition>
+																				</node>
+																			</node>
+																		</node>
+																	</node>
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--이 것은 변수가 2 이거나 0 으로 즉 오른쪽 지점에 토템이 등장했거나, 아무것도 등장 안했으면 왼쪽에 부기 오른쪽에 토템 소환 시킴-->
+					<!-- !!여기 매우중요-->
+					<node name="SetSlaveValue" key="SummonDeathPhysical" value="1">
+						<!--!!매우중요:  오른쪽 지점 토템을 계속 방치할 경우, 물리저항용 소환몹만 계속 등장하는데, 이때 BoogieWhiteManyPhysical 남아있는 마리수 체크가 꼬일 수 있기 때문에, 이 부분 실행시 꼭 물리저항용 부기 제거 자살 명령 처리함-->
+						<node name="standby" limit="1800" faceTarget="0">
+							<!-- 부기가 자살하여 죽음 신호 보낼때까지 1~2초 정도 기다림-->
+							<!--혹시 마법 버프 상태와 소환몹이 계속 있는 상황을 대비해서, 무조건 마법 버프  제거 초기화 한 다음에 물리 버프 부여함-->
+							<node name="SetSlaveValue" key="SummonDeathMagical" value="1">
+								<!--우선 제일 먼저 마법 버프용 소환몹 제거하기-->
+								<node name="buff" type="remove" id="50000317" level="1">
+									<!--  마방상승 버프 제거하기 -->
+									<node name="SetValue" key="BoogieWhiteManyMagical" value="-1">
+										<!--    -1로 변수 초기화 하기-->
+										<!--물방상승, 왼쪽지점 부기 등장-->
+										<node name="skill" faceTarget="0" idx="2">
+											<node name="announce" message="$ZakumBody_BoogieWhite$" durationTick="7000">
+												<!-- 부기를 죽여야 보호막이 없어지는 걸을 메시지로 알려줌-->
+												<node name="SetValue" key="BoogieWhiteManyPhysical" value="0">
+													<!--이 변수 0으로 셋팅해서 물리저항용 부기 몇마리 남았는지 개수체크 할 수 있도록 함-->
+													<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="101" summonPos="150, -1650, 1960" summonRot="0,0,90">
+														<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="102" summonPos="750, -1650, 1960" summonRot="0,0,90">
+															<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="103" summonPos="300, -1650, 2410" summonRot="0,0,90">
+																<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="104" summonPos="900, -1650, 2860" summonRot="0,0,90">
+																	<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="201" summonPos="450, -1650, 1960" summonRot="0,0,90">
+																		<!--전에는 회복 부기 있었는데, 물방상승 부기로 교체하였음 -->
+																		<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="202" summonPos="750, -1650, 2410" summonRot="0,0,90">
+																			<!--전에는 회복 부기 있었는데, 물방상승 부기로 교체하였음 -->
+																			<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="203" summonPos="1200, -1650, 2860" summonRot="0,0,90">
+																				<!--전에는 회복 부기 있었는데, 물방상승 부기로 교체하였음 -->
+																				<node name="conditions">
+																					<condition name="extraData" key="TotemMany" value="3" op="lessEqual">
+																						<!--계약의 토템 수가 3개 이하면, 계약의 토템 추가 소환 함-->
+																						<node name="skill" faceTarget="0" isKeepBattle="true" idx="16">
+																							<!--레벨3: 오른쪽 지점 플레이어 저주 걸기-->
+																							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="551" summonPos="3300, -1650, 2430" summonRot="0,0,-90" />
+																							<!--오른쪽 2층 지점에 레이저 발사하여 부기를 공격하는 플레이어 견제, 왼쪽 방향으로 발사할 때 꼭 summonRot="0,0,-90" 이렇게 해야함-->
+																							<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="552" summonPos="3150, -1650, 2880" summonRot="0,0,-90" />
+																							<!--오른쪽 3층 지점에 레이저 발사하여 부기를 공격하는 플레이어 견제, 왼쪽 방향으로 발사할 때 꼭 summonRot="0,0,-90" 이렇게 해야함-->
+																							<node name="standby" limit="5200" faceTarget="0" />
+																							<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지   standby 4~5초 정도 머무는 것이 좋음-->
+																						</node>
+																					</condition>
+																					<condition name="true">
+																						<!--계약의 토템을 너무 방치해서, 계약의 토템 수가 4개 이상이면 너무 복잡해 져서 토템 추가 소환 안함-->
+																						<node name="standby" limit="4800" faceTarget="0" />
+																					</condition>
+																				</node>
+																			</node>
+																		</node>
+																	</node>
+																</node>
+															</node>
+														</node>
+													</node>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="DefenceBoogieWhiteLaserMode_LastPhase">
+			<node name="select" prob="50,50">
+				<!--마지막 페이즈에서는 계약의 토템이 나온 지점의 플레이어 전원  토템의 저주를 걸어 부기 나온쪽에서 건너가야 하는 상황을 부여함-->
+				<!--물방상승, 왼쪽지점 부기 등장-->
+				<node name="standby" limit="200" faceTarget="0" cooltime="104000" isKeepBattle="true">
+					<!--혹시 마법 버프 상태와 소환몹이 계속 있는 상황을 대비해서, 무조건 마법 버프  제거 초기화 한 다음에 물리 버프 부여함-->
+					<node name="SetSlaveValue" key="SummonDeathMagical" value="1" />
+					<!--우선 제일 먼저 마법 버프용 소환몹 제거하기-->
+					<node name="buff" type="remove" id="50000317" level="1" />
+					<!--  마방상승 버프 제거하기 -->
+					<node name="SetValue" key="BoogieWhiteManyMagical" value="-1" />
+					<!--    -1로 변수 초기화 하기-->
+					<node name="skill" faceTarget="0" idx="2" />
+					<node name="announce" message="$ZakumBody_BoogieWhite$" durationTick="7000" />
+					<!-- 부기를 죽여야 보호막이 없어지는 걸을 메시지로 알려줌-->
+					<node name="SetValue" key="BoogieWhiteManyPhysical" value="0" />
+					<!--이 변수 0으로 셋팅해서 물리저항용 부기 몇마리 남았는지 개수체크 할 수 있도록 함-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="101" summonPos="150, -1650, 1960" summonRot="0,0,90" />
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="102" summonPos="750, -1650, 1960" summonRot="0,0,90" />
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="103" summonPos="300, -1650, 2410" summonRot="0,0,90" />
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="104" summonPos="750, -1650, 2860" summonRot="0,0,90" />
+					<!--아주 중요!!  레벨12: 오른쪽 지점 플레이어 전원 토템의 저주 걸기, 이 패턴 나오면 부기가 나온 지점의 플레이어가 토템 나온 지점으로 건너 가도록 하기 위해 -->
+					<node name="skill" faceTarget="0" idx="18" />
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="551" summonPos="3300, -1650, 2430" summonRot="0,0,-90" />
+					<!--오른쪽 2층 지점에 레이저 발사하여 부기를 공격하는 플레이어 견제, 왼쪽 방향으로 발사할 때 꼭 summonRot="0,0,-90" 이렇게 해야함-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="552" summonPos="3150, -1650, 2880" summonRot="0,0,-90" />
+					<!--오른쪽 3층 지점에 레이저 발사하여 부기를 공격하는 플레이어 견제, 왼쪽 방향으로 발사할 때 꼭 summonRot="0,0,-90" 이렇게 해야함-->
+					<node name="standby" limit="5200" faceTarget="0" />
+					<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지   standby 4~5초 정도 머무는 것이 좋음-->
+				</node>
+				<!--마방상승, 오른쪽지점 부기 등장-->
+				<node name="standby" limit="200" faceTarget="0" cooltime="104000" isKeepBattle="true">
+					<!--혹시 물리 버프 상태와 소환몹이 계속 있는 상황을 대비해서, 무조건 물리 버프  제거 초기화 한 다음에 마법 버프 부여함-->
+					<node name="SetSlaveValue" key="SummonDeathPhysical" value="1" />
+					<!--우선 제일 먼저 물리 버프용 소환몹 제거하기-->
+					<node name="buff" type="remove" id="50000316" level="1" />
+					<!--  물방상승 버프 제거하기 -->
+					<node name="SetValue" key="BoogieWhiteManyPhysical" value="-1" />
+					<!--    -1로 변수 초기화 하기-->
+					<node name="skill" faceTarget="0" idx="3" />
+					<node name="announce" message="$ZakumBody_BoogieWhite$" durationTick="7000" />
+					<!-- 부기를 죽여야 보호막이 없어지는 걸을 메시지로 알려줌-->
+					<node name="SetValue" key="BoogieWhiteManyMagical" value="0" />
+					<!--이 변수 0으로 셋팅해서 마법저항용 부기 몇마리 남았는지 개수체크 할 수 있도록 함-->
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="111" summonPos="2850, -1650, 1960" summonRot="0,0,-90" />
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="112" summonPos="3600, -1650, 1960" summonRot="0,0,-90" />
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="113" summonPos="3150, -1650, 2410" summonRot="0,0,-90" />
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="114" summonPos="2850, -1650, 2860" summonRot="0,0,-90" />
+					<!--아주 중요!!  레벨11: 왼쪽 지점 플레이어 전원 토템의 저주 걸기, 이 패턴 나오면 부기가 나온 지점의 플레이어가 토템 나온 지점으로 건너 가도록 하기 위해 -->
+					<node name="skill" faceTarget="0" idx="17" />
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="555" summonPos="450, -1650, 2430" summonRot="0,0,90" />
+					<!--왼쪽 2층 지점에 레이저 발사하여 부기를 공격하는 플레이어 견제, 오른쪽 방향으로 발사-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="556" summonPos="450, -1650, 2880" summonRot="0,0,90" />
+					<!--왼쪽 3층 지점에 레이저 발사하여 부기를 공격하는 플레이어 견제, 오른쪽 방향으로 발사-->
+					<node name="standby" limit="5200" faceTarget="0" />
+					<!--토템 소환되면 토템이 자쿰한테 TotemMany+1 신호 보낼때까지   standby 4~5초 정도 머무는 것이 좋음-->
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="PenaltyCheckTotem">
+			<!--2층 지점에서 계속 머물면서 얍삽한 플레이 하는 대상에게 계약의 토템으로 견제하는 것을 정의하는 부분임-->
+			<node name="standby" limit="160" faceTarget="0">
+				<node name="target" type="near" center="1800, -1670, 4360">
+					<!--이 좌표는 자쿰이 배치된 중심 기준으로 엄청 높은 지점으로 설정했음, 좌표를 이곳으로 잡아야 자쿰 몸에 가까이 붙은 대상보다  2층 대상을 최우선으로 타겟팅 할 것임-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="22">
+							<!--레벨 41 거리체크: 타겟팅된 대상이 2층에 얍삽한 플레이 지점에 있다면, 페널티용 계약의 토템 생성하기 결정하는 부분 진행-->
+							<!--아래 부분이 좀 복잡한테 페널티 토템 생성하기 위해서는 ##1.토템 체크, 2.자쿰팔 체크, 3.물리저항부기 체크, 4마법저항부기 체크##  총 4번에 걸친 체크가 필요하기 때문에 if else 구조가 4개로 되어 있음-->
+							<node name="conditions">
+								<condition name="extraData" key="TotemMany" value="-1">
+									<!-- ##1.토템 체크, 이 변수가 -1 이라는 것은 맵에 계약의 토템이 하나도 없다는 뜻, 즉 저주 토템이 없는데 2층 지점에 있으면 패널티 부여-->
+									<node name="conditions">
+										<condition name="extraData" key="ArmSummonMany" value="0">
+											<!-- ##2.자쿰팔 체크, 이 변수가 0 이라는 것은 맵에 자쿰팔소환몹이 하나도 없다는 뜻, 즉 자쿰팔소환몹이 없는데 2층 지점에 있으면 패널티 부여-->
+											<node name="conditions">
+												<condition name="extraData" key="BoogieWhiteManyPhysical" value="-1">
+													<!-- ##3.물리저항부기 체크, 이 변수가 -1 이라는 것은 맵에 물리 버프 담당 부기 소환몹이 하나도 없다는 뜻, 즉 부기 소환몹이 없는데 2층 지점에 있으면 패널티 부여-->
+													<node name="conditions">
+														<condition name="extraData" key="BoogieWhiteManyMagical" value="-1">
+															<!-- ##4.마법저항부기 체크, 이 변수가 -1 이라는 것은 맵에 마법 버프 담당 부기 소환몹이 하나도 없다는 뜻, 즉 부기 소환몹이 없는데 2층 지점에 있으면 패널티 부여-->
+															<!-- 주의!: BoogieWhiteManyPhysical    BoogieWhiteManyMagical  이 두 변수는 자쿰 몸체에 보호막 부여 부기만 체크하고 회복 부여해주는 부기는 이 변수에 체크 안됨, 즉 회복 시켜주는 부기가 있는데 2층에 있으면 패널티 토템이 생성됨-->
+															<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+																<node name="SetValue" key="TotemMany" value="0" />
+																<!--이 변수 0을로 셋팅하여 계약의 토템 소환됨에 따른 개수 체크 할 수 있도록 하기-->
+																<node name="skill" faceTarget="0" idx="22" />
+																<!--레벨41: 우선 전투판에 있는 모든 플레이어 저주 제거한 다음에 토템이 생성된 오른쪽 지점에만 저주 걸기-->
+																<!-- 중요!: 이 50100144 레벨41 스킬에는 모든 저주를 제거하는 기능이 있는데, 가끔 저주가 풀리지 않는 치명적인 버그가 있어서 이 페널티 토템이 생성될 때 저주 제거하는 기능을 넣어 버그로 인한 위험한 상활을 해소시킴-->
+																<node name="summon" npcId="13" npcCount="1" npcCountMax="1" group="949" summonPos="3450, -1650, 2450" summonRot="0,0,-90" />
+																<!--왼쪽 방향으로 레이저 발사, 왼쪽 뱡향 발사는 summonRot="0,0,-90" 설정해야 함-->
+																<node name="standby" limit="3000" faceTarget="0" />
+															</node>
+														</condition>
+														<condition name="true">
+															<!-- ##4.마법저항부기 체크, BoogieWhiteManyMagical  변수가 -1 이 아니라는 것은 맵에 이미 마법 버프 담당 부기 소환몹이 있다는 뜻이기 때문에 이때 플레이어는 부기 소환몹이 잡으러 얼마든지 2층 지점에 있을 수 있어서 이때는 절대 패널티용 저주의 토템 생성하면 안됨-->
+															<node name="skill" faceTarget="0" idx="21" />
+															<!--중요!   레벨31: 저주 제거 스킬 사용, 가끔 저주가 풀리지 않는 치명적인 버그가 있어서, 이 페널티 토템이 체크 로직에서 저주 제거 기능을 넣어 버그로 인한 위험한 상활을 해소시킴-->
+														</condition>
+													</node>
+												</condition>
+												<condition name="true">
+													<!-- ##3.물리저항부기 체크, BoogieWhiteManyPhysical  변수가 -1 이 아니라는 것은 맵에 이미 물리 버프 담당 부기 소환몹이 있다는 뜻이기 때문에 이때 플레이어는 부기 소환몹이 잡으러 얼마든지 2층 지점에 있을 수 있어서 이때는 절대 패널티용 저주의 토템 생성하면 안됨-->
+													<node name="skill" faceTarget="0" idx="21" />
+													<!--중요!   레벨31: 저주 제거 스킬 사용, 가끔 저주가 풀리지 않는 치명적인 버그가 있어서, 이 페널티 토템이 체크 로직에서 저주 제거 기능을 넣어 버그로 인한 위험한 상활을 해소시킴-->
+												</condition>
+											</node>
+										</condition>
+										<condition name="true">
+											<!-- ##2.자쿰팔 체크, ArmSummonMany 변수가 0 이 아니라는 것은 맵에 이미 자쿰팔소환몹이 있다는 뜻이기 때문에 이때 플레이어는 자쿰팔 잡으러 얼마든지 2층 지점에 있을 수 있어서 이때는 절대 패널티용 저주의 토템 생성하면 안됨-->
+											<node name="skill" faceTarget="0" idx="21" />
+											<!--중요!   레벨31: 저주 제거 스킬 사용, 가끔 저주가 풀리지 않는 치명적인 버그가 있어서, 이 페널티 토템이 체크 로직에서 저주 제거 기능을 넣어 버그로 인한 위험한 상활을 해소시킴-->
+										</condition>
+									</node>
+								</condition>
+								<condition name="true">
+									<!-- ##1.토템 체크, TotemMany 변수가 -1이 아니라는 것은 맵에 이미 저주의 토템이 있다는 뜻이기 때문에 이때 플레이어는 저주 토템 잡으러 얼마든지 2층 지점에 있을 수 있어서 이때는 절대 패널티용 저주의 토템 생성하면 안됨-->
+									<node name="standby" limit="130" faceTarget="0" />
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<!--2층에 아무도 없으면-->
+							<node name="conditions">
+								<condition name="extraData" key="TotemMany" value="-1">
+									<!-- 이 변수가 -1 이라는 것은 맵에 계약의 토템이 하나도 없다는 뜻-->
+									<node name="skill" faceTarget="0" idx="21" />
+									<!--중요!   레벨31: 저주 제거 스킬 사용, 가끔 저주가 풀리지 않는 치명적인 버그가 있어서, 이 페널티 토템 체크 로직에서 저주 제거 기능을 넣어 버그로 인한 위험한 상활을 해소시킴-->
+								</condition>
+								<condition name="true">
+									<!-- 이 경우는 맵에 계약의 토템이 있다는 뜻이기 때문에 아무것도 안함-->
+									<node name="standby" limit="130" faceTarget="0" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</node>
+			</node>
+		</aiPreset>
+		<!--자쿰 팔에 변수 할당해여 어떤 속성 보호를 부여할지를 결정하는 부분-->
+		<aiPreset name="ElementsBarrierOrder">
+			<node name="select" prob="17,17,17,17,17,17">
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="4" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="1" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="5" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="3" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="2" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="3" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="6" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="4" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="6" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="5" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="4" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="2" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="3" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="6" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="2" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="5" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="5" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="2" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="1" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="6" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+				<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+					<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+					<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독 -->
+					<node name="SetSlaveValue" key="ElementsDecision01" value="5" />
+					<!--1번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision02" value="4" />
+					<!--2번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision04" value="3" />
+					<!--4번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+					<node name="SetSlaveValue" key="ElementsDecision05" value="1" />
+					<!--5번 자쿰팔에서 속성 보호 적용 신호 보내기-->
+				</node>
+			</node>
+		</aiPreset>
+		<!--모든 자쿰 팔에 속성 보호 버프 제거하기-->
+		<aiPreset name="ElementsBarrierRemove">
+			<node name="standby" limit="200" animation="Attack_Idle_B" cooltime="9999999" isKeepBattle="true">
+				<!--Attack_Idle_B 에 컬리전 박스를 높게 올려서 플레이어가 때리지 못하게 설정하였음 -->
+				<!-- 1번: 화염, 2번: 빙결, 3번: 전격, 4번: 신성, 5번: 암흑, 6번: 독, 99번: 모든 속성 버프 제거 -->
+				<node name="SetSlaveValue" key="ElementsDecision01" value="99" />
+				<!--1번 자쿰팔에서 속성 보호 제거 신호 보내기-->
+				<node name="SetSlaveValue" key="ElementsDecision02" value="99" />
+				<!--2번 자쿰팔에서 속성 보호 제거 신호 보내기-->
+				<node name="SetSlaveValue" key="ElementsDecision04" value="99" />
+				<!--4번 자쿰팔에서 속성 보호 제거 신호 보내기-->
+				<node name="SetSlaveValue" key="ElementsDecision05" value="99" />
+				<!--5번 자쿰팔에서 속성 보호 제거 신호 보내기-->
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

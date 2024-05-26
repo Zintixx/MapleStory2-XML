@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="buff" type="add" id="50004570" level="2" isKeepBattle="true">
+				<!--  계왕권 아우라 공격 애디셔널 시작하자마자 바로 적용,  레벨2는 딜레이 없이 바로 이 애디셔널 적용하는거, 참고로 레벨1은 딜레이 4~5초 정도 되어있음 -->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="9987" summonPos="600, 3600, 910" summonRot="0,0,0" />
+				<!-- 중요: 맵 구석 안보이는 곳에 페이크 몬스터 배치, 시간 단위로 등장시키는 졸몹 호출은 이 몬스터가 관리함 -->
+				<node name="standby" limit="1100" faceTarget="1" />
+				<node name="say" message="$TurkaHoodForce_3PhaseStart$" durationTick="8000" />
+				<!--말풍선-->
+				<node name="standby" limit="2200" faceTarget="1" />
+				<node name="SetValue" key="DashPatternCheck" value="0" />
+				<!-- 마지막 페이즈 연속 돌진 공격때 사용하는 변수 최초 0 초기화 하기-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="40">
+			<node name="SetSlaveValue" isKeepBattle="true" key="SummonCallOk" value="1">
+				<!-- 페이크 몬스터 "21502310"의 AI인 AI_SignalSummon.xml에게 SummonCallOk = 1신호 보내서, 최종 페이즈 졸몹 정신없게 호출 패턴하라고 명령내림 -->
+				<node name="TriggerSetUserValue" triggerID="101000" key="MobSpawnStop" value="4" />
+				<!-- MobSpawn01.xml 트리거에게 신호 보내서 졸몹 스폰 정지 시킴     param1="101000" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+				<node name="TriggerSetUserValue" triggerID="103000" key="MobSpawnStop" value="4" />
+				<!-- MobSpawn03.xml 트리거에게 신호 보내서 졸몹 스폰 정지 시킴     param1="103000" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+				<node name="TriggerSetUserValue" triggerID="105000" key="MobSpawnStop" value="4" />
+				<!-- MobSpawn05.xml 트리거에게 신호 보내서 졸몹 스폰 정지 시킴     param1="105000" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+				<node name="TriggerSetUserValue" triggerID="106000" key="MobSpawnStop" value="4" />
+				<!-- MobSpawn06.xml 트리거에게 신호 보내서 졸몹 스폰 정지 시킴     param1="106000" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+				<node name="TriggerSetUserValue" triggerID="109000" key="MobSpawnStop" value="4" />
+				<!-- MobSpawn09.xml 트리거에게 신호 보내서 졸몹 스폰 정지 시킴     param1="109000" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+				<node name="TriggerSetUserValue" triggerID="110000" key="MobSpawnStop" value="4" />
+				<!-- MobSpawn10.xml 트리거에게 신호 보내서 졸몹 스폰 정지 시킴     param1="110000" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+				<node name="TriggerSetUserValue" triggerID="112000" key="MobSpawnStop" value="4" />
+				<!-- MobSpawn12.xml 트리거에게 신호 보내서 졸몹 스폰 정지 시킴     param1="112000" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+			</node>
+		</condition>
+		<condition name="hpLess" value="20">
+			<!-- HP 20% 이하로 떨어지면 경고 메시지 트리거 작동 중지시키기  -->
+			<node name="TriggerSetUserValue" triggerID="192" key="TriggerEnd" value="99" />
+			<!--   TriggerEnd = 99 신호에 의해서 이벤트 연출 트리거 작동	 즉 message.xml 에서 받음      param1="192" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+		</condition>
+	</reserved>
+	<battle>
+		<node name="conditions">
+			<condition name="additional" id="50004575">
+				<!-- 거대 로봇탈것 공격에 맞아 기절 애디셔널에 걸리면, 이 50004575 도 추가로 걸리는데, 이 단계에서 기절 관련 말풍선 띄우고 연속공격 관련 각종 변수 0 초기화 함  -->
+				<!--  연속기 공격 도중에 기절 됬을 경우를 대비해 연속기 관련 각종 변수 전부 초기화 하기  -->
+				<node name="buff" type="remove" id="50001093" level="1">
+					<!--  얼굴에 붙어있는 마법빛 애디셔널 효과 제거하기  -->
+					<!-- 각종 변수 0 초기화 후에 평상시 상태로 돌아오기  -->
+					<node name="SetValue" key="Shot" value="0">
+						<node name="SetValue" key="DashPatternPos" value="0">
+							<node name="SetValue" key="DashPatternCheck" value="0">
+								<node name="select" prob="50,50">
+									<!-- DashPatternCheck 변수 여기서 0 셋팅하면서 <aiPreset name="DashShot_Pattern"> 부분 빠져나오게 함 -->
+									<node name="say" message="$TurkaHoodForce_StunWarning01$" durationTick="8000">
+										<node name="standby" limit="700" faceTarget="1">
+											<node name="buff" type="remove" id="50004575" level="1" />
+											<!--이거 제거 안하면 무한 루프에 빠짐-->
+										</node>
+									</node>
+									<node name="say" message="$TurkaHoodForce_StunWarning02$" durationTick="8000">
+										<node name="standby" limit="500" faceTarget="1">
+											<node name="buff" type="remove" id="50004575" level="1" />
+											<!--이거 제거 안하면 무한 루프에 빠짐-->
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+			</condition>
+			<condition name="hpOver" value="40">
+				<node name="select" prob="9999,9999,0">
+					<node name="target" type="rand" from="10" to="1300" cooltime="8000">
+						<node name="select" prob="99,1">
+							<!--  기본은 랜덤 타겟팅 방식 -->
+							<node name="target" type="hasAdditional" additionalId="73000012" additionalLevel="1" target="hostile" cooltime="21000" />
+							<!--일정 시간마다 로봇 탑승 대상 타겟팅 함 -->
+							<node name="SetValue" key="Temp" value="0" />
+							<!--  아무것도 안한다는 뜻임 -->
+						</node>
+					</node>
+					<node name="standby" limit="170" faceTarget="1" cooltime="26000" initialCooltime="13000">
+						<aiPreset name="RidingPlayer_GrabPattern" />
+						<!-- 메인 전투판 기준 큐브 한칸 위에서 로봇 탑승하면서 졸몹 제거하고 있는 플레이어 잡기 공격 견제하기 위한 부분임-->
+					</node>
+					<aiPreset name="Normal_MainPattern" />
+				</node>
+			</condition>
+			<condition name="true">
+				<node name="conditions">
+					<condition name="extraData" key="DashPatternCheck" value="1" op="greaterEqual">
+						<!--  %&% <aiPreset name="Fianl_MainPattern"/>에서 DashPatternCheck = 1 이 되면, 연속돌진이동 후 발사 공격 패턴 시작하도록 함 -->
+						<node name="conditions">
+							<condition name="skillRange" skillIdx="10">
+								<!-- 레벨22: 같은 2페이지 메인 전투판 안에 공격 대상이 있어야만, 연속돌진이동 후 발사 공격 패턴 계속 사용함,  사정거리 범위는 cylinder 3300  높이 100  한칸아래 50 -->
+								<aiPreset name="DashShot_Pattern" />
+							</condition>
+							<condition name="true">
+								<node name="select" prob="999,1">
+									<!-- 같은 2페이지 메인 전투판 안에 공격 대상이 없으면, 한번 standby로 맵 중앙 제일 가까운 대상 타겟팅 체크하고 그래도 다시 여기 단계 오면 바로 풀림 -->
+									<node name="standby" limit="1900" faceTarget="1" animation="Attack_02_E" cooltime="3700" isKeepBattle="true">
+										<node name="target" type="near" center="-450, -1350, 1050" />
+										<!-- 3페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+										<node name="standby" limit="500" faceTarget="1" animation="Attack_02_E" />
+									</node>
+									<node name="standby" limit="500" faceTarget="1" animation="Attack_02_E" isKeepBattle="true">
+										<node name="buff" type="remove" id="50001093" level="1" />
+										<!--  얼굴에 붙어있는 마법빛 애디셔널 효과 제거하기  -->
+										<!-- 각종 변수 0 초기화 후에 평상시 상태로 돌아오기  -->
+										<node name="SetValue" key="Shot" value="0" />
+										<node name="SetValue" key="DashPatternPos" value="0" />
+										<node name="SetValue" key="DashPatternCheck" value="0" />
+										<!-- DashPatternCheck 변수 여기서 0 셋팅하면서 <aiPreset name="DashShot_Pattern"> 부분 빠져나오게 함 -->
+										<node name="standby" limit="1200" faceTarget="1" />
+									</node>
+								</node>
+							</condition>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="9999,999,0">
+							<node name="target" type="rand" from="10" to="1300" cooltime="7000" />
+							<!--  이 페이즈 때는 기본은 랜덤 타겟팅 방식 -->
+							<!--일정 시간마다 로봇 탑승 대상 타겟팅 해서 견제함 -->
+							<node name="target" type="hasAdditional" additionalId="73000012" additionalLevel="1" target="hostile" cooltime="16000">
+								<node name="conditions">
+									<condition name="skillRange" skillIdx="7">
+										<!-- 레벨3: 사정거리 1500, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음, 큐브 한칸 아래는 포함함-->
+										<node name="trace" limit="2500" skillIdx="1">
+											<node name="skill" faceTarget="1" idx="1">
+												<!-- 낫 휘둘기 2연타, 레벨1은 돌진함 -->
+												<node name="standby" limit="1800" faceTarget="1" />
+											</node>
+										</node>
+									</condition>
+									<condition name="true">
+										<node name="target" type="near" from="10" to="1300" />
+										<!-- 로봇탑승 타겟팅 대상이 멀리 있거나 한큐브 위에 있으면, 제일 가까운 대상 타겟팅 하기 -->
+									</condition>
+								</node>
+							</node>
+							<aiPreset name="Fianl_MainPattern" />
+							<!-- HP 40% 이하에서 평소 공격 패턴 상태임 -->
+						</node>
+					</condition>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="101" master="None" delayTick="5500" summonPosOffset="0, 0, 0" summonRot="0,0,-50" isKeepBattle="true">
+			<!-- 자살 연출을 위한 투르카 분신 소환 -->
+			<node name="TriggerSetUserValue" triggerID="14112" key="RidingBattle" value="-1" />
+			<!-- InteractMesh10014112.xml 트리거에게 신호 보내서 로봇탈것 스폰 정지지킴    param1="14112" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+			<node name="TriggerSetUserValue" triggerID="14101" key="RidingBattle" value="-1" />
+			<!-- InteractMesh10014101.xml 트리거에게 신호 보내서 로봇탈것 스폰 정지지킴    param1="14101" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+			<node name="TriggerSetUserValue" triggerID="14104" key="RidingBattle" value="-1" />
+			<!-- InteractMesh10014104.xml 트리거에게 신호 보내서 로봇탈것 스폰 정지지킴    param1="14104" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+			<node name="TriggerSetUserValue" triggerID="14106" key="RidingBattle" value="-1" />
+			<!-- InteractMesh10014106.xml 트리거에게 신호 보내서 로봇탈것 스폰 정지지킴    param1="14106" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+			<node name="TriggerSetUserValue" triggerID="14109" key="RidingBattle" value="-1" />
+			<!-- InteractMesh10014109.xml 트리거에게 신호 보내서 로봇탈것 스폰 정지지킴    param1="14109" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+			<node name="TriggerSetUserValue" triggerID="14110" key="RidingBattle" value="-1" />
+			<!-- InteractMesh10014110.xml 트리거에게 신호 보내서 로봇탈것 스폰 정지지킴    param1="14110" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+			<node name="TriggerSetUserValue" triggerID="14100" key="RidingBattle" value="-1" />
+			<!-- InteractMesh10014100.xml 트리거에게 신호 보내서 거대 로봇탈것 스폰 정지지킴    param1="14100" 은   MS2TriggerModel의 TriggerModelID 번호임 -->
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Normal_MainPattern">
+			<!-- 평상시 공격패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="20,20,20,20,20">
+						<!-- 사정거리 470, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+						<node name="skill" faceTarget="1" idx="1">
+							<!-- 낫 휘둘기 2연타, 레벨1은 돌진함 -->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+							<!-- 낫 내려찍기 -->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="1" cooltime="9000" idx="12">
+							<!--얼굴 발사, 레벨21은 사정거리 650 큐브 2칸위까지 커버, 로봇탑승 상태의 플레이어를 최우선 유도탄에 맞추는 기능 포함되어 있음 -->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="1" cooltime="55000" idx="9">
+							<!-- 얼굴 바닥 레이저 발동, 레벨11은 단독 레이저 공격 전용-->
+							<node name="standby" limit="2500" faceTarget="1" />
+						</node>
+						<node name="standby" limit="200" faceTarget="1" cooltime="58000">
+							<node name="select" prob="50,50">
+								<!-- 메테오 드랍 -->
+								<node name="skill" faceTarget="1" idx="15">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+								<node name="skill" faceTarget="1" idx="16">
+									<node name="standby" limit="2500" faceTarget="1" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="16,28,28,28">
+						<!-- 사정거리 1100, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+						<node name="trace" till="465" limit="1200" cooltime="17000" />
+						<!-- 거리 465 까지 추적, 주의: 추적할 때 투르카가 메인 전투판에 벗어나 큐브 한칸 위로 올라가는 경우 없도록 해야함 -->
+						<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+							<!-- 낫 내려찍기 -->
+							<node name="standby" limit="2100" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="1" idx="13">
+							<!-- 얼굴발사, 레벨22 사정거리 1900 큐브 2칸위까지 커버, 로봇탑승 상태의 플레이어를 최우선 유도탄에 맞추는 기능 포함되어 있음 -->
+							<node name="standby" limit="2200" />
+						</node>
+						<node name="skill" faceTarget="1" cooltime="45000" idx="9">
+							<!-- 얼굴 바닥 레이저 발동, 레벨11은 단독 레이저 공격 전용-->
+							<node name="standby" limit="2200" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="11">
+					<node name="select" prob="50,50">
+						<!-- 사정거리 1900, 레벨2는 큐브 한칸 위의 대상 포함 시키지 않음, 큐브 한칸 위에 있는  플레이어는  구분해서 추적하기 위해서 평소에는 같은 메인 전투판에 있는 플레이어 위주로 타겟팅 함-->
+						<node name="trace" till="900" limit="1200" cooltime="17000" />
+						<!-- 거리 900 까지 추적, 주의: 추적할 때 투르카가 메인 전투판에 벗어나 큐브 한칸 위로 올라가는 경우 없도록 해야함 -->
+						<node name="skill" faceTarget="1" idx="13">
+							<!-- 얼굴발사, 레벨22 사정거리 1900 큐브 2칸위까지 커버, 로봇탑승 상태의 플레이어를 최우선 유도탄에 맞추는 기능 포함되어 있음 -->
+							<node name="standby" limit="2200" />
+						</node>
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="14">
+					<!-- 사정거리 3300, 레벨23 범위 영역은 바닥으로 부터 340 올렸음, 로봇 탑승하면 플레이어 컬리전 박스가 높게 올라가는데, 큐브 한칸 위에 있는 로봇탑승 플레이어를 정밀하게 체크하기 위해 범위 영역은 바닥으로 부터 340 올렸음 -->
+					<node name="skill" faceTarget="1" idx="14">
+						<!-- 얼굴발사, 레벨23 사정거리 3300 큐브 6~7칸위 높이까지 커버, 로봇탑승 상태의 플레이어를 최우선 유도탄에 맞추는 기능 포함되어 있음 -->
+						<node name="standby" limit="2200" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99,1">
+						<node name="move" destination="-225, -1425, 1050" limit="2400" cooltime="7000" />
+						<node name="standby" limit="600" faceTarget="1">
+							<node name="target" type="near" from="10" to="1200" />
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="Fianl_MainPattern">
+			<node name="select" prob="999,99,99,0">
+				<!-- 최종 페이즈 공격 패턴-->
+				<node name="standby" limit="200" faceTarget="1" cooltime="68000">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<!-- 레벨3: 사정거리 1500, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음, 큐브 한칸 아래는 포함함-->
+							<node name="SetValue" key="DashPatternCheck" value="1" />
+							<!-- %&% 이 변수 1로 만들어 돌진이동 후 공격 연속 패턴 시작되도록 함 -->
+						</condition>
+						<condition name="true">
+							<node name="SetValue" key="Temp" value="1" />
+							<!-- 사정거리 밖에 있으면 아무것도 안함 -->
+						</condition>
+					</node>
+				</node>
+				<node name="standby" limit="200" faceTarget="1" cooltime="38000">
+					<node name="select" prob="50,50">
+						<!-- 메테오 드랍 공격 자주 사용 -->
+						<node name="skill" faceTarget="1" idx="15">
+							<node name="standby" limit="1300" faceTarget="1" />
+						</node>
+						<node name="skill" faceTarget="1" idx="16">
+							<node name="standby" limit="1100" faceTarget="1" />
+						</node>
+					</node>
+				</node>
+				<node name="skill" faceTarget="1" cooltime="22000" idx="3">
+					<!-- 2초뒤 저주 폭발 2발 준비, 레벨 11 준비 동작, 얼굴 애디셔널 이펙트 출력 -->
+					<node name="skill" faceTarget="0" idx="4">
+						<!-- 2초뒤 저주 폭발 2발 발사, 레벨 12 발사 동작, 얼굴 애디셔널 이펙트 지우기 -->
+						<node name="standby" limit="1400" faceTarget="1" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="20,20,20,40">
+							<!-- 사정거리 470, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+							<node name="skill" faceTarget="1" idx="1">
+								<!-- 낫 휘둘기 2연타, 레벨1은 돌진함 -->
+								<node name="standby" limit="1800" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="9000" idx="12">
+								<!--얼굴 발사, 레벨21은 사정거리 650 큐브 2칸위까지 커버, 로봇탑승 상태의 플레이어를 최우선 유도탄에 맞추는 기능 포함되어 있음 -->
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="32000" idx="9">
+								<!-- 얼굴 바닥 레이저 발동, 레벨11은 단독 레이저 공격 전용-->
+								<node name="standby" limit="1600" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="19,20,20,41">
+							<!-- 사정거리 1100, 큐브 한칸 위의 대상은 사정거리 범위 안에 포함시키지 않음-->
+							<node name="trace" till="465" limit="1200" cooltime="17000" />
+							<!-- 거리 465 까지 추적, 주의: 추적할 때 투르카가 메인 전투판에 벗어나 큐브 한칸 위로 올라가는 경우 없도록 해야함 -->
+							<node name="skill" faceTarget="1" cooltime="12000" idx="2">
+								<!-- 낫 내려찍기 -->
+								<node name="standby" limit="1100" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" idx="13">
+								<!-- 얼굴발사, 레벨22 사정거리 1900 큐브 2칸위까지 커버, 로봇탑승 상태의 플레이어를 최우선 유도탄에 맞추는 기능 포함되어 있음 -->
+								<node name="standby" limit="1200" faceTarget="1" />
+							</node>
+							<node name="skill" faceTarget="1" cooltime="25000" idx="9">
+								<!-- 얼굴 바닥 레이저 발동, 레벨11은 단독 레이저 공격 전용-->
+								<node name="standby" limit="1500" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="11">
+						<node name="select" prob="50,50">
+							<!-- 사정거리 1900, 레벨2는 큐브 한칸 위의 대상 포함 시키지 않음, 큐브 한칸 위에 있는  플레이어는  구분해서 추적하기 위해서 평소에는 같은 메인 전투판에 있는 플레이어 위주로 타겟팅 함-->
+							<node name="trace" till="900" limit="1200" cooltime="17000" />
+							<!-- 거리 900 까지 추적, 주의: 추적할 때 투르카가 메인 전투판에 벗어나 큐브 한칸 위로 올라가는 경우 없도록 해야함 -->
+							<node name="skill" faceTarget="1" idx="13">
+								<!-- 얼굴발사, 레벨22 사정거리 1900 큐브 2칸위까지 커버, 로봇탑승 상태의 플레이어를 최우선 유도탄에 맞추는 기능 포함되어 있음 -->
+								<node name="standby" limit="1300" faceTarget="1" />
+							</node>
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="14">
+						<!-- 사정거리 3300, 레벨23 범위 영역은 바닥으로 부터 340 올렸음, 로봇 탑승하면 플레이어 컬리전 박스가 높게 올라가는데, 큐브 한칸 위에 있는 로봇탑승 플레이어를 정밀하게 체크하기 위해 범위 영역은 바닥으로 부터 340 올렸음 -->
+						<node name="skill" faceTarget="1" idx="14">
+							<!-- 얼굴발사, 레벨23 사정거리 3300 큐브 6~7칸 높이까지 커버, 로봇탑승 상태의 플레이어를 최우선 유도탄에 맞추는 기능 포함되어 있음 -->
+							<node name="standby" limit="1300" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="select" prob="99,1">
+							<node name="move" destination="-225, -1425, 1050" limit="2400" cooltime="7000" />
+							<node name="standby" limit="600" faceTarget="1">
+								<node name="target" type="near" from="10" to="1200" />
+							</node>
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="RidingPlayer_GrabPattern">
+			<!-- 메인 전투판 기준 큐브 한칸 위에서 로봇 탑승하면서 졸몹 제거하고 있는 플레이어 잡기 공격 견제하기 위한 부분임-->
+			<node name="target" type="hasAdditional" additionalId="73000012" additionalLevel="1" target="hostile">
+				<!-- 제일 먼저 로봇 탑승 플레이어 타겟팅 시도하여, 이 때 로봇 탑승 타겟티이 있으면  <if skillId="50101308" skillLev="12">  이 부분 실행해 잡기 공격 실행하고  만약 없다면 <else> 아무것도 안하는 이 부분 실행할 것임 -->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="20">
+						<!-- 레벨2: 타겟팅 대상이 이 범위 안에 들어오면 잡기 공격 하기, 사정거리 3300, 범위 영역은 바닥으로 부터 340 올렸음, 로봇 탑승하면 플레이어 컬리전 박스가 높게 올라가는데, 큐브 한칸 위에 있는 로봇탑승 플레이어를 정밀하게 체크하기 위해 범위 영역은 바닥으로 부터 340 올렸음 -->
+						<node name="trace" limit="2500" skillIdx="19">
+							<!-- 거리 650 까지 추적 후 잡기 공격 발동 -->
+							<node name="skill" faceTarget="1" idx="19">
+								<!-- 잡기 공격 발동, 레벨11 3페이즈 로봇탑승 플레이어 잡기 전용 스킬임 -->
+								<node name="target" type="grabbedUser" from="2" to="1500">
+									<!-- 중요: 잡기 공격 후 잡은 대상 우선 타겟팅 하기 설정하기!! -->
+									<node name="conditions">
+										<condition name="state" targetState="grabTarget">
+											<!-- 타겟팅 된 대상이 잡혀있다면-->
+											<!--  플레이어 잡은 상태로 중앙쪽 이동후 내던지기 -->
+											<node name="standby" limit="1200" facePos="-225, -1425, 1050" animation="Attack_02_J" isKeepBattle="true">
+												<node name="move" destination="-225, -1425, 1050" limit="2100" animation="Attack_02_J" />
+												<node name="skill" idx="18" />
+												<!-- 잡은 대상 내던지기+메테오, 이때 잡시 시도때 나오는 손에 붙는 애디셔널 제거함 , 참고로 그냥 던지기 스킬은 50101308(레벨5)-->
+												<node name="standby" limit="1200" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<!-- 타겟팅 된  잡혀있지 않다면, 즉 잡힌 플레이어 한명도 없다면, 그냥 standby 상태로 돌아오기 -->
+											<node name="buff" type="remove" id="50001094" level="1">
+												<!-- 잡기 시도때 손에 붙는 애디셔널 제거하기  -->
+												<node name="standby" limit="1200" faceTarget="1">
+													<node name="target" type="near" from="10" to="1200" />
+												</node>
+											</node>
+										</condition>
+									</node>
+								</node>
+							</node>
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="300" faceTarget="1">
+							<node name="target" type="near" from="10" to="1200" />
+						</node>
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="DashShot_Pattern">
+			<!-- 돌진 이동 후 얼굴 발사 반복 공격 패턴 정의   <aiPreset name="Fianl_MainPattern"> 에서 DashPatternCheck 변수 1로 만들어서 이 행위 시작하도록 함-->
+			<node name="conditions">
+				<condition name="extraData" key="DashPatternCheck" value="8" op="greaterEqual">
+					<!-- DashPatternCheck 변수가 기준 이상 수가 되면 이 공격팬턴 최종 마무리 처리 하기, #$% 이 설정 아래쪽에 또 있음 -->
+					<node name="standby" limit="900" faceTarget="1" animation="Attack_02_E" isKeepBattle="true">
+						<!-- 플레이어가 어느정도 가까이 온 상태에서 공격해야 효과적이기 때문에 공격 직전  standby 상태로 잠시 대기하기-->
+						<node name="target" type="near" center="-450, -1350, 1050" />
+						<!-- 3페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+						<node name="skill" faceTarget="1" idx="7" />
+						<!--  바닥 레이저  -->
+						<node name="buff" type="remove" id="50001093" level="1" />
+						<!--  얼굴에 붙어있는 마법빛 애디셔널 효과 제거하기  -->
+						<node name="standby" limit="900" faceTarget="1" />
+						<node name="skill" idx="17" />
+						<node name="teleport" pos="-450, -1350, 1060" />
+						<!-- 맵 중앙으로 순간이동하기 -->
+						<!-- 각종 변수 0 초기화 후에 평상시 상태로 돌아오기  -->
+						<node name="SetValue" key="Shot" value="0" />
+						<node name="SetValue" key="DashPatternPos" value="0" />
+						<node name="SetValue" key="DashPatternCheck" value="0" />
+						<!-- DashPatternCheck 변수 여기서 0 셋팅하면서 <aiPreset name="DashShot_Pattern"> 부분 빠져나오게 함 -->
+						<node name="standby" limit="2300" faceTarget="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="Shot" value="1">
+					<node name="select" prob="999,70,30">
+						<!--  대쉬 이동 후 발사 공격 혹은 레이저 공격 행동을 정의하는 부분  -->
+						<node name="standby" limit="1600" faceTarget="1" animation="Attack_02_E" cooltime="5000">
+							<!-- 플레이어가 어느정도 가까이 온 상태에서 공격해야 효과적이기 때문에 공격 직전  standby 상태로 잠시 대기하기-->
+							<node name="target" type="near" center="-450, -1350, 1050">
+								<!-- 3페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+								<node name="skill" faceTarget="1" idx="8">
+									<!--  레벨4: 투사체 발사 바닥 폭발 + 폭발저주 2초전  -->
+									<node name="SetValue" key="Shot" value="0">
+										<!-- Shot 변수에 0 초기화 하여, 한번 공격 행동 후 이 단계 빠져나오게 하기  -->
+										<node name="SetValue" key="DashPatternCheck" value="1" isModify="1">
+											<node name="select" prob="33,33,34">
+												<node name="standby" limit="2100" faceTarget="1" animation="Attack_02_E" />
+												<node name="standby" limit="2800" faceTarget="1" animation="Attack_02_E" />
+												<node name="standby" limit="3200" faceTarget="1" animation="Attack_02_E" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="1200" faceTarget="1" animation="Attack_02_E">
+							<!-- 플레이어가 어느정도 가까이 온 상태에서 공격해야 효과적이기 때문에 공격 직전  standby 상태로 잠시 대기하기-->
+							<node name="target" type="near" center="-450, -1350, 1050">
+								<!-- 3페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+								<node name="skill" faceTarget="1" idx="6">
+									<!--  레벨2: 투사체 발사 바닥 폭발  -->
+									<node name="SetValue" key="Shot" value="0">
+										<!-- Shot 변수에 0 초기화 하여, 한번 공격 행동 후 이 단계 빠져나오게 하기  -->
+										<node name="SetValue" key="DashPatternCheck" value="1" isModify="1">
+											<node name="select" prob="33,33,34">
+												<node name="standby" limit="2100" faceTarget="1" animation="Attack_02_E" />
+												<node name="standby" limit="2800" faceTarget="1" animation="Attack_02_E" />
+												<node name="standby" limit="3200" faceTarget="1" animation="Attack_02_E" />
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+						<node name="standby" limit="1100" faceTarget="1" animation="Attack_02_E" cooltime="21000">
+							<!-- 플레이어가 어느정도 가까이 온 상태에서 공격해야 효과적이기 때문에 공격 직전  standby 상태로 잠시 대기하기-->
+							<node name="target" type="near" center="-450, -1350, 1050">
+								<!-- 3페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+								<node name="skill" faceTarget="1" idx="7">
+									<!--  바닥 레이저  -->
+									<node name="SetValue" key="Shot" value="0">
+										<!-- Shot 변수에 0 초기화 하여, 한번 공격 행동 후 이 단계 빠져나오게 하기  -->
+										<node name="SetValue" key="DashPatternCheck" value="2" isModify="1">
+											<node name="conditions">
+												<condition name="extraData" key="DashPatternCheck" value="8" op="greaterEqual">
+													<!-- 바닥 레이저 공격 하고나서,   DashPatternCheck 변수 체크하여 이 변수가 기준 이상 수가 되면 이 공격팬턴 최종 마무리 처리 하기,  #$% 이 설정 위쪽에 또 있음-->
+													<node name="buff" type="remove" id="50001093" level="1" isKeepBattle="true">
+														<!--  얼굴에 붙어있는 마법빛 애디셔널 효과 제거하기  -->
+														<node name="skill" idx="17" />
+														<node name="teleport" pos="-450, -1350, 1060" />
+														<!-- 맵 중앙으로 순간이동하기 -->
+														<node name="standby" limit="2300" faceTarget="1" />
+														<!-- 각종 변수 0 초기화 후에 평상시 상태로 돌아오기  -->
+														<node name="SetValue" key="Shot" value="0" />
+														<node name="SetValue" key="DashPatternPos" value="0" />
+														<node name="SetValue" key="DashPatternCheck" value="0" />
+													</node>
+												</condition>
+												<condition name="true">
+													<node name="select" prob="33,33,34">
+														<node name="standby" limit="800" faceTarget="1" animation="Attack_02_E" />
+														<node name="standby" limit="1300" faceTarget="1" animation="Attack_02_E" />
+														<node name="standby" limit="2100" faceTarget="1" animation="Attack_02_E" />
+													</node>
+												</condition>
+											</node>
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="1">
+					<!-- DashPatternPos 변수 1을 할당받아 1시 방향으로 대시 이동하는 경우  -->
+					<node name="move" destination="1200, -1350, 1050" limit="1400" animation="Attack_022_E" speed="1600">
+						<!-- 1시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 1시 3시 제회-->
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="5" />
+								<node name="SetValue" key="DashPatternPos" value="7" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="9" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="11" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="3">
+					<!-- DashPatternPos 변수 3을 할당받아 3시 방향으로 대시 이동하는 경우  -->
+					<node name="move" destination="750, -2700, 1050" limit="1400" animation="Attack_022_E" speed="1600">
+						<!-- 3시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 3시 5시 제외  -->
+								<node name="SetValue" key="DashPatternPos" value="11" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="9" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="7" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="5">
+					<!-- DashPatternPos 변수 5를 할당받아 5시 방향으로 대시 이동하는 경우  -->
+					<node name="move" destination="-300, -3000, 1050" limit="1400" animation="Attack_022_E" speed="1600">
+						<!-- 5시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 5시 3시 제외  -->
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="7" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="11" />
+								<node name="SetValue" key="DashPatternPos" value="9" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="7">
+					<!-- DashPatternPos 변수 7을 할당받아 7시 방향으로 대시 이동하는 경우  -->
+					<node name="move" destination="-2100, -1650, 1050" limit="1400" animation="Attack_022_E" speed="1600">
+						<!-- 7시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 7시 9시 제외 -->
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="5" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="11" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="1" />
+								<node name="SetValue" key="DashPatternPos" value="3" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="9">
+					<!-- DashPatternPos 변수 9를 할당받아 9시 방향으로 대시 이동하는 경우  -->
+					<node name="move" destination="-1650, -450, 1050" limit="1400" animation="Attack_022_E" speed="1600">
+						<!-- 9시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 9시 7시 제외  -->
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="1" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="11" />
+								<node name="SetValue" key="DashPatternPos" value="5" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="3" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="DashPatternPos" value="11">
+					<!-- DashPatternPos 변수 11을 할당받아 11시 방향으로 대시 이동하는 경우  -->
+					<node name="move" destination="-300, 150, 1050" limit="1400" animation="Attack_022_E" speed="1600">
+						<!-- 11시 방향으로 대시 이동  -->
+						<node name="SetValue" key="Shot" value="1">
+							<node name="select" prob="20,20,20,20">
+								<!-- Shot 변수에 1을 넣어 대시 이동 후 발사 공격 하도록 하기  -->
+								<!-- 공격 행동 후 다음 대쉬 이동 방향 설정하는 부분, 방금 대쉬 이동한 방향과 그 근처 제외한 다른 방향을 설정, 즉 11시 9시 제외  -->
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="1" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="5" />
+								<node name="SetValue" key="DashPatternPos" value="3" />
+								<node name="SetValue" cooltime="24000" key="DashPatternPos" value="7" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- ## 이 단계에 오면, 최초에 이 부분부터 실행함 ## -->
+					<node name="move" destination="-450, -1350, 1050" limit="1600">
+						<!-- 3페이즈 전투판 중앙 지점으로 이동  -->
+						<node name="skill" faceTarget="1" idx="5">
+							<!-- 최초 준비 동작으로 이 스킬에 50001093(레벨1) 얼굴에 마법 에너지 붙는 애디셔널 효과 붙이는 기능 있음 -->
+							<node name="skill" faceTarget="1" idx="6">
+								<node name="target" type="near" center="-450, -1350, 1050">
+									<!-- 3페이즈 맵 중앙에 가까운 대상을 타겟팅함 -->
+									<node name="standby" limit="1800" faceTarget="1" animation="Attack_02_E">
+										<node name="select" prob="50,50">
+											<!-- 처음에 이 변수에 1 혹은 3을 할당하여, 1시방향 혹은 3시방향으로 대시 이동함-->
+											<node name="SetValue" key="DashPatternPos" value="9" />
+											<node name="SetValue" key="DashPatternPos" value="3" />
+										</node>
+									</node>
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

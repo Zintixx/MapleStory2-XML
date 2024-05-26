@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="101">
+			<node name="standby" limit="100" faceTarget="1" isKeepBattle="true">
+				<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true"/>
+				<node name="SetValue" key="CheckBodyBigger" value="0" />
+				<node name="SetValue" key="ActionBodyBigger" value="0" />
+			</node>
+		</condition>
+	</reserved>
+	<battle>
+		<node name="select" prob="100,100,0">
+			<node name="standby" limit="10" faceTarget="1" cooltime="9999999" isKeepBattle="true">
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="101" lifeTime="600" summonPos="6600, -150, 2150" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="102" lifeTime="600" summonPos="7350, -1200, 2150" />
+				<node name="move" destination="6600, -1050, 1700" limit="4000" />
+				<!--  커지기 주문 투사체 받기 좋도록 전투판 중앙으로 이동하기-->
+				<node name="standby" limit="4200" faceTarget="1" />
+				<!--  커지기 주문 4개를 한꺼번에 받으려면 4초 정도 기다리고 있어야 함, 4초가 너무 길어도 어쩔 수 없음 -->
+				<node name="target" type="near" from="10" to="1800" />
+				<!--  이 페이즈에서 항상 가까이 있는 대상에게 타겟팅 가도록 함  -->
+			</node>
+			<node name="conditions" cooltime="1000">
+				<condition name="extraData" key="CheckBodyBigger" value="1">
+					<!-- 몹 소환 이후 몹이 살아있는 상태  -->
+					<node name="conditions">
+						<condition name="SlaveCount" count="0">
+							<node name="SetValue" key="CheckBodyBigger" value="0" />
+							<node name="buff" type="remove" id="50001505" />
+							<node name="buff" type="remove" id="50001506" />				
+						</condition>
+						<condition name="SlaveCount" count="1">
+							<node name="SetValue" key="ActionBodyBigger" value="1" />
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="1"/>
+							<node name="target" type="near" from="10" to="1800" />
+						</condition>
+						<condition name="SlaveCount" count="2">
+							<node name="SetValue" key="ActionBodyBigger" value="2" />
+							<node name="skill" faceTarget="0" isKeepBattle="true" idx="2"/>
+							<node name="target" type="near" from="10" to="1800" />
+						</condition>
+					</node>
+				</condition>
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="ActionBodyBigger" value="1">
+					<!--  덩치커짐 1단계 20% 커진 상태면 -->
+					<!-- 통상적인 행동 패턴  -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="6">
+							<node name="skill" idx="6">
+								<!--  레벨2가 덩치커짐 20% 상태이때 사용하는 스킬임 -->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="1500" skillIdx="6">
+								<node name="target" type="near" from="10" to="2500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionBodyBigger" value="2">
+					<!--  덩치커짐 2단계 40% 커진 상태면 -->
+					<!-- 통상적인 행동 패턴  -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="7">
+							<node name="skill" idx="7">
+								<!--  레벨3이 덩치커짐 40% 상태이때 사용하는 스킬임 -->
+								<node name="standby" limit="2500" faceTarget="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="trace" limit="1500" skillIdx="7">
+								<node name="target" type="near" from="10" to="2500" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="extraData" key="ActionBodyBigger" value="0" op="lessEqual">
+					<!--  덩치가 보통 상태일 때  -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!--타겟팅 대상이 1층 지형에 있으면-->
+							<!-- 통상적인 행동 패턴  -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="5">
+									<!--  레벨1이 덩치커짐 없이 사용하는 스킬임 -->
+									<node name="skill" idx="5">
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="1500" skillIdx="5">
+										<node name="target" type="near" from="10" to="2500" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" idx="4" />
+							<!--Attack_Idle 대기 상태-->
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--  덩치가 보통 상태일 때 (신호 데이터가 꼬였을 때를 대비해서 ActionBodyBigger=0 과 똑같이 설정함) -->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="4">
+							<!--타겟팅 대상이 1층 지형에 있으면-->
+							<!-- 통상적인 행동 패턴  -->
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="5">
+									<!--  레벨1이 덩치커짐 없이 사용하는 스킬임 -->
+									<node name="skill" idx="5">
+										<node name="standby" limit="3500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="trace" limit="1500" skillIdx="5">
+										<node name="target" type="near" from="10" to="2500" />
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="skill" idx="4" />
+							<!--Attack_Idle 대기 상태-->
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

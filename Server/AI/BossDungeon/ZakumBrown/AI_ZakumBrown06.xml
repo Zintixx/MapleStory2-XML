@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<node name="standby" limit="500" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+				<node name="SetValue" key="ZakumArmNumber" value="6" />
+				<node name="buff" type="add" id="50004403" level="1" />
+				<!--자쿰팔이 버프 스킬을 사용할 때 자쿰 몸에 붙는 아이콘 애디셔널은 팔에 붙지 않게 하기 위해 이 애디셔널을 부여함 -->
+				<node name="standby" limit="9300" faceTarget="0" />
+				<!--시작하자마자 바로 공격하는 것이 좀 어색해서 최초에만 몇초동안의 딜레이 설정을 넣음 -->
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 오른쪽 1층 지형 -->
+			<node name="target" type="near" center="3000, -1675, 1800" cooltime="8000" />
+			<node name="conditions">
+				<condition name="extraData" key="ZakumArmNumber" value="6">
+					<!-- 팔이 6개 있는 경우-->
+					<aiPreset name="MainBattle06" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="5">
+					<!-- 팔이 5개 있는 경우-->
+					<aiPreset name="MainBattle06" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="4">
+					<!-- 팔이 4개 있는 경우, 6번 팔은 초반에 처리해야지 남은 팔 4개 상태에서도 6번 팔이 계속 남아있으면 버프 스킬 자주 사용하게 됨-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="3">
+					<!-- 팔이 3개 있는 경우-->
+					<aiPreset name="MainBattle04" />
+				</condition>
+				<condition name="extraData" key="ZakumArmNumber" value="2">
+					<!-- 팔이 2개 있는 경우-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+				<condition name="true">
+					<!-- 팔이 1개 있는 경우-->
+					<aiPreset name="MainBattle02" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="VoiceDeathZakumArm" value="1">
+			<!-- 본체에게 팔이 죽음으로 인한 성우 목소리를 출력하라는 신호를 보냄-->
+			<node name="SetMasterValue" key="ZakumArmBuff" value="1" isModify="1">
+				<!-- 자쿰팔이 죽으면 이 변수에 1을 더해 자쿰 본체에서 자쿰팔에 버프 부야하는 행동을 하도록 함-->
+				<node name="SetValueRangeTarget" key="ZakumArmNumber" value="-1" radius="2500" height="4000" isModify="1">
+					<!-- 자쿰팔이 죽어서 본체와 다른 팔의 이 변수 -1을 하여 현재 팔이 몇개 남았는지 본체와 다른 팔에서 파악할 수 있도록 함-->
+					<!-- param3 은 좌우 영역, param4는 위아래 영역임, 자쿰몸체 컬리전 박스가 3600 높이에 어긋나게 있기 때문에 최소 param4=3600 이상이어야 함-->
+					<node name="TriggerSetUserValue" triggerID="999116" key="ZakumArmDeath06" value="1">
+						<!-- 자쿰팔이 죽으면 트리거 신호 보내기 -->
+						<node name="ModifyRoomTime" timeTick="80000" isShowEffect="1" />
+						<!--던전시간 80초 증가, param2="true" 이것을 넣어야 UI 표시를 함-->
+					</node>
+				</node>
+			</node>
+		</node>
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="MainBattle06">
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="1">
+					<node name="select" prob="90,10">
+						<!--1층 오른쪽 전투판 팔쪽으로 가까이 붙어 있으면-->
+						<!--휩쓸기-->
+						<node name="skill" cooltime="10000" idx="1">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="6200" faceTarget="0" />
+								<node name="standby" limit="5750" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1300" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="skillRange" skillIdx="2">
+					<node name="select" prob="30,30,30,9,1">
+						<!--1층 오른쪽 전투판에 있으면-->
+						<!--큐브스킬 돌 솟구치기-->
+						<node name="skill" cooltime="45000" idx="2">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="6200" faceTarget="0" />
+								<node name="standby" limit="5750" faceTarget="0" />
+							</node>
+						</node>
+						<!--짓누르기, 바람 일으키기-->
+						<node name="skill" cooltime="15000" idx="3">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="6200" faceTarget="0" />
+								<node name="standby" limit="5750" faceTarget="0" />
+							</node>
+						</node>
+						<!--주먹 연속 치기, 바람 일으키기-->
+						<node name="skill" cooltime="18000" idx="4">
+							<node name="select" prob="50,50">
+								<node name="standby" limit="6200" faceTarget="0" />
+								<node name="standby" limit="5750" faceTarget="0" />
+							</node>
+						</node>
+						<!--각종 버프 걸기-->
+						<node name="standby" limit="700" faceTarget="1" cooltime="95000" initialCooltime="31000">
+							<node name="select" prob="35,33,31,1">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="skill" cooltime="150000" idx="7">
+									<!--마법 공격력 상승-->
+									<node name="standby" limit="3300" faceTarget="0" />
+								</node>
+								<node name="skill" cooltime="150000" idx="6">
+									<!--물리 공격력 상승-->
+									<node name="standby" limit="4400" faceTarget="0" />
+								</node>
+								<node name="skill" cooltime="390000" idx="5">
+									<!--방어력 상승, 여기서 이거 사용 확률 더 낮게하기-->
+									<node name="standby" limit="3800" faceTarget="0" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="3300" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="99,1">
+						<!--1층 오른쪽 이외에 다른 곳에 있으면-->
+						<!--각종 버프 걸기-->
+						<node name="standby" limit="700" faceTarget="1" cooltime="12000" initialCooltime="30000">
+							<node name="select" prob="97,1,1,1">
+								<!--쿨타임 조절 난이도 포인트-->
+								<node name="skill" cooltime="30000" idx="5">
+									<!--방어력 상승-->
+									<node name="standby" limit="2800" faceTarget="0" />
+								</node>
+								<node name="skill" cooltime="30000" idx="6">
+									<!--물리 공격력 상승-->
+									<node name="standby" limit="3400" faceTarget="0" />
+								</node>
+								<node name="skill" cooltime="30000" idx="7">
+									<!--마법 공격력 상승-->
+									<node name="standby" limit="2300" faceTarget="0" />
+								</node>
+								<node name="standby" limit="1000" faceTarget="0" />
+							</node>
+						</node>
+						<node name="standby" limit="1300" faceTarget="0" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle04">
+			<node name="select" prob="399,0">
+				<!--각종 버프 걸기-->
+				<node name="standby" limit="700" faceTarget="1" cooltime="12000">
+					<node name="select" prob="97,1,1,1">
+						<!--쿨타임 조절 난이도 포인트-->
+						<node name="skill" cooltime="30000" idx="5">
+							<!--방어력 상승-->
+							<node name="standby" limit="1700" faceTarget="0" />
+						</node>
+						<node name="skill" cooltime="30000" idx="6">
+							<!--물리 공격력 상승-->
+							<node name="standby" limit="1400" faceTarget="0" />
+						</node>
+						<node name="skill" cooltime="30000" idx="7">
+							<!--마법 공격력 상승-->
+							<node name="standby" limit="1300" faceTarget="0" />
+						</node>
+						<node name="standby" limit="1000" faceTarget="0" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="90,10">
+							<!--1층 오른쪽 전투판 팔쪽으로 가까이 붙어 있으면-->
+							<!--휩쓸기-->
+							<node name="skill" cooltime="8000" idx="1">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="3200" faceTarget="0" />
+									<node name="standby" limit="2750" faceTarget="0" />
+								</node>
+							</node>
+							<node name="standby" limit="1300" faceTarget="0" />
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="33,33,33,1">
+							<!--1층 오른쪽 전투판에 있으면-->
+							<!--큐브스킬 돌 솟구치기-->
+							<node name="skill" cooltime="35000" idx="2">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="3200" faceTarget="0" />
+									<node name="standby" limit="2750" faceTarget="0" />
+								</node>
+							</node>
+							<!--짓누르기, 바람 일으키기-->
+							<node name="skill" cooltime="15000" idx="3">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="3200" faceTarget="0" />
+									<node name="standby" limit="2750" faceTarget="0" />
+								</node>
+							</node>
+							<!--주먹 연속 치기, 바람 일으키기-->
+							<node name="skill" cooltime="15000" idx="4">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="3200" faceTarget="0" />
+									<node name="standby" limit="2750" faceTarget="0" />
+								</node>
+							</node>
+							<node name="standby" limit="1300" faceTarget="0" />
+						</node>
+					</condition>
+					<condition name="true">
+						<!--1층 오른쪽 이외에 다른 곳에 있으면-->
+						<node name="standby" limit="1300" faceTarget="0" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle02">
+			<node name="select" prob="399,0">
+				<!--각종 버프 걸기-->
+				<node name="standby" limit="700" faceTarget="1" cooltime="12000">
+					<node name="select" prob="97,1,1,1">
+						<!--쿨타임 조절 난이도 포인트-->
+						<node name="skill" cooltime="30000" idx="5">
+							<!--방어력 상승-->
+							<node name="standby" limit="600" faceTarget="0" />
+						</node>
+						<node name="skill" cooltime="30000" idx="6">
+							<!--물리 공격력 상승-->
+							<node name="standby" limit="400" faceTarget="0" />
+						</node>
+						<node name="skill" cooltime="30000" idx="7">
+							<!--마법 공격력 상승-->
+							<node name="standby" limit="300" faceTarget="0" />
+						</node>
+						<node name="standby" limit="1000" faceTarget="0" />
+					</node>
+				</node>
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="90,10">
+							<!--1층 오른쪽 전투판 팔쪽으로 가까이 붙어 있으면-->
+							<!--휩쓸기-->
+							<node name="skill" cooltime="8000" idx="1">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="400" faceTarget="0" />
+									<node name="standby" limit="1550" faceTarget="0" />
+								</node>
+							</node>
+							<node name="standby" limit="1300" faceTarget="0" />
+						</node>
+					</condition>
+					<condition name="skillRange" skillIdx="2">
+						<node name="select" prob="33,33,33,1">
+							<!--1층 오른쪽 전투판에 있으면-->
+							<!--큐브스킬 돌 솟구치기-->
+							<node name="skill" cooltime="25000" idx="2">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="600" faceTarget="0" />
+									<node name="standby" limit="1750" faceTarget="0" />
+								</node>
+							</node>
+							<!--짓누르기, 바람 일으키기-->
+							<node name="skill" cooltime="15000" idx="3">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="500" faceTarget="0" />
+									<node name="standby" limit="1250" faceTarget="0" />
+								</node>
+							</node>
+							<!--주먹 연속 치기, 바람 일으키기-->
+							<node name="skill" cooltime="15000" idx="4">
+								<node name="select" prob="50,50">
+									<node name="standby" limit="700" faceTarget="0" />
+									<node name="standby" limit="1350" faceTarget="0" />
+								</node>
+							</node>
+							<node name="standby" limit="1300" faceTarget="0" />
+						</node>
+					</condition>
+					<condition name="true">
+						<!--1층 오른쪽 이외에 다른 곳에 있으면-->
+						<node name="standby" limit="1300" faceTarget="0" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

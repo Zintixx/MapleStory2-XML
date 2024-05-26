@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,999,0">
+			<!--최초 등장하자마자 점프 이동함 -->
+			<node name="standby" limit="50" faceTarget="0" cooltime="9999999" isKeepBattle="true">
+				<!-- 점프 도약 동작 없는 것이 더 어울림 -->
+				<node name="jump" pos="4425, 5625, 5300" speed="1500" heightMultiplier="0.4" />
+				<!--10시 전투판으로 뛰기-->
+				<node name="skill" faceTarget="0" idx="9" />
+				<!--착지 -->
+				<node name="SetValue" key="Position" value="0" />
+				<!--0 은 단상 위에 있다는 뜻임-->
+				<node name="standby" limit="2000" faceTarget="1" />
+			</node>
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="5000">
+				<node name="target" type="near" from="10" to="1300" />
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="SnowKingSummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="RemoveMe" />
+					<!--스스로 사라짐, 이 몬스터는 죽으면 보스가 대미지 입기 때문에 죽지 않고 스스로 사라짐 처리함-->
+				</condition>
+				<condition name="true">
+					<aiPreset name="Battle01" />
+					<!--주 공격 패턴-->
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="SnowKingSummonDeath" value="1" isModify="1" />
+		<!--분신의 죽음을 보스한테 알리는데 사용하는 변수, 이 변수에 의해 보스 스스로 대미지 입게 할지 말지를 결정함 -->
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="Battle01">
+			<!--기본 공격 패턴-->
+			<node name="conditions">
+				<condition name="skillRange" skillIdx="7">
+					<!--1000 사정거리 안에 있으면-->
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="select" prob="30,40,40">
+								<!--900 사정거리 안에 있으면-->
+								<node name="skill" idx="1">
+									<!-- 3콤보 공격 -->
+									<node name="skill" faceTarget="1" idx="2">
+										<node name="target" type="rand" from="10" to="1500">
+											<node name="skill" faceTarget="1" idx="3">
+												<node name="conditions">
+													<condition name="skillRange" skillIdx="3">
+														<!-- 사정거리 600 이내에 있으면 -->
+														<node name="skill" faceTarget="1" idx="4">
+															<node name="standby" limit="1700" faceTarget="1" />
+														</node>
+													</condition>
+													<condition name="true">
+														<!-- 600 이상  멀리 있으면 -->
+														<node name="skill" faceTarget="1" idx="5">
+															<node name="standby" limit="1700" faceTarget="1" />
+														</node>
+													</condition>
+												</node>
+											</node>
+										</node>
+									</node>
+								</node>
+								<node name="skill" cooltime="15000" idx="6">
+									<!--돌진 공격 -->
+									<node name="standby" limit="1700" faceTarget="1" />
+								</node>
+								<node name="skill" cooltime="15000" idx="7">
+									<!--검기투척 약 -->
+									<node name="standby" limit="1700" faceTarget="1" />
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="select" prob="50,50">
+								<node name="trace" limit="5000" skillIdx="1" />
+								<node name="standby" limit="500" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="90,100">
+						<!--1000 사정거리 밖에 있으면-->
+						<node name="skill" cooltime="8000" idx="8" />
+						<!--강제로 얼리는 냉기 웨이브 -->
+						<node name="standby" limit="500" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

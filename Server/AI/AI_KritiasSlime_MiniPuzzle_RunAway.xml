@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--황금상자 발견 기믹 / 크리티아스 슬라임 / 필드를 뛰어다니는 NPC 따라잡기(술래잡기) / PC를 인지하면 도망가고 근접 범위 안으로 PC가 들어오면 잡힌 것으로 처리 -->
+	<battle>
+		<!--  PC에게 따라잡히면 스플래시 스킬을 사용해서 PC 1명에게 황금상자 소유권 버프 지급 -->
+		<node name="conditions">
+			<condition name="skillRange" skillIdx="1">
+				<node name="skill" faceTarget="1" idx="1">
+					<!-- 인접한 대상 1명에게 버프 부여 -->
+					<node name="target" type="hasAdditional" additionalId="71001071" additionalLevel="1" target="hostile" noChangeWhenNoTarget="true" />
+					<!-- 버프를 가진 대상 인식하면 말풍선 연출 후에 황금 상자 생성 -->
+					<node name="conditions">
+						<condition name="additional" id="71001071" isTarget="1">
+							<!--황금 상자 생성  -->
+							<node name="CreateInteractObject" interactID="12000072" lifeTime="120" kfmName="Interaction_chest_C01" normal="Opened_A" reactable="Closed_A" />
+							<!-- 트리거에 신호 보내고 나면 트리거에서 제거 (트리거에서 연출용 NPC로 교체) -->
+							<node name="TriggerSetUserValue" triggerID="17000" key="ChangeNpc" value="1" />
+						</condition>
+						<!-- 버프를 가진 대상이 없으면 도망가기 -->
+						<condition name="true">
+							<node name="select" prob="99,1">
+								<node name="runaway" till="1200" limit="1000" cooltime="100">
+									<node name="standby" limit="10" faceTarget="1" />
+								</node>
+								<node name="standby" limit="10" faceTarget="1" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+			<!--  시야 안에 적이 있으면 도망치기 -->
+			<condition name="true">
+				<node name="select" prob="99,1">
+					<node name="runaway" till="1200" limit="1000" cooltime="100">
+						<node name="standby" limit="10" faceTarget="1" />
+					</node>
+					<node name="standby" limit="10" faceTarget="1" />
+				</node>
+			</condition>
+		</node>
+	</battle>
+</npcAi>

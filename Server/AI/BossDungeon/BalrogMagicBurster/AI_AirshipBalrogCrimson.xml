@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="200" faceTarget="0" isKeepBattle="true">
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="901" summonPos="450, 300, 2110" summonRot="0,0,180" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="902" summonPos="0, 450, 2110" summonRot="0,0,180" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="903" summonPos="-450, 450, 2110" summonRot="0,0,180" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="904" summonPos="-900, 300, 2110" summonRot="0,0,180" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="905" summonPos="-1500, 600, 2410" summonRot="0,0,180" />
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="906" summonPos="-1800, 300, 2410" summonRot="0,0,180" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="907" summonPos="-2100, 150, 2410" summonRot="0,0,180" />
+				<!--	투사체가 시작 지점에 포구에서 450 이상 떨여져있음	-->
+				<node name="summon" npcId="1" npcCount="1" npcCountMax="1" group="908" summonPos="900, 600, 2410" summonRot="0,0,180" />
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="909" summonPos="1200, 150, 2410" summonRot="0,0,180" />
+				<!--	투사체가 시작 지점에 포구에서 450 이상 떨여져있음	-->
+				<node name="summon" npcId="2" npcCount="1" npcCountMax="1" group="910" summonPos="1500, 0, 2410" summonRot="0,0,180" />
+				<!--	투사체가 시작 지점에 포구에서 450 이상 떨여져있음	-->
+				<node name="move" destination="-450, 2450, 1250" limit="13000" />
+				<node name="SetValue" key="MoveCheck" value="0" />
+				<!--	왼쪽 가운데 오른쪽 이동행동을 결정하는데 사용하는 변수	-->
+				<node name="SetValue" key="CannonShotNumber" value="0" />
+				<!--	대포 발사를 총 몇번 발사하는지 알 수 있게 사용하는 변수	-->
+				<node name="SetValue" key="CannonShotDelay" value="5" />
+				<!--	최초 값 5~10 정도 설정, 	대포 발사 후 이후 발사할 때 얼마큼 오랫동안 대기 상태로 있을 지를 결정하는데 사용하는 변수	-->
+				<node name="SetValue" key="CannonShotPattern" value="1" />
+				<!--	"1번: 가운데" -> "2번: 왼쪽" -> "3번: 오른쪽" 대포 발사  -> "4번: 가운데 강제 죽이기" 패턴 행위를 결정할때 사용하는 변수	-->
+				<node name="SetValue" key="HalfwayPoint" value="0" />
+				<!--	대포 15번 다 쏘면 이 변수 1로 설정하고, HalfwayPoint = 1 설정에 의해서 다시 처음부터 시작하는데, 이때는 쏘는 대포는 바닥 불이 사라지지 않는 버전으로 공격함	-->
+				<node name="standby" limit="2000" faceTarget="0" />
+				<!--	<teleport pos = "-400, 2450, 1250"  prob="100"/>	-->
+			</node>
+		</condition>
+		<condition name="hpLess" value="51">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="summon" npcId="3" npcCount="1" npcCountMax="1" group="11" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<!--폭발 시작	-->
+				<node name="standby" limit="2700" faceTarget="0" />
+				<node name="SetSlaveValue" key="DeathCannonShot" value="1" />
+				<!--	대포 제거	-->
+				<node name="SetSlaveValue" key="SummonDeath" value="1" />
+				<!--	소환몹 제거	-->
+				<node name="standby" limit="300" faceTarget="0" />
+				<node name="TriggerSetUserValue" triggerID="9993" key="AirshipBalrogCrimsonBroken" value="1" />
+				<!--   AirshipBalrogCrimsonBroken = 1 신호에 의해서 이벤트 연출 트리거 작동	 즉 Event01.xml 에서 받음      param1="9993" 은   MS2TriggerModel의 TriggerModelID 번호임-->
+				<node name="standby" limit="4000" faceTarget="0" animation="Attack_01_B" />
+				<!--	animation="Attack_01_B" 넣어야 몸체가 들썩 거리지 않아서 몸체 교체 될때 그나마 자연스럽게 보여짐	-->
+				<node name="summon" npcId="4" npcCount="1" npcCountMax="1" group="201" master="None" option="masterHP" summonPosOffset="0, 0, 0" summonRot="0,0,0" />
+				<!--보스 UI HB바 이슈 때문에 전함이 파괴되면 바로 교체하지 않고 이 단계 몬스터 나온 다음에 이후 진짜 레이저 전함(23000092)으로 교체하도록 설정했음-->
+				<node name="standby" limit="600" faceTarget="0" animation="Attack_01_B" />
+				<!--	animation="Attack_01_B" 넣어야 몸체가 들썩 거리지 않아서 몸체 교체 될때 그나마 자연스럽게 보여짐	-->
+				<node name="RemoveMe" />
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="99999,9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분, 주기적으로 졸몹에서 현재 전함이 가운데인지 왼쪽인지 혹은 오른쪽인지를 주기적으로 계속 알려줌, 중간에 스폰되는 몬스터 때문에 주기적으로 신호 보내는 설정이 필요함 -->
+			<node name="standby" limit="200" faceTarget="1" cooltime="4000">
+				<node name="target" type="rand" from="10" to="5500">
+					<node name="conditions">
+						<condition name="extraData" key="CannonShotPattern" value="1">
+							<!--현재 인페르녹의 전함이 가운데 지점에 있을 경우 -->
+							<node name="SetValueRangeTarget" key="CannonShotPattern" value="1" radius="12500" height="3500" />
+							<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						</condition>
+						<condition name="extraData" key="CannonShotPattern" value="2">
+							<!--현재 인페르녹의 전함이 왼쪽 지점에 있을 경우 -->
+							<node name="SetValueRangeTarget" key="CannonShotPattern" value="2" radius="12500" height="3500" />
+							<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						</condition>
+						<condition name="extraData" key="CannonShotPattern" value="3">
+							<!--현재 인페르녹의 전함이 오른쪽 지점에 있을 경우 -->
+							<node name="SetValueRangeTarget" key="CannonShotPattern" value="3" radius="12500" height="3500" />
+							<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						</condition>
+						<condition name="true">
+							<!--이론적으로 여기 올일 없음 -->
+							<node name="standby" limit="200" faceTarget="1" />
+						</condition>
+					</node>
+				</node>
+			</node>
+			<!--일정 시간마다  졸몹 호출하기, 빈칸 채우기 방식 -->
+			<node name="standby" limit="100" faceTarget="1" cooltime="13000">
+				<aiPreset name="SummonCall" />
+			</node>
+			<node name="conditions">
+				<condition name="additional" id="50004404">
+					<!--<standby limit="2000"  faceTarget="0"  prob="99999">		
+				<announce message="$BarkhantBlue_SummonAttackRed$" durationTick="7000"/>	</standby>  -->
+					<!--  플레이어용 대포에 맞으면 50004404 애디셔널이 걸리게 되어, 이것으로 인해 대포 발사 행위를 지연시키는 설정함, 지금은 이 기능 필요 없어서 주석 처리함-->
+					<node name="buff" type="remove" id="50004404" level="1">
+						<!--
+				<event eventName="ModifyExtra" target="Me" param1="CannonShotDelay" param2="30" prob="60" cooltime = "6000" />  
+				<event eventName="ModifyExtra" target="Me" param1="CannonShotDelay" param2="0" prob="20"/> 
+				<event eventName="ModifyExtra" target="Me" param1="CannonShotDelay" param2="20" prob="10" cooltime = "6000"/>   
+				<event eventName="ModifyExtra" target="Me" param1="CannonShotDelay" param2="10" prob="10" cooltime = "6000"/>
+				-->
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotDelay" value="1" op="greaterEqual">
+					<node name="standby" limit="100" faceTarget="0">
+						<node name="SetValue" key="CannonShotDelay" value="-1" isModify="1" />
+					</node>
+				</condition>
+				<!--대포 발사 공격 패턴 정의 하는 메인 행동 부분 -->
+				<condition name="hpOver" value="51">
+					<node name="conditions">
+						<condition name="extraData" key="MoveCheck" value="1">
+							<aiPreset name="MoveCheck_CenterLeftRight" />
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="extraData" key="HalfwayPoint" value="0">
+									<aiPreset name="MainBattle_CannonShot" />
+								</condition>
+								<condition name="extraData" key="HalfwayPoint" value="1">
+									<aiPreset name="MainBattle_CannonShotFinal" />
+								</condition>
+								<condition name="true">
+									<!-- HalfwayPoint 변수 설정이 안될 경우 이 단계에 오는데, 만약을 위해 HalfwayPoint = 0 셋팅을 함-->
+									<node name="SetValue" key="HalfwayPoint" value="0" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="600" faceTarget="0" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<aiPresets>
+		<!--바닥불 10초 정도 있는  버전-->
+		<aiPreset name="MainBattle_CannonShot">
+			<node name="conditions">
+				<condition name="extraData" key="CannonShotPattern" value="1">
+					<node name="select" prob="9999,9999,9999,9999,9999,1">
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="1">
+							<!--대포 쏘는 스킬 레벨 별로 딱 한번만 발사함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="2">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="3">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="4">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="5">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<!--  CannonShotPattern = 1 단계에서 대포 다 쏴서 쿨타임 걸리면 이 단계 와서 왼쪽으로 이동함-->
+						<node name="standby" limit="500" faceTarget="0" isKeepBattle="true">
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--여기 오면 안되지만 혹시 여기 오면 무조건 이동관련 로직 진행하도록 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotPattern" value="2">
+					<node name="select" prob="9999,9999,9999,9999,9999,1">
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="6">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="7">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="8">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="9">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="10">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<!--  CannonShotPattern = 2 단계에서 대포 다 쏴서 쿨타임 걸리면 이 단계 와서 오른쪽으로 이동함-->
+						<node name="standby" limit="500" faceTarget="0" isKeepBattle="true">
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--여기 오면 안되지만 혹시 여기 오면 무조건 이동관련 로직 진행하도록 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotPattern" value="3">
+					<node name="select" prob="9999,9999,9999,9999,9999,1">
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="11">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="12">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="13">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="14">
+							<!--  레벨1~14는 바닥 3개 설치  플레이어 타겟 4명 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="15">
+							<!--  레벨15 만 바닥 2개 설치  플레이어 타겟 5명 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<!--  CannonShotPattern = 3 단계에서 대포 다 쏴서 쿨타임 걸리면 이 단계 와서 오른쪽으로 이동함-->
+						<node name="standby" limit="500" faceTarget="0" isKeepBattle="true">
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--여기 오면 안되지만 혹시 여기 오면 무조건 이동관련 로직 진행하도록 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<!--  이론적으로 이 단계 올 일 없음-->
+					<node name="standby" limit="200" faceTarget="0" />
+				</condition>
+			</node>
+		</aiPreset>
+		<!--바닥불 엄청 오래 있는 버전-->
+		<aiPreset name="MainBattle_CannonShotFinal">
+			<node name="conditions">
+				<condition name="extraData" key="CannonShotPattern" value="1">
+					<node name="select" prob="9999,9999,9999,9999,9999,1">
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="16">
+							<!--대포 쏘는 스킬 레벨 별로 딱 한번만 발사함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="17">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="18">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="19">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="20">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<!--  CannonShotPattern = 1 단계에서 대포 다 쏴서 쿨타임 걸리면 이 단계 와서 왼쪽으로 이동함-->
+						<node name="standby" limit="500" faceTarget="0" isKeepBattle="true">
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--여기 오면 안되지만 혹시 여기 오면 무조건 이동관련 로직 진행하도록 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotPattern" value="2">
+					<node name="select" prob="9999,9999,9999,9999,9999,1">
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="21">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="22">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="23">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="24">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="25">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<!--  CannonShotPattern = 2 단계에서 대포 다 쏴서 쿨타임 걸리면 이 단계 와서 오른쪽으로 이동함-->
+						<node name="standby" limit="500" faceTarget="0" isKeepBattle="true">
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--여기 오면 안되지만 혹시 여기 오면 무조건 이동관련 로직 진행하도록 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotPattern" value="3">
+					<node name="select" prob="9999,9999,9999,9999,9999,1">
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="26">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="27">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="28">
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="29">
+							<!--  레벨1~14는 바닥 3개 설치  플레이어 타겟 4명 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<node name="skill" faceTarget="0" cooltime="999999" isKeepBattle="true" idx="30">
+							<!--  레벨15 만 바닥 2개 설치  플레이어 타겟 5명 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+							<node name="SetValue" key="CannonShotDelay" value="33" />
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--대포 한번 쏘고 무조건 이동관련 로직 진행하도록 함-->
+						</node>
+						<!--  CannonShotPattern = 3 단계에서 대포 다 쏴서 쿨타임 걸리면 이 단계 와서 오른쪽으로 이동함-->
+						<node name="standby" limit="500" faceTarget="0" isKeepBattle="true">
+							<node name="SetValue" key="MoveCheck" value="1" />
+							<!--여기 오면 안되지만 혹시 여기 오면 무조건 이동관련 로직 진행하도록 함-->
+							<node name="SetValue" key="CannonShotNumber" value="1" isModify="1" />
+						</node>
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotPattern" value="4">
+					<!-- CannonShotPattern = 4 인 경우로 이 단계 오면 플레이어 강제로 죽이는 스킬 사용-->
+					<node name="skill" faceTarget="0" idx="31">
+						<!--  레벨16  발동 시간 무척 짧고 히트박스 엄청 커서  플레이어 죽이기 위한 용도, 이후 전투 끝날때 까지 이 스킬만 계속 사용-->
+						<node name="standby" limit="1500" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- CannonShotPattern 변수 설정이 안될 경우 이 단계에 오는데, 만약을 위해 CannonShotPattern = 1 셋팅을 함-->
+					<node name="SetValue" key="CannonShotPattern" value="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MoveCheck_CenterLeftRight">
+			<node name="conditions">
+				<condition name="extraData" key="CannonShotNumber" value="2">
+					<!--가운데에서 대포 2발 쏘고 왼쪽으로 이동-->
+					<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+						<node name="SetValue" key="CannonShotPattern" value="2" />
+						<!--  이 변수에 2를 넣어서 왼쪽으로 이동 공격 상황을 알림-->
+						<node name="SetValueRangeTarget" key="CannonShotPattern" value="2" radius="12500" height="3500" />
+						<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						<node name="SetValue" key="MoveCheck" value="0" />
+						<!--이 변수 0으로 초기화 하여  이어서 다음에  대포 쏘도록 함-->
+						<!-- ##	<announce message="$AirshipBalrogCrimson_Left$" durationTick="7000"/>	테스트용, 나중에 주석처리 해야함-->
+						<node name="move" destination="-1200, 2450, 1250" limit="15000" />
+						<node name="standby" limit="3000" faceTarget="0" />
+						<node name="buff" type="remove" id="50004404" level="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotNumber" value="4">
+					<!--왼쪽에서 대포 2발 쏘고 오른쪽으로 이동-->
+					<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+						<node name="SetValue" key="CannonShotPattern" value="3" />
+						<!--  이 변수에 3를 넣어서 오른쪽으로 이동 공격 상황을 알림-->
+						<node name="SetValueRangeTarget" key="CannonShotPattern" value="3" radius="12500" height="3500" />
+						<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						<node name="SetValue" key="MoveCheck" value="0" />
+						<!--이 변수 0으로 초기화 하여  이어서 다음에  대포 쏘도록 함-->
+						<!-- ##		<announce message="$AirshipBalrogCrimson_Right$" durationTick="7000"/>	테스트용, 나중에 주석처리 해야함-->
+						<node name="move" destination="500, 2450, 1250" limit="25000" />
+						<node name="standby" limit="3000" faceTarget="0" />
+						<node name="buff" type="remove" id="50004404" level="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotNumber" value="7">
+					<!--오른쪽에서 대포 3발 쏘고 가운데로 이동-->
+					<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+						<node name="SetValue" key="CannonShotPattern" value="1" />
+						<!--  이 변수에 1를 넣어서 가운데로 이동 공격 상황을 알림-->
+						<node name="SetValueRangeTarget" key="CannonShotPattern" value="1" radius="12500" height="3500" />
+						<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						<node name="SetValue" key="MoveCheck" value="0" />
+						<!--이 변수 0으로 초기화 하여  이어서 다음에  대포 쏘도록 함-->
+						<!-- ##		<announce message="$AirshipBalrogCrimson_Center$" durationTick="7000"/>	테스트용, 나중에 주석처리 해야함-->
+						<node name="move" destination="-450, 2450, 1250" limit="25000" />
+						<node name="standby" limit="3000" faceTarget="0" />
+						<node name="buff" type="remove" id="50004404" level="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotNumber" value="8">
+					<!--가운데에서 대포 1발 쏘고 왼쪽으로 이동-->
+					<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+						<node name="SetValue" key="CannonShotPattern" value="2" />
+						<!--  이 변수에 2를 넣어서 왼쪽으로 이동 공격 상황을 알림-->
+						<node name="SetValueRangeTarget" key="CannonShotPattern" value="2" radius="12500" height="3500" />
+						<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						<node name="SetValue" key="MoveCheck" value="0" />
+						<!--이 변수 0으로 초기화 하여  이어서 다음에  대포 쏘도록 함-->
+						<!-- ##		<announce message="$AirshipBalrogCrimson_Left$" durationTick="7000"/>	테스트용, 나중에 주석처리 해야함-->
+						<node name="move" destination="-1200, 2450, 1250" limit="15000" />
+						<node name="standby" limit="3000" faceTarget="0" />
+						<node name="buff" type="remove" id="50004404" level="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotNumber" value="11">
+					<!--왼쪽에서 대포 3발 쏘고 가운데로 이동-->
+					<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+						<node name="SetValue" key="CannonShotPattern" value="1" />
+						<!--  이 변수에 1를 넣어서 가운데로 이동 공격 상황을 알림-->
+						<node name="SetValueRangeTarget" key="CannonShotPattern" value="1" radius="12500" height="3500" />
+						<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						<node name="SetValue" key="MoveCheck" value="0" />
+						<!--이 변수 0으로 초기화 하여  이어서 다음에  대포 쏘도록 함-->
+						<!-- ##		<announce message="$AirshipBalrogCrimson_Center$" durationTick="7000"/>	테스트용, 나중에 주석처리 해야함-->
+						<node name="move" destination="-450, 2450, 1250" limit="25000" />
+						<node name="standby" limit="3000" faceTarget="0" />
+						<node name="buff" type="remove" id="50004404" level="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotNumber" value="13">
+					<!--가운데에서 대포 2발 쏘고 오른쪽 이동-->
+					<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+						<node name="SetValue" key="CannonShotPattern" value="3" />
+						<!--  이 변수에 3를 넣어서 오른쪽으로 이동 공격 상황을 알림-->
+						<node name="SetValueRangeTarget" key="CannonShotPattern" value="3" radius="12500" height="3500" />
+						<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+						<node name="SetValue" key="MoveCheck" value="0" />
+						<!--이 변수 0으로 초기화 하여  이어서 다음에  대포 쏘도록 함-->
+						<!-- ##		<announce message="$AirshipBalrogCrimson_Right$" durationTick="7000"/>	테스트용, 나중에 주석처리 해야함-->
+						<node name="move" destination="500, 2450, 1250" limit="25000" />
+						<node name="standby" limit="3000" faceTarget="0" />
+						<node name="buff" type="remove" id="50004404" level="1" />
+					</node>
+				</condition>
+				<condition name="extraData" key="CannonShotNumber" value="15" op="greaterEqual">
+					<!--오른쪽서 대포 2발 쏘고 가운데 이동-->
+					<node name="conditions">
+						<condition name="extraData" key="HalfwayPoint" value="0">
+							<!--이 단계 오면 대포 15발 다 쏴서, 다시 처음부터 중앙으로 가서 15발 대포 쏘기를 하는데, 이 이후 쏘는 대포는 바닥 불 사라지지 않는 버전이라서 그것 관련 처리를 진행함-->
+							<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+								<node name="SetValue" key="CannonShotNumber" value="0" />
+								<!--	중요!: 반환점 돌가 다음 대포 공격때 사용하기 위해 이 변수	초기화 하기-->
+								<node name="SetValue" key="CannonShotPattern" value="1" />
+								<!--  다시 처음부터 시작하는데, 가운데 지점에서 시작하기 때문에  이 변수 1로 셋팅-->
+								<node name="SetValueRangeTarget" key="CannonShotPattern" value="1" radius="12500" height="3500" />
+								<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+								<!--	1번: 가운데,  2번: 왼쪽,  3번: 오른쪽 대포 발사,  이 변수를 졸몹이 받아서 전함이 어디 위치에 있는지 알 수 있도록 함	-->
+								<node name="SetValue" key="MoveCheck" value="0" />
+								<!--이 변수 0으로 초기화 하여  이어서 다음에  대포 쏘도록 함-->
+								<!-- ##		<announce message="$AirshipBalrogCrimson_HalfwayPoint$" durationTick="7000"/>	테스트용, 나중에 주석처리 해야함-->
+								<node name="SetValue" key="HalfwayPoint" value="1" />
+								<!--	중요!: 이 변수 1로 설정하고, HalfwayPoint = 1 설정에 의해서 다시 처음부터 시작하는데, 이때는 쏘는 대포는 바닥 불이 사라지지 않는 버전으로 공격함, 이 변수가 1이 되어 다음 부터 <aiPreset name="MainBattle_CannonShotFinal"/> 대포 발사 부분 실행함	-->
+								<node name="move" destination="-450, 2450, 1250" limit="25000" />
+								<node name="standby" limit="3000" faceTarget="0" />
+								<node name="buff" type="remove" id="50004404" level="1" />
+							</node>
+						</condition>
+						<condition name="true">
+							<!-- HalfwayPoint = 1 인 경우임-->
+							<node name="standby" limit="300" faceTarget="0" isKeepBattle="true">
+								<node name="SetValue" key="CannonShotPattern" value="4" />
+								<!--  이 변수에 4를 넣어서 가운데 지점에서 바닥폭발 예시 시간이 짧고 히트박스 엄청 큰  무조건 죽이는  공격 대포 공격 하도록 함-->
+								<node name="SetValueRangeTarget" key="CannonShotPattern" value="1" radius="12500" height="3500" />
+								<!--졸몹에게 이 신호를 보내 발록전함이 어느쪽에서 대포 쏘고 있는지를 알림-->
+								<!--	1번: 가운데,  2번: 왼쪽,  3번: 오른쪽 대포 발사,  이 변수를 졸몹이 받아서 전함이 어디 위치에 있는지 알 수 있도록 함	-->
+								<node name="SetValue" key="MoveCheck" value="0" />
+								<!--이 변수 0으로 초기화 하여  이어서 다음에  대포 쏘도록 함-->
+								<!-- ##		<announce message="$AirshipBalrogCrimson_Center$" durationTick="7000"/>	테스트용, 나중에 주석처리 해야함-->
+								<node name="move" destination="-450, 2800, 1250" limit="25000" />
+								<!-- 위 1단계 보다 약간 뒤로 이동하도록 설정함-->
+								<node name="standby" limit="3000" faceTarget="0" />
+								<node name="buff" type="remove" id="50004404" level="1" />
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<condition name="true">
+					<!-- 대포 공격 후에 <aiPreset name="MoveCheck_CenterLeftRight"/> 실행하는데  위에  정해놓은 대포 발사 횟수에 해당되지 않으면, MoveCheck 변수 0으로 셋팅해서 다시 대포 공격 행동 하도록 함 -->
+					<node name="standby" limit="300" faceTarget="0">
+						<node name="SetValue" key="MoveCheck" value="0" />
+						<!--대포 쏘는 해당 횟수에 해당 안되면, 이 변수 0으로 초기화 하여 바로 이어서 대포 쏘도록 함-->
+					</node>
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="SummonCall">
+			<node name="select" prob="99999,3,3,3">
+				<!--모든 소환몹 호출-->
+				<node name="standby" limit="100" faceTarget="0" cooltime="31000" isKeepBattle="true">
+					<!--중앙-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="101" summonPos="-450, -300, 1960" summonRot="0,0,180" />
+					<!--발록창병-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="102" summonPos="50, -300, 1960" summonRot="0,0,180" />
+					<!--발록창병-->
+					<!--왼쪽-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="103" summonPos="-1350, -300, 2230" summonRot="0,0,180" />
+					<!--발록창병-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="104" summonPos="-1720, -300, 2260" summonRot="0,0,180" />
+					<!--발록창병-->
+					<!--오른쪽-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="105" summonPos="750, -300, 2260" summonRot="0,0,180" />
+					<!--발록창병-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="106" summonPos="1150, -300, 2260" summonRot="0,0,180" />
+					<!--발록창병-->
+					<!--왼쪽-->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="111" summonPos="-900, -400, 1960" summonRot="0,0,180" />
+					<!--발록크림슨-->
+					<!--오른쪽-->
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="112" summonPos="300, -350, 1960" summonRot="0,0,180" />
+					<!--발록크림슨-->
+				</node>
+				<!--일부 소환몹 호출 TypeA-->
+				<node name="standby" limit="100" faceTarget="0" cooltime="31000" isKeepBattle="true">
+					<!--중앙-->
+					<node name="summon" npcId="5" npcCount="1" npcCountMax="1" group="101" summonPos="-450, -300, 1960" summonRot="0,0,180" />
+					<!--발록창병-->
+					<!--왼쪽-->
+					<node name="summon" npcId="7" npcCount="1" npcCountMax="1" group="103" summonPos="-1350, -300, 2230" summonRot="0,0,180" />
+					<!--발록창병-->
+					<!--오른쪽-->
+					<node name="summon" npcId="9" npcCount="1" npcCountMax="1" group="105" summonPos="750, -300, 2260" summonRot="0,0,180" />
+					<!--발록창병-->
+				</node>
+				<!--일부 소환몹 호출 TypeB-->
+				<node name="standby" limit="100" faceTarget="0" cooltime="31000" isKeepBattle="true">
+					<!--중앙-->
+					<node name="summon" npcId="6" npcCount="1" npcCountMax="1" group="102" summonPos="50, -300, 1960" summonRot="0,0,180" />
+					<!--발록창병-->
+					<!--왼쪽-->
+					<node name="summon" npcId="8" npcCount="1" npcCountMax="1" group="104" summonPos="-1720, -300, 2260" summonRot="0,0,180" />
+					<!--발록창병-->
+					<!--오른쪽-->
+					<node name="summon" npcId="10" npcCount="1" npcCountMax="1" group="106" summonPos="1150, -300, 2260" summonRot="0,0,180" />
+					<!--발록창병-->
+				</node>
+				<!--일부 소환몹 호출 TypeC-->
+				<node name="standby" limit="100" faceTarget="0" cooltime="31000" isKeepBattle="true">
+					<!--왼쪽-->
+					<node name="summon" npcId="11" npcCount="1" npcCountMax="1" group="111" summonPos="-900, -400, 1960" summonRot="0,0,180" />
+					<!--발록크림슨-->
+					<!--오른쪽-->
+					<node name="summon" npcId="12" npcCount="1" npcCountMax="1" group="112" summonPos="300, -350, 1960" summonRot="0,0,180" />
+					<!--발록크림슨-->
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

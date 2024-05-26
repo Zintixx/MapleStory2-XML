@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,9999,9999,9999,0">
+			<node name="SetValue" cooltime="9999999" key="EnterBattleDirection" value="0" />
+			<!-- 보스가 보내는 신호로 할당받는 변수로 전투에 참전하라는 것을 알리는 용도로 사용함-->
+			<node name="SetValue" cooltime="9999999" key="EnterBattleRightOrLeft" value="0" />
+			<!-- 보스가 보내는 신호로 어느쪽 전투판으로 뛰는지 알려주는 변수이 1: 오른쪽, 2: 왼쪽-->
+			<node name="SetValue" cooltime="9999999" key="BattleMode" value="0" />
+			<node name="buff" type="add" id="50001104" cooltime="999999" />
+			<!-- 타겟팅 예외 버프 부여하기-->
+			<node name="conditions">
+				<condition name="extraData" key="SummonDeath" value="1">
+					<!-- 소환 본체가 자살 명령 내리면-->
+					<node name="skill" idx="4" />
+					<!-- 자살 스킬 사용하기-->
+				</condition>
+				<condition name="extraData" key="BattleMode" value="1">
+					<!-- 이 변수가 1이되면 통상적인 공격 행동을 함-->
+					<aiPreset name="MainBattle" />
+				</condition>
+				<condition name="extraData" key="EnterBattleDirection" value="1" op="greaterEqual">
+					<!-- 보스한테 EnterBattleDirection 변수 할당 받으면 해당 층으로 저프 뛴 다음 통상적인 공격 행위를 함-->
+					<node name="standby" limit="100" faceTarget="0" animation="Idle_A">
+						<node name="standby" limit="100" faceTarget="0" animation="Idle_A">
+							<!--100%확률로 점프 뛰기-->
+							<node name="SetValue" key="BattleMode" value="1">
+								<node name="SetMasterValue" key="MonsterNumber" value="1" isModify="1">
+									<!--몬스터가 추가되었기 때문에 보스의 MonsterNumber 이 변수에 1 더함, 이 변수가 0이 되어야 다음 스테이지로 넘어가는 구조임-->
+									<aiPreset name="JumpMove" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="standby" limit="2000" faceTarget="1" animation="Idle_A" />
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="MonsterNumber" value="-1" isModify="1" />
+	</battleEnd>
+	<aiPresets>
+		<aiPreset name="JumpMove">
+			<!--건너편 지형에서 전투 판으로 점프 뛰는 상황-->
+			<node name="conditions">
+				<condition name="extraData" key="EnterBattleRightOrLeft" value="1">
+					<!--이 변수가 1이면 오른쪽 전투판으로 뛰기-->
+					<!--보스 전투판  오른쪽 지점, 2시 방향으로 착지-->
+					<node name="skill" facePos="4950, 4425, 5300" isKeepBattle="true" idx="2">
+						<!--점프 도약 -->
+						<node name="jump" pos="4950, 4425, 5300" speed="1500" heightMultiplier="0.7" />
+						<!--7시 방향으로 착지 -->
+						<node name="skill" faceTarget="0" idx="3" />
+						<!--착지 -->
+						<node name="standby" limit="2000" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="extraData" key="EnterBattleRightOrLeft" value="2">
+					<!--이 변수가 2이면 오른쪽 전투판으로 뛰기-->
+					<!--보스 전투판  오른쪽 지점, 2시 방향으로 착지-->
+					<node name="skill" facePos="3750, 5625, 5300" isKeepBattle="true" idx="2">
+						<!--점프 도약 -->
+						<node name="jump" pos="3750, 5625, 5300" speed="1500" heightMultiplier="0.7" />
+						<!--7시 방향으로 착지 -->
+						<node name="skill" faceTarget="0" idx="3" />
+						<!--착지 -->
+						<node name="standby" limit="2000" faceTarget="0" />
+					</node>
+				</condition>
+				<condition name="true">
+					<!--이론상 이것이 실행되면 절대 안됨-->
+					<node name="skill" idx="1" />
+				</condition>
+			</node>
+		</aiPreset>
+		<aiPreset name="MainBattle">
+			<node name="select" prob="9999,9999,0">
+				<!--주 전투 행위-->
+				<node name="target" type="near" from="10" to="1200" cooltime="8000" />
+				<node name="buff" type="remove" id="50001104" cooltime="999999" />
+				<!--전투에 돌입하면 타겟팅 예외 버프 제거하기-->
+				<node name="conditions">
+					<condition name="skillRange" skillIdx="1">
+						<node name="select" prob="70,30">
+							<!--거리 450 이내 -->
+							<node name="skill" cooltime="7000" idx="1">
+								<!--바닥 폭발 공격, 점프 뛰라고 신호 받으면 바로 뛰게 하기 위해 스킬 사용후 standby 넣지 않음 -->
+							</node>
+							<node name="standby" limit="500" faceTarget="1" />
+						</node>
+					</condition>
+					<condition name="true">
+						<node name="standby" limit="500" faceTarget="1" />
+					</condition>
+				</node>
+			</node>
+		</aiPreset>
+	</aiPresets>
+</npcAi>

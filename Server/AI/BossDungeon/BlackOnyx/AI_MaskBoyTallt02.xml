@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="standby" limit="100" faceTarget="0" isKeepBattle="true">
+				<node name="TriggerModifyUserValue" triggerID="1001" key="MonsterMany" value="1" />
+				<!--전투 상태가 되면 트리거가 졸몹 마리수 체크할 때 +1 하기,   TriggerModelID =  1001 -->
+				<node name="SetValue" key="BattleOn" value="1" />
+				<!--전투 상태가 되면, 이 변수 1로 만들어  전투 상태로 진입했음을 알림, 등장하자마마 바로 극딜 당해 전투 상태로 넘어가기 전에 죽어 버리면 로직이 꼬일 수 있어서 이 변수를 통해 그런 상황을 예방함 -->
+			</node>
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,9999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="6000">
+				<node name="target" type="rand" from="10" to="1300" />
+			</node>
+			<node name="trace" till="610" limit="9970" cooltime="12000" initialCooltime="12000" />
+			<!-- initialCooltime 시간 지나면 몬스터 무리가 조건 플레이어 가까이 다가오도록 하기, 구석에 계속 짱박혀 있는 상황을 막기 위해 -->
+			<!-- HP 75% 이상 -->
+			<node name="conditions">
+				<condition name="hpOver" value="75">
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<!--거리 900,  뇌전격 거리 체크-->
+							<node name="skill" idx="1">
+								<node name="trace" till="650" limit="6570">
+									<!-- 마지막 중간 보스전에서 공격후 가까이 다가가는 행동을 해야 쾌적한 킬링 전투가 됨 -->
+									<node name="standby" limit="1800" faceTarget="1">
+										<node name="SetValue" key="CloseOk" value="1" />
+									</node>
+								</node>
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="conditions">
+								<condition name="extraData" key="CloseOk" value="1">
+									<!-- 최초 한번 공격 행동 하면 이 변수 1이 되여 적극적으로 가까이 오도록 설정함 -->
+									<node name="trace" till="430" limit="6570" />
+								</condition>
+								<condition name="true">
+									<node name="standby" limit="500" faceTarget="1" />
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+				<!-- HP 30% 이상 -->
+				<condition name="true">
+					<node name="conditions">
+						<condition name="hpOver" value="30">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="3">
+									<node name="select" prob="69,30,30,1">
+										<!--뇌전격 거리 체크-->
+										<node name="skill" cooltime="5000" idx="3">
+											<!--뇌전격 -->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="skill" idx="1">
+											<node name="standby" limit="1500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="2500" skillIdx="3" />
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="2">
+											<node name="select" prob="99,30,1">
+												<!--염화장 거리 체크-->
+												<node name="skill" cooltime="10000" idx="2">
+													<node name="select" prob="30,100">
+														<!--염화장 -->
+														<node name="target" type="rand" from="10" to="900" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+												<node name="trace" limit="2500" skillIdx="2" />
+												<node name="standby" limit="1000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="69,1,30">
+												<node name="skill" idx="1">
+													<!--3쿠션 에너지볼 -->
+													<node name="target" type="rand" from="10" to="900" />
+													<!--타겟팅 변경 -->
+													<node name="standby" limit="2000" faceTarget="1" />
+												</node>
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="trace" limit="2500" skillIdx="1" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+						<!-- HP 30% 이하 -->
+						<condition name="true">
+							<node name="conditions">
+								<condition name="skillRange" skillIdx="5">
+									<node name="select" prob="69,30,30,1">
+										<!--뇌전격 거리 체크-->
+										<node name="skill" cooltime="5000" idx="5">
+											<!--뇌전격 -->
+											<node name="standby" limit="2000" faceTarget="1" />
+										</node>
+										<node name="skill" idx="1">
+											<node name="standby" limit="2500" faceTarget="1" />
+										</node>
+										<node name="trace" limit="2500" skillIdx="5" />
+										<node name="standby" limit="500" faceTarget="1" />
+									</node>
+								</condition>
+								<condition name="true">
+									<node name="conditions">
+										<condition name="skillRange" skillIdx="6">
+											<node name="select" prob="99,30,1">
+												<!--염화장 거리 체크-->
+												<node name="skill" cooltime="10000" idx="6">
+													<node name="select" prob="30,100">
+														<!--염화장 -->
+														<node name="target" type="rand" from="10" to="900" />
+														<node name="standby" limit="1500" faceTarget="1" />
+													</node>
+												</node>
+												<node name="trace" limit="2500" skillIdx="6" />
+												<node name="standby" limit="2000" faceTarget="1" />
+											</node>
+										</condition>
+										<condition name="true">
+											<node name="select" prob="69,1,30">
+												<node name="skill" idx="4">
+													<!--3쿠션 에너지볼 -->
+													<node name="target" type="rand" from="10" to="900" />
+													<!--타겟팅 변경 -->
+													<node name="standby" limit="2000" faceTarget="1" />
+												</node>
+												<node name="standby" limit="100" faceTarget="1" />
+												<node name="trace" limit="2500" skillIdx="4" />
+											</node>
+										</condition>
+									</node>
+								</condition>
+							</node>
+						</condition>
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+	<battleEnd>
+		<!--죽을 때 특정 변수 값에 -1을 해서 보스한테 신호 보내기,   <battleEnd onlyDead="true"> 이렇게 넣으면 오직 죽었을 때만 처리하게 됨,    즉 전투 풀렸을 때도 처리하고 싶으면  <battleEnd> 이렇게 하기-->
+		<node name="conditions">
+			<condition name="extraData" key="BattleOn" value="1">
+				<!--전투 상태가 되어서 죽은 경우 이 변수가 1이 될것임-->
+				<node name="TriggerModifyUserValue" triggerID="1001" key="MonsterMany" value="-1" />
+				<!--이 몬스터가 죽으면 -main.xml  트리거에 설정된 MonsterMany 변수 1 빼기-->
+			</condition>
+			<condition name="true">
+				<!--전투 상태가 되기 전에 죽으면 BattleOn 이 변수 설정이 안되었을 것임-->
+				<node name="SetValue" key="Temp" value="0" />
+				<!--아무것도 안한다는 뜻임 -->
+			</condition>
+		</node>
+	</battleEnd>
+</npcAi>

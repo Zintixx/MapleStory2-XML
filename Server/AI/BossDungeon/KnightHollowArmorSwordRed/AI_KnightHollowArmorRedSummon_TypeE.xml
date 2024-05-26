@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<!--전투-->
+	<battle>
+		<node name="select" prob="9999,99999,0">
+			<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+			<node name="standby" limit="10" faceTarget="1" cooltime="3000">
+				<node name="target" type="near" from="10" to="2600" />
+				<!--제일 가까운 대상 타겟팅 잡기 -->
+			</node>
+			<node name="standby" limit="100" faceTarget="0" cooltime="999999">
+				<!--	<buff type="add" id="50000334" level="1"   prob="25"/>  마방 극상  버프    4인 던전으로 변경되면서 사용 안함-->
+				<node name="standby" limit="200" faceTarget="1" />
+				<!--이 몬스터는 마방 방어력 상승 버부만 부여하고 물방은 빼자, 이 몬스터는 근거리 클래스가 쉽게 제거하기 위한 용도로 만들었기 때문에 물방은 넣지 말기-->
+			</node>
+			<node name="conditions">
+				<condition name="extraData" key="DeathSummonMob" value="1">
+					<node name="skill" idx="2" />
+					<!-- 보스 명령을 받고 자살 스킬 사용하기, 보스의 특정 페이즈에 들어서면 바로 소환몹 제거하기, 큐브가 제거되었는데 회복해주는 소환몹은 계속 남아있으면 이 몬스터를 잡을 수 없기 때문에 자살 명령으로 제거하도록 함-->
+				</condition>
+				<condition name="skillRange" skillIdx="3">
+					<node name="select" prob="88,12">
+						<!--300~400 이내 이고 같은 높이에 있으면 아래 행위를 함-->
+						<node name="skill" idx="3">
+							<node name="select" prob="33,34,33">
+								<!--투척 공격-->
+								<node name="standby" limit="1400" faceTarget="1" />
+								<node name="standby" limit="2100" faceTarget="1" />
+								<node name="standby" limit="2700" faceTarget="1" />
+							</node>
+						</node>
+						<node name="skill" cooltime="56000" idx="1">
+							<node name="select" prob="33,34,33">
+								<!--낮은 확률로 회복 스킬 사용함, 레벨5가 두번째 패턴구간에 사용하는 애디셔널 코드 보스 회복시키는 전용-->
+								<node name="standby" limit="1200" faceTarget="1" />
+								<node name="standby" limit="2100" faceTarget="1" />
+								<node name="standby" limit="2900" faceTarget="1" />
+							</node>
+						</node>
+					</node>
+				</condition>
+				<condition name="true">
+					<node name="select" prob="55,15,15,15">
+						<!--300~400 이상 떨어져 있으면 회복 곡사 투척 스킬 사용함-->
+						<!--카보 중간 페이즈에서 등장하는 힐졸 소환몹, 힐 주기 비교적 길게 설정하기, 이 힐졸은 자살 명령 받으면 바로 죽어야 하기 때문에 쿨타임 방식으로 스킬 사용 빈도를 조절함-->
+						<node name="skill" cooltime="9200" idx="1">
+							<!--회복 시키기, 레벨5가 두번째 패턴구간에 사용하는 애디셔널 코드 보스 회복시키는 전용-->
+						</node>
+						<node name="standby" limit="500" faceTarget="1" />
+						<node name="standby" limit="1500" faceTarget="1" />
+						<node name="standby" limit="950" faceTarget="1" />
+					</node>
+				</condition>
+			</node>
+		</node>
+	</battle>
+</npcAi>

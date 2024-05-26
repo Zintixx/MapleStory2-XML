@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<reserved>
+		<condition name="hpLess" value="100">
+			<node name="SetMasterValue" key="CannonWeaponLive" value="1" />
+			<!-- 이 변수 1로 셋팅하여 이 NPC가 레이저포 설치 완료되어서 평상시 공격 행동을 하도록 설정함-->
+		</condition>
+	</reserved>
+	<!--전투-->
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="DeathCannonShot" value="1">
+				<node name="skill" idx="1" />
+				<!-- 자살 스킬 사용하기-->
+			</condition>
+			<condition name="true">
+				<node name="standby" limit="100" faceTarget="1" animation="Attack_Idle_B" />
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<!--이 캐논포가 파괴되는 경우는  캐논포가 발사된 경우나 아니면 발록의 공격에 의해서 파괴된 경우임 -->
+		<node name="SetMasterValue" key="CannonWeaponLive" value="0">
+			<!--캐논 레이저포 설치 경비병AI 에게 신호 보내서, 캐논 레이저포가 파괴되었음을 알수 있게 함 -->
+			<node name="SetMasterValue" key="MoveCheck" value="0">
+				<!-- 캐논 레이저포 파괴되면 설치 경비병NPC 가 특정 장소로 이동해야 하기 때문에 이 변수 0 신호 셋팅 해야함-->
+				<!-- !!중요정보:  BossBuffOkCheck 변수는   AI_CannonWeaponLaser_TypeB.xml   AI_GuardSpear_TypeA.xml   AI_Balrog.xml 3곳 AI에서 서로 간접을 부여하면사 사용하는 중요하고 복잡한 변수임 -->
+				<node name="SetMasterValue" key="BossBuffOkCheck" value="0" />
+				<!-- !중요: 이 변수는 캐논포 설치 NPC가 발록이 버브 상태일 때 AI로 부터 주기적으로 BossBuffOkCheck = 1  신호 받는데,  
+					         그러다 보니 캐논포가 발사후 파괴되면 발록의 버프가 사라졌는데도 캐논포 설치 NPC가  무조건 설치하러 가는 문제가 있어서
+							 일단 캐논포가 파괴되면 이 캐논포AI에서 무조건 BossBuffOkCheck = 0 신호를 캐논포 설치 NPC에게 보낸 후, 만약 발록에 의해서 캐논포가 파괴된 경우면
+                            어차피 발록 AI로 부터 	BossBuffOkCheck = 1  신호를 받기 때문에 이렇게 설정함                설치 NPC AI:  AI_GuardCrossbow_TypeA.xml     -->
+			</node>
+		</node>
+	</battleEnd>
+</npcAi>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<npcAi>
+	<battle>
+		<node name="conditions">
+			<condition name="extraData" key="DeathSummonMob" value="1">
+				<node name="RemoveMe" />
+				<!-- 보스 명령을 받고 스스로 사라짐-->
+			</condition>
+			<condition name="true">
+				<node name="select" prob="9999,0">
+					<!--타겟팅을 일정 시간마다  다시 renew 해주는 부분 -->
+					<node name="target" type="near" from="10" to="2500" cooltime="3000" />
+					<node name="conditions">
+						<condition name="skillRange" skillIdx="1">
+							<node name="skill" faceTarget="1" isKeepBattle="true" idx="2">
+								<node name="skill" faceTarget="1" idx="2" />
+								<node name="skill" faceTarget="1" idx="1" />
+								<!-- 공반 버프 투사체 발사하고 자살 행동하기 여기에 사잘 기능은 없음-->
+								<node name="skill" faceTarget="0" idx="3" />
+								<!-- 스스로 자살스킬사용, 처음에는 50001378 스킬에 자기 공격해서 자살하는 기능을 넣었는데, 이 스킬에 붙어있던 이펙트가 출력 안되는 문제가 있어서 AI에서 스스로 사라지도록 설정했음 -->
+							</node>
+						</condition>
+						<condition name="true">
+							<node name="standby" limit="500" faceTarget="1">
+								<node name="target" type="near" from="10" to="1500" />
+							</node>
+						</condition>
+					</node>
+				</node>
+			</condition>
+		</node>
+	</battle>
+	<battleEnd onlyDead="true">
+		<node name="SetMasterValue" key="CheckSummonMany" value="-1" isModify="1"></node>
+	</battleEnd>
+</npcAi>
