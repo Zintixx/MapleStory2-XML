@@ -41,15 +41,7 @@ if (serverData == null) {
 
 List<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> serverIndividualDropBoxes = serverData.dropBox;
 
-// Merge client and server data
-// For each client dropbox, if it doesnt exist in server, add it
-//  If it exists, first check if the group exists and the locale is different
-//      If the group exists and the locale is different, add the group
-//      If the group exists and the locale is the same, add the items
-//      Then for each item in the group, check if it exists in the server group
-//          If it doesnt exist, add it
-//          If it exists, first compare locale, if they are equal, we need to add only the server fields weight, properJobWeight
-
+// merge client and server data
 foreach (var clientDropBox in clientIndividualDropBoxes) {
     var serverDropBox = serverIndividualDropBoxes.FirstOrDefault(x => x.dropBoxID == clientDropBox.dropBoxID);
     if (serverDropBox == null) {
