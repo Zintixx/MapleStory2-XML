@@ -27,9 +27,6 @@ IEnumerable<KeyValuePair<GroupKey, List<Maple2.File.Parser.Xml.Table.IndividualI
 
 List<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> clientIndividualDropBoxes = ConvertToServerIndividualItemDrop(clientIndividualDropBoxesGrouped).ToList();
 
-// count dropBoxes
-int dropBoxCount = clientIndividualDropBoxes.GroupBy(x => x.dropBoxID).Count();
-
 string serverXmlFile = Path.Combine(Paths.SERVER_DIR, "table", "server", "individualItemDrop_Final_Backup.xml");
 
 Maple2.File.Parser.Xml.Table.Server.IndividualItemDropRoot? serverData = DeserializeXml<Maple2.File.Parser.Xml.Table.Server.IndividualItemDropRoot>(serverXmlFile);
@@ -125,8 +122,7 @@ Console.WriteLine("Saved to file: " + outputXmlPath);
 // Cleanup XML
 string xmlString = File.ReadAllText(outputXmlPath);
 xmlString = Regex.Replace(xmlString, " \\w+=\"\"", string.Empty); // remove empty attributes
-// minCount="1" maxCount="1"
-xmlString = Regex.Replace(xmlString, " minCount=\"1\" maxCount=\"1\"", string.Empty);
+xmlString = Regex.Replace(xmlString, " minCount=\"1\" maxCount=\"1\"", string.Empty); // remove minCount="1" maxCount="1"
 File.WriteAllText(outputXmlPath, xmlString);
 
 
