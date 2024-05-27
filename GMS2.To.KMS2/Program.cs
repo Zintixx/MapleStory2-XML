@@ -122,9 +122,11 @@ writer.Close();
 
 Console.WriteLine("Saved to file: " + outputXmlPath);
 
-// remove all empty from xml
+// Cleanup XML
 string xmlString = File.ReadAllText(outputXmlPath);
-xmlString = Regex.Replace(xmlString, " \\w+=\"\"", string.Empty);
+xmlString = Regex.Replace(xmlString, " \\w+=\"\"", string.Empty); // remove empty attributes
+// minCount="1" maxCount="1"
+xmlString = Regex.Replace(xmlString, " minCount=\"1\" maxCount=\"1\"", string.Empty);
 File.WriteAllText(outputXmlPath, xmlString);
 
 
@@ -175,6 +177,8 @@ IEnumerable<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> ConvertToSer
                         showIconOnGachaUI = x.showIconOnGachaUI,
                         mapDependency = x.mapDependency,
                         constraintsQuest = x.constraintsQuest,
+                        minCount = (int) x.minCount,
+                        maxCount = (int) x.maxCount,
                         _locale = x.Locale,
                     }).ToList()
                 }
