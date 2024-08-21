@@ -3,4 +3,4 @@
 using WeblateConverter.Converter;
 
 var converter = new Converter();
-converter.Begin();
+converter.Select();

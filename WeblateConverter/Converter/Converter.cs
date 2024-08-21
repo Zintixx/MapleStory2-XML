@@ -1,12 +1,51 @@
 ﻿using System.Xml;
 using Newtonsoft.Json.Linq;
+using WeblateConverter.Enum;
 
 namespace WeblateConverter.Converter;
 
 public class Converter {
-    public void Begin() {
-        ProcessLocaleStrings("en");
-        ProcessLocaleStrings("kr");
+    public void Select() {
+        Console.WriteLine("Select 1 to convert XML to JSON");
+        Console.WriteLine("Select 2 to convert JSON to XML");
+        string? input = Console.ReadLine();
+
+        if (input == "1") {
+            XmlToJson();
+        } else if (input == "2") {
+            Console.WriteLine("Not implemented");
+        } else {
+            Console.WriteLine("Invalid input");
+            return;
+        }
+    }
+    private void XmlToJson() {
+        Console.WriteLine("Enter the locale you want to convert to JSON");
+        string? locale = Console.ReadLine();
+
+        // get all enum names in Locale
+        string[] enumNames = System.Enum.GetNames(typeof(Locale));
+
+        // Check if locale1 is a valid enum
+        while (System.Enum.TryParse<Locale>(locale, out _) == false) {
+            Console.WriteLine($"Invalid locale, valid locales are: {string.Join(", ", enumNames)}");
+            locale = Console.ReadLine();
+        }
+
+        if (ProcessLocaleStrings(locale)) {
+            Console.WriteLine("Conversion successful");
+        } else {
+            Console.WriteLine("Conversion failed");
+        }
+
+        // return to Select if user wants to, otherwise exit
+        Console.WriteLine("Do you want to convert another locale? (y/n)");
+        string? input = Console.ReadLine();
+        if (input == "y") {
+            Select();
+        } else {
+            return;
+        }
     }
 
     private bool ProcessLocaleStrings(string locale) {
@@ -154,7 +193,7 @@ public class Converter {
                 continue;
             }
             // get first attribute
-            XmlAttribute keyAttribute = childNode.Attributes[0];
+            XmlAttribute keyAttribute = childNode.Attributes![0];
             string key = keyAttribute.Value;
 
             var attributesObject = new JObject();
