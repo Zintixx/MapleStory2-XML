@@ -3,6 +3,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using GMS2.To.KMS2;
 using Maple2.File.Parser.Tools;
+using Maple2.File.Parser.Xml.Table.Server;
 
 string clientTableFolder = Path.Combine(Paths.GMS2_DIR, "table");
 string[] clientXmlFiles = Directory.GetFiles(clientTableFolder, "individualitemdrop*.xml", SearchOption.AllDirectories);
@@ -25,48 +26,67 @@ IEnumerable<KeyValuePair<GroupKey, List<Maple2.File.Parser.Xml.Table.IndividualI
     .ToDictionary(group => group.Key, group => group.ToList())
     .Where(dict => dict.Value.Count > 0);
 
-List<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> clientIndividualDropBoxes = ConvertToServerIndividualItemDrop(clientIndividualDropBoxesGrouped).ToList();
+List<IndividualItemDrop> clientIndividualDropBoxes = ConvertToServerIndividualItemDrop(clientIndividualDropBoxesGrouped).ToList();
 
 string serverXmlFile = Path.Combine(Paths.SERVER_DIR, "table", "server", "individualItemDrop_Final_Backup.xml");
 
-Maple2.File.Parser.Xml.Table.Server.IndividualItemDropRoot? serverData = DeserializeXml<Maple2.File.Parser.Xml.Table.Server.IndividualItemDropRoot>(serverXmlFile);
+IndividualItemDropRoot? serverData = DeserializeXml<IndividualItemDropRoot>(serverXmlFile);
 if (serverData == null) {
     throw new Exception("Failed to deserialize xml");
 }
 
-List<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> serverIndividualDropBoxes = serverData.dropBox;
+List<IndividualItemDrop> serverIndividualDropBoxes = serverData.dropBox;
 
 // merge client and server data
-foreach (var clientDropBox in clientIndividualDropBoxes) {
-    var serverDropBox = serverIndividualDropBoxes.FirstOrDefault(x => x.dropBoxID == clientDropBox.dropBoxID);
+foreach (IndividualItemDrop clientDropBox in clientIndividualDropBoxes) {
+    IndividualItemDrop? serverDropBox = serverIndividualDropBoxes.FirstOrDefault(x => x.dropBoxID == clientDropBox.dropBoxID);
     if (serverDropBox == null) {
         serverIndividualDropBoxes.Add(clientDropBox);
         continue;
     }
 
-    var clientGroup = clientDropBox.__group.First();
-    var serverGroup = serverDropBox.__group.FirstOrDefault(x => x.dropGroupID == clientGroup.dropGroupID);
+    IndividualItemDrop.Group? clientGroup = clientDropBox.__group.First();
+    IndividualItemDrop.Group? serverGroup = serverDropBox.__group.FirstOrDefault(x => x.dropGroupID == clientGroup.dropGroupID);
     if (serverGroup == null) {
         serverDropBox.__group.Add(clientGroup);
         continue;
     }
 
-    // since group exists, make all locale KR
-    serverGroup._locale = "KR";
-    foreach (var item in serverGroup.__v) {
-        item._locale = "KR";
-    }
+    foreach (IndividualItemDrop.Group.Item? clientItem in clientGroup.__v) {
+        IndividualItemDrop.Group.Item? serverItem = serverGroup.__v.FirstOrDefault(x => x.itemID == clientItem.itemID);
+        if (serverItem is not null) {
+            // fix server item minCount
+            if (serverItem.minCount == 0) {
+                serverItem.minCount = 1;
+            }
 
-    foreach (var clientItem in clientGroup.__v) {
-        var serverItem = serverGroup.__v.FirstOrDefault(x => x.itemID == clientItem.itemID && (x.Locale == clientItem.Locale || x.Locale == ""));
-        if (serverItem == null) {
+            // fix server item grade
+            if (serverItem.grade.Length == 0) {
+                serverItem.grade = [..clientItem.grade];
+            }
+        }
 
+        // if item exists in server, with same minCount and no locale, its good to go, skip
+        if (serverItem is not null && serverItem.minCount == clientItem.minCount && serverItem.Locale == "") {
+            // use weights from server
+            clientItem.weight = serverItem.weight;
+            clientItem.properJobWeight = serverItem.properJobWeight;
+            clientItem.imProperJobWeight = serverItem.imProperJobWeight;
+            continue;
+        }
+
+        if (serverItem is not null && serverItem._locale == "KR") {
+            clientItem._locale = "NA";
+            clientItem.weight = serverItem.weight;
+            clientItem.properJobWeight = serverItem.properJobWeight;
+            clientItem.imProperJobWeight = serverItem.imProperJobWeight;
             serverGroup.__v.Add(clientItem);
             continue;
         }
 
-        serverItem._locale = clientItem._locale;
-        continue;
+        if (serverItem is null) {
+            serverGroup.__v.Add(clientItem);
+        }
     }
 
     // if group has multiple items with different locales, set the group locale to empty
@@ -78,9 +98,9 @@ foreach (var clientDropBox in clientIndividualDropBoxes) {
 // order by dropBoxID, dropGroupID, itemID
 serverIndividualDropBoxes = [.. serverIndividualDropBoxes.OrderBy(x => x.dropBoxID)];
 
-foreach (var dropBox in serverIndividualDropBoxes) {
+foreach (IndividualItemDrop dropBox in serverIndividualDropBoxes) {
     dropBox.__group = [.. dropBox.__group.OrderBy(x => x.dropGroupID)];
-    foreach (var group in dropBox.__group) {
+    foreach (IndividualItemDrop.Group? group in dropBox.__group) {
         group.__v = [.. group.__v.OrderBy(x => x.itemID)];
     }
 }
@@ -107,13 +127,15 @@ foreach (var dropBox in serverIndividualDropBoxes) {
 //     Console.WriteLine("Groups saved to file: " + outputXmlPath);
 // }
 
-Maple2.File.Parser.Xml.Table.Server.IndividualItemDropRoot individualItemDropRoot = new Maple2.File.Parser.Xml.Table.Server.IndividualItemDropRoot() {
-    dropBox = serverIndividualDropBoxes
+var individualItemDropRoot = new IndividualItemDropRoot() {
+    dropBox = serverIndividualDropBoxes,
 };
 
-XmlSerializer groupsSerializer = new XmlSerializer(typeof(Maple2.File.Parser.Xml.Table.Server.IndividualItemDropRoot));
+var groupsSerializer = new XmlSerializer(typeof(IndividualItemDropRoot));
 string outputXmlPath = Path.Combine(Paths.SOLUTION_DIR, "server", "table", "server", "individualItemDrop_Final.xml");
-using XmlWriter writer = XmlWriter.Create(outputXmlPath, new XmlWriterSettings { Indent = true });
+using var writer = XmlWriter.Create(outputXmlPath, new XmlWriterSettings {
+    Indent = true,
+});
 groupsSerializer.Serialize(writer, individualItemDropRoot);
 writer.Close();
 
@@ -127,24 +149,23 @@ File.WriteAllText(outputXmlPath, xmlString);
 
 
 #region Methods
-
 static T? DeserializeXml<T>(string xmlPath) where T : class {
     string xmlString = File.ReadAllText(xmlPath);
     xmlString = Sanitizer.RemoveEmpty(xmlString);
     xmlString = Sanitizer.SanitizeBool(xmlString);
 
-    XmlReader xml = XmlReader.Create(new StringReader(xmlString));
-    XmlSerializer individualItemDropSerializer = new XmlSerializer(typeof(T));
-    T? data = individualItemDropSerializer.Deserialize(xml) as T;
+    var xml = XmlReader.Create(new StringReader(xmlString));
+    var individualItemDropSerializer = new XmlSerializer(typeof(T));
+    var data = individualItemDropSerializer.Deserialize(xml) as T;
     return data;
 }
 
-IEnumerable<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> ConvertToServerIndividualItemDrop(IEnumerable<KeyValuePair<GroupKey, List<Maple2.File.Parser.Xml.Table.IndividualItemDrop>>> clientIndividualDropBoxesGrouped) {
-    foreach (var dropbox in clientIndividualDropBoxesGrouped) {
-        var serverDropBox = new Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop() {
+IEnumerable<IndividualItemDrop> ConvertToServerIndividualItemDrop(IEnumerable<KeyValuePair<GroupKey, List<Maple2.File.Parser.Xml.Table.IndividualItemDrop>>> individualDropBoxesGrouped) {
+    foreach (KeyValuePair<GroupKey, List<Maple2.File.Parser.Xml.Table.IndividualItemDrop>> dropbox in individualDropBoxesGrouped) {
+        var serverDropBox = new IndividualItemDrop {
             dropBoxID = dropbox.Key.IndividualDropBoxID,
             __group = [
-                new() {
+                new IndividualItemDrop.Group {
                     dropGroupID = dropbox.Key.DropGroup,
                     smartDropRate = dropbox.Value.First().smartDropRate,
                     dropGroupMinLevel = dropbox.Value.First().dropGroupMinLevel,
@@ -176,9 +197,9 @@ IEnumerable<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> ConvertToSer
                         minCount = (int) x.minCount,
                         maxCount = (int) x.maxCount,
                         _locale = x.Locale,
-                    }).ToList()
-                }
-            ]
+                    }).ToList(),
+                },
+            ],
         };
 
         yield return serverDropBox;
@@ -186,5 +207,4 @@ IEnumerable<Maple2.File.Parser.Xml.Table.Server.IndividualItemDrop> ConvertToSer
 }
 
 internal record GroupKey(int IndividualDropBoxID, byte DropGroup);
-
 #endregion
