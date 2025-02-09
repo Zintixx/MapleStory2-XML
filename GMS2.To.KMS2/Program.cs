@@ -145,6 +145,10 @@ Console.WriteLine("Saved to file: " + outputXmlPath);
 string xmlString = File.ReadAllText(outputXmlPath);
 xmlString = Regex.Replace(xmlString, " \\w+=\"\"", string.Empty); // remove empty attributes
 xmlString = Regex.Replace(xmlString, " minCount=\"1\" maxCount=\"1\"", string.Empty); // remove minCount="1" maxCount="1"
+string[] attributesToConvert = ["isBindCharacter", "disableBreak", "tradableCountDeduction", "rePackingLimitCountDeduction", "isApplySmartGenderDrop", "assistBonus", "constraintsQuest", "isAnnounce", "serverDrop"];
+foreach (string attribute in attributesToConvert) {
+    xmlString = Regex.Replace(xmlString, $" {attribute}=\"true\"", $" {attribute}=\"1\"");
+}
 File.WriteAllText(outputXmlPath, xmlString);
 
 
