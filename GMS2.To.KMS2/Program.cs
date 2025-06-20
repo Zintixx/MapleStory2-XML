@@ -101,7 +101,7 @@ serverIndividualDropBoxes = [.. serverIndividualDropBoxes.OrderBy(x => x.dropBox
 foreach (IndividualItemDrop dropBox in serverIndividualDropBoxes) {
     dropBox.__group = [.. dropBox.__group.OrderBy(x => x.dropGroupID)];
     foreach (IndividualItemDrop.Group? group in dropBox.__group) {
-        group.__v = [.. group.__v.OrderBy(x => x.itemID)];
+        // group.__v = [.. group.__v.OrderBy(x => x.itemID)];
     }
 }
 
