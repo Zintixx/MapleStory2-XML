@@ -188,10 +188,16 @@ public class Converter {
         }
         var jsonObject = new JObject();
         foreach (XmlNode childNode in node.ChildNodes) {
+            // Skip comment nodes
+            if (childNode.NodeType == XmlNodeType.Comment) {
+                continue;
+            }
+
             if (childNode.Attributes?.Count == 0) {
                 Console.WriteLine($"No attributes found in node in {document.BaseURI}");
                 continue;
             }
+
             // get first attribute
             XmlAttribute keyAttribute = childNode.Attributes![0];
             string key = keyAttribute.Value;
