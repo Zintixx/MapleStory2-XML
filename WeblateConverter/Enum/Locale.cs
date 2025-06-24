@@ -1,8 +1,10 @@
-﻿namespace WeblateConverter.Enum;
+﻿﻿﻿namespace WeblateConverter.Enum;
 
 public enum Locale {
     en,
     kr,
+    kr_latest,  // Latest Korean XML strings
+    ko,  // Korean output locale for JSON
     de,
     pt,
     cn,
