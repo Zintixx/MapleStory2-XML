@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System.Xml;
+﻿using System.Xml;
 using Newtonsoft.Json.Linq;
 using WeblateConverter.Enum;
 
@@ -9,6 +9,7 @@ public class Converter {
         Console.WriteLine("Select 1 to convert XML to JSON");
         Console.WriteLine("Select 2 to convert JSON to XML");
         Console.WriteLine("Select 3 to convert latest Korean XML (kr_latest) to JSON (ko) with missing keys from other languages");
+        Console.WriteLine("Select 4 to convert JSON to XML for all languages found in Json folder");
         string? input = Console.ReadLine();
 
         if (input == "1") {
@@ -17,6 +18,8 @@ public class Converter {
             JsonToXml();
         } else if (input == "3") {
             XmlToJsonKoreanWithMissingKeys();
+        } else if (input == "4") {
+            JsonToXmlAllLanguages();
         } else {
             Console.WriteLine("Invalid input");
             return;
@@ -133,8 +136,7 @@ public class Converter {
             }
 
             if (locale is not "kr" and not "ko") {
-                switch (name)
-                {
+                switch (name) {
                     case not null when name.StartsWith("questdescription"):
                         questJsons.Add(json);
                         continue;
@@ -168,9 +170,13 @@ public class Converter {
     }
 
     private bool ProcessKoreanWithMissingKeys() {
-        string masterLocale = "kr_latest";  // XML source uses latest Korean strings
-        string outputLocale = "ko";  // JSON output goes to "ko"
-        string[] otherLocales = { "en", "jp", "cn" };
+        string masterLocale = "kr_latest"; // XML source uses latest Korean strings
+        string outputLocale = "ko"; // JSON output goes to "ko"
+        string[] otherLocales = {
+            "en",
+            "jp",
+            "cn"
+        };
 
         // Get Korean files first
         FileInfo[] koreanFiles = GetFiles(masterLocale);
@@ -210,8 +216,7 @@ public class Converter {
             JObject enhancedJsonObject = AddMissingKeysToJsonObject(json, fileName, missingKeysByFile, sourceKeyData);
 
             // Handle special file groupings (same logic as original)
-            switch (fileName)
-            {
+            switch (fileName) {
                 case not null when fileName.StartsWith("questdescription"):
                     questJsons.Add(enhancedJsonObject);
                     continue;
@@ -281,6 +286,80 @@ public class Converter {
         return true;
     }
 
+    private void JsonToXmlAllLanguages() {
+        Console.WriteLine("Converting JSON to XML for all languages found in Json folder...");
+
+        // Get all language directories from the Json folder
+        string[] availableLanguages = GetAvailableLanguages();
+
+        if (availableLanguages.Length == 0) {
+            Console.WriteLine("No language directories found in Json folder");
+            return;
+        }
+
+        Console.WriteLine($"Found {availableLanguages.Length} languages: {string.Join(", ", availableLanguages)}");
+
+        int successCount = 0;
+        int failureCount = 0;
+
+        foreach (string language in availableLanguages) {
+            Console.WriteLine($"\n--- Processing language: {language} ---");
+
+            try {
+                if (ProcessJsonToXml(language)) {
+                    Console.WriteLine($"✓ Successfully converted {language}");
+                    successCount++;
+                } else {
+                    Console.WriteLine($"✗ Failed to convert {language}");
+                    failureCount++;
+                }
+            } catch (Exception ex) {
+                Console.WriteLine($"✗ Error converting {language}: {ex.Message}");
+                failureCount++;
+            }
+        }
+
+        Console.WriteLine($"\n--- Conversion Summary ---");
+        Console.WriteLine($"Total languages processed: {availableLanguages.Length}");
+        Console.WriteLine($"Successful conversions: {successCount}");
+        Console.WriteLine($"Failed conversions: {failureCount}");
+
+        // return to Select if user wants to, otherwise exit
+        Console.WriteLine("\nDo you want to perform another conversion? (y/n)");
+        string? input = Console.ReadLine();
+        if (input == "y") {
+            Select();
+        } else {
+            return;
+        }
+    }
+
+    private string[] GetAvailableLanguages() {
+        // Get the base directory of the application
+        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+        // Navigate up to the project root directory
+        string? projectRoot = Directory.GetParent(baseDirectory)?.Parent?.Parent?.Parent?.Parent?.FullName;
+        if (projectRoot == null) {
+            Console.WriteLine("Project root not found");
+            return [];
+        }
+
+        // Combine the project root with the relative path to the "Json" folder
+        string jsonPath = Path.Combine(projectRoot, "WeblateConverter", "Json");
+
+        if (!Directory.Exists(jsonPath)) {
+            Console.WriteLine($"Json directory not found at: {jsonPath}");
+            return [];
+        }
+
+        // Get all subdirectories (language folders)
+        DirectoryInfo jsonDir = new DirectoryInfo(jsonPath);
+        DirectoryInfo[] languageDirs = jsonDir.GetDirectories();
+
+        return languageDirs.Select(dir => dir.Name).ToArray();
+    }
+
     private string CombineJsons(List<JObject> jsonObjects) {
         var combinedObject = new JObject();
         foreach (JObject jsonObj in jsonObjects) {
@@ -290,7 +369,6 @@ public class Converter {
         }
         return combinedObject.ToString();
     }
-
     private string CombineJsons(List<string> jsons) {
         var jsonObject = new JObject();
         foreach (string json in jsons) {
@@ -306,8 +384,7 @@ public class Converter {
         string jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Json", locale, name.Replace(".xml", ".json"));
         string? directoryPath = Path.GetDirectoryName(jsonPath);
 
-        if (!Directory.Exists(directoryPath))
-        {
+        if (!Directory.Exists(directoryPath)) {
             Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Json", locale));
         }
 
@@ -634,29 +711,6 @@ public class Converter {
         return keyData;
     }
 
-    private string AddMissingKeysToJson(string originalJson, string fileName, Dictionary<string, HashSet<string>> missingKeysByFile, Dictionary<string, Dictionary<string, JObject>> sourceKeyData) {
-        JObject jsonObject = JObject.Parse(originalJson);
-
-        if (missingKeysByFile.ContainsKey(fileName)) {
-            foreach (string missingKey in missingKeysByFile[fileName]) {
-                if (!jsonObject.ContainsKey(missingKey)) {
-                    // Find the source data for this key
-                    JObject? sourceValue = FindSourceValueForKey(missingKey, fileName, sourceKeyData);
-                    if (sourceValue != null) {
-                        jsonObject[missingKey] = sourceValue;
-                        Console.WriteLine($"Added missing key to {fileName}: {missingKey} (copied from source)");
-                    } else {
-                        // Fallback to empty object if source not found
-                        jsonObject[missingKey] = new JObject();
-                        Console.WriteLine($"Added missing key to {fileName}: {missingKey} (empty placeholder)");
-                    }
-                }
-            }
-        }
-
-        return jsonObject.ToString();
-    }
-
     private JObject AddMissingKeysToJsonObject(string originalJson, string fileName, Dictionary<string, HashSet<string>> missingKeysByFile, Dictionary<string, Dictionary<string, JObject>> sourceKeyData) {
         JObject jsonObject = JObject.Parse(originalJson);
 
@@ -714,11 +768,25 @@ public class Converter {
     private string[] GetTargetFileNames(string fileName) {
         // Map individual files to their combined file names based on the grouping logic
         return fileName switch {
-            not null when fileName.StartsWith("questdescription") => new[] { fileName, "questdescription_final.xml" },
-            not null when fileName.StartsWith("skillname") => new[] { fileName, "skillname.xml" },
-            not null when fileName.StartsWith("korskilldescription") => new[] { fileName, "stringskilldescription.xml" },
-            not null when fileName.StartsWith("koradditionaldescription") => new[] { fileName, "stringadditionaldescription.xml" },
-            _ => new[] { fileName } // For non-grouped files, just return the original filename
+            not null when fileName.StartsWith("questdescription") => new[] {
+                fileName,
+                "questdescription_final.xml"
+            },
+            not null when fileName.StartsWith("skillname") => new[] {
+                fileName,
+                "skillname.xml"
+            },
+            not null when fileName.StartsWith("korskilldescription") => new[] {
+                fileName,
+                "stringskilldescription.xml"
+            },
+            not null when fileName.StartsWith("koradditionaldescription") => new[] {
+                fileName,
+                "stringadditionaldescription.xml"
+            },
+            _ => new[] {
+                fileName
+            } // For non-grouped files, just return the original filename
         };
     }
 
@@ -885,8 +953,11 @@ public class Converter {
             throw new InvalidOperationException("Project root not found");
         }
 
+        // Map locale for output directory (ko -> kr)
+        string outputLocale = GetOutputLocale(locale);
+
         // Create output directory path
-        string outputPath = Path.Combine(projectRoot, "Xml", "string", $"{locale}_output");
+        string outputPath = Path.Combine(projectRoot, "Xml", "string", $"{outputLocale}_output");
 
         if (!Directory.Exists(outputPath)) {
             Directory.CreateDirectory(outputPath);
@@ -896,6 +967,14 @@ public class Converter {
         File.WriteAllText(filePath, xmlContent);
 
         Console.WriteLine($"Saved XML file: {filePath}");
+    }
+
+    private string GetOutputLocale(string inputLocale) {
+        // Map ko to kr for output directory, keep other locales as-is
+        return inputLocale switch {
+            "ko" => "kr",
+            _ => inputLocale
+        };
     }
 
     private string FormatXml(XmlDocument xmlDoc) {
@@ -917,26 +996,6 @@ public class Converter {
         return System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
     }
 
-    private string EscapeApostrophesInXml(string xmlContent) {
-        if (string.IsNullOrEmpty(xmlContent)) {
-            return xmlContent;
-        }
-
-        // Use regex to find attribute values and escape apostrophes within them
-        // This pattern matches: attribute="value with apostrophes"
-        return System.Text.RegularExpressions.Regex.Replace(
-            xmlContent,
-            @"(\w+)=""([^""]*)""",
-            match => {
-                string attrName = match.Groups[1].Value;
-                string attrValue = match.Groups[2].Value;
-                // Replace all apostrophes in the attribute value
-                string escapedValue = attrValue.Replace("'", "&apos;");
-                return $"{attrName}=\"{escapedValue}\"";
-            }
-        );
-    }
-
     private string GetXmlElementName(string fileName) {
         // Remove .json extension if present
         string baseFileName = fileName.Replace(".json", "").Replace(".xml", "");
@@ -944,55 +1003,105 @@ public class Converter {
         // Create lookup dictionary for filename to XML element name mapping
         var elementNameLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
             // Files that use <achieve> element
-            { "achievedescription", "achieve" },
-            { "achievespecialrewarddescription", "achieve" },
-            { "addressname", "address"},
-            { "chapterdescription_epic", "chapter" },
-            { "chapterdescription_event", "chapter" },
-            { "chapterdescription_eventcn", "chapter"},
-            { "chapterdescription_eventcommon", "chapter" },
-            { "chapterdescription_eventkr", "chapter" },
-            { "chapterdescription_eventna", "chapter" },
-            { "chapterdescription_field", "chapter" },
-            { "chapterdescription_famecontents", "chapter" },
-            { "chapterdescription_guide", "chapter" },
-            { "chapterdescription_guild", "chapter" },
-            { "chapterdescription_item", "chapter" },
-            { "chapterdescription_tutorial", "chapter" },
-            { "chapterdescription_world", "chapter" },
-            { "korjobdescription", "job"},
-            { "loadingdescription", "tip"},
-            { "maidmanufacturemessage", "Message"},
-            { "maidpropertystring", "Desc"},
-            { "pvpmode", "PVPMessage"},
-            { "questdescription_dailymission", "quest"},
-            { "questdescription_epic", "quest"},
-            { "questdescription_eventcn", "quest"},
-            { "questdescription_eventcommon", "quest"},
-            { "questdescription_eventkr", "quest"},
-            { "questdescription_eventna", "quest"},
-            { "questdescription_famecontents", "quest"},
-            { "questdescription_famefield", "quest"},
-            { "questdescription_famemission", "quest"},
-            { "questdescription_field", "quest"},
-            { "questdescription_guide", "quest"},
-            { "questdescription_guild", "quest"},
-            { "questdescription_item", "quest"},
-            { "questdescription_levelguide", "quest"},
-            { "questdescription_mentoring", "quest"},
-            { "questdescription_tutorial", "quest"},
-            { "questdescription_wedding", "quest"},
-            { "questdescription_world", "quest"},
-            { "seasonnamecn", "season"},
-            { "seasonnamejp", "season"},
-            { "seasonnamekr", "season"},
-            { "seasonnamena", "season"},
-            { "seasonnameth", "season"},
-            { "systemmailcontentcn", "mail"},
-            { "systemmailcontentjp", "mail"},
-            { "systemmailcontentkr", "mail"},
-            { "systemmailcontentna", "mail"},
-            { "systemmailcontentth", "mail"}
+            {
+                "achievedescription", "achieve"
+            }, {
+                "achievespecialrewarddescription", "achieve"
+            }, {
+                "addressname", "address"
+            }, {
+                "chapterdescription_epic", "chapter"
+            }, {
+                "chapterdescription_event", "chapter"
+            }, {
+                "chapterdescription_eventcn", "chapter"
+            }, {
+                "chapterdescription_eventcommon", "chapter"
+            }, {
+                "chapterdescription_eventkr", "chapter"
+            }, {
+                "chapterdescription_eventna", "chapter"
+            }, {
+                "chapterdescription_field", "chapter"
+            }, {
+                "chapterdescription_famecontents", "chapter"
+            }, {
+                "chapterdescription_guide", "chapter"
+            }, {
+                "chapterdescription_guild", "chapter"
+            }, {
+                "chapterdescription_item", "chapter"
+            }, {
+                "chapterdescription_tutorial", "chapter"
+            }, {
+                "chapterdescription_world", "chapter"
+            }, {
+                "korjobdescription", "job"
+            }, {
+                "loadingdescription", "tip"
+            }, {
+                "maidmanufacturemessage", "Message"
+            }, {
+                "maidpropertystring", "Desc"
+            }, {
+                "pvpmode", "PVPMessage"
+            }, {
+                "questdescription_dailymission", "quest"
+            }, {
+                "questdescription_epic", "quest"
+            }, {
+                "questdescription_eventcn", "quest"
+            }, {
+                "questdescription_eventcommon", "quest"
+            }, {
+                "questdescription_eventkr", "quest"
+            }, {
+                "questdescription_eventna", "quest"
+            }, {
+                "questdescription_famecontents", "quest"
+            }, {
+                "questdescription_famefield", "quest"
+            }, {
+                "questdescription_famemission", "quest"
+            }, {
+                "questdescription_field", "quest"
+            }, {
+                "questdescription_guide", "quest"
+            }, {
+                "questdescription_guild", "quest"
+            }, {
+                "questdescription_item", "quest"
+            }, {
+                "questdescription_levelguide", "quest"
+            }, {
+                "questdescription_mentoring", "quest"
+            }, {
+                "questdescription_tutorial", "quest"
+            }, {
+                "questdescription_wedding", "quest"
+            }, {
+                "questdescription_world", "quest"
+            }, {
+                "seasonnamecn", "season"
+            }, {
+                "seasonnamejp", "season"
+            }, {
+                "seasonnamekr", "season"
+            }, {
+                "seasonnamena", "season"
+            }, {
+                "seasonnameth", "season"
+            }, {
+                "systemmailcontentcn", "mail"
+            }, {
+                "systemmailcontentjp", "mail"
+            }, {
+                "systemmailcontentkr", "mail"
+            }, {
+                "systemmailcontentna", "mail"
+            }, {
+                "systemmailcontentth", "mail"
+            }
         };
 
         // Check if we have a specific mapping for this file
@@ -1011,29 +1120,53 @@ public class Converter {
         // Create lookup dictionary for filename to key attribute name mapping
         var keyAttributeLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
             // Files that use different key attribute names
-            { "addressname", "mapcode" },
-            { "kordynamicaction", "skillID"},
-            { "maidmanufacturemessage", "MaidID"},
-            { "maidpropertystring", "MaidID"},
-            { "pvpmode", "key"},
-            { "questdescription_dailymission", "questID"},
-            { "questdescription_epic", "questID"},
-            { "questdescription_eventcn", "questID"},
-            { "questdescription_eventcommon", "questID"},
-            { "questdescription_eventkr", "questID"},
-            { "questdescription_eventna", "questID"},
-            { "questdescription_famecontents", "questID"},
-            { "questdescription_famefield", "questID"},
-            { "questdescription_famemission", "questID"},
-            { "questdescription_field", "questID"},
-            { "questdescription_guide", "questID"},
-            { "questdescription_guild", "questID"},
-            { "questdescription_item", "questID"},
-            { "questdescription_levelguide", "questID"},
-            { "questdescription_mentoring", "questID"},
-            { "questdescription_tutorial", "questID"},
-            { "questdescription_wedding", "questID"},
-            { "questdescription_world", "questID"},
+            {
+                "addressname", "mapcode"
+            }, {
+                "kordynamicaction", "skillID"
+            }, {
+                "maidmanufacturemessage", "MaidID"
+            }, {
+                "maidpropertystring", "MaidID"
+            }, {
+                "pvpmode", "key"
+            }, {
+                "questdescription_dailymission", "questID"
+            }, {
+                "questdescription_epic", "questID"
+            }, {
+                "questdescription_eventcn", "questID"
+            }, {
+                "questdescription_eventcommon", "questID"
+            }, {
+                "questdescription_eventkr", "questID"
+            }, {
+                "questdescription_eventna", "questID"
+            }, {
+                "questdescription_famecontents", "questID"
+            }, {
+                "questdescription_famefield", "questID"
+            }, {
+                "questdescription_famemission", "questID"
+            }, {
+                "questdescription_field", "questID"
+            }, {
+                "questdescription_guide", "questID"
+            }, {
+                "questdescription_guild", "questID"
+            }, {
+                "questdescription_item", "questID"
+            }, {
+                "questdescription_levelguide", "questID"
+            }, {
+                "questdescription_mentoring", "questID"
+            }, {
+                "questdescription_tutorial", "questID"
+            }, {
+                "questdescription_wedding", "questID"
+            }, {
+                "questdescription_world", "questID"
+            },
 
             // Most files use "id" as the key attribute (this is the default)
             // Add more specific mappings as needed when you discover them
@@ -1055,37 +1188,69 @@ public class Converter {
         // Create lookup dictionary for filename to secondary key attribute name mapping
         var secondaryKeyLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
             // Files that need secondary keys due to duplicate primary keys
-            { "addressname", "blockCode" },
-            { "seasonnamena", "type"},
-            { "setitemoption", "partCount"},
-            { "koradditionaldescription", "level"},
-            { "koradditionaldescription_1", "level"},
-            { "koradditionaldescription_10", "level"},
-            { "koradditionaldescription_20", "level"},
-            { "koradditionaldescription_30", "level"},
-            { "koradditionaldescription_40", "level"},
-            { "koradditionaldescription_50", "level"},
-            { "koradditionaldescription_60", "level"},
-            { "koradditionaldescription_70", "level"},
-            { "koradditionaldescription_80", "level"},
-            { "koradditionaldescription_90", "level"},
-            { "koradditionaldescription_100", "level"},
-            { "koradditionaldescription_110", "level"},
-            { "korskilldescription", "level"},
-            { "korskilldescription_1", "level"},
-            { "korskilldescription_10", "level"},
-            { "korskilldescription_20", "level"},
-            { "korskilldescription_30", "level"},
-            { "korskilldescription_40", "level"},
-            { "korskilldescription_50", "level"},
-            { "korskilldescription_60", "level"},
-            { "korskilldescription_70", "level"},
-            { "korskilldescription_80", "level"},
-            { "korskilldescription_90", "level"},
-            { "korskilldescription_100", "level"},
-            { "korskilldescription_110", "level"},
-            { "stringadditionaldescription", "level"},
-            { "stringskilldescription", "level"}
+            {
+                "addressname", "blockCode"
+            }, {
+                "seasonnamena", "type"
+            }, {
+                "setitemoption", "partCount"
+            }, {
+                "koradditionaldescription", "level"
+            }, {
+                "koradditionaldescription_1", "level"
+            }, {
+                "koradditionaldescription_10", "level"
+            }, {
+                "koradditionaldescription_20", "level"
+            }, {
+                "koradditionaldescription_30", "level"
+            }, {
+                "koradditionaldescription_40", "level"
+            }, {
+                "koradditionaldescription_50", "level"
+            }, {
+                "koradditionaldescription_60", "level"
+            }, {
+                "koradditionaldescription_70", "level"
+            }, {
+                "koradditionaldescription_80", "level"
+            }, {
+                "koradditionaldescription_90", "level"
+            }, {
+                "koradditionaldescription_100", "level"
+            }, {
+                "koradditionaldescription_110", "level"
+            }, {
+                "korskilldescription", "level"
+            }, {
+                "korskilldescription_1", "level"
+            }, {
+                "korskilldescription_10", "level"
+            }, {
+                "korskilldescription_20", "level"
+            }, {
+                "korskilldescription_30", "level"
+            }, {
+                "korskilldescription_40", "level"
+            }, {
+                "korskilldescription_50", "level"
+            }, {
+                "korskilldescription_60", "level"
+            }, {
+                "korskilldescription_70", "level"
+            }, {
+                "korskilldescription_80", "level"
+            }, {
+                "korskilldescription_90", "level"
+            }, {
+                "korskilldescription_100", "level"
+            }, {
+                "korskilldescription_110", "level"
+            }, {
+                "stringadditionaldescription", "level"
+            }, {
+                "stringskilldescription", "level"
+            }
 
             // Add more mappings as needed when you discover files with duplicate primary keys
         };
@@ -1099,68 +1264,38 @@ public class Converter {
         return null;
     }
 
-
-
-    private void ConvertQuestDescriptionFinalWithSorting(string jsonContent, string locale) {
-        JObject jsonObject = JObject.Parse(jsonContent);
-
-        // Create a list to store quest entries with their parsed quest IDs for sorting
-        var questEntries = new List<(int questId, string key, JToken value)>();
-
-        foreach ((string combinedKey, JToken? value) in jsonObject) {
-            try {
-                // Parse the combined key to extract the quest ID
-                var (primaryKey, secondaryKey, feature, localeFromKey) = ParseCombinedKey(combinedKey, "questdescription_final.json");
-
-                // Convert the primary key to int for sorting
-                if (!int.TryParse(primaryKey, out int questId)) {
-                    Console.WriteLine($"Warning: Could not parse quest ID '{primaryKey}' from key '{combinedKey}'. Skipping.");
-                    continue;
-                }
-
-                questEntries.Add((questId, combinedKey, value ?? new JObject()));
-
-            } catch (Exception ex) {
-                Console.WriteLine($"Error processing quest key '{combinedKey}': {ex.Message}");
-            }
-        }
-
-        // Sort by quest ID in ascending order
-        questEntries.Sort((a, b) => a.questId.CompareTo(b.questId));
-
-        // Create a new sorted JSON object
-        var sortedJsonObject = new JObject();
-        foreach (var (questId, key, value) in questEntries) {
-            sortedJsonObject[key] = value;
-        }
-
-        // Convert to XML
-        string xmlContent = ConvertJsonToXml(sortedJsonObject.ToString(), "questdescription_final.json");
-
-        // Save the XML file
-        SaveXmlFile("questdescription_final.xml", xmlContent, locale);
-
-        Console.WriteLine($"Successfully converted questdescription_final.json to questdescription_final.xml with {questEntries.Count} quests sorted by questID");
-    }
-
     private void ConvertSkillNameWithSplitting(string jsonContent, string locale) {
         JObject jsonObject = JObject.Parse(jsonContent);
 
         // Create dictionaries to store skill entries for each file
         var skillFiles = new Dictionary<string, List<(int skillId, string key, JToken value)>> {
-            { "skillname", new List<(int, string, JToken)>() },
-            { "skillname_1", new List<(int, string, JToken)>() },
-            { "skillname_10", new List<(int, string, JToken)>() },
-            { "skillname_20", new List<(int, string, JToken)>() },
-            { "skillname_30", new List<(int, string, JToken)>() },
-            { "skillname_40", new List<(int, string, JToken)>() },
-            { "skillname_50", new List<(int, string, JToken)>() },
-            { "skillname_60", new List<(int, string, JToken)>() },
-            { "skillname_70", new List<(int, string, JToken)>() },
-            { "skillname_80", new List<(int, string, JToken)>() },
-            { "skillname_90", new List<(int, string, JToken)>() },
-            { "skillname_100", new List<(int, string, JToken)>() },
-            { "skillname_110", new List<(int, string, JToken)>() }
+            {
+                "skillname", new List<(int, string, JToken)>()
+            }, {
+                "skillname_1", new List<(int, string, JToken)>()
+            }, {
+                "skillname_10", new List<(int, string, JToken)>()
+            }, {
+                "skillname_20", new List<(int, string, JToken)>()
+            }, {
+                "skillname_30", new List<(int, string, JToken)>()
+            }, {
+                "skillname_40", new List<(int, string, JToken)>()
+            }, {
+                "skillname_50", new List<(int, string, JToken)>()
+            }, {
+                "skillname_60", new List<(int, string, JToken)>()
+            }, {
+                "skillname_70", new List<(int, string, JToken)>()
+            }, {
+                "skillname_80", new List<(int, string, JToken)>()
+            }, {
+                "skillname_90", new List<(int, string, JToken)>()
+            }, {
+                "skillname_100", new List<(int, string, JToken)>()
+            }, {
+                "skillname_110", new List<(int, string, JToken)>()
+            }
         };
 
         foreach ((string combinedKey, JToken? value) in jsonObject) {
@@ -1235,26 +1370,39 @@ public class Converter {
 
         // Create dictionaries to store skill entries for each file
         var skillFiles = new Dictionary<string, List<(int skillId, int level, string key, JToken value)>> {
-            { "koradditionaldescription", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_1", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_10", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_20", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_30", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_40", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_50", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_60", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_70", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_80", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_90", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_100", new List<(int, int, string, JToken)>() },
-            { "koradditionaldescription_110", new List<(int, int, string, JToken)>() }
+            {
+                "koradditionaldescription", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_1", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_10", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_20", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_30", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_40", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_50", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_60", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_70", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_80", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_90", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_100", new List<(int, int, string, JToken)>()
+            }, {
+                "koradditionaldescription_110", new List<(int, int, string, JToken)>()
+            }
         };
 
         foreach ((string combinedKey, JToken? value) in jsonObject) {
             try {
                 // Parse the combined key to extract the skill ID
                 var (primaryKey, secondaryKey, feature, localeFromKey) = ParseCombinedKey(combinedKey, "stringadditionaldescription.json");
-
 
 
                 // Convert the primary key to int for categorization
@@ -1322,7 +1470,6 @@ public class Converter {
             });
 
 
-
             // Create a new sorted JSON object for this file
             var sortedJsonObject = new JObject();
             foreach (var (skillId, level, key, value) in entries) {
@@ -1346,19 +1493,33 @@ public class Converter {
 
         // Create dictionaries to store skill entries for each file
         var skillFiles = new Dictionary<string, List<(int skillId, int level, string key, JToken value)>> {
-            { "korskilldescription", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_1", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_10", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_20", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_30", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_40", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_50", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_60", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_70", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_80", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_90", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_100", new List<(int, int, string, JToken)>() },
-            { "korskilldescription_110", new List<(int, int, string, JToken)>() }
+            {
+                "korskilldescription", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_1", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_10", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_20", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_30", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_40", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_50", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_60", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_70", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_80", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_90", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_100", new List<(int, int, string, JToken)>()
+            }, {
+                "korskilldescription_110", new List<(int, int, string, JToken)>()
+            }
         };
 
         foreach ((string combinedKey, JToken? value) in jsonObject) {
@@ -1446,5 +1607,67 @@ public class Converter {
         }
 
         Console.WriteLine($"Successfully split stringskilldescription.json into multiple XML files based on skill ID ranges");
+    }
+
+    private string EscapeApostrophesInXml(string xmlContent) {
+        if (string.IsNullOrEmpty(xmlContent)) {
+            return xmlContent;
+        }
+
+        // Use regex to find attribute values and escape apostrophes within them
+        // This pattern matches: attribute="value with apostrophes"
+        return System.Text.RegularExpressions.Regex.Replace(
+            xmlContent,
+            @"(\w+)=""([^""]*)""",
+            match => {
+                string attrName = match.Groups[1].Value;
+                string attrValue = match.Groups[2].Value;
+                // Replace all apostrophes in the attribute value
+                string escapedValue = attrValue.Replace("'", "&apos;");
+                return $"{attrName}=\"{escapedValue}\"";
+            }
+        );
+    }
+
+    private void ConvertQuestDescriptionFinalWithSorting(string jsonContent, string locale) {
+        JObject jsonObject = JObject.Parse(jsonContent);
+
+        // Create a list to store quest entries with their parsed quest IDs for sorting
+        var questEntries = new List<(int questId, string key, JToken value)>();
+
+        foreach ((string combinedKey, JToken? value) in jsonObject) {
+            try {
+                // Parse the combined key to extract the quest ID
+                var (primaryKey, secondaryKey, feature, localeFromKey) = ParseCombinedKey(combinedKey, "questdescription_final.json");
+
+                // Convert the primary key to int for sorting
+                if (!int.TryParse(primaryKey, out int questId)) {
+                    Console.WriteLine($"Warning: Could not parse quest ID '{primaryKey}' from key '{combinedKey}'. Skipping.");
+                    continue;
+                }
+
+                questEntries.Add((questId, combinedKey, value ?? new JObject()));
+
+            } catch (Exception ex) {
+                Console.WriteLine($"Error processing quest key '{combinedKey}': {ex.Message}");
+            }
+        }
+
+        // Sort by quest ID in ascending order
+        questEntries.Sort((a, b) => a.questId.CompareTo(b.questId));
+
+        // Create a new sorted JSON object
+        var sortedJsonObject = new JObject();
+        foreach (var (questId, key, value) in questEntries) {
+            sortedJsonObject[key] = value;
+        }
+
+        // Convert to XML
+        string xmlContent = ConvertJsonToXml(sortedJsonObject.ToString(), "questdescription_final.json");
+
+        // Save the XML file
+        SaveXmlFile("questdescription_final.xml", xmlContent, locale);
+
+        Console.WriteLine($"Successfully converted questdescription_final.json to questdescription_final.xml with {questEntries.Count} quests sorted by questID");
     }
 }
